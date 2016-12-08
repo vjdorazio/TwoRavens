@@ -106,7 +106,7 @@ query.app<-function(env){
   #################################################################
   ##################################################################
   else{
-  #tmp1=substr(everything,2,(nchar(everything)-1))
+  tmp1=substr(everything,2,(nchar(everything)-1))
 #  tmp2=rjson::fromJSON(everything)
   query=temp2$query
   print("value of query")
@@ -116,11 +116,13 @@ query.app<-function(env){
     print(json2)
    #json2='{"$or":[{"date":{"$gte":"$date(2016-05-24)","$lte":"$date(2016-05-25)"}},{"location":{"$in":["United States of America"]}}]}'
    json3=gsub(" ","%20",json2) 
-   #json3='{"date":{"$gte":"$date(2016-05-19)","$lte":"$date(2016-05-25)"},"location":{"$in":["Seoul"]},"source":"IGOBUSIMFGOV"}'
-  print(4)
-  url=paste0("http://10.176.148.60:5000/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query=",json3)
+   #json3='{"date8":{"$gte":"20070101","$lte":"20131231"},"country_code":{"$in":["Beijing%Shi","Illinois"]},"source":{"$in":["SAUGOV","INDGOV"]},"target":{"$in":["ISRGOV","CHNGOV"]}}'
+        # '{"date8":{"$gte":"20070101","$lte":"20103131"},"country_code":{"$in":["Beijing%Shi","Illinois"]},"source":{"$in":["SAUGOV","INDGOV"]},"target":{"$in":["PAKGOV","USAGOV"]}}'
+   
+   print(4)
+  url=paste0("http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query=",json3)
   #url2=paste0("http://10.176.148.60:5000/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query=",json3)
-  
+  testurl='http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={%22date8%22:%2220070101%22,%22country_code%22:%22Beijing%20Shi%22,%22source%22:%22SAUGOV%22,%22target%22:%22ISRGOV%22}'
   print(url)
   
   #jsontest='{"9":{"33":{"74":[{"label":"V155","labs":"Bird Flu and Epidemics"},{"label":"V415","labs":"Fowl and Meat Industry"}]}}}'
