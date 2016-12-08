@@ -1345,8 +1345,9 @@ console.log("todate:"+todate);
 
     function downloadSuccess(btn, json) {
         
-        // console.log("json value: ", json);
-       alert("Done!");
+         console.log("json value: ", json);
+       if(json["data"].length===0)
+       alert("No records found!!");
        // jsondata=json;
         //maxdate=new Date((jsondata.maxdate*1000));
         //mindate=new Date((jsondata.mindate*1000));
