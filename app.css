@@ -379,3 +379,341 @@ td {
 }
 #searchvar.x  { background-position: right 5px center; } /* (jQ) Show icon */
 #searchvar.onX{ cursor: pointer; }     
+
+ /* The Overlay (background) */
+.overlay {
+    /* Height & width depends on how you want to reveal the overlay (see JS below) */   
+    height: 100%;
+    width: 0;
+    position: fixed; /* Stay in place */
+    z-index: 51; /* Sit on top */
+    left: 0;
+    top: 0;
+    background-color: rgb(0,0,0); /* Black fallback color */
+    background-color: rgba(0,0,0, 1.0); /* Black w/opacity */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+}
+.overlay h1{
+ position: relative;
+    top: 10%; /* 25% from the top */
+    width: 100%; /* 100% width */
+    text-align: center; /* Centered text/links */
+    margin-top: 30px;
+    margin-bottom: 7%;
+  
+}
+/* Position the content inside the overlay */
+.overlay-content {
+    position: relative;
+    /*top: 10%; /* 25% from the top */
+    width: 100%; /* 100% width */
+    text-align: center; /* Centered text/links */
+    margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+    height:100%;
+}
+
+/* The navigation links inside the overlay */
+.overlay p {
+    padding: 8px;
+    text-decoration: none;
+    font-size: 36px;
+    color: #818181;
+    display: block; /* Display block instead of inline */
+    transition: 0.3s; /* Transition effects on hover (color) */
+    margin-top: 3%;
+}
+
+/* When you mouse over the navigation links, change their color */
+.overlay a:hover, .overlay a:focus {
+    color: #f1f1f1;
+}
+
+/* Position the close button (top right corner) */
+.overlay .closebtn {
+    position: absolute;
+    top: 20px;
+    right: 45px;
+    font-size: 60px;
+}
+
+/* When the height of the screen is less than 450 pixels, change the font-size of the links and position the close button again, so they don't overlap */
+@media screen and (max-height: 450px) {
+    .overlay a {font-size: 20px}
+    .overlay .closebtn {
+        font-size: 40px;
+        top: 15px;
+        right: 35px;
+    }
+}
+
+
+
+overlay
+
+#Year_range{
+
+	width:5px;
+}
+
+.dropdown {
+  position: relative;
+  /*top:5%;*/
+  margin-left: 43%;
+  /*transform: translateX(290%);*/
+}
+
+a {
+  color: #fff;
+  height:40px;
+}
+
+.dropdown dd,
+.dropdown dt {
+  margin: 0px;
+  padding: 0px;
+}
+
+.dropdown ul {
+  margin: 0 0 0 0;
+  width: 272px;
+}
+
+.dropdown dd {
+  position: relative;
+}
+
+.dropdown a,
+.dropdown a:visited {
+  color: #fff;
+  text-decoration: none;
+  outline: none;
+  font-size: 12px;
+}
+
+.dropdown dt a {
+  background-color: #4F6877;
+  display: block;
+  padding: 8px 20px 5px 10px;
+  min-height: 25px;
+  line-height: 24px;
+  overflow: hidden;
+  border: 0;
+  width: 272px;
+}
+
+.dropdown dt a span,
+.multiSel span {
+  cursor: pointer;
+  display: inline-block;
+  padding: 0 3px 2px 0;
+}
+
+.dropdown dd ul {
+  background-color: #4F6877;
+  border: 0;
+  color: #fff;
+  display: none;
+  left: 0px;
+  padding: 2px 15px 2px 5px;
+  position: absolute;
+  top: 2px;
+  width: 272px;
+  list-style: none;
+  height: 200px;
+  overflow: auto;
+  text-align:left;
+}
+
+.dropdown span.value {
+  display: none;
+}
+
+.dropdown dd ul li a {
+  padding: 5px;
+  display: block;
+}
+
+.dropdown dd ul li a:hover {
+  background-color: #fff;
+}
+
+/*source actor*/
+.dropdownactorl1,.dropdownactorl2,.dropdownactorl3,.dropdownactorl4,.tdropdownactorl1,.tdropdownactorl2,.tdropdownactorl3,.tdropdownactorl4 {
+  position: relative;
+  
+  margin-left: 43%;
+  height:50px;
+  z-index=100;
+  
+}
+
+a {
+  color: #fff;
+  height:40px;
+}
+
+.dropdownactorl1 dd,
+.dropdownactorl1 dt,
+.dropdownactorl2 dd,
+.dropdownactorl2 dt,
+.dropdownactorl3 dd,
+.dropdownactorl3 dt,
+.dropdownactorl4 dd,
+.dropdownactorl4 dt,
+.tdropdownactorl1 dd,
+.tdropdownactorl1 dt,
+.tdropdownactorl2 dd,
+.tdropdownactorl2 dt,
+.tdropdownactorl3 dd,
+.tdropdownactorl3 dt,
+.tdropdownactorl4 dd,
+.tdropdownactorl4 dt  {
+  margin: 0px;
+  padding: 0px;
+  width:300px;
+  z-index=100;
+}
+
+.dropdownactorl1 ul,
+.dropdownactorl2 ul,
+.dropdownactorl3 ul,
+.dropdownactorl4 ul,
+.tdropdownactorl1 ul,
+.tdropdownactorl2 ul,
+.tdropdownactorl3 ul,
+.tdropdownactorl4 ul  {
+  margin: 0 0 0 0;
+  width: 272px;
+  z-index=100;
+}
+
+.dropdownactorl1 dd,
+.dropdownactorl2 dd,
+.dropdownactorl3 dd,
+.dropdownactorl4 dd,
+.tdropdownactorl1 dd,
+.tdropdownactorl2 dd,
+.tdropdownactorl3 dd,
+.tdropdownactorl4 dd {
+  position: relative;
+  z-index=100;
+}
+
+.dropdownactorl1 a,
+.dropdownactorl1 a:visited,
+.dropdownactorl2 a,
+.dropdownactorl2 a:visited,
+.dropdownactorl3 a,
+.dropdownactorl3 a:visited,
+.dropdownactorl4 a,
+.dropdownactorl4 a:visited,
+.tdropdownactorl1 a,
+.tdropdownactorl1 a:visited,
+.tdropdownactorl2 a,
+.tdropdownactorl2 a:visited,
+.tdropdownactorl3 a,
+.tdropdownactorl3 a:visited,
+.tdropdownactorl4 a,
+.tdropdownactorl4 a:visited {
+  color: #fff;
+  text-decoration: none;
+  outline: none;
+  font-size: 12px;
+}
+
+.dropdownactorl1 dt a,
+.dropdownactorl2 dt a,
+.dropdownactorl3 dt a,
+.dropdownactorl4 dt a,
+.tdropdownactorl1 dt a,
+.tdropdownactorl2 dt a,
+.tdropdownactorl3 dt a,
+.tdropdownactorl4 dt a  {
+  background-color: #4F6877;
+  display: block;
+  padding: 8px 20px 5px 10px;
+  min-height: 25px;
+  line-height: 24px;
+  overflow: hidden;
+  border: 0;
+  width: 272px;
+  z-index=100;
+}
+
+.dropdownactorl1 dt a span,
+.dropdownactorl2 dt a span,
+.dropdownactorl3 dt a span,
+.dropdownactorl4 dt a span,
+.tdropdownactorl1 dt a span,
+.tdropdownactorl2 dt a span,
+.tdropdownactorl3 dt a span,
+.tdropdownactorl4 dt a span,
+.multiSel span {
+  cursor: pointer;
+  display: inline-block;
+  padding: 0 3px 2px 0;
+}
+
+.dropdownactorl1 dd ul,
+.dropdownactorl2 dd ul,
+.dropdownactorl3 dd ul,
+.dropdownactorl4 dd ul, 
+.tdropdownactorl1 dd ul,
+.tdropdownactorl2 dd ul,
+.tdropdownactorl3 dd ul,
+.tdropdownactorl4 dd ul {
+  background-color: #4F6877;
+  border: 0;
+  color: #fff;
+  display: none;
+  left: 0px;
+  padding: 2px 15px 2px 5px;
+  position: absolute;
+  top: 2px;
+  width: 272px;
+  list-style: none;
+  height: 200px;
+  overflow: auto;
+  text-align:left;
+}
+
+.dropdownactorl1 span.value,
+.dropdownactorl2 span.value,
+.dropdownactorl3 span.value,
+.dropdownactorl4 span.value,
+.tdropdownactorl1 span.value,
+.tdropdownactorl2 span.value,
+.tdropdownactorl3 span.value,
+.tdropdownactorl4 span.value {
+  display: none;
+}
+
+.dropdownactorl1 dd ul li a,
+.dropdownactorl2 dd ul li a,
+.dropdownactorl3 dd ul li a,
+.dropdownactorl4 dd ul li a,
+.tdropdownactorl1 dd ul li a,
+.tdropdownactorl2 dd ul li a,
+.tdropdownactorl3 dd ul li a,
+.tdropdownactorl4 dd ul li a 
+ {
+  padding: 5px;
+  display: block;
+}
+
+.dropdownactorl1 dd ul li a:hover,
+.dropdownactorl2 dd ul li a:hover,
+.dropdownactorl3 dd ul li a:hover,
+.dropdownactorl4 dd ul li a:hover,
+.tdropdownactorl1 dd ul li a:hover,
+.tdropdownactorl2 dd ul li a:hover,
+.tdropdownactorl3 dd ul li a:hover,
+.tdropdownactorl4 dd ul li a:hover {
+  background-color: #fff;
+}
+
+#nxtl1btn {
+transform: translateX(10%);
+
+}
