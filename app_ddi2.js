@@ -1331,13 +1331,13 @@ console.log("todate:"+todate);
 
     var out=[]; 
     var qry={};
-    qry["type"]="postquery";
-    qry["query"]='"date8":{"$gte":'+fromdate+',"$lte":'+todate+' },"country_code":{"$in":'+selectedcountry+'},"source":{"$in":'+sourcecode+'},target:{"$in":'+targetcode+'}';
+    //qry["type"]="postquery";
+    // qry["query"]='"date8":{"$gte":"'+fromdate+'","$lte":"'+todate+'" },"country_code":{"$in":'+selectedcountry+'},"source":{"$in":'+sourcecode+'},target:{"$in":'+targetcode+'}';
 
-    //out.push({type:"postquery",query:{"date":{"$gte":"$date("+testfromdate+")","$lte":"$date("+testtodate+")"}, if(selectedcountry.length>0) {"location":{"$in": selectedcountry}},if(sourcecode.length>0) {"source":{"$in":sourcecode}},if(targetcode.length>0) {"target":{"$in":targetcode :}}}});
+    out.push({type:"postquery",query:{"date8":{"$gte":fromdate,"$lte":todate},"country_code":{"$in": selectedcountry},"source":{"$in":sourcecode},"target":{"$in":targetcode}}});
     //out='type:postquery,query:{"$or":[{date:{"$gte":"$date('+fromdate+')","$lte":"$date('+todate+')"}},{location:{"$in":'+selectedcountry+'}},{"source":"'+sourcecode+'"}]}}';
     
-    jsonout=JSON.stringify(qry);
+    jsonout=JSON.stringify(out);
      console.log("jsonout",jsonout);
     
     urlcall = rappURL+"queryapp"; //base.concat(jsonout);
