@@ -349,8 +349,8 @@ data=jdata;
                      
                 max=parseInt(maxdate.toString().substr(11,5));
                 min=parseInt(mindate.toString().substr(11,5));        
-               // max=2016;
-                //min=1990;  
+                fromdate=min.toString()+"0101";
+                todate=max.toString()+"1231";  
 
                    //console.log("MAxdate:",max," and mindate:",min);
                    if((max-min)>=10){
@@ -1281,11 +1281,14 @@ function yearspicker(){
 function preQuery() {
     //zparams.zmetadataurl=metadataurl;
     //zparams.zusername=username;
-    var out=[];
+    //var out=[];
+    var qr={};
     var qry="prequery";
-    out.push({type:qry});
 
-    var jsonout = JSON.stringify(out);
+    qr["type"]=qry;    
+  //  out.push({type:qry});
+
+    var jsonout = JSON.stringify(qr);
     // console.log(jsonout);
     var btn="nobutton";
     
@@ -1330,14 +1333,31 @@ console.log("todate:"+todate);
     console.log("target Code"+targetcode);
 
     var out=[]; 
-    var qry={};
-    //qry["type"]="postquery";
-    // qry["query"]='"date8":{"$gte":"'+fromdate+'","$lte":"'+todate+'" },"country_code":{"$in":'+selectedcountry+'},"source":{"$in":'+sourcecode+'},target:{"$in":'+targetcode+'}';
+    var qry;
+    var qr={};
 
-    out.push({type:"postquery",query:{"date8":{"$gte":fromdate,"$lte":todate},"country_code":{"$in": selectedcountry},"source":{"$in":sourcecode},"target":{"$in":targetcode}}});
-    //out='type:postquery,query:{"$or":[{date:{"$gte":"$date('+fromdate+')","$lte":"$date('+todate+')"}},{location:{"$in":'+selectedcountry+'}},{"source":"'+sourcecode+'"}]}}';
+    qr["type"]="postquery";
+    //qry["query"]='"date8":{"$gte":"'+fromdate+'","$lte":"'+todate+'" },"country_code":{"$in":'+selectedcountry+'},"source":{"$in":'+sourcecode+'},target:{"$in":'+targetcode+'}';
+    qr["query"]={"date8":{},"country_code":{},"source":{},"target":{}};
+    qr["query"]["date8"]["$gte"]=fromdate;
+    qr["query"]["date8"]["$lte"]=todate;
+    qr["query"]["country_code"]["$in"]=selectedcountry;
+    qr["query"]["source"]["$in"]=sourcecode;
+    qr["query"]["target"]["$in"]=targetcode;
+
+    if(selectedcountry.length===0)
+    delete qr["query"]["country_code"]
+
+    if(sourcecode.length===0)
+    delete qr["query"]["source"]
+
+    if(targetcode.length===0)
+    delete qr["query"]["target"]    
+    //out.push({type:"postquery",query:{"date8":{"$gte":fromdate,"$lte":todate},"country_code":{"$in": selectedcountry},"source":{"$in":sourcecode},"target":{"$in":targetcode}}});
     
-    jsonout=JSON.stringify(out);
+    // qry='{"date8":{"$gte":"'+fromdate+'","$lte":"'+todate+'"},"country_code":{"$in":"'+selectedcountry+'"},"source":{"$in":"'+sourcecode+'"},"target":{"$in":}}';
+    //qr["query"]=qry;
+    jsonout=JSON.stringify(qr);
      console.log("jsonout",jsonout);
     
     urlcall = rappURL+"queryapp"; //base.concat(jsonout);
@@ -1348,6 +1368,9 @@ console.log("todate:"+todate);
          console.log("json value: ", json);
        if(json["data"].length===0)
        alert("No records found!!");
+     else
+      alert(json["nrws"]+" Records retrieved!");
+      
        // jsondata=json;
         //maxdate=new Date((jsondata.maxdate*1000));
         //mindate=new Date((jsondata.mindate*1000));
