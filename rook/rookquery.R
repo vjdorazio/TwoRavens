@@ -52,8 +52,8 @@ query.app<-function(env){
   #################################################################
   #################################################################
   ##################################################################
-  temp1=substr(everything,2,(nchar(everything)-1))
-  temp2=rjson::fromJSON(temp1)
+  #temp1=substr(everything,2,(nchar(everything)-1))
+  temp2=rjson::fromJSON(everything)
   print("temp")
   print(temp2)
   type=temp2$type
@@ -115,22 +115,27 @@ query.app<-function(env){
     print("value of json2")
     print(json2)
    #json2='{"$or":[{"date":{"$gte":"$date(2016-05-24)","$lte":"$date(2016-05-25)"}},{"location":{"$in":["United States of America"]}}]}'
-   json3=gsub(" ","%20",json2) 
-   #json3='{"date8":{"$gte":"20070101","$lte":"20131231"},"country_code":{"$in":["Beijing%Shi","Illinois"]},"source":{"$in":["SAUGOV","INDGOV"]},"target":{"$in":["ISRGOV","CHNGOV"]}}'
-        # '{"date8":{"$gte":"20070101","$lte":"20103131"},"country_code":{"$in":["Beijing%Shi","Illinois"]},"source":{"$in":["SAUGOV","INDGOV"]},"target":{"$in":["PAKGOV","USAGOV"]}}'
+   json3=gsub(" ","%20",json2)
+   xx <- unlist(strsplit(json3,""))
+   xx[c(18,29,38,49)] <- c("", "", "","")
+   json3=paste0(xx,collapse='')
    
+   #json3='{"date8":{"$gte":"[19700101]","$lte":"[20161231]"},"country_code":{"$in":["Ahal","West%20Bank"]}}'
+        # '{"date8":{"$gte":"20070101","$lte":"20101231"},"country_code":{"$in":["Beijing%Shi","Illinois"]},"source":{"$in":["SAUGOV","INDGOV"]},"target":{"$in":["PAKGOV","USAGOV"]}}'
+   #json3='{\"date8\":{\"$gte\":[\"19700101\"],\"$lte\":[\"20161231\"]},\"country_code\":{\"$in\":[\"Ahal\",\"West%20Bank\"]}}'
    print(4)
   url=paste0("http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query=",json3)
   #url2=paste0("http://10.176.148.60:5000/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query=",json3)
-  testurl='http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={%22date8%22:%2220070101%22,%22country_code%22:%22Beijing%20Shi%22,%22source%22:%22SAUGOV%22,%22target%22:%22ISRGOV%22}'
+  #testurl='http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={%22date8%22:%2220070101%22,%22country_code%22:%22Beijing%20Shi%22,%22source%22:%22SAUGOV%22,%22target%22:%22ISRGOV%22}'
   print(url)
   
   #jsontest='{"9":{"33":{"74":[{"label":"V155","labs":"Bird Flu and Epidemics"},{"label":"V415","labs":"Fowl and Meat Industry"}]}}}'
       
 #  dt=jsonlite::fromJSON(jsontest)
   mydata=jsonlite::fromJSON(url)
-  #mydata=getURL(url)
+    #mydata=getURL(url)
   print(mydata)
+  rws=nrow(mydata$data)
   #test=mydata$data
   #date=mydata$data$date
   #location=mydata$data$location
@@ -142,7 +147,7 @@ query.app<-function(env){
   #mindate=datesort[which.min(datesort)]
   
   #outdata=list(maxdate=maxdate,mindate=mindate,location=location2)
-  jsontest=rjson::toJSON(mydata)
+  jsontest=rjson::toJSON(list(data=mydata,nrws=rws))
   
   result=list(jsontest)
   }
