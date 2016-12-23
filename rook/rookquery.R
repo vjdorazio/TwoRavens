@@ -121,11 +121,11 @@ query.app<-function(env){
    json3=paste0(xx,collapse='')
    
    #json3='{"date8":{"$gte":"[19700101]","$lte":"[20161231]"},"country_code":{"$in":["Ahal","West%20Bank"]}}'
-        # '{"date8":{"$gte":"20070101","$lte":"20101231"},"country_code":{"$in":["Beijing%Shi","Illinois"]},"source":{"$in":["SAUGOV","INDGOV"]},"target":{"$in":["PAKGOV","USAGOV"]}}'
+    #     '{"date8":{"$gte":"20070101","$lte":"20101231"},"country_code":{"$in":["Beijing%Shi","Illinois"]},"source":{"$in":["SAUGOV","INDGOV"]},"target":{"$in":["PAKGOV","USAGOV"]}}'
    #json3='{\"date8\":{\"$gte\":[\"19700101\"],\"$lte\":[\"20161231\"]},\"country_code\":{\"$in\":[\"Ahal\",\"West%20Bank\"]}}'
    print(4)
   url=paste0("http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query=",json3)
-  #url2=paste0("http://10.176.148.60:5000/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query=",json3)
+ # url2='http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={\"date8\":{\"$gte\":\"20160101\",\"$lte\":\"20161231\"},\"source\":{\"$in\":[\"USAGOV\"]},\"target\":{\"$in\":[\"PAK\"]}}'
   #testurl='http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={%22date8%22:%2220070101%22,%22country_code%22:%22Beijing%20Shi%22,%22source%22:%22SAUGOV%22,%22target%22:%22ISRGOV%22}'
   print(url)
   
@@ -134,8 +134,11 @@ query.app<-function(env){
 #  dt=jsonlite::fromJSON(jsontest)
   mydata=jsonlite::fromJSON(url)
     #mydata=getURL(url)
-  print(mydata)
+  #print(mydata)
   rws=nrow(mydata$data)
+  dat=as.data.frame(mydata$data)
+  df <- subset(dat, select = -c(7,26) )
+  write.csv(df,file="../data/subsetdata1.csv")
   #test=mydata$data
   #date=mydata$data$date
   #location=mydata$data$location

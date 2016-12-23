@@ -102,6 +102,7 @@ source("rookdata.R")
 source("rookwrite.R")
 source("rookquery.R")
 source("build.R")
+source("rookagg.R")
 if(addPrivacy){
     source("rookprivate.R")
 }
@@ -119,6 +120,7 @@ if(!production){
     R.server$add(app = write.app, name="writeapp")
     R.server$add(app = query.app, name="queryapp")
     R.server$add(app = build.app, name="buildapp")
+    R.server$add(app = aggregate.app, name="aggregateapp")
     
         ## These add the .apps for the privacy budget allocator interface
     if(addPrivacy){
