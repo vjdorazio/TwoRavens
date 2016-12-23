@@ -330,7 +330,7 @@ preQuery();
 //############################################################
 var todate,fromdate;
 function getValues(jdata){
-console.log("test",jdata);
+//console.log("test",jdata);
 $('#my-select').multiSelect();
 data=jdata;
               //console.log("Source Actor:"+data.sourceactors);
@@ -370,7 +370,7 @@ data=jdata;
 
 
               var source=data.sourceactors;
-              console.log("source code1: ",source);
+             // console.log("source code1: ",source);
 
               //separating the first three characters into igo list or country list
              var j=0,k=0;
@@ -516,7 +516,7 @@ $('.mutliSelect').on('change',':checkbox', function() {
 //+++++For Source Actors+++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 $("#nxtl1btn").on('click', function(){
-   console.log("Level one to level 2 clicked");
+  // console.log("Level one to level 2 clicked");
   // console.log("IGO::",igos);
   if(sourcelevel1=="IGO")
   {
@@ -534,7 +534,7 @@ $("#nxtl1btn").on('click', function(){
   }
   else{
 
-     console.log("inside l2");
+    // console.log("inside l2");
     $("#level2h4").text("Select Country");
     $(".mutliSelectactorl2").append("<ul>");
     for(var i=0;i<sourcecountry.length;i++)
@@ -557,7 +557,7 @@ $("#nxtl1btn").on('click', function(){
 function leveltwothree(btn){
 
 
-console.log("Source Code:"+sourcelevel2);
+//console.log("Source Code:"+sourcelevel2);
     var out=[];
     var cd1={};
     cd1["var"]="source";
@@ -567,7 +567,7 @@ console.log("Source Code:"+sourcelevel2);
     //out='type:postquery,query:{"$or":[{date:{"$gte":"$date('+fromdate+')","$lte":"$date('+todate+')"}},{location:{"$in":'+selectedcountry+'}},{"source":"'+sourcecode+'"}]}}';
     
     jsonout=JSON.stringify(out);
-     console.log("jsonout",jsonout);
+     //console.log("jsonout",jsonout);
     
     urlcall = rappURL+"buildapp"; //base.concat(jsonout);
     var solajsonout = "solaJSON="+jsonout;
@@ -598,9 +598,9 @@ console.log("Source Code:"+sourcelevel2);
        
        }
        for(var m=0;m<code2.length;m++){
-       console.log("Mic check",code2.indexOf(code2[m]));
+      // console.log("Mic check",code2.indexOf(code2[m]));
        }
-       console.log("Mic check",code2);
+     //  console.log("Mic check",code2);
 
   
     $("#level3h4").text("select second part of code");
@@ -692,7 +692,7 @@ $("#srcgenbtn").on('click',function(){
 			}
     	
     }*/
-    console.log(sourcecode);
+   // console.log(sourcecode);
 
  // sourcecode=sourcelevel2[0]+sourcelevel3[0]+sourcelevel4[0];
   $("#sourcecodep").text(sourcecode);
@@ -770,12 +770,12 @@ $('.mutliSelectactorl2').on('change',':checkbox', function() {
   if ($(this).is(':checked')) {
 
     sourcelevel2.splice(sourcelevel2.length,0,title);
-     console.log("level 2 array:",sourcelevel2);
+    // console.log("level 2 array:",sourcelevel2);
   } else {
     id=sourcelevel2.indexOf(title);
     // console.log("unchecked:",id);
     sourcelevel2.splice(id,1);
-    console.log("level2 array:",sourcelevel2);
+   // console.log("level2 array:",sourcelevel2);
 
   }
 });
@@ -815,7 +815,7 @@ $('.mutliSelectactorl3').on('change',':checkbox', function() {
     	if($.inArray(i,code1index)!=-1){
     	sourcelevel3.splice(sourcelevel3.indexOf(code2[i])+1,0,title);
       //console.log(sourcelevel3.indexOf(code2[i])+1);
-      console.log(sourcelevel3);	
+     // console.log(sourcelevel3);	
     	break;
     	}	
     }
@@ -823,7 +823,7 @@ $('.mutliSelectactorl3').on('change',':checkbox', function() {
     id=$(this).attr("id");
      
     sourcelevel3.splice(id,1);
-    console.log(sourcelevel3);
+    //console.log(sourcelevel3);
   }
 });
 
@@ -857,7 +857,7 @@ $('.mutliSelectactorl4').on('change',':checkbox', function() {
     //$('.multiSel').append(html);
     //$(".hida").hide();
     ind=code3.indexOf(title);
-    console.log("value of index:",ind);
+   // console.log("value of index:",ind);
     for(var i=ind;i>=0;i--)
     {
     	if($.inArray(i,code12index)!=-1){
@@ -869,12 +869,12 @@ $('.mutliSelectactorl4').on('change',':checkbox', function() {
 
 
     //sourcelevel4.splice(sourcelevel4.length,0,title);
-     console.log("level4:",sourcelevel4);
+    // console.log("level4:",sourcelevel4);
   } else {
     id=sourcelevel4.indexOf(title);
     // console.log("unchecked:",id);
     sourcelevel4.splice(id,1);
-    console.log("the country array:",sourcelevel4);
+    //console.log("the country array:",sourcelevel4);
     //$('span[title="' + title + '"]').remove();
     //var ret = $(".hida");
     //$('.dropdown dt a').append(ret);
@@ -914,7 +914,7 @@ $("#tnxtl1btn").on('click', function(){
   }
   else{
 
-     console.log("inside l2");
+    // console.log("inside l2");
     $("#tlevel2h4").text("Select Country");
     $(".tmutliSelectactorl2").append("<ul>");
     for(var i=0;i<sourcecountry.length;i++)
@@ -937,13 +937,13 @@ $("#tnxtl1btn").on('click', function(){
 function tleveltwothree(btn){
 
 
-console.log("Target Code:"+targetlevel2);
+//console.log("Target Code:"+targetlevel2);
     var out=[]; 
     out.push({var:"target",level:"one",code1:targetlevel2});
     //out='type:postquery,query:{"$or":[{date:{"$gte":"$date('+fromdate+')","$lte":"$date('+todate+')"}},{location:{"$in":'+selectedcountry+'}},{"source":"'+sourcecode+'"}]}}';
     
     jsonout=JSON.stringify(out);
-     console.log("jsonout",jsonout);
+    // console.log("jsonout",jsonout);
     
     urlcall = rappURL+"buildapp"; //base.concat(jsonout);
     var solajsonout = "solaJSON="+jsonout;
@@ -1065,7 +1065,7 @@ $("#trggenbtn").on('click',function(){
 
     }
 
-    console.log(targetcode);
+    //console.log(targetcode);
 
  // sourcecode=sourcelevel2[0]+sourcelevel3[0]+sourcelevel4[0];
   $("#targetcodep").text(targetcode);
@@ -1143,12 +1143,12 @@ $('.tmutliSelectactorl2').on('change',':checkbox', function() {
   if ($(this).is(':checked')) {
 
     targetlevel2.splice(targetlevel2.length,0,title);
-     console.log("level 2 array:",targetlevel2);
+     //console.log("level 2 array:",targetlevel2);
   } else {
     id=targetlevel2.indexOf(title);
     // console.log("unchecked:",id);
     targetlevel2.splice(id,1);
-    console.log("level2 array:",targetlevel2);
+    //console.log("level2 array:",targetlevel2);
 
   }
 });
@@ -1184,7 +1184,7 @@ $('.tmutliSelectactorl3').on('change',':checkbox', function() {
     {
     	if($.inArray(i,tcode1index)!=-1){
     	targetlevel3.splice(targetlevel3.indexOf(tcode2[i])+1,0,title);	
-      console.log(targetlevel3);
+      //console.log(targetlevel3);
     	break;
     	}	
     }
@@ -1208,35 +1208,11 @@ $('.tmutliSelectactorl3').on('change',':checkbox', function() {
 
 
 
-  //console.log("from date:",fromdate," to date",todate);
-  // url1="http://10.176.148.60:5000/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={%22$or%22:[{%22code%22:%22030%22},{%22code%22:%22111%22}]}";
-  // url2="http://10.176.148.60:5000/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&select=date,location,country&query={}"; 
- /*
- d3.json(url2, function(error, json) {
-                if (error) return console.warn(error);
-                var jsondata = json;
-               // console.log("inside d3:",jsondata);
-
-                
-                //console.log("Yo date:",date1);
-                getValues(jsondata);    
-                });*/
 
 function yearspicker(){
 
                   mx=maxdate;
-                // console.log("yearspicker called");
-               // console.log("min:",mindate);
-                //  console.log("max:",mx);
-
-                  //maxmonth=maxdate.getMonth();
-                  //maxday=maxdate.getDay()+1;
-                  //minmonth=mindate.getMonth();
-                  //minday=mindate.getDay()+1;
-                  //console.log("maxyear:",max," maxmonth:",maxmonth," maxday:",maxday);
-                  //console.log("minyear:",min," minmonth:",minmonth," minday:",minday);
-                   //$("#fromdate").datepicker();
-                   
+                
                    
                    $(function(){
                    $("#fromdate").datepicker({
@@ -1265,13 +1241,7 @@ function yearspicker(){
                     //yearRange:min+":"+max
                     });
                    });
-                   //$("#todate").datepicker();
-                   /*({
-                    mindate:mindate,
-                    maxdate:maxdate
-
-                   });;*/
-
+                   
                    $("#fromdate").show();
                    $("#todate").show();
 
@@ -1319,8 +1289,8 @@ function callquery(btn){
 
     //var btn="nobutton";
     //var base = rappURL+"zeligapp?solaJSON="
-console.log("fromdate:"+fromdate);
-console.log("todate:"+todate);
+//console.log("fromdate:"+fromdate);
+//console.log("todate:"+todate);
 
     // testfromdate=fromdate.toISOString().slice(0,10);
      //testtodate=todate.toISOString().slice(0,10);
@@ -1329,8 +1299,8 @@ console.log("todate:"+todate);
      // console.log("from date:",testfromdate," to date",testtodate);
     // console.log("Query called,country list:",selectedcountry);
      //outtypes.push({varnamesTypes:allNodes[j].name, nature:allNodes[j].nature, numchar:allNodes[j].numchar, binary:allNodes[j].binary, interval:allNodes[j].interval,time:allNodes[j].time});
-    console.log("Source Code:"+sourcecode);
-    console.log("target Code"+targetcode);
+   // console.log("Source Code:"+sourcecode);
+   // console.log("target Code"+targetcode);
 
     var out=[]; 
     var qry;
@@ -1358,27 +1328,20 @@ console.log("todate:"+todate);
     // qry='{"date8":{"$gte":"'+fromdate+'","$lte":"'+todate+'"},"country_code":{"$in":"'+selectedcountry+'"},"source":{"$in":"'+sourcecode+'"},"target":{"$in":}}';
     //qr["query"]=qry;
     jsonout=JSON.stringify(qr);
-     console.log("jsonout",jsonout);
+    // console.log("jsonout",jsonout);
     
     urlcall = rappURL+"queryapp"; //base.concat(jsonout);
     var solajsonout = "solaJSON="+jsonout;
 
     function downloadSuccess(btn, json) {
         
-         console.log("json value: ", json);
+         //console.log("json value: ", json);
        if(json["data"].length===0)
        alert("No records found!!");
      else
       alert(json["nrws"]+" Records retrieved!");
+      $("#btnGoToAgg").show();
       
-       // jsondata=json;
-        //maxdate=new Date((jsondata.maxdate*1000));
-        //mindate=new Date((jsondata.mindate*1000));
-        //countrylist=jsondata.location;
-        //maxdate1=parseInt(maxdate.toString().substr(11,5));
-        //mindate1=parseInt(mindate.toString().substr(11,5));
-        //console.log("maxdate:",maxdate1);
-        //console.log(countrylist);
        
         
           
@@ -1392,6 +1355,59 @@ console.log("todate:"+todate);
 //console.log("inside getvalues, maxdate:",maxdate1," mindate:",mindate1);
 
 }
+
+//==============================End of subset========================================
+
+
+$("#btnGoToAgg").on('click',function(){
+
+  document.getElementById("subsetOverlay").style.width = "0%";
+  openNav("agg");
+
+});
+
+
+function callaggquery(btn){
+
+  var unit=$("#DateAggSel").val();
+  var out={};
+  out["unit"]=unit;
+  out["source"]=sourcecode;
+  out["target"]=targetcode;
+  jsonout=JSON.stringify(out);
+     console.log("jsonout",jsonout);
+    
+    urlcall = rappURL+"aggregateapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON="+jsonout;
+
+
+function downloadSuccess(btn, json) {
+        
+         console.log("json value: ", json);
+       //if(json["data"].length===0)
+       //alert("No records found!!");
+     //else
+      //alert(json["nrws"]+" Records retrieved!");
+      //$("#btnGoToAgg").show();
+      
+       
+        
+          
+    }
+    
+    function downloadFail(btn) {
+        console.log("failed")
+    }
+
+    makeCorsRequest(urlcall,btn, downloadSuccess, downloadFail, solajsonout);
+
+}
+
+
+
+
+
+
 
 console.log("Value of username: ",username);
 //This function finds whether a key is present in the json file, and sends the key's value if present.
@@ -1606,14 +1622,24 @@ for (var i = 0; i < elements.length - 1; i++) {
 //console.log("max index:",highest_index);
 
 
-$("#myNav").attr("z-index", (highest_index+1));
-function openNav() {
-    document.getElementById("myNav").style.width = "100%";
+$("#subsetOverlay").attr("z-index", (highest_index+1));
+function openNav(typ) {
+    if(typ==="subset"){
+    document.getElementById("subsetOverlay").style.width = "100%";
+    //$("#btnGoToAgg").hide();
+  }
+    else if(typ=="agg")
+      document.getElementById("aggOverlay").style.width = "100%";
 }
 
 /* Close when someone clicks on the "x" symbol inside the overlay */
-function closeNav() {
-    document.getElementById("myNav").style.width = "0%";
+function closeNav(typ) {
+  if(typ==="subset")
+    document.getElementById("subsetOverlay").style.width = "0%";
+   else if(typ=="agg")
+       document.getElementById("aggOverlay").style.width = "0%";
+    
+
     callreadpreprocess();
 }
 
@@ -2295,7 +2321,7 @@ var force;
 		
 	
         $(document).ready(function(){
-            openNav();
+            openNav("subset");
         		$("#btnSave").hide();
         });
 	

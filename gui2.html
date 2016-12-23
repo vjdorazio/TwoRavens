@@ -41,10 +41,10 @@
 </svg-->
 
   <body>
-      <div id="myNav" class="overlay">
+      <div id="subsetOverlay" class="overlay">
 
   <!-- Button to close the overlay navigation -->
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav('subset')">&times;</a>
 
   <!--Header-->
 
@@ -128,7 +128,7 @@
             
         </div>
     </dd>
-  <!--<button>Filter</button>-->
+ 
 </dl>
 </div>
 
@@ -185,7 +185,7 @@
 
         </div>
     </dd>
-  <!--<button>Filter</button>-->
+  
 </dl>
 </div>
 <div id="tlevel3" hidden>
@@ -205,7 +205,7 @@
             
         </div>
     </dd>
-  <!--<button>Filter</button>-->
+  
 </dl>
 </div>
 
@@ -224,20 +224,7 @@
   
     <dd>
         <div class="mutliSelect">
-            <!--<ul>
-                    <li>
-                    <input type="checkbox" value="Apple" />Apple</li>
-                    <li>
-                    <input type="checkbox" value="Blackberry" />Blackberry</li>
-                    <li>
-                    <input type="checkbox" value="HTC" />HTC</li>
-                    <li>
-                    <input type="checkbox" value="Sony Ericson" />Sony Ericson</li>
-                    <li>
-                    <input type="checkbox" value="Motorola" />Motorola</li>
-                    <li>
-                    <input type="checkbox" value="Nokia" />Nokia</li>
-            </ul> -->
+            
         </div>
     </dd>
   <!--<button>Filter</button>-->
@@ -245,6 +232,42 @@
     <!--<p>Clients</p>
     <p>Contact</p>-->
   <button class="btn btn-default ladda-button" id="btnEventSubset" onclick="callquery()" style="margin-left: 50%;" >subset</button>
+  <button    id="btnGoToAgg" style="margin-left: 50%;" >Next</button>
+  
+  </div>
+
+
+</div>
+
+   <div id="aggOverlay" class="overlay" style="width:0%;">
+
+  <!-- Button to close the overlay navigation -->
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav('agg')">&times;</a>
+
+  <!--Header-->
+
+
+  <!-- Overlay content -->
+  <div class="overlay-content">
+    <h1>Aggregation</h1>
+    <p>Choose Unit of Date Aggregation</p>
+    <select id="DateAggSel" class="form-control" style="-webkit-appearance: none;
+    -moz-appearance: none;width:20%;margin-left:40%;">
+      <option value="" disabled selected hidden>Choose Unit</option>
+      <option value="Daily">Daily</option>
+      <option value="Weekly">Weekly</option>
+      <option value="Monthly">Monthly</option>
+      <option value="Quarterly">Quarterly</option>
+      <option value="Yearly">Yearly</option>
+
+    </select>
+    
+   
+ 
+ 
+   
+  <button class="btn btn-default ladda-button" id="btnEventAgg" onclick="callaggquery()" style="margin-left: 50%;" >Aggregate</button>
+  
   </div>
 
 
