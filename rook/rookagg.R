@@ -1,7 +1,9 @@
 ## Source (sou) & Target (tar) are from Original dataset, column Source (the most detailed column) ##
 ## ss dataset: subset ##
-
-query.app<-function(env){
+library(xts)
+library(ggplot2)
+#install.packages("ggplot2")
+aggregate.app<-function(env){
   production<-FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
   warning<-FALSE
   
@@ -26,19 +28,52 @@ query.app<-function(env){
     everything <- request$POST()$solaJSON
     print("value of Everything")
     print(everything)
-  }
+  } 
   
+  print("1")
+  mydata=jsonlite::fromJSON(everything)
+  print("2")
+  unit=mydata$unit
+  print("2")
+  events=read.delim("../data/subsetdata1.csv",sep=",")
+  #sou <- c("USAGOV")
+  print("3")
+    sou=mydata$source
+  #tar <- c("PAK")
+    print("4")
+  tar=mydata$target
+  print("5")
+  ss <- events[grepl(paste(sou, collapse= "|"), events$source) &
+                 grepl(paste(tar, collapse= "|"),events$target),]
+  print("6")
+  aggdatatemp=aggdaily(sou,tar,ss)
+  print("7")
+  if(unit=="Daily"){
+    aggdatafinal=aggdatatemp
+    }
   
+  else if (unit=="Weekly")
+  {
+    aggdatafinal= aggweekly(sou,tar,aggdatatemp)  
+    }
+    else if(unit=="Monthly")
+    {
+      aggdatafinal=aggmonthly(sou,tar,aggdatatemp)
+      }
+    else if(unit=="Quarterly")
+      aggdatafinal=aggquarterly(sou,tar,aggdatatemp)
+    
+    else if(unit=="Yearly")
+      aggdatafinal=aggyearly(sou,tar,aggdatatemp)
+    
+  print(aggdatafinal)
   
-
-  sou <- c("USAGOV","RUS")
-  tar <- c("KENGOV", "IRQ", "SYR")
+  jsontest=rjson::toJSON(list(data=aggdatafinal))
+  result=list(jsontest)
   
-  ss <- events[grepl(paste(sou, collapse= "|"), events$Source) &
-                 grepl(paste(tar, collapse= "|"),events$Target),]
-  
-  
-  
+  response$write(result)
+  #print(response)
+  response$finish()
   
   
 }
@@ -51,7 +86,7 @@ query.app<-function(env){
 makets <- function(x)
 {
   # Get the daily crosstab
-  x1 <- table(x$Date, x$QuadClass) # get frequency of each Quadclass for each date. All Quadclass in 1 column
+  x1 <- table(x$date8, x$quad_class) # get frequency of each Quadclass for each date. All Quadclass in 1 column
   
   # Now make the time series
   x2 <- xts(x1[,1:5], as.Date(rownames(x1),
@@ -71,17 +106,17 @@ makets <- function(x)
 
 ## Aggdata: Aggregated dataset by QuadClass for each Source - Target combination 
 
-aggdaily<-function(sou,tar){
-  aggdata <- data.frame(Date="", Neutral=0, VCoop=0, MCoop=0, VConf=0, MConf=0, Source="", Target="")
+aggdaily<-function(sou,tar,ss){
+  aggdata <- data.frame(Date="", Neutral=0, VCoop=0, MCoop=0, VConf=0, MConf=0, source="", target="")
   aggdata <- aggdata[0,]
   
   for(i in 1:length(sou)) {
     for(j in 1:length(tar)) {
-      temp <- ss[which(ss$Source==sou[i] & ss$Target==tar[j]),] 
+      temp <- ss[which(ss$source==sou[i] & ss$target==tar[j]),] 
       if(nrow(temp)==0) next
       temp1 <- as.data.frame(makets(temp))
-      temp1$Source<-as.character(sou[i])
-      temp1$Target<-as.character(tar[j])
+      temp1$source<-as.character(sou[i])
+      temp1$target<-as.character(tar[j])
       if(i==1 & j==1) {
         aggdata<-temp1
       }
@@ -97,13 +132,13 @@ aggdaily<-function(sou,tar){
   aggdata.ts.sorted.day <- aggdata.ts[order(aggdata.ts$Date),] # sorted event by Date order
   
   # Pad 0 to all missing dates for all Source-Target combination -> dataset: aggdata2 
-  aggdata2 <- data.frame(Date="", Neutral=0, VCoop=0, MCoop=0, VConf=0, MConf=0, Source="", Target="")
+  aggdata2 <- data.frame(Date="", Neutral=0, VCoop=0, MCoop=0, VConf=0, MConf=0, source="", target="")
   aggdata2 <- aggdata2[0,]
   
   for(i in 1:length(sou)) {
     for(j in 1:length(tar)) {
-      temp2 <- aggdata.ts.sorted.day[which(aggdata.ts.sorted.day$Source==sou[i] 
-                                           & aggdata.ts.sorted.day$Target==tar[j]),] 
+      temp2 <- aggdata.ts.sorted.day[which(aggdata.ts.sorted.day$source==sou[i] 
+                                           & aggdata.ts.sorted.day$target==tar[j]),] 
       if(nrow(temp2)==0) next
       temp2.length <- length (temp2$Date)
       temp2.time.min <- temp2$Date[1]
@@ -112,8 +147,8 @@ aggdaily<-function(sou,tar){
       all.dates.frame <- data.frame(list(Date=all.dates))
       temp2.merged <- merge(all.dates.frame,temp2, all=T)
       temp2.merged[,2:6][(is.na(temp2.merged[,2:6]))] <- 0
-      temp2.merged$Source<-as.character(sou[i])
-      temp2.merged$Target<-as.character(tar[j])
+      temp2.merged$source<-as.character(sou[i])
+      temp2.merged$target<-as.character(tar[j])
       if(i==1 & j==1) {
         aggdata2<-temp2.merged
       }
@@ -123,13 +158,13 @@ aggdaily<-function(sou,tar){
     }
   }
   #View(aggdata2)
-    
-  return(aggdata2)
+    returndata=aggdata2
+  return(returndata)
 }
 
 
 
-aggweekly<-function(sou,tar){
+aggweekly<-function(sou,tar,aggdata2){
 
   # MAKE WEEKLY -> dataset: aggdata.weekly.ts
   
@@ -138,8 +173,8 @@ aggweekly<-function(sou,tar){
   
   for(i in 1:length(sou)) {
     for(j in 1:length(tar)) {
-      temp3 <- aggdata2[which(aggdata2$Source==sou[i] 
-                              & aggdata2$Target==tar[j]),] 
+      temp3 <- aggdata2[which(aggdata2$source==sou[i] 
+                              & aggdata2$target==tar[j]),] 
       if(nrow(temp3)==0) next
       temp4 <- xts (temp3[2:6], as.Date(temp3$Date, format='%m/%d/%Y'))
       for(k in 1:ncol(temp4)){
@@ -151,8 +186,8 @@ aggweekly<-function(sou,tar){
       }
       temp4.weekly <- cbind(temp41, temp42, temp43, temp44, temp45)
       temp5 <- as.data.frame(temp4.weekly)
-      temp5$Source<-as.character(sou[i])
-      temp5$Target<-as.character(tar[j])
+      temp5$source<-as.character(sou[i])
+      temp5$target<-as.character(tar[j])
       if(i==1 & j==1) {
         aggdata.weekly<-temp5
       }
@@ -164,24 +199,27 @@ aggweekly<-function(sou,tar){
   
   #View(temp4.weekly)
   #View(temp5)
-  View(aggdata.weekly) # cons: have rownames (date) overlapped -> move rowname to the 1st column
+ # View(aggdata.weekly) # cons: have rownames (date) overlapped -> move rowname to the 1st column
   aggdata.weekly.ts <- data.frame (Date=as.Date(rownames(aggdata.weekly)), coredata(aggdata.weekly)) 
-  View(aggdata.weekly.ts) 
-  View(aggdata.weekly)
+  #View(aggdata.weekly.ts) 
+  #View(aggdata.weekly)
+  
+  return(aggdata.weekly.ts)
   
 }
 
 
-aggmonthly<-function(sou,tar){
+aggmonthly<-function(sou,tar,aggdata2){
 # MAKE MONTHLY -> dataset: aggdata.monthly.ts
-
+print("Inisdie agg monthly 1")
 aggdata.monthly <- data.frame(Date="", Neutral=0, VCoop=0, MCoop=0, VConf=0, MConf=0, Source="", Target="")
+print("Inisdie agg monthly 2")
 aggdata.monthly <- aggdata2[0,]
-
+print("Inisdie agg monthly 3")
 for(i in 1:length(sou)) {
   for(j in 1:length(tar)) {
-    temp3 <- aggdata2[which(aggdata2$Source==sou[i] 
-                            & aggdata2$Target==tar[j]),] 
+    temp3 <- aggdata2[which(aggdata2$source==sou[i] 
+                            & aggdata2$target==tar[j]),] 
     if(nrow(temp3)==0) next
     temp4 <- xts (temp3[2:6], as.Date(temp3$Date, format='%m/%d/%Y'))
     for(k in 1:ncol(temp4)){
@@ -203,17 +241,19 @@ for(i in 1:length(sou)) {
     }
   }
 }
-
+print("Inisdie agg monthly 4")
 aggdata.monthly.ts <- data.frame (Date=as.Date(rownames(aggdata.monthly)), coredata(aggdata.monthly))
-write.csv(aggdata.monthly.ts, file = "/Users/phama/Desktop/monthagg.csv")
+print("Inisdie agg monthly 5")
+#write.csv(aggdata.monthly.ts, file = "/Users/phama/Desktop/monthagg.csv")
 
-View(aggdata.monthly.ts)
+#View(aggdata.monthly.ts)
+return(aggdata.monthly.ts)
 }#end of aggmonthly
 
 
 
 
-aggquarterly<-function(sou,tar){
+aggquarterly<-function(sou,tar,aggdata2){
 # Make QUARTERLY -> dataset: aggdata.quarterly.ts
 
 aggdata.quarterly <- data.frame(Date="", Neutral=0, VCoop=0, MCoop=0, VConf=0, MConf=0, Source="", Target="")
@@ -221,8 +261,8 @@ aggdata.quarterly <- aggdata2[0,]
 
 for(i in 1:length(sou)) {
   for(j in 1:length(tar)) {
-    temp3 <- aggdata2[which(aggdata2$Source==sou[i] 
-                            & aggdata2$Target==tar[j]),] 
+    temp3 <- aggdata2[which(aggdata2$source==sou[i] 
+                            & aggdata2$target==tar[j]),] 
     if(nrow(temp3)==0) next
     temp4 <- xts (temp3[2:6], as.Date(temp3$Date, format='%m/%d/%Y'))
     for(k in 1:ncol(temp4)){
@@ -246,12 +286,13 @@ for(i in 1:length(sou)) {
 }
 
 aggdata.quarterly.ts <- data.frame (Date=as.Date(rownames(aggdata.quarterly)), coredata(aggdata.quarterly))
-View(aggdata.quarterly.ts)
+#View(aggdata.quarterly.ts)
+return(aggdata.quarterly.ts)
 }#end of aggquarterly
 
 
 
-aggyearly<-function(sou,tar){
+aggyearly<-function(sou,tar,aggdata2){
 # Make YEARLY -> dataset: aggdata.yearly.ts
 
 aggdata.yearly <- data.frame(Date="", Neutral=0, VCoop=0, MCoop=0, VConf=0, MConf=0, Source="", Target="")
@@ -259,8 +300,8 @@ aggdata.yearly <- aggdata2[0,]
 
 for(i in 1:length(sou)) {
   for(j in 1:length(tar)) {
-    temp3 <- aggdata2[which(aggdata2$Source==sou[i] 
-                            & aggdata2$Target==tar[j]),] 
+    temp3 <- aggdata2[which(aggdata2$source==sou[i] 
+                            & aggdata2$target==tar[j]),] 
     if(nrow(temp3)==0) next
     temp4 <- xts (temp3[2:6], as.Date(temp3$Date, format='%m/%d/%Y'))
     for(k in 1:ncol(temp4)){
@@ -284,7 +325,8 @@ for(i in 1:length(sou)) {
 }
 
 aggdata.yearly.ts <- data.frame (Date=as.Date(rownames(aggdata.yearly)), coredata(aggdata.yearly))
-View(aggdata.yearly.ts)
+#View(aggdata.yearly.ts)
+return(aggdata.yearly.ts)
 }#end of aggyearly
 
 
