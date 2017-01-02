@@ -82,13 +82,13 @@ query.app<-function(env){
  
   print("test2")
   
-  sourc<<-(jsonlite::fromJSON(preurl[1]))$data
-  target<<-(jsonlite::fromJSON(preurl[2]))$data
+  sourc<<-sort((jsonlite::fromJSON(preurl[1]))$data,decreasing = FALSE)
+  target<<-sort((jsonlite::fromJSON(preurl[2]))$data,decreasing=FALSE)
   #date=(jsonlite::fromJSON(preurl[1]))$data
   #location=predata$data$location
   #country=mydata$data$country
   
-  location=(jsonlite::fromJSON(preurl[4]))$data
+  location=sort((jsonlite::fromJSON(preurl[4]))$data,decreasing=FALSE)
   date=jsonlite::fromJSON(preurl[3])$data
   datetest=as.Date(date,"%Y%m%d")
   datesort=sort(datetest)
