@@ -52,17 +52,18 @@
   <!-- Overlay content -->
   <div class="overlay-content">
     <h1>Subset</h1>
-    <p>Choose Date Range</p>
+    <p id="daterange">Choose Date Range</p>
     <span id="Year_range"></span>
     <input type="text" class="datepicker" id="fromdate" placeholder="From" hidden>
 	<input type="text" class="datepicker" id="todate" placeholder="To" hidden>
 
    
- 
- <p >Choose Source Actor</p>
+   <ul id="actloc">
+<li id="mainlist">
+ <p id="sourceactorheading">Choose Source Actor</p>
    <div id="level1">
    <h4>Select international organisation or country(level 1)</h4>
-   <button id="nxtl1btn" ><img src="next.png" ></button>
+   
    <dl class="dropdownactorl1"> 
   
     <dt>
@@ -87,13 +88,14 @@
     </dd>
   
 </dl>
+<button id="nxtl1btn" ><img src="next.png" ></button>
 </div>
 
 
 <div id="level2" hidden>
     <h4 id="level2h4" ></h4>
 
-     <button id="nxtl2btn" onclick="leveltwothree()"><img src="next.png" ></button>
+    
    <dl class="dropdownactorl2"> 
   
     <dt>
@@ -110,10 +112,11 @@
     </dd>
   <!--<button>Filter</button>-->
 </dl>
+ <button id="nxtl2btn" onclick="leveltwothree()"><img src="next.png" ></button>
 </div>
 <div id="level3" hidden>
 <h4 id="level2h4"></h4>
-   <button id="srcgenbtn">Generate Code</button>
+   
    <dl class="dropdownactorl3"> 
   
     <dt>
@@ -130,16 +133,17 @@
     </dd>
  
 </dl>
+<button id="srcgenbtn">Generate Code</button>
 </div>
 
 <p id="sourcecodep"></p>
- 
+</li>
 
-
- <p >Choose Target Actor</p>
+<li id="mainlist">
+<p id="targetactorheading">Choose Target Actor</p>
    <div id="tlevel1">
    <h4>Select international organisation or country(level 1)</h4>
-   <button id="tnxtl1btn" ><img src="next.png" ></button>
+   
    <dl class="tdropdownactorl1"> 
   
     <dt>
@@ -164,13 +168,14 @@
     </dd>
   
 </dl>
+<button id="tnxtl1btn" ><img src="next.png" ></button>
 </div>
 
 
 <div id="tlevel2" hidden>
     <h4 id="tlevel2h4" ></h4>
 
-     <button id="tnxtl2btn" onclick="tleveltwothree()"><img src="next.png" ></button>
+    
    <dl class="tdropdownactorl2"> 
   
     <dt>
@@ -187,10 +192,11 @@
     </dd>
   
 </dl>
+ <button id="tnxtl2btn" onclick="tleveltwothree()"><img src="next.png" ></button>
 </div>
 <div id="tlevel3" hidden>
 <h4 id="tlevel2h4"></h4>
- <button id="trggenbtn">Generate Code</button>
+ 
    <dl class="tdropdownactorl3"> 
   
     <dt>
@@ -207,12 +213,15 @@
     </dd>
   
 </dl>
+<button id="trggenbtn">Generate Code</button>
 </div>
-
-
 <p id="targetcodep"></p>
- 
- <p >Choose Location(Country)</p>
+</li>
+
+<li id="mainlist">
+<div id="location">
+ <p id="locationheading">Choose Location(Country)</p>
+   <h4>select</h4>
    <dl class="dropdown"> 
   
     <dt>
@@ -229,6 +238,9 @@
     </dd>
   <!--<button>Filter</button>-->
 </dl>
+</div>
+</li>
+</ul>
     <!--<p>Clients</p>
     <p>Contact</p>-->
   <button class="btn btn-default ladda-button" id="btnEventSubset" onclick="callquery()" style="margin-left: 50%;" >subset</button>

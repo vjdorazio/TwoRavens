@@ -868,16 +868,11 @@ $('.mutliSelectactorl4').on('change',':checkbox', function() {
 
 
 
-    //sourcelevel4.splice(sourcelevel4.length,0,title);
-    // console.log("level4:",sourcelevel4);
+   
   } else {
     id=sourcelevel4.indexOf(title);
     // console.log("unchecked:",id);
     sourcelevel4.splice(id,1);
-    //console.log("the country array:",sourcelevel4);
-    //$('span[title="' + title + '"]').remove();
-    //var ret = $(".hida");
-    //$('.dropdown dt a').append(ret);
 
   }
 });
@@ -896,8 +891,7 @@ $('.mutliSelectactorl4').on('change',':checkbox', function() {
 //+++++For Target Actors+++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 $("#tnxtl1btn").on('click', function(){
-   //console.log("Level one to level 2 clicked");
-  // console.log("IGO::",igos);
+   
   if(targetlevel1=="IGO")
   {
     // console.log("inside l2");
@@ -937,37 +931,20 @@ $("#tnxtl1btn").on('click', function(){
 function tleveltwothree(btn){
 
 
-//console.log("Target Code:"+targetlevel2);
     var out=[]; 
     out.push({var:"target",level:"one",code1:targetlevel2});
-    //out='type:postquery,query:{"$or":[{date:{"$gte":"$date('+fromdate+')","$lte":"$date('+todate+')"}},{location:{"$in":'+selectedcountry+'}},{"source":"'+sourcecode+'"}]}}';
     
     jsonout=JSON.stringify(out);
-    // console.log("jsonout",jsonout);
     
     urlcall = rappURL+"buildapp"; //base.concat(jsonout);
     var solajsonout = "solaJSON="+jsonout;
 
     function downloadSuccess(btn, json) {
         
-         //console.log("json value: ", json);
-
+       
         tcode1=[];
        tcode2=[];
-       //console.log("code1",code1);
-       //console.log("code2",code2);
-       /*
-        code1[n]=key;
-          code2[k]=key;
-          code1index[n]=k;
-          k++;
-          sourcelevel3[n]=key;
-
-          $.merge(code2,json[key]);
-          n++;
-           k=k+json[key].length;
-
-       */
+       
 
        var k=0,n=0;
        for(var key in json)
@@ -984,22 +961,7 @@ function tleveltwothree(btn){
            k=k+json[key].length;
 
 
-        //console.log("inside if, code 2 will be stored");
-       	//tcode2[k]=json[key].code2;
-       	//console.log("inside if, code 1 will be stored");
-       	//tcode1[n]=key;
-       	//tcode2[k]=json[key].code;
-       	//targetlevel3[n]=json[key].code1;
-		//tcode1index[n]=k;
-       	//k++;
-       	
-
-       	//tcode2[k]=json[key].code2;
-       	//sourcelevel3[n]=
-       	//n++;
        
-
-       	//k++;
        }
   
     $("#tlevel3h4").text("select second part of code");
@@ -1626,7 +1588,7 @@ $("#subsetOverlay").attr("z-index", (highest_index+1));
 function openNav(typ) {
     if(typ==="subset"){
     document.getElementById("subsetOverlay").style.width = "100%";
-    //$("#btnGoToAgg").hide();
+    $("#btnGoToAgg").hide();
   }
     else if(typ=="agg")
       document.getElementById("aggOverlay").style.width = "100%";
