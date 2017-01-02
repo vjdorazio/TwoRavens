@@ -59,7 +59,7 @@ build.app<-function(env){
         d=fromJSON(query)
         
         #code2<-cbind(code2,d$data)
-        code2<-d$data
+        code2<-sort(d$data,decreasing = FALSE)
         lst[[code1]]<-code2
         
       }
