@@ -507,15 +507,15 @@ $("#nxtl1btn").on('click', function(){
   }
 } 
   $(".mutliSelect").append("</ul>");
-  $("#level1").hide("slide",{direction:"left"},500);
-  $("#level2").show("slide",{direction:"right"},500);
+  $("#level1").hide();
+  $("#level2").fadeIn(500);
 });
 
 function leveltwoone(btn){
   $('input[name=level1radio]').attr('checked',false);
   sourcelevel1="";
-  $("#level2").hide("slide",{direction:"left"},500);
-  $("#level1").show("slide",{direction:"right"},500);
+  $("#level2").hide();
+  $("#level1").fadeIn(500);
 
 }
 function levelthreetwo(btn){
@@ -523,8 +523,8 @@ function levelthreetwo(btn){
   // sourcelevel1="";
   $("input[name=srclvl2]").attr('checked',false);
   sourcelevel2=[];
-  $("#level3").hide("slide",{direction:"left"},500);
-  $("#level2").show("slide",{direction:"right"},500);
+  $("#level3").hide();
+  $("#level2").fadeIn(500);
 
 }
 function leveltwothree(btn){
@@ -592,8 +592,8 @@ function leveltwothree(btn){
 
   }
 
-  $("#level2").hide("slide",{direction:"left"},500);
-  $("#level3").show("slide",{direction:"right"},500);
+  $("#level2").hide();
+  $("#level3").fadeIn(500);
 
         
           
@@ -871,15 +871,15 @@ $("#tnxtl1btn").on('click', function(){
   }
 } 
   $(".tmutliSelect").append("</ul>");
-  $("#tlevel1").hide("slide",{direction:"left"},500);
-  $("#tlevel2").show("slide",{direction:"right"},500);
+  $("#tlevel1").hide();
+  $("#tlevel2").fadeIn(500);
 });
 
 function tleveltwoone(btn){
   $('input[name=tlevel1radio]').attr('checked',false);
   targetlevel1="";
-  $("#tlevel2").hide("slide",{direction:"left"},500);
-  $("#tlevel1").show("slide",{direction:"right"},500);
+  $("#tlevel2").hide();
+  $("#tlevel1").fadeIn(500);
 
 }
 
@@ -888,8 +888,8 @@ function tlevelthreetwo(btn){
   // sourcelevel1="";
   $("input[name=tarlvl2]").attr('checked',false);
   targetlevel2=[];
-  $("#tlevel3").hide("slide",{direction:"left"},500);
-  $("#tlevel2").show("slide",{direction:"right"},500);
+  $("#tlevel3").hide();
+  $("#tlevel2").fadeIn(500);
 
 }
 
@@ -947,8 +947,8 @@ function tleveltwothree(btn){
 
   }
 
-  $("#tlevel2").hide("slide",{direction:"left"},500);
-  $("#tlevel3").show("slide",{direction:"right"},500);
+  $("#tlevel2").hide();
+  $("#tlevel3").fadeIn(500);
 
         
           
