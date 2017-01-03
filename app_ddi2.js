@@ -253,23 +253,7 @@ if (dataurl) {
    else
    	pURL = "data/fearonLaitinpreprocess8.json";
    
-  // console.log("yo value of test",test);
-   /*$.ajax({
-    url:purltest,
-    type:'HEAD',
-    error: function()
-    {
-    	console.log("error");
-    	pURL = "data/fearonLaitinPreprocess4.json";
-        //file not exists
-    },
-    success: function()
-    {
-    	console.log("success");
-    	pURL = purltest;
-        //file exists
-    }
-	});*/
+  
 		function UrlExists(url)
 		{
 		    var http = new XMLHttpRequest();
@@ -287,8 +271,6 @@ if (dataurl) {
     // pURL = "data/qog_pp.json";   // This is Qual of Gov
 }
 
-//date=getValues();
-//console.log("Date Rohit: ",date);
 var preprocess = {};
 var mods = new Object;
 var jsondata;
@@ -302,8 +284,6 @@ var igos=["IGO","MNC","NGO","IMG"];
 var isocountrynames;
 isourl="data/countrynames.json";
 
-//isocountrynames=jQuery.getJSON(isourl);
-//var mydata = [];
 $.ajax({
   url: isourl,
   async: false,
@@ -336,14 +316,9 @@ data=jdata;
               //console.log("Source Actor:"+data.sourceactors);
                 var i=0;
                 for(var key in data.location){
-                 // console.log("key:",key);
-                 // console.log(data[key].date["$date"]);
-                //date[i]=new Date((data[key].date["$date"]));
                 countrylist[i]=data.location[key];  
                 i++;
                 }
-                //console.log("locations:",countrylist);
-                //console.log("date:",date);
                 maxdate=new Date((data.maxdate).toString().replace(/-/g, '\/'));
                 mindate=new Date((data.mindate).toString().replace(/-/g, '\/'));
                      
@@ -352,7 +327,6 @@ data=jdata;
                 fromdate=min.toString()+"0101";
                 todate=max.toString()+"1231";  
 
-                   //console.log("MAxdate:",max," and mindate:",min);
                    if((max-min)>=10){
                    $("#fromdate").hide();
                    $("#todate").hide();
@@ -370,9 +344,6 @@ data=jdata;
 
 
               var source=data.sourceactors;
-             // console.log("source code1: ",source);
-
-              //separating the first three characters into igo list or country list
              var j=0,k=0;
               for(var i=0;i<source.length;i++)
               {
@@ -383,14 +354,10 @@ data=jdata;
                     j++;
 
                  }
-                 //code1[k]=source[key].code1;
-                 //code2[k]=source[key].code2;
-                 //code3[k]=source[key].code3;
                  k++; 
 
               }
 
-              //sourcecountry=sourcecountry.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
 
              
 
@@ -409,17 +376,8 @@ $("#Year_range").ionRangeSlider({
 
       fromdate=data.from+"0101";
       todate=data.to+"1231";
-      //console.log("from ",fromdate," to ", todate);
     }
   
-    //values: year,
-
-    //values: [
-      //  "January", "February", "March",
-        //"April", "May", "June",
-        //"July", "August", "September",
-        //"October", "November", "December"
-    //]
 });
 }
 
@@ -527,7 +485,7 @@ $("#nxtl1btn").on('click', function(){
     {
       
     // console.log("hello"+igos[i]);
-    $(".mutliSelectactorl2 ul").append("<li><input type='checkbox' value='"+igos[i]+"' >"+igos[i]+"</li>");
+    $(".mutliSelectactorl2 ul").append("<li><input type='checkbox' name='srclvl2' value='"+igos[i]+"' >"+igos[i]+"</li>");
 
 
     }
@@ -541,7 +499,7 @@ $("#nxtl1btn").on('click', function(){
     {
    
     //console.log("hello"+igos[i]);
-    $(".mutliSelectactorl2 ul").append("<li><input type='checkbox' value='"+sourcecountry[i]+"' >"+findValue(isocountrynames,sourcecountry[i])+"</li>");
+    $(".mutliSelectactorl2 ul").append("<li><input type='checkbox' name='srclvl2' value='"+sourcecountry[i]+"' >"+findValue(isocountrynames,sourcecountry[i])+"</li>");
 
 
     
@@ -553,7 +511,22 @@ $("#nxtl1btn").on('click', function(){
   $("#level2").show("slide",{direction:"right"},500);
 });
 
+function leveltwoone(btn){
+  $('input[name=level1radio]').attr('checked',false);
+  sourcelevel1="";
+  $("#level2").hide("slide",{direction:"left"},500);
+  $("#level1").show("slide",{direction:"right"},500);
 
+}
+function levelthreetwo(btn){
+
+  // sourcelevel1="";
+  $("input[name=srclvl2]").attr('checked',false);
+  sourcelevel2=[];
+  $("#level3").hide("slide",{direction:"left"},500);
+  $("#level2").show("slide",{direction:"right"},500);
+
+}
 function leveltwothree(btn){
 
 
@@ -610,7 +583,7 @@ function leveltwothree(btn){
    
    // //console.log("hello"+igos[i]);
     if($.inArray(code2[i],code1)==-1)
-    $(".mutliSelectactorl3 ul").append("<li><input type='checkbox' id="+i+" value='"+code2[i]+"' >"+code2[i]+"</li>");
+    $(".mutliSelectactorl3 ul").append("<li><input type='checkbox' name='srclvl3' id="+i+" value='"+code2[i]+"' >"+code2[i]+"</li>");
 	else
 	$(".mutliSelectactorl3 ul").append("<li>"+code2[i]+"</li>");
 		
@@ -669,32 +642,7 @@ $("#srcgenbtn").on('click',function(){
 
     }
 
-/*
-  for(var i=0;i<code12.length;i++)
-    {	
-    	cd1=code12[i];
-    	if(i!=code12.length-1)
-    	{
-    	//
-    	cd3=sourcelevel4.slice(sourcelevel4.indexOf(code12[i])+1,sourcelevel4.indexOf(code12[i+1]));
 
-    	}
-    	else{
-    		cd3=sourcelevel4.slice(sourcelevel4.indexOf(code12[i])+1);
-    	}
-    	
-			for(var j=0;j<cd3.length;j++)
-			{
-				cod=cd1+cd3[j];
-				sourcecode[n]=cod;
-				n++;
-
-			}
-    	
-    }*/
-   // console.log(sourcecode);
-
- // sourcecode=sourcelevel2[0]+sourcelevel3[0]+sourcelevel4[0];
   $("#sourcecodep").text(sourcecode);
 }) //end of source gen
 
@@ -901,7 +849,7 @@ $("#tnxtl1btn").on('click', function(){
     {
       
     // console.log("hello"+igos[i]);
-    $(".tmutliSelectactorl2 ul").append("<li><input type='checkbox' value='"+igos[i]+"' >"+igos[i]+"</li>");
+    $(".tmutliSelectactorl2 ul").append("<li><input type='checkbox' name='tarlvl2' value='"+igos[i]+"' >"+igos[i]+"</li>");
 
 
     }
@@ -915,7 +863,7 @@ $("#tnxtl1btn").on('click', function(){
     {
    
     //console.log("hello"+igos[i]);
-    $(".tmutliSelectactorl2 ul").append("<li><input type='checkbox' value='"+sourcecountry[i]+"' >"+findValue(isocountrynames,sourcecountry[i])+"</li>");
+    $(".tmutliSelectactorl2 ul").append("<li><input type='checkbox' name='tarlvl2' value='"+sourcecountry[i]+"' >"+findValue(isocountrynames,sourcecountry[i])+"</li>");
 
 
     
@@ -926,6 +874,25 @@ $("#tnxtl1btn").on('click', function(){
   $("#tlevel1").hide("slide",{direction:"left"},500);
   $("#tlevel2").show("slide",{direction:"right"},500);
 });
+
+function tleveltwoone(btn){
+  $('input[name=tlevel1radio]').attr('checked',false);
+  targetlevel1="";
+  $("#tlevel2").hide("slide",{direction:"left"},500);
+  $("#tlevel1").show("slide",{direction:"right"},500);
+
+}
+
+function tlevelthreetwo(btn){
+
+  // sourcelevel1="";
+  $("input[name=tarlvl2]").attr('checked',false);
+  targetlevel2=[];
+  $("#tlevel3").hide("slide",{direction:"left"},500);
+  $("#tlevel2").show("slide",{direction:"right"},500);
+
+}
+
 
 
 function tleveltwothree(btn){
@@ -971,7 +938,7 @@ function tleveltwothree(btn){
    
    // //console.log("hello"+igos[i]);
     if($.inArray(tcode2[i],tcode1)==-1)
-    $(".tmutliSelectactorl3 ul").append("<li><input type='checkbox' id="+i+" value='"+tcode2[i]+"' >"+tcode2[i]+"</li>");
+    $(".tmutliSelectactorl3 ul").append("<li><input type='checkbox' name='tarlvl3' id="+i+" value='"+tcode2[i]+"' >"+tcode2[i]+"</li>");
 	else
 	$(".tmutliSelectactorl3 ul").append("<li>"+tcode2[i]+"</li>");
 		
