@@ -12,8 +12,8 @@
 }
 .irs-with-grid {
     height: 75px;
-    width:50%;
-    margin-left: 25%
+    /*width:50%;*/
+    margin-left: 5%
 }
 .irs-line {
     height: 10px; top: 33px;
