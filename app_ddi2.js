@@ -416,7 +416,25 @@ function getSelectedValue(id) {
 
 $(document).bind('click', function(e) {
   var $clicked = $(e.target);
-  if (!$clicked.parents().hasClass("dropdown")) $(".dropdown dd ul").hide();
+  if (!$clicked.parents().hasClass("dropdownevent")) $(".dropdownevent dd ul").hide();
+});
+
+$(".dropdownevent dt a").on('click', function() {
+  $(".dropdownevent dd ul").slideToggle('fast');
+});
+
+$(".dropdownevent dd ul li a").on('click', function() {
+  $(".dropdownevent dd ul").hide();
+});
+
+function getSelectedValue(id) {
+  // console.log("ID in selected value:",id);
+  return $("#" + id).find("dt a span.value").html();
+}
+
+$(document).bind('click', function(e) {
+  var $clicked = $(e.target);
+  if (!$clicked.parents().hasClass("dropdownevent")) $(".dropdownevent dd ul").hide();
 });
 
 var selectedcountry=[];
@@ -442,6 +460,7 @@ var tcode1index=[];
 var tcode2index=[];
 var tcode12index=[];
 var tcode12=[];
+var selectedevent=[];
 
 var k=0;
 $('.mutliSelect').on('change',':checkbox', function() {
@@ -468,7 +487,46 @@ $('.mutliSelect').on('change',':checkbox', function() {
   }
 });
 
+$('#history').on('click',function(){
+  //if(selectedcountry.length==0 && selectedevent.length==0 && sourcecode.length==0 && targetcode.length==0 )
+  $('#fl1').html('<center><h2>Selected Items:</h2></center><p>From Date:'+fromdate+'<br>To Date:'+todate+'<br>Source Actors:'+sourcecode+'<br>Target Actors:'+targetcode+'<br>Location:'+selectedcountry+'<br>EventType:'+selectedevent+'</p>'); 
 
+});
+$('.mutliSelectevent').on('change',':checkbox', function() {
+
+  //console.log("click event called");
+  var title = $(this).closest('.mutliSelectevent').find('input[type="checkbox"]').val(),
+    title = $(this).val();
+
+  if ($(this).is(':checked')) {
+    //var html = '<span title="' + title + '">' + title + '</span>';
+    //$('.multiSel').append(html);
+    //$(".hida").hide();
+    selectedevent.splice(selectedevent.length,0,title);
+    // console.log("the country array:",selectedcountry);
+  } else {
+    id=selectedevent.indexOf(title);
+    // console.log("unchecked:",id);
+    selectedevent.splice(id,1);
+    // console.log("the country array:",selectedcountry);
+    //$('span[title="' + title + '"]').remove();
+    //var ret = $(".hida");
+    //$('.dropdown dt a').append(ret);
+
+  }
+});
+
+ $(".mutliSelectevent").append("<ul>");
+    for(var i=1;i<=20;i++)
+    {
+      
+    // console.log("hello"+igos[i]);
+    $(".mutliSelectevent ul").append("<li><input type='checkbox' name='eventcheck' value='"+i+"' >"+i+"</li>");
+
+
+    }
+  
+$(".mutliSelectevent").append("</ul>");
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++For Source Actors+++++++++++++++
@@ -825,6 +883,43 @@ $('.mutliSelectactorl4').on('change',':checkbox', function() {
   }
 });
 
+$("#srcigo").on('click',function(){
+
+   $(".mutliSelectactorl2").append("<ul>");
+    for(var i=0;i<igos.length;i++)
+    {
+      
+    // console.log("hello"+igos[i]);
+    $(".mutliSelectactorl2 ul").append("<li><input type='checkbox' name='srclvl2' value='"+igos[i]+"' >"+igos[i]+"</li>");
+
+
+    }
+
+$(".mutliSelectactorl2").append("</ul>");
+
+
+
+});
+
+
+$("#srccoun").on('click',function(){
+
+   $(".mutliSelectactorl2").append("<ul>");
+    for(var i=0;i<sourcecountry.length;i++)
+    {
+   
+    //console.log("hello"+igos[i]);
+    $(".mutliSelectactorl2 ul").append("<li><input type='checkbox' name='srclvl2' value='"+sourcecountry[i]+"' >"+findValue(isocountrynames,sourcecountry[i])+"</li>");
+
+
+    
+
+  }
+$(".mutliSelectactorl2").append("</ul>");
+
+
+
+});
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -873,6 +968,44 @@ $("#tnxtl1btn").on('click', function(){
   $(".tmutliSelect").append("</ul>");
   $("#tlevel1").hide();
   $("#tlevel2").fadeIn(500);
+});
+
+$("#tarigo").on('click',function(){
+
+   $(".tmutliSelectactorl2").append("<ul>");
+    for(var i=0;i<igos.length;i++)
+    {
+      
+    // console.log("hello"+igos[i]);
+    $(".tmutliSelectactorl2 ul").append("<li><input type='checkbox' name='srclvl2' value='"+igos[i]+"' >"+igos[i]+"</li>");
+
+
+    }
+
+$(".tmutliSelectactorl2").append("</ul>");
+
+
+
+});
+
+
+$("#tarcoun").on('click',function(){
+
+   $(".tmutliSelectactorl2").append("<ul>");
+    for(var i=0;i<sourcecountry.length;i++)
+    {
+   
+    //console.log("hello"+igos[i]);
+    $(".tmutliSelectactorl2 ul").append("<li><input type='checkbox' name='tarlvl2' value='"+sourcecountry[i]+"' >"+findValue(isocountrynames,sourcecountry[i])+"</li>");
+
+
+    
+
+  }
+$(".tmutliSelectactorl2").append("</ul>");
+
+
+
 });
 
 function tleveltwoone(btn){
@@ -967,6 +1100,7 @@ function tleveltwothree(btn){
 
 
 var targetcode=[];
+
 
 $("#trggenbtn").on('click',function(){
 	targetcode=[];
@@ -1237,12 +1371,13 @@ function callquery(btn){
 
     qr["type"]="postquery";
     //qry["query"]='"date8":{"$gte":"'+fromdate+'","$lte":"'+todate+'" },"country_code":{"$in":'+selectedcountry+'},"source":{"$in":'+sourcecode+'},target:{"$in":'+targetcode+'}';
-    qr["query"]={"date8":{},"country_code":{},"source":{},"target":{}};
+    qr["query"]={"date8":{},"country_code":{},"source":{},"target":{},"root_code":{}};
     qr["query"]["date8"]["$gte"]=fromdate;
     qr["query"]["date8"]["$lte"]=todate;
     qr["query"]["country_code"]["$in"]=selectedcountry;
     qr["query"]["source"]["$in"]=sourcecode;
     qr["query"]["target"]["$in"]=targetcode;
+    qr["query"]["root_code"]["in"]=selectedevent;
 
     if(selectedcountry.length===0)
     delete qr["query"]["country_code"]
@@ -1252,6 +1387,10 @@ function callquery(btn){
 
     if(targetcode.length===0)
     delete qr["query"]["target"]    
+
+
+    if(selectedevent.length===0)
+    delete qr["query"]["root_code"]    
     //out.push({type:"postquery",query:{"date8":{"$gte":fromdate,"$lte":todate},"country_code":{"$in": selectedcountry},"source":{"$in":sourcecode},"target":{"$in":targetcode}}});
     
     // qry='{"date8":{"$gte":"'+fromdate+'","$lte":"'+todate+'"},"country_code":{"$in":"'+selectedcountry+'"},"source":{"$in":"'+sourcecode+'"},"target":{"$in":}}';

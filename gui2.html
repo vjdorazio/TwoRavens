@@ -15,7 +15,9 @@
         <link rel="stylesheet" href="slider/css/ion.rangeSlider.css">
         
         <link rel="stylesheet" href="slider/css/ion.rangeSlider.skinHTML5.css">
-       
+        
+        <link type="text/css" rel="stylesheet" href="jquery/featherlight.css" />
+
         <script type="text/javascript" src="jquery/jquery.min.js"></script>
         <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="jquery/jquery-ui.min.js"></script>
@@ -52,47 +54,49 @@
   <!-- Overlay content -->
   <div class="overlay-content">
     <h1>Subset</h1>
-    <p id="daterange">Choose Date Range</p>
+    <ul>
+    <li id="toplist" style="width: 60%;">
+    <div id="dtdiv">
+    <p id="daterange">Date Range</p>
     <span id="Year_range"></span>
     <input type="text" class="datepicker" id="fromdate" placeholder="From" hidden>
 	<input type="text" class="datepicker" id="todate" placeholder="To" hidden>
-
+</div>
+   </li>
+   <li id="toplist" style="width: 30%; text-align: center;">
+   <div id="event">
+ <p id="eventheading">Event Type</p>
    
-   <ul id="actloc">
-<li id="mainlist">
- <p id="sourceactorheading">Choose Source Actor</p>
-   <div id="level1">
-   <h4>Select international organisation or country(level 1)</h4>
-   
-   <dl class="dropdownactorl1"> 
+   <dl class="dropdownevent"> 
   
     <dt>
-   <a href="#">
-          <span class="hida">Select</span>
-      <p class="multiSelactorl1"></p>  
+    <a href="#">
+      <span class="hida">Select</span>    
+      <p class="multiSelevent"></p>  
     </a>
-
     </dt>
   
     <dd>
-        <div class="mutliSelectactorl1">
-            <ul>
-                    <li>
-                    <input type="radio" name="level1radio" value="IGO" />International Organisation</li>
-                    <li>
-                    <input type="radio" value="Country" name="level1radio" />Country</li>
-                    
-                    
-            </ul> 
+        <div class="mutliSelectevent">
+            
         </div>
     </dd>
-  
+  <!--<button>Filter</button>-->
 </dl>
-<button id="nxtl1btn" ><img src="next.png" ></button>
+</div>
+</li>
+</ul>
+   <ul id="actloc">
+<li id="mainlist">
+ <p id="sourceactorheading">Source Actor</p>
+   <div id="level1">
+   <!-- <h4>Select international organisation or country(level 1)</h4> -->
+   <button id="srcigo">IGO</button><button id="srccoun">Country</button>
+   
 </div>
 
 
-<div id="level2" hidden>
+<div id="level2">
     <h4 id="level2h4" ></h4>
 
     
@@ -112,7 +116,7 @@
     </dd>
   <!--<button>Filter</button>-->
 </dl>
- <button id="prvl2btn" onclick="leveltwoone()"><img src="prev.png" ></button>
+ 
  <button id="nxtl2btn" onclick="leveltwothree()"><img src="next.png" ></button>
  
 </div>
@@ -143,39 +147,14 @@
 </li>
 
 <li id="mainlist">
-<p id="targetactorheading">Choose Target Actor</p>
+<p id="targetactorheading">Target Actor</p>
    <div id="tlevel1">
-   <h4>Select international organisation or country(level 1)</h4>
-   
-   <dl class="tdropdownactorl1"> 
+    <button id="tarigo">IGO</button><button id="tarcoun">Country</button>
   
-    <dt>
-   <a href="#">
-          <span class="hida">Select</span>
-      <p class="tmultiSelactorl1"></p>  
-    </a>
-
-    </dt>
-  
-    <dd>
-        <div class="tmutliSelectactorl1">
-            <ul>
-                    <li>
-                    <input type="radio" name="tlevel1radio" value="IGO" />International Organisation</li>
-                    <li>
-                    <input type="radio" value="Country" name="tlevel1radio" />Country</li>
-                    
-                    
-            </ul> 
-        </div>
-    </dd>
-  
-</dl>
-<button id="tnxtl1btn" ><img src="next.png" ></button>
 </div>
 
 
-<div id="tlevel2" hidden>
+<div id="tlevel2" >
     <h4 id="tlevel2h4" ></h4>
 
     
@@ -195,7 +174,7 @@
     </dd>
   
 </dl>
- <button id="tprvl2btn" onclick="tleveltwoone()"><img src="prev.png" ></button>
+
  <button id="tnxtl2btn" onclick="tleveltwothree()"><img src="next.png" ></button>
  
 </div>
@@ -227,7 +206,7 @@
 
 <li id="mainlist">
 <div id="location">
- <p id="locationheading">Choose Location(Country)</p>
+ <p id="locationheading">Location(Country)</p>
    <h4>select</h4>
    <dl class="dropdown"> 
   
@@ -250,9 +229,17 @@
 </ul>
     <!--<p>Clients</p>
     <p>Contact</p>-->
-  <button class="btn btn-default ladda-button" id="btnEventSubset" onclick="callquery()" style="margin-left: 50%;" >subset</button>
-  <button    id="btnGoToAgg" style="margin-left: 50%;" >Next</button>
+  <ul style="text-align: center; margin-top: 5%;">
+  <li style="display: inline-block;">
+  <button class="btn btn-default" id="history" href="#" data-featherlight="#fl1">History</button>
+  </li>
+  <li style="display: inline-block;">
+  <button class="btn btn-default ladda-button" id="btnEventSubset" onclick="callquery()"  >subset</button>
   
+  </li>
+  <li style="display: inline;">
+  <button    id="btnGoToAgg" style="margin-left: 50%;" >Next</button>
+  </li>
   </div>
 
 
@@ -292,7 +279,10 @@
 
 </div>
      <!-- <span onclick="openNav()" id="openbutton">open</span>-->
-
+<div class="lightbox" id="fl1">
+      <center><h2>Selected Items:</h2></center>
+      <!-- <p id="lightboxcontent"></p> -->
+    </div>
     <nav id="option" class="navbar navbar-default" role="navigation">
           <div>
               </span>
@@ -478,7 +468,7 @@
         <div class="clearfix"></div>
 
     </div>
-
+<script src="jquery/featherlight.js" type="text/javascript" charset="utf-8"></script>
 <script>
     
 // Open/Close Panels

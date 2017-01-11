@@ -462,7 +462,11 @@ td {
 #Year_range{
 
 	width:5px;
+
 }
+
+
+
 
 .dropdown {
   position: relative;
@@ -485,7 +489,8 @@ a {
   text-align: center;
 }
 
-.dropdown ul {
+.dropdown ul,
+.dropdownevent ul {
   margin: 0 0 0 0;
   width: 272px;
 }
@@ -515,6 +520,7 @@ a {
 }
 
 .dropdown dt a span,
+.dropdownevent dt a span
 .multiSel span {
   cursor: pointer;
   display: inline-block;
@@ -570,6 +576,14 @@ a {
   
 }
 
+.dropdownevent{
+ position: relative;
+  
+  /*margin-left: 43%;*/
+  height:50px;
+  z-index=100;
+   
+}
 a {
   color: #fff;
   height:40px;
@@ -609,6 +623,14 @@ a {
   text-align: center;
 }
 
+.dropdownevent dd,
+.dropdownevent dt{
+ padding: 0px;
+  width:100%;
+  z-index=100;
+  text-align: center; 
+}
+
 
 #level1,#level2,#level3 {
 
@@ -632,12 +654,27 @@ a {
   /*float:center;*/
 }
 
-#daterange {
-  /*text-align: center;*/
-  margin-left:41%;
+#toplist{
+
+  display: inline-block;
 }
 
+#daterange {
+  text-align: center;
+  margin-left:15%;
+  /*width:20%;*/
+}
 
+#dtdiv
+{
+  /*width:60%;*/
+  margin-right: 5%;
+  text-align: center;
+}
+
+#eventheading{
+  text-align: center;
+}
 #sourceactorheading {
   /*margin-left: 5%;*/
   /*width: 40%;*/
@@ -671,7 +708,8 @@ a {
 .tdropdownactorl1 ul,
 .tdropdownactorl2 ul,
 .tdropdownactorl3 ul,
-.tdropdownactorl4 ul  {
+.tdropdownactorl4 ul,
+.dropdownevent  {
   margin: 0 0 0 0;
   width: 272px;
   /*margin-left: 43%;*/
@@ -685,7 +723,8 @@ a {
 .tdropdownactorl1 dd,
 .tdropdownactorl2 dd,
 .tdropdownactorl3 dd,
-.tdropdownactorl4 dd {
+.tdropdownactorl4 dd,
+.dropdownevent {
   position: relative;
   z-index=100;
 }
@@ -705,7 +744,9 @@ a {
 .tdropdownactorl3 a,
 .tdropdownactorl3 a:visited,
 .tdropdownactorl4 a,
-.tdropdownactorl4 a:visited {
+.tdropdownactorl4 a:visited,
+.dropdownevent a,
+.dropdownevent a:visited {
   color: #fff;
   text-decoration: none;
   outline: none;
@@ -719,7 +760,8 @@ a {
 .tdropdownactorl1 dt a,
 .tdropdownactorl2 dt a,
 .tdropdownactorl3 dt a,
-.tdropdownactorl4 dt a  {
+.tdropdownactorl4 dt a,
+.dropdownevent dt a  {
   background-color: #4F6877;
   display: block;
   padding: 8px 20px 5px 10px;
@@ -739,7 +781,8 @@ a {
 .tdropdownactorl2 dt a span,
 .tdropdownactorl3 dt a span,
 .tdropdownactorl4 dt a span,
-.multiSel span {
+.multiSel span,
+.multiSelevent span {
   cursor: pointer;
   display: inline-block;
   padding: 0 3px 2px 0;
@@ -752,7 +795,8 @@ a {
 .tdropdownactorl1 dd ul,
 .tdropdownactorl2 dd ul,
 .tdropdownactorl3 dd ul,
-.tdropdownactorl4 dd ul {
+.tdropdownactorl4 dd ul,
+.dropdownevent dd ul {
   background-color: #4F6877;
   border: 0;
   color: #fff;
@@ -776,7 +820,8 @@ a {
 .tdropdownactorl1 span.value,
 .tdropdownactorl2 span.value,
 .tdropdownactorl3 span.value,
-.tdropdownactorl4 span.value {
+.tdropdownactorl4 span.value.
+.dropdownevent span.value {
   display: none;
 }
 
@@ -787,7 +832,8 @@ a {
 .tdropdownactorl1 dd ul li a,
 .tdropdownactorl2 dd ul li a,
 .tdropdownactorl3 dd ul li a,
-.tdropdownactorl4 dd ul li a 
+.tdropdownactorl4 dd ul li a,
+.dropdownevent dd ul li a 
  {
   padding: 5px;
   display: block;
@@ -800,7 +846,8 @@ a {
 .tdropdownactorl1 dd ul li a:hover,
 .tdropdownactorl2 dd ul li a:hover,
 .tdropdownactorl3 dd ul li a:hover,
-.tdropdownactorl4 dd ul li a:hover {
+.tdropdownactorl4 dd ul li a:hover,
+.dropdownevent dd ul li a:hover {
   background-color: #fff;
 }
 
