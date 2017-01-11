@@ -125,7 +125,9 @@ query.app<-function(env){
    #json3='{\"date8\":{\"$gte\":[\"19700101\"],\"$lte\":[\"20161231\"]},\"country_code\":{\"$in\":[\"Ahal\",\"West%20Bank\"]}}'
    print(4)
   url=paste0("http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query=",json3)
- # url2='http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={\"date8\":{\"$gte\":\"20160101\",\"$lte\":\"20161231\"},\"source\":{\"$in\":[\"USAGOV\"]},\"target\":{\"$in\":[\"PAK\"]}}'
+  #url2='http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={\"date8\":{\"$gte\":\"20160101\",\"$lte\":\"20161231\"},\"source\":{\"$in\":[\"USAGOV\"]},\"target\":{\"$in\":[\"PAK\"]}}'
+  #url3="http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={\"date8\":{\"$gte\":\"20130101\",\"$lte\":\"20161231\"},\"source\":{\"$in\":[\"USAGOV\"]},\"target\":{\"$in\":[\"PAK\"]},\"root_code\":{\"in\":[\"10\"]}}"
+
   #testurl='http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={%22date8%22:%2220070101%22,%22country_code%22:%22Beijing%20Shi%22,%22source%22:%22SAUGOV%22,%22target%22:%22ISRGOV%22}'
   print(url)
   
@@ -135,6 +137,7 @@ query.app<-function(env){
   mydata=jsonlite::fromJSON(url)
     #mydata=getURL(url)
   #print(mydata)
+ # t=mydata$data
   rws=nrow(mydata$data)
   dat=as.data.frame(mydata$data)
   df <- subset(dat, select = -c(7,26) )
