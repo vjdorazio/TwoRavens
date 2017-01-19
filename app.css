@@ -458,13 +458,13 @@ td {
   margin-top: 5%;
 }
 
-
+/*
 #Year_range{
 
 	width:5px;
 
 }
-
+*/
 
 
 
@@ -659,16 +659,51 @@ a {
   display: inline-block;
 }
 
-#daterange {
+/*#daterange {
   text-align: center;
   margin-left:15%;
-  /*width:20%;*/
+  /*width:20%;
+}
+*/
+
+#event
+{
+  text-align: center;
+  margin-left: 30%;
 }
 
-#dtdiv
+#historydiv{
+background-color: white;
+width:50%;
+height:24%;
+float:left;
+
+}
+
+#buttondiv{
+  /*position: fixed;*/
+  float: right;
+  /*text-align: center;*/
+  margin-right: 25%;
+}
+.historyp{
+  color: black;
+  font-size: 10pt;
+}
+
+#datehist,  
+#srchist,
+#tarhist,
+#lochist,
+#eventhist{color: black;
+  font-size: 14pt;
+display: inline;}
+
+#datediv
 {
+  position: relative;
   /*width:60%;*/
-  margin-right: 5%;
+  /*margin-right: 5%;*/
   text-align: center;
 }
 

@@ -294,7 +294,13 @@ $.ajax({
 });
 
 
+$("#historybtn").on('click',function(){
+	$("#historydiv").toggle("slide", {direction: "left"});
+	// $('#historydiv').html('<center><h3>Selected Items:</h3></center><p id="historyp">From Date:'+fromdatestring+' To Date:'+todatestring+' Source Actors:'+sourcecode+' Target Actors:'+targetcode+' Location:'+selectedcountry+' EventType:'+selectedevent+'</p>'); 
 
+
+
+});
 // console.log("iso codes:"+isocountrynames);
 var sourcecountry=[];
 var code1=[];
@@ -311,7 +317,7 @@ preQuery();
 var todate,fromdate;
 function getValues(jdata){
 //console.log("test",jdata);
-$('#my-select').multiSelect();
+$('#my-select').multiSelect(); 
 data=jdata;
               //console.log("Source Actor:"+data.sourceactors);
                 var i=0;
@@ -322,25 +328,79 @@ data=jdata;
                 maxdate=new Date((data.maxdate).toString().replace(/-/g, '\/'));
                 mindate=new Date((data.mindate).toString().replace(/-/g, '\/'));
                      
-                max=parseInt(maxdate.toString().substr(11,5));
-                min=parseInt(mindate.toString().substr(11,5));        
-                fromdate=min.toString()+"0101";
-                todate=max.toString()+"1231";  
-
-                   if((max-min)>=10){
-                   $("#fromdate").hide();
-                   $("#todate").hide();
+                        
+                mx=maxdate;
+                  max=parseInt(maxdate.toString().substr(11,5));
+                 min=parseInt(mindate.toString().substr(11,5));
+                  fromdate=new Date(min.toString()+"-01-01");
+                  fromdatestring=fromdate.getFullYear()+""+('0' + (fromdate.getMonth()+1)).slice(-2)+""+('0' + fromdate.getDate()).slice(-2);
+                         
+                  todate=new Date(max.toString()+"-12-31");  
+ todatestring=todate.getFullYear()+""+('0' + (todate.getMonth()+1)).slice(-2)+""+('0' + todate.getDate()).slice(-2);
+                       
+                  console.log("mindate:"+fromdate);
+                  console.log("maxdate:"+todate);
+                  
+                    //fromMin="01-01-"+from;
+                    //fromMax="12-31-"+from;
                    
-                   yearslider();
+                   //toMin="01-01-"+to;
+                   //toMax="12-31-"+to;
+                   
+                   
+                   $("#fromdate").datepicker({
+                    dateFormat:'mm-dd-yy',
+                    changeYear:true,
+                    changeMonth:true,
+                    defaultDate:fromdate, 
+                    yearRange:min+':'+max,
+                    minDate:mindate,
+                    maxDate:maxdate,
+                    onSelect: function()
+                    { 
+                         fromdate = $(this).datepicker('getDate'); 
+                         $("#todate").datepicker('option','minDate',fromdate);
+                         $("#todate").datepicker('option','defaultDate',fromdate);
+                         fromdatestring=fromdate.getFullYear()+""+('0' + (fromdate.getMonth()+1)).slice(-2)+""+('0' + fromdate.getDate()).slice(-2);
+                         console.log("fromdate clicked,fromdate:",fromdatestring);
+                    }
+                                    //yearRange:min+":"+max
+                    });
+                   
+                   
+                   $("#todate").datepicker({
+                    changeYear:true,
+                    changeMonth:true,
+                    yearRange:min+':'+max,  
+                    dateFormat:'mm-dd-yy',
+                    defaultDate:todate,
+                    minDate:mindate,
+                    maxDate:maxdate,
+                    onSelect: function()
+                    { 
+                        todate = $(this).datepicker('getDate');
+                        todatestring=todate.getFullYear()+""+('0' + (todate.getMonth()+1)).slice(-2)+""+('0' + todate.getDate()).slice(-2);
+                         
+                        console.log("todate clicked,todate:",todatestring); 
+                    }
+
+                    //yearRange:min+":"+max
+                    });
+                   
+                   // if((max-min)>=10){
+                   // $("#fromdate").hide();
+                   // $("#todate").hide();
+                   
+                   // yearslider();
                     
 
-                    }
-                    else
-                    {
+                   //  }
+                   //  else
+                   //  {
 
-                      yearspicker();
+                      // yearspicker();
                    
-                    }
+                    // }
 
 
               var source=data.sourceactors;
@@ -371,12 +431,18 @@ $("#Year_range").ionRangeSlider({
     //from: 1700,
     //to:2007,
 
-    onFinish: function(data){
+    onChange: function(data){
 
+    yearspicker(data.from,data.to);      
 
-      fromdate=data.from+"0101";
-      todate=data.to+"1231";
     }
+    // onFinish: function(data){
+
+
+    //   yearspicker(data.from,data.to);
+    //   // fromdate=data.from+"0101";
+    //   // todate=data.to+"1231";
+    // }
   
 });
 }
@@ -474,11 +540,13 @@ $('.mutliSelect').on('change',':checkbox', function() {
     //$('.multiSel').append(html);
     //$(".hida").hide();
     selectedcountry.splice(selectedcountry.length,0,title);
+    $("#lochist").text("Location: "+selectedcountry);
     // console.log("the country array:",selectedcountry);
   } else {
     id=selectedcountry.indexOf(title);
     // console.log("unchecked:",id);
     selectedcountry.splice(id,1);
+     $("#lochist").text("Location: "+selectedcountry);
     // console.log("the country array:",selectedcountry);
     //$('span[title="' + title + '"]').remove();
     //var ret = $(".hida");
@@ -487,11 +555,10 @@ $('.mutliSelect').on('change',':checkbox', function() {
   }
 });
 
-$('#history').on('click',function(){
+//$('#history').on('click',function(){
   //if(selectedcountry.length==0 && selectedevent.length==0 && sourcecode.length==0 && targetcode.length==0 )
-  $('#fl1').html('<center><h2>Selected Items:</h2></center><p>From Date:'+fromdate+'<br>To Date:'+todate+'<br>Source Actors:'+sourcecode+'<br>Target Actors:'+targetcode+'<br>Location:'+selectedcountry+'<br>EventType:'+selectedevent+'</p>'); 
-
-});
+  
+//});
 $('.mutliSelectevent').on('change',':checkbox', function() {
 
   //console.log("click event called");
@@ -503,11 +570,13 @@ $('.mutliSelectevent').on('change',':checkbox', function() {
     //$('.multiSel').append(html);
     //$(".hida").hide();
     selectedevent.splice(selectedevent.length,0,title);
+    $("#eventhist").text("Event Type: "+selectedevent);
     // console.log("the country array:",selectedcountry);
   } else {
     id=selectedevent.indexOf(title);
     // console.log("unchecked:",id);
     selectedevent.splice(id,1);
+    $("#eventhist").text("Event Type: "+selectedevent);
     // console.log("the country array:",selectedcountry);
     //$('span[title="' + title + '"]').remove();
     //var ret = $(".hida");
@@ -516,21 +585,23 @@ $('.mutliSelectevent').on('change',':checkbox', function() {
   }
 });
 
- $(".mutliSelectevent").append("<ul>");
-    for(var i=1;i<=20;i++)
-    {
+//  $(".mutliSelectevent").append("<ul>");
+//     for(var i=1;i<=20;i++)
+//     {
       
-    // console.log("hello"+igos[i]);
-    $(".mutliSelectevent ul").append("<li><input type='checkbox' name='eventcheck' value='"+i+"' >"+i+"</li>");
+//     // console.log("hello"+igos[i]);
+//     $(".mutliSelectevent ul").append("<li><input type='checkbox' name='eventcheck' value='"+i+"' >"+i+"</li>");
 
 
-    }
+//     }
   
-$(".mutliSelectevent").append("</ul>");
+// $(".mutliSelectevent").append("</ul>");
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++For Source Actors+++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 $("#nxtl1btn").on('click', function(){
   // console.log("Level one to level 2 clicked");
   // console.log("IGO::",igos);
@@ -701,7 +772,8 @@ $("#srcgenbtn").on('click',function(){
     }
 
 
-  $("#sourcecodep").text(sourcecode);
+  // $("#sourcecodep").text(sourcecode);
+  $("#srchist").text("Source Actors: "+sourcecode);
 }) //end of source gen
 
 
@@ -1131,7 +1203,8 @@ $("#trggenbtn").on('click',function(){
     //console.log(targetcode);
 
  // sourcecode=sourcelevel2[0]+sourcelevel3[0]+sourcelevel4[0];
-  $("#targetcodep").text(targetcode);
+  // $("#targetcodep").text(targetcode);
+  $("#tarhist").text("Target Actors: "+targetcode);
 }) //end of source gen
 
 
@@ -1177,6 +1250,9 @@ $('.tmutliSelectactorl1').on('change',':radio', function() {
   }
 });
 
+
+
+// inputbtn.click();
 
 //for source actor level 2
 
@@ -1270,43 +1346,18 @@ $('.tmutliSelectactorl3').on('change',':checkbox', function() {
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
+$('.irs-slider from').on('mouseup',function(){
 
+alert("hello!");
+
+});
 
 function yearspicker(){
 
-                  mx=maxdate;
-                
+                  
                    
-                   $(function(){
-                   $("#fromdate").datepicker({
-                    dateFormat:'mm-dd-yy',
-                    minDate:mindate,
-                    maxDate:maxdate,
-                    onSelect: function()
-                    { 
-                         fromdate = $(this).datepicker('getDate'); 
-                         //console.log("fromdate clicked,fromdate:",fromdate);
-                    }
-                                    //yearRange:min+":"+max
-                    });
-                   });
-                   $(function(){
-                   $("#todate").datepicker({
-                    dateFormat:'mm-dd-yy',
-                    minDate:mindate,
-                    maxDate:maxdate,
-                    onSelect: function()
-                    { 
-                        todate = $(this).datepicker('getDate');
-                        //console.log("todate clicked,todate:",todate); 
-                    }
-
-                    //yearRange:min+":"+max
-                    });
-                   });
-                   
-                   $("#fromdate").show();
-                   $("#todate").show();
+                   // $("#fromdate").show();
+                   // $("#todate").show();
 
 
                    
@@ -1372,12 +1423,12 @@ function callquery(btn){
     qr["type"]="postquery";
     //qry["query"]='"date8":{"$gte":"'+fromdate+'","$lte":"'+todate+'" },"country_code":{"$in":'+selectedcountry+'},"source":{"$in":'+sourcecode+'},target:{"$in":'+targetcode+'}';
     qr["query"]={"date8":{},"country_code":{},"source":{},"target":{},"root_code":{}};
-    qr["query"]["date8"]["$gte"]=fromdate;
-    qr["query"]["date8"]["$lte"]=todate;
+    qr["query"]["date8"]["$gte"]=fromdatestring;
+    qr["query"]["date8"]["$lte"]=todatestring;
     qr["query"]["country_code"]["$in"]=selectedcountry;
     qr["query"]["source"]["$in"]=sourcecode;
     qr["query"]["target"]["$in"]=targetcode;
-    qr["query"]["root_code"]["in"]=selectedevent;
+    qr["query"]["root_code"]["$in"]=selectedevent;
 
     if(selectedcountry.length===0)
     delete qr["query"]["country_code"]
@@ -1432,6 +1483,12 @@ $("#btnGoToAgg").on('click',function(){
   document.getElementById("subsetOverlay").style.width = "0%";
   openNav("agg");
 
+});
+
+$('input[type="button"]').on('click',function(){
+    //var getValueButton = this.id;
+    console.log("click");
+    // .not('#'+getValueButton).attr('disabled', true);
 });
 
 
@@ -1694,7 +1751,7 @@ $("#subsetOverlay").attr("z-index", (highest_index+1));
 function openNav(typ) {
     if(typ==="subset"){
     document.getElementById("subsetOverlay").style.width = "100%";
-    $("#btnGoToAgg").hide();
+    // $("#btnGoToAgg").hide();
   }
     else if(typ=="agg")
       document.getElementById("aggOverlay").style.width = "100%";

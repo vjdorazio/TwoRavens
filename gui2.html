@@ -6,15 +6,13 @@
         
         <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
         <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="jquery/jquery-ui.min.css">
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css">
+       
         <link href="multiselect/css/multi-select.css" media="screen" rel="stylesheet" type="text/css">
 
         <link rel="stylesheet" href="app.css">
-        <link rel="stylesheet" href="Ladda/dist/ladda-themeless.min.css">
+        <!-- <link rel="stylesheet" href="Ladda/dist/ladda-themeless.min.css"> -->
             
-        <link rel="stylesheet" href="slider/css/ion.rangeSlider.css">
-        
-        <link rel="stylesheet" href="slider/css/ion.rangeSlider.skinHTML5.css">
         
         <link type="text/css" rel="stylesheet" href="jquery/featherlight.css" />
 
@@ -29,7 +27,6 @@
         
         <script type="text/javascript" src="d3.v3.min.js"></script>
         <script type="text/javascript" src="plots.js"></script>
-        <script type="text/javascript" src="/slider/js/ion-rangeSlider/ion.rangeSlider.min.js"></script>
         <script src="multiselect/js/jquery.multi-select.js" type="text/javascript"></script>
   </head>
   
@@ -55,16 +52,16 @@
   <div class="overlay-content">
     <h1>Subset</h1>
     <ul>
-    <li id="toplist" style="width: 60%;">
-    <div id="dtdiv">
+    <li id="toplist" style="width: 60%;margin-top: -10px;">
+    <div id="datediv">
     <p id="daterange">Date Range</p>
-    <span id="Year_range"></span>
-    <input type="text" class="datepicker" id="fromdate" placeholder="From" hidden>
-	<input type="text" class="datepicker" id="todate" placeholder="To" hidden>
+    <input type="text"  style="width: 300px;" id="fromdate" placeholder="From">
+
+	<input type="text"   style="width: 300px;" id="todate" placeholder="To">
 </div>
    </li>
-   <li id="toplist" style="width: 30%; text-align: center;">
-   <div id="event">
+   <li id="toplist" style="width:35%">
+   <div id="event" >
  <p id="eventheading">Event Type</p>
    
    <dl class="dropdownevent"> 
@@ -78,7 +75,33 @@
   
     <dd>
         <div class="mutliSelectevent">
-            
+            <ul>
+             
+            <li><input type="checkbox" value="01">Make Public Statement</li>
+            <li><input type="checkbox" value="02">Appeal</li>
+            <li><input type="checkbox" value="03">Express Intent to Coop</li>
+            <li><input type="checkbox" value="04">Consult</li>
+            <li><input type="checkbox" value="05">Engage in Dip Coop</li>
+            <li><input type="checkbox" value="06">Engage in Material Coop</li>
+            <li><input type="checkbox" value="07">Provide Aid</li>
+            <li><input type="checkbox" value="08">Yield</li>
+             <li><input type="checkbox" value="09">Investigate</li>
+            <li><input type="checkbox" value="10">Demand</li>
+            <li><input type="checkbox" value="11">Disapprove</li>
+            <li><input type="checkbox" value="12">Reject</li>
+            <li><input type="checkbox" value="13">Threaten</li>
+            <li><input type="checkbox" value="14">Protest</li>
+            <li><input type="checkbox" value="15">Exhibit Force Posture</li>
+           <li><input type="checkbox" value="16">Reduce Relations</li>
+            <li><input type="checkbox" value="17">Coerce</li>
+            <li><input type="checkbox" value="18">Assualt</li>
+            <li><input type="checkbox" value="19">Fight</li>
+  <li><input type="checkbox" value="20">Use Unconventional Mass Violence</li>
+
+
+
+
+            </ul>
         </div>
     </dd>
   <!--<button>Filter</button>-->
@@ -207,7 +230,7 @@
 <li id="mainlist">
 <div id="location">
  <p id="locationheading">Location(Country)</p>
-   <h4>select</h4>
+   
    <dl class="dropdown"> 
   
     <dt>
@@ -227,19 +250,31 @@
 </div>
 </li>
 </ul>
+
+
+<div id="historydiv" hidden>
+<center><h3>Selected Items</h3></center>
+<p class="historyp" id="srchist"></p>
+<p class="historyp" id="tarhist"></p><br/>
+<p class="historyp" id="lochist"></p>
+<p class="historyp" id="eventhist"></p>
+
+</div>
     <!--<p>Clients</p>
     <p>Contact</p>-->
-  <ul style="text-align: center; margin-top: 5%;">
+    <div id="buttondiv">
+  <ul style=" margin-top: 5%; margin-left:30%;">
   <li style="display: inline-block;">
-  <button class="btn btn-default" id="history" href="#" data-featherlight="#fl1">History</button>
+  <button class="btn btn-default" id="historybtn" href="#">History</button>
   </li>
   <li style="display: inline-block;">
   <button class="btn btn-default ladda-button" id="btnEventSubset" onclick="callquery()"  >subset</button>
   
   </li>
   <li style="display: inline;">
-  <button    id="btnGoToAgg" style="margin-left: 50%;" >Next</button>
-  </li>
+  <button    id="btnGoToAgg"  >Next</button>
+  </li></ul>
+</div>
   </div>
 
 
@@ -254,17 +289,28 @@
 
 
   <!-- Overlay content -->
-  <div class="overlay-content">
+  <div class="overlay-content" style="text-align: center;">
     <h1>Aggregation</h1>
-    <p>Choose Unit of Date Aggregation</p>
-    <select id="DateAggSel" class="form-control" style="-webkit-appearance: none;
-    -moz-appearance: none;width:20%;margin-left:40%;">
-      <option value="" disabled selected hidden>Choose Unit</option>
-      <option value="Daily">Daily</option>
-      <option value="Weekly">Weekly</option>
-      <option value="Monthly">Monthly</option>
-      <option value="Quarterly">Quarterly</option>
-      <option value="Yearly">Yearly</option>
+    <p>Unit of Date Aggregation</p>
+    <ul  id="dateagg">
+    <li id="dateagglist" style="display: inline-block;"><button id="daily" disabled >Daily</button></li>
+    <li id="dateagglist" style="display: inline-block;"><button id="weekly">Weekly</button></li>
+  <li id="dateagglist" style="display: inline-block;"><button id="monthly">Monthly</button></li>
+  <li id="dateagglist" style="display: inline-block;"><button id="qtrly">Quarterly</button></li>
+  <li id="dateagglist" style="display: inline-block;"><button id="yearly" >Yearly</button></li>
+
+
+    </ul>
+
+<p>Unit of spatial Aggregation</p>
+     <select id="spaceAggSel" class="form-control" style="-webkit-appearance: none;
+    -moz-appearance: none;width:20%;margin-left:40%;" disabled>
+      <!-- <option value="" disabled selected hidden>Choose Unit</option> -->
+      <!-- <option value="Daily">Daily</option> -->
+      <!-- <option value="Weekly">Weekly</option> -->
+      <!-- <option value="Monthly">Monthly</option> -->
+      <!-- <option value="Quarterly">Quarterly</option> -->
+      <!-- <option value="Yearly">Yearly</option> -->
 
     </select>
     
@@ -272,17 +318,17 @@
  
  
    
-  <button class="btn btn-default ladda-button" id="btnEventAgg" onclick="callaggquery()" style="margin-left: 50%;" >Aggregate</button>
+  <button class="btn btn-default ladda-button" id="btnEventAgg" onclick="callaggquery()" style="margin-top:5%;" >Aggregate</button>
   
   </div>
 
 
 </div>
      <!-- <span onclick="openNav()" id="openbutton">open</span>-->
-<div class="lightbox" id="fl1">
-      <center><h2>Selected Items:</h2></center>
-      <!-- <p id="lightboxcontent"></p> -->
-    </div>
+<!-- <div class="lightbox" id="fl1">
+      
+      <p id="lightboxcontent"></p>
+    </div> -->
     <nav id="option" class="navbar navbar-default" role="navigation">
           <div>
               </span>
