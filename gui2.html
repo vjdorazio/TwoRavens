@@ -114,7 +114,7 @@
  <p id="sourceactorheading">Source Actor</p>
    <div id="level1">
    <!-- <h4>Select international organisation or country(level 1)</h4> -->
-   <button id="srcigo">IGO</button><button id="srccoun">Country</button>
+   <button  id="srcigo">IGO</button><button  id="srccoun">Country</button>
    
 </div>
 
@@ -271,9 +271,15 @@
   <button class="btn btn-default ladda-button" id="btnEventSubset" onclick="callquery()"  >subset</button>
   
   </li>
-  <li style="display: inline;">
-  <button    id="btnGoToAgg"  >Next</button>
-  </li></ul>
+
+   <li style="display: inline-block;">
+  <a class="btn btn-default" id="downloadsubset" href="data/subsetdata1.csv" style="color: black;" >download</a>
+  </li>
+<!-- <button    id="downloadsubset"></button> -->
+  <li style="display: inline-block;">
+  <button    id="btnGoToAgg">Next</button>
+  </li>
+  </ul>
 </div>
   </div>
 
@@ -293,7 +299,7 @@
     <h1>Aggregation</h1>
     <p>Unit of Date Aggregation</p>
     <ul  id="dateagg">
-    <li id="dateagglist" style="display: inline-block;"><button id="daily" disabled >Daily</button></li>
+    <li id="dateagglist" style="display: inline-block;"><button id="daily"  >Daily</button></li>
     <li id="dateagglist" style="display: inline-block;"><button id="weekly">Weekly</button></li>
   <li id="dateagglist" style="display: inline-block;"><button id="monthly">Monthly</button></li>
   <li id="dateagglist" style="display: inline-block;"><button id="qtrly">Quarterly</button></li>
@@ -316,10 +322,13 @@
     
    
  
- 
-   
-  <button class="btn btn-default ladda-button" id="btnEventAgg" onclick="callaggquery()" style="margin-top:5%;" >Aggregate</button>
-  
+ <div>
+   <ul style="margin-top: 10px;">
+   <li style="display: inline-block;">
+  <button class="btn btn-default ladda-button" id="btnEventAgg" onclick="callaggquery()" style="margin-top:5%;" >Aggregate</button></li>
+   <li style="display: inline-block;">
+  <a class="btn btn-default" id="downloadagg" style="color: black;" href="data/aggdata.tab" >download</a></li>
+  </div>
   </div>
 
 

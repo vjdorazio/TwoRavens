@@ -957,6 +957,9 @@ $('.mutliSelectactorl4').on('change',':checkbox', function() {
 
 $("#srcigo").on('click',function(){
 
+	$("#srcigo").toggleClass('clicked');
+	// $("#srccoun").toggleClaass('clicked');
+
    $(".mutliSelectactorl2").append("<ul>");
     for(var i=0;i<igos.length;i++)
     {
@@ -969,7 +972,7 @@ $("#srcigo").on('click',function(){
 
 $(".mutliSelectactorl2").append("</ul>");
 
-
+// $(".dropdownactorl2 dd ul").slideToggle('fast');
 
 });
 
@@ -989,7 +992,7 @@ $("#srccoun").on('click',function(){
   }
 $(".mutliSelectactorl2").append("</ul>");
 
-
+// $(".dropdownactorl2 dd ul").slideToggle('fast');
 
 });
 
@@ -1455,11 +1458,13 @@ function callquery(btn){
     function downloadSuccess(btn, json) {
         
          //console.log("json value: ", json);
-       if(json["data"].length===0)
+       if(json["nrws"]===0)
        alert("No records found!!");
-     else
+     else{
       alert(json["nrws"]+" Records retrieved!");
       $("#btnGoToAgg").show();
+      $("#downloadsubset").show();
+}
       
        
         
@@ -1485,16 +1490,75 @@ $("#btnGoToAgg").on('click',function(){
 
 });
 
-$('input[type="button"]').on('click',function(){
+$("input[type='button']").click(function(event){
     //var getValueButton = this.id;
     console.log("click");
     // .not('#'+getValueButton).attr('disabled', true);
 });
+// on('click',function(){
+//     //var getValueButton = this.id;
+//     console.log("click");
+//     // .not('#'+getValueButton).attr('disabled', true);
+// });
+	
+
+	var dateaggsel;
+		$("#daily").click(function(){
+			
+			dateaggsel=(dateaggsel === "Daily")?"":"Daily";
+			$("#weekly").prop("disabled", (_, val) => !val);
+			$("#monthly").prop("disabled", (_, val) => !val);
+			$("#qtrly").prop("disabled", (_, val) => !val);
+			$("#yearly").prop("disabled", (_, val) => !val);
+
+		});
+
+		$("#weekly").click(function(){
+			
+			 dateaggsel=(dateaggsel === "Weekly")?"":"Weekly";
+			$("#daily").prop("disabled", (_, val) => !val);
+			$("#monthly").prop("disabled", (_, val) => !val);
+			$("#qtrly").prop("disabled", (_, val) => !val);
+			$("#yearly").prop("disabled", (_, val) => !val);
+
+		});
+
+		$("#monthly").click(function(){
+			
+			dateaggsel=(dateaggsel === "Monthly")?"":"Monthly";
+			$("#weekly").prop("disabled", (_, val) => !val);
+			$("#daily").prop("disabled", (_, val) => !val);
+			$("#qtrly").prop("disabled", (_, val) => !val);
+			$("#yearly").prop("disabled", (_, val) => !val);
+
+		});
+
+		$("#qtrly").click(function(){
+			
+			 dateaggsel=(dateaggsel === "Quarterly")?"":"Quarterly";
+			$("#weekly").prop("disabled", (_, val) => !val);
+			$("#monthly").prop("disabled", (_, val) => !val);
+			$("#daily").prop("disabled", (_, val) => !val);
+			$("#yearly").prop("disabled", (_, val) => !val);
+
+		});
+
+		$("#yearly").click(function(){
+			
+			 dateaggsel=(dateaggsel === "Yearly")?"":"Yearly";
+			console.log("Selected: ",dateaggsel);
+			$("#weekly").prop("disabled", (_, val) => !val);
+			$("#monthly").prop("disabled", (_, val) => !val);
+			$("#qtrly").prop("disabled", (_, val) => !val);
+			$("#daily").prop("disabled", (_, val) => !val);
+
+		});
 
 
 function callaggquery(btn){
 
-  var unit=$("#DateAggSel").val();
+  var unit=dateaggsel;
+
   var out={};
   out["unit"]=unit;
   out["source"]=sourcecode;
@@ -1510,7 +1574,9 @@ function downloadSuccess(btn, json) {
         
          console.log("json value: ", json);
        //if(json["data"].length===0)
-       //alert("No records found!!");
+       alert("Success!");
+        $("#downloadagg").show();
+     	
      //else
       //alert(json["nrws"]+" Records retrieved!");
       //$("#btnGoToAgg").show();
@@ -1747,14 +1813,19 @@ for (var i = 0; i < elements.length - 1; i++) {
 //console.log("max index:",highest_index);
 
 
+
+
 $("#subsetOverlay").attr("z-index", (highest_index+1));
 function openNav(typ) {
     if(typ==="subset"){
     document.getElementById("subsetOverlay").style.width = "100%";
-    // $("#btnGoToAgg").hide();
+     $("#btnGoToAgg").hide();
+     $("#downloadsubset").hide();
   }
-    else if(typ=="agg")
+    else if(typ=="agg"){
       document.getElementById("aggOverlay").style.width = "100%";
+   $("#downloadagg").hide();   
+    }
 }
 
 /* Close when someone clicks on the "x" symbol inside the overlay */
