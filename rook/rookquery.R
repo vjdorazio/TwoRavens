@@ -153,7 +153,7 @@ query.app<-function(env){
   #mindate=datesort[which.min(datesort)]
   
   #outdata=list(maxdate=maxdate,mindate=mindate,location=location2)
-  jsontest=rjson::toJSON(list(data=mydata,nrws=rws))
+  jsontest=rjson::toJSON(list(nrws=rws))
   
   result=list(jsontest)
   }

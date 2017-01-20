@@ -67,8 +67,28 @@ aggregate.app<-function(env){
       aggdatafinal=aggyearly(sou,tar,aggdatatemp)
     
   print(aggdatafinal)
+  print("test0")
+  write.table(aggdatafinal,file="../data/aggdata.tab")
   
-  jsontest=rjson::toJSON(list(data=aggdatafinal))
+  #nrow(aggdatafinal)
+  #print("test1")
+  if(nrow(aggdatafinal)>0){
+    #print("test2")
+      result="true";
+      #print("test3")
+    jsontest=rjson::toJSON(list(rslt=result))
+    #print("test4")
+  }
+  else{
+    #print("test5")
+    result="false";
+    #print("test6")
+    jsontest=rjson::toJSON(list(rslt=result))
+    #print("test7")
+  }
+  
+  
+  print(jsontest)
   result=list(jsontest)
   
   response$write(result)
