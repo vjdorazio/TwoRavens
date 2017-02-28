@@ -4,7 +4,7 @@
 ##  8/4/15
 ##
 library(jsonlite)
-library(RJSONIO)
+#library(RJSONIO)
 #sourc=NULL
 build.app<-function(env){
   
@@ -51,12 +51,12 @@ build.app<-function(env){
       for(i in 1:length(code)){
         code1=code[i]
         if(var=="Source")
-        {query=capture.output(cat('http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={"src_actor":"',code[i],'"}&unique=src_agent',sep=""))}
+        {query=capture.output(cat('http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={"src_actor":"',code[3],'"}&unique=src_agent',sep=""))}
         else
         {query=capture.output(cat('http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={"tgt_actor":"',code[i],'"}&unique=tgt_agent',sep=""))}
         #query='http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={"src_actor":"RUS"}&unique=src_agent'
         
-        d=fromJSON(query)
+        d=RJSONIO::fromJSON(query)
         
         #code2<-cbind(code2,d$data)
         code2<-sort(d$data,decreasing = FALSE)
