@@ -29,7 +29,6 @@ build.app<-function(env){
   }
   temp1=substr(everything,2,(nchar(everything)-1))
   everything=rjson::fromJSON(temp1)
-  #print(everything$var)
   
   level=everything$level
   code2final=NULL
@@ -40,10 +39,12 @@ build.app<-function(env){
       code=everything$code
       var=everything$var
       
+      #test code 
       #jsonout=' {"var":"sourc","level":"one","code":["JPN","SAU","USA"]}'
       #dt=fromJSON(jsonout)
       #code1=c("MNC", "NGO")
       #code=dt$code
+      
       lst=list()
       #code2=NULL
       #colnames(code2)<-c("code1","code2")
@@ -54,46 +55,16 @@ build.app<-function(env){
         {query=capture.output(cat('http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={"src_actor":"',code[3],'"}&unique=src_agent',sep=""))}
         else
         {query=capture.output(cat('http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={"tgt_actor":"',code[i],'"}&unique=tgt_agent',sep=""))}
-        #query='http://10.176.148.60:5002/api/data?api_key=CD75737EF4CAC292EE17B85AAE4B6&query={"src_actor":"RUS"}&unique=src_agent'
         
         d=RJSONIO::fromJSON(query)
-        
-        #code2<-cbind(code2,d$data)
         code2<-sort(d$data,decreasing = FALSE)
         lst[[code1]]<-code2
         
       }
     
       
-    #  colnames(code2)<-code
-      
-     # code2<-as.data.frame(code2)
-      
-      #codetest=as.data.frame(t(code2))
-      #codetest=unname(code2)
-      #print(code1)
-      #for(i in 1:length(code1)){
-       # #code2=as.data.frame(eval(parse(text=everything$var))[which(eval(parse(text=everything$var))$code1==code1),])
-        #code2=eval(parse(text=everything$var))[which(eval(parse(text=everything$var))$code1==code1[i]),]
-        #code2=code2[,c("code1","code2")]
-        
-        #code2=unique(code2)
-        #code2final=as.data.frame(rbind(code2final,code2))
-        #lst=append(lst,list(code1=code1[i],code2=code2))
-        #lst=append(lst,list(code1[1]=code2))
-      #}
-      
-      #rownames(code2final)<-("NGO")
-        #code2final$code1
-      
-      
-      #code2=as.data.frame(eval(parse(text=everything$var))[which(eval(parse(text=everything$var))$code1==code1),])
-      #code2=as.data.frame(unique(code2$code2))
-      #colnames(code2)<-("code")
-      #jsondata=jsonlite::toJSON(codetest)
       
       jsondata=jsonlite::toJSON(lst)
-     # print(jsondata)
       result=list(jsondata)
     }
     
@@ -103,7 +74,6 @@ build.app<-function(env){
   
   
   response$write(result)
-  #print(response)
   response$finish()
   
   

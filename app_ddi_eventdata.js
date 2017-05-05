@@ -336,7 +336,7 @@ if (dataurl) {
     // pURL = "data/qog_pp.json";   // This is Qual of Gov
 }
 
- .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+ // .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
     function brushed() 
     {   
