@@ -275,6 +275,16 @@ var preprocess = {};
 var mods = new Object;
 var jsondata;
 
+
+//This part of the code deals with the Ovrlay in gui2.html
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 var maxdate;
 var mindate;
 var countrylist=[];
@@ -602,6 +612,7 @@ $('.mutliSelectevent').on('change',':checkbox', function() {
 //+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
+//if IGO button is cicked, populate IGO list, else populate COuntry list
 $("#nxtl1btn").on('click', function(){
   // console.log("Level one to level 2 clicked");
   // console.log("IGO::",igos);
@@ -640,6 +651,8 @@ $("#nxtl1btn").on('click', function(){
   $("#level2").fadeIn(500);
 });
 
+
+//function to go back from level two to level one
 function leveltwoone(btn){
   $('input[name=level1radio]').attr('checked',false);
   sourcelevel1="";
@@ -647,6 +660,8 @@ function leveltwoone(btn){
   $("#level1").fadeIn(500);
 
 }
+
+//function to go back from level three to level two
 function levelthreetwo(btn){
 
   // sourcelevel1="";
@@ -656,6 +671,9 @@ function levelthreetwo(btn){
   $("#level2").fadeIn(500);
 
 }
+
+
+//function to go from level two to level three
 function leveltwothree(btn){
 
 
@@ -846,7 +864,7 @@ $('.mutliSelectactorl2').on('change',':checkbox', function() {
     title = $(this).val();
 
   if ($(this).is(':checked')) {
-
+    //splice adds an element into an array at a specific location. here, if a actor is clicked, it adds that to end of the selection list.
     sourcelevel2.splice(sourcelevel2.length,0,title);
     // console.log("level 2 array:",sourcelevel2);
   } else {
