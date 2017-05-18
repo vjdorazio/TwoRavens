@@ -1,0 +1,38 @@
+{
+"explorePlots": {
+    "histograms": {
+        "name": [
+            "histograms"
+        ],
+        "description": [
+            "A histogram is a graph that you can use to assess the shape and spread of continuous sample data"
+        ]
+        },
+            "Scatter Plots": {
+                "name": [
+                    "Scatter Plots"
+                ],
+                "description": [
+                    "A Scatter (XY) Plot has points that show the relationship between two sets of data"
+                ]
+              },
+              "Dot Plots": {
+                  "name": [
+                      "Dot Plots"
+                  ],
+                  "description": [
+                      "A Dot Plot is a graphical display of data using dots"
+                  ]
+                },
+                "Density Plots": {
+                    "name": [
+                        "Density Plots"
+                    ],
+                    "description": [
+                        "A Density Plot visualises the distribution of data over a continuous interval or time period"
+                    ]
+                  },
+
+
+}
+}
