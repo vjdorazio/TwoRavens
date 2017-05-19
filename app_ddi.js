@@ -204,7 +204,7 @@ $('#collapseLog').on('hidden.bs.collapse', function () {
 
 // text for the about box
 // note that .textContent is the new way to write text to a div
-$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cummulative guidance and meta-analysis.'); //This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
+$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" --  The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cummulative guidance and meta-analysis.'); //This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
 
 
 
@@ -423,14 +423,14 @@ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
 
                       //console.log("allNodes: ", allNodes);
                       // Reading the zelig models and populating the model list in the right panel.
-                      d3.json("data/zelig5models.json", function(error, json) {
+                      d3.json("data/explore.json", function(error, json) {
                               if (error) return console.warn(error);
                               var jsondata = json;
 
-                              //console.log("zelig models json: ", jsondata);
-                              for(var key in jsondata.zelig5models) {
-                              if(jsondata.zelig5models.hasOwnProperty(key)) {
-                              mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
+                              console.log("explore DATA json: ", jsondata);
+                              for(var key in jsondata.explore) {
+                              if(jsondata.explore.hasOwnProperty(key)) {
+                              mods[jsondata.explore[key].name[0]] = jsondata.explore[key].description[0];
                               }
                               }
 
@@ -630,14 +630,14 @@ function scaffolding(callback) {
 
 
 
-
+// populating the right panel in explore
 
     d3.select("#models")
     .style('height', 2000)
     .style('overfill', 'scroll');
 
     var modellist = Object.keys(mods);
-
+console.log("This data would be written "+  modellist);
     d3.select("#models").selectAll("p")
     .data(modellist)
     .enter()
@@ -840,10 +840,14 @@ var circle = svg.append('svg:g').selectAll('g');
         mousedown_node = null,
         mouseup_node = null;
 var force;
-	function layout(v) {
 
 
-	    var myValues=[];
+
+//kripanshu's explore work code
+	  function layout(v) {
+
+
+	  var myValues=[];
     nodes = [];
     links = [];
 
@@ -853,7 +857,7 @@ var force;
         for(var j =0; j < zparams.zvars.length; j++ ) {
             var ii = findNodeIndex(zparams.zvars[j]);
             if(allNodes[ii].grayout) {continue;}
-            nodes.push(allNodes[ii]);
+          nodes.push(allNodes[ii]);
             var selectMe = zparams.zvars[j].replace(/\W/g, "_");
             selectMe = "#".concat(selectMe);
             console.log(selectMe);
