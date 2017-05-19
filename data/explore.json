@@ -1,0 +1,154 @@
+{
+    "explore": {
+        "histograms": {
+            "name": [
+                "histograms"
+            ],
+            "description": [
+                "A histogram is a graph that you can use to assess the shape and spread of continuous sample data"
+            ],
+            "outcome": {
+                "modelingType": [
+                    "continous"
+                ]
+            },
+            "explanatory": {
+                "modelingType": [
+                    "continuous",
+                    "discrete",
+                    "nominal",
+                    "ordinal",
+                    "binary"
+                ]
+            },
+            "vignette.url": [
+                "http://zeligproject.org/zelig-ls.html"
+            ],
+            "tree": [
+                "Zelig-ls",
+                "Zelig"
+            ]
+        },
+        "scatter plot": {
+            "name": [
+                "Scatter Plot"
+            ],
+            "description": [
+                "A Scatter (XY) Plot has points that show the relationship between two sets of data"
+            ],
+            "outcome": {
+                "modelingType": [
+                    "binary"
+                ]
+            },
+            "explanatory": {
+                "modelingType": [
+                    "continuous",
+                    "discrete",
+                    "nominal",
+                    "ordinal",
+                    "binary"
+                ]
+            },
+            "vignette.url": [
+                "http://zeligproject.org/zelig-logit.html"
+            ],
+            "tree": [
+                "Zelig-logit",
+                "Zelig-binchoice",
+                "Zelig-glm",
+                "Zelig"
+            ]
+        },
+        "Dot Plots": {
+            "name": [
+                "Dot Plots"
+            ],
+            "description": [
+                "A Dot Plot is a graphical display of data using dots"
+            ],
+            "outcome": {
+                "modelingType": [
+                    "binary"
+                ]
+            },
+            "explanatory": {
+                "modelingType": [
+                    "continuous",
+                    "discrete",
+                    "nominal",
+                    "ordinal",
+                    "binary"
+                ]
+            },
+            "vignette.url": [
+                "http://zeligproject.org/zelig-probit.html"
+            ],
+            "tree": [
+                "Zelig-probit",
+                "Zelig-binchoice",
+                "Zelig-glm",
+                "Zelig"
+            ]
+        },
+        "Density Plots": {
+            "name": [
+                "Density Plots"
+            ],
+            "description": [
+                "A Density Plot visualises the distribution of data over a continuous interval or time period"
+            ],
+            "outcome": {
+                "modelingType": [
+                    "discrete"
+                ]
+            },
+            "explanatory": {
+                "modelingType": [
+                    "continuous",
+                    "discrete",
+                    "nominal",
+                    "ordinal",
+                    "binary"
+                ]
+            },
+            "vignette.url": [
+                "http://zeligproject.org/zelig-poisson.html"
+            ],
+            "tree": [
+                "Zelig-poisson",
+                "Zelig-glm",
+                "Zelig"
+            ]
+        },
+        "qq plot": {
+            "name": [
+                "QQ plot"
+            ],
+            "description": [
+                "A Q-Q plot is a scatterplot created by plotting two sets of quantiles against one another"
+            ],
+            "outcome": {
+                "modelingType": [
+                    "bounded"
+                ]
+            },
+            "explanatory": {
+                "modelingType": [
+                    "continuous",
+                    "discrete",
+                    "nominal",
+                    "ordinal",
+                    "binary"
+                ]
+            },
+            "vignette.url": [
+                "http://zeligproject.org/zelig-weibull.html"
+            ],
+            "tree": [
+                "Zelig-weibull",
+                "Zelig"
+            ]
+        }
+    }
+}
