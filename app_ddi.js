@@ -152,8 +152,10 @@ var arc4 = d3.svg.arc()
 .startAngle(4.3)
 .endAngle(5.3);
 
-
-
+// to draw circle on the ends of the link:path
+var circledata = [
+    { id: 0, name: 'circle', path: 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0', viewbox: '-6 -6 12 12' }
+]
 // From .csv
 var dataset2 = [];
 var valueKey = [];
@@ -926,24 +928,30 @@ var force;
 		// define arrow markers for graph links
         svg.append('svg:defs').append('svg:marker')
         .attr('id', 'end-arrow')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 6)
-        .attr('markerWidth', 3)
-        .attr('markerHeight', 3)
+            .classed('circle_end',true)
+        .attr('viewBox', '-6 -6 12 12')
+        .attr('refX', 1)
+            .attr('refY',1)
+        .attr('markerWidth', 7)
+        .attr('markerHeight', 7)
         .attr('orient', 'auto')
         .append('svg:path')
-        .attr('d', 'M0,-5L10,0L0,5')
+        .attr('d', 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0')
         .style('fill', '#000');
+
+
 
         svg.append('svg:defs').append('svg:marker')
         .attr('id', 'start-arrow')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 4)
-        .attr('markerWidth', 3)
-        .attr('markerHeight', 3)
+            .classed('circle_start',true)
+        .attr('viewBox', '-6 -6 12 12')
+        .attr('refX', 1)
+            .attr('refY',1)
+        .attr('markerWidth', 7)
+        .attr('markerHeight', 7)
         .attr('orient', 'auto')
         .append('svg:path')
-        .attr('d', 'M10,-5L0,0L10,5')
+        .attr('d', 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0')
         .style('fill', '#000');
 
         // line displayed when dragging new nodes
@@ -1073,11 +1081,16 @@ var force;
 	//var
 	drag_line = svg.append('svg:path')
         .attr('class', 'link dragline hidden')
-       .attr('d', 'M0,0L0,0');
+       .attr('d', 'M0,0L0,0')
+        ;
+
+
+
 	//
     d3.select("#models").selectAll("p") // models tab
     .on("mouseover", function(d) {
         // REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
+console.log("This model is selected")
         })
     .on("mouseout", function() {
         //Remove the tooltip
@@ -1188,6 +1201,11 @@ function restart() {
         // nodes.id is pegged to allNodes, i.e. the order in which variables are read in
         // nodes.index is floating and depends on updates to nodes.  a variables index changes when new variables are added.
 		//var force=forced3layout(nodes, links,  width,  height, tick);
+
+    var div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
         circle.call(force.drag);
         if(forcetoggle[0]==="true")
         {
@@ -1216,16 +1234,16 @@ function restart() {
         // update existing links
         // VJD: dashed links between pebbles are "selected". this is disabled for now
         path.classed('selected', function(d) { return;})//return d === selected_link; })
-        .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
-        .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; });
+        .style('marker-start', function(d) { return d ? 'url(#start-arrow)' : ''; })
+        .style('marker-end', function(d) { return d ? 'url(#end-arrow)' : ''; });
 
 
         // add new links
         path.enter().append('svg:path')
         .attr('class', 'link')
         .classed('selected', function(d) { return;})//return d === selected_link; })
-        .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
-        .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; })
+        .style('marker-start', function(d) { return d ? 'url(#start-arrow)' : ''; })
+        .style('marker-end', function(d) { return d ? 'url(#end-arrow)' : ''; })
         .on('mousedown', function(d) { // do we ever need to select a link? make it delete..
             var obj1 = JSON.stringify(d);
             for(var j =0; j < links.length; j++) {
@@ -1233,6 +1251,70 @@ function restart() {
                     links.splice(j,1);
                 }
             }
+        })
+
+            .on('mouseover', function(d) {
+                //     if(!mousedown_node || d === mousedown_node) return;
+                d3.select(this)
+                    .style('stroke', 'red')
+                    .style("cursor", "not-allowed")
+                    // Un-sets the "explicit" fill (might need to be null instead of '')
+                    .classed("active", true )
+
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div	.html("<span style='background-color: #d9534f ; padding:2px ; font-style: oblique' >Delete this link</span>")
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
+//d3.select('#start-arrow').style('fill','red');
+
+
+
+               // console.log("color is red")
+
+
+            })
+
+            .on('mouseout', function(d) {
+                //    if(!mousedown_node || d === mousedown_node) return;
+                // unenlarge target node
+                //tooltip.style("visibility", "hidden");
+                //    d3.select(this).attr('transform', '');
+                d3.select(this)
+                    .style('stroke', '#000')
+                    .style("cursor", "pointer")
+                    // Un-sets the "explicit" fill (might need to be null instead of '')
+                    .classed("active", false );
+                div.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+               // console.log("color was red")
+
+
+            });
+
+ d3.select('#start-arrow')
+            .on('mouseover', function(d) {
+                //     if(!mousedown_node || d === mousedown_node) return;
+                d3.select(this)
+                    .style('stroke', 'red')
+                    // Un-sets the "explicit" fill (might need to be null instead of '')
+                    .classed("active", true ).style('cursor','wait')
+                console.log("circle color is red");
+
+
+            })
+            .on('mouseout', function(d) {
+            //    if(!mousedown_node || d === mousedown_node) return;
+            // unenlarge target node
+            //tooltip.style("visibility", "hidden");
+            //    d3.select(this).attr('transform', '');
+            d3.select(this)
+                .style('stroke', '#000')
+                // Un-sets the "explicit" fill (might need to be null instead of '')
+                .classed("active", true )
+            console.log("circle color was red")
         });
 
         // remove old links
