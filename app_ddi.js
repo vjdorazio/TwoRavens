@@ -932,8 +932,8 @@ var force;
         .attr('viewBox', '-6 -6 12 12')
         .attr('refX', 1)
             .attr('refY',1)
-        .attr('markerWidth', 7)
-        .attr('markerHeight', 7)
+        .attr('markerWidth', 4)
+        .attr('markerHeight', 4)
         .attr('orient', 'auto')
         .append('svg:path')
         .attr('d', 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0')
@@ -947,8 +947,8 @@ var force;
         .attr('viewBox', '-6 -6 12 12')
         .attr('refX', 1)
             .attr('refY',1)
-        .attr('markerWidth', 7)
-        .attr('markerHeight', 7)
+        .attr('markerWidth', 4)
+        .attr('markerHeight', 4)
         .attr('orient', 'auto')
         .append('svg:path')
         .attr('d', 'M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0')
@@ -1259,16 +1259,16 @@ function restart() {
                     .style('stroke', 'red')
                     .style("cursor", "not-allowed")
                     // Un-sets the "explicit" fill (might need to be null instead of '')
-                    .classed("active", true )
+                    .classed("active", true );
 
-                div.transition()
+              /*  div.transition()
                     .duration(200)
                     .style("opacity", .9);
                 div	.html("<span style='background-color: #d9534f ; padding:2px ; font-style: oblique' >Delete this link</span>")
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
 //d3.select('#start-arrow').style('fill','red');
-
+*/
 
 
                // console.log("color is red")
@@ -1286,9 +1286,9 @@ function restart() {
                     .style("cursor", "pointer")
                     // Un-sets the "explicit" fill (might need to be null instead of '')
                     .classed("active", false );
-                div.transition()
-                    .duration(500)
-                    .style("opacity", 0);
+              //  div.transition()
+                //    .duration(500)
+                  //  .style("opacity", 0);
                // console.log("color was red")
 
 
