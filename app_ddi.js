@@ -2269,6 +2269,103 @@ function estimate(btn) {
 }
 
 
+function explore(btn) {
+    if(production && zparams.zsessionid=="") {
+        alert("Warning: Data download is not complete. Try again soon.");
+        return;
+    }
+    
+    zPop();
+    console.log("zpop: ",zparams);
+    // write links to file & run R CMD
+    
+    //package the output as JSON
+    // add call history and package the zparams object as JSON
+    zparams.callHistory=callHistory;
+    var jsonout = JSON.stringify(zparams);
+    
+    //var base = rappURL+"zeligapp?solaJSON="
+    urlcall = rappURL+"exploreapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON="+jsonout;
+    //console.log("urlcall out: ", urlcall);
+    //console.log("POST out: ", solajsonout);
+    
+    var jsonout = JSON.stringify(zparams);
+    
+    function exploreSuccess(btn,json) {
+        estimateLadda.stop();  // stop spinner
+        allResults.push(json);
+        // console.log(allResults);
+        console.log("json in: ", json);
+        
+        var myparent = document.getElementById("results");
+        if(estimated==false) {
+            myparent.removeChild(document.getElementById("resultsHolder"));
+        }
+        
+        estimated=true;
+        d3.select("#results")
+        .style("display", "block");
+        
+        d3.select("#resultsView")
+        .style("display", "block");
+        
+        d3.select("#modelView")
+        .style("display", "block");
+        
+        
+        // programmatic click on Results button
+        $("#btnResults").trigger("click");
+        
+        
+        modelCount = modelCount+1;
+        var model = "Model".concat(modelCount);
+        
+        function modCol() {
+            d3.select("#modelView")
+            .selectAll("p")
+            .style('background-color', hexToRgba(varColor));
+        }
+        
+        modCol();
+        
+        d3.select("#modelView")
+        .insert("p",":first-child") // top stack for results
+        .attr("id",model)
+        .text(model)
+        .style('background-color', hexToRgba(selVarColor))
+        .on("click", function(){
+            var a = this.style.backgroundColor.replace(/\s*/g, "");
+            var b = hexToRgba(selVarColor).replace(/\s*/g, "");
+            if(a.substr(0,17)===b.substr(0,17)) {
+            return; //escapes the function early if the displayed model is clicked
+            }
+            modCol();
+            d3.select(this)
+            .style('background-color', hexToRgba(selVarColor));
+            viz(this.id);
+            });
+        
+        var rCall = [];
+        rCall[0] = json.call;
+        logArray.push("explore: ".concat(rCall[0]));
+        showLog();
+        
+        viz(model);
+    }
+    
+    function exploreFail(btn) {
+        estimateLadda.stop();  // stop spinner
+        estimated=true;
+    }
+    
+    
+    estimateLadda.start();  // start spinner
+    makeCorsRequest(urlcall,btn, exploreSuccess, exploreFail, solajsonout);
+    
+}
+
+
 function dataDownload() {
     zPop();
     // write links to file & run R CMD
