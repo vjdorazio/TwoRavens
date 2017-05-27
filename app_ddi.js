@@ -107,7 +107,7 @@ var d3Color = '#1f77b4';  // d3's default blue
 var grayColor = '#c0c0c0';
 
 var lefttab = "tab1"; //global for current tab in left panel
-var righttab = "btnModels"; // global for current tab in right panel
+var righttab = "btnUnivariate"; // global for current tab in right panel
 
 var zparams = { zdata:[], zedges:[], ztime:[], znom:[], zcross:[], zmodel:"", zvars:[], zdv:[], zdataurl:"", zsubset:[], zsetx:[], zmodelcount:0, zplot:[], zsessionid:"", zdatacite:"", zmetadataurl:"", zusername:""};
 
@@ -206,7 +206,7 @@ $('#collapseLog').on('hidden.bs.collapse', function () {
 
 // text for the about box
 // note that .textContent is the new way to write text to a div
-$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" --  The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cummulative guidance and meta-analysis.'); //This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
+$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" --  The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical univariate from Dataverse, to provide cummulative guidance and meta-analysis.'); //This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
 
 
 
@@ -634,13 +634,13 @@ function scaffolding(callback) {
 
 // populating the right panel in explore
 
-    d3.select("#models")
+    d3.select("#univariate")
     .style('height', 2000)
     .style('overfill', 'scroll');
 
     var modellist = Object.keys(mods);
 console.log("This data would be written "+  modellist);
-    d3.select("#models").selectAll("p")
+    d3.select("#univariate").selectAll("p")
     .data(modellist)
     .enter()
     .append("p")
@@ -927,7 +927,7 @@ var force;
 		//function svgappend()
 		// define arrow markers for graph links
         svg.append('svg:defs').append('svg:marker')
-        .attr('id', 'end-arrow')
+        .attr('id', 'end-circle')
             .classed('circle_end',true)
         .attr('viewBox', '-6 -6 12 12')
         .attr('refX', 1)
@@ -942,7 +942,7 @@ var force;
 
 
         svg.append('svg:defs').append('svg:marker')
-        .attr('id', 'start-arrow')
+        .attr('id', 'start-circle')
             .classed('circle_start',true)
         .attr('viewBox', '-6 -6 12 12')
         .attr('refX', 1)
@@ -1004,7 +1004,8 @@ var force;
            circle.attr('transform', function(d) {
                        return 'translate(' + d.x + ',' + d.y + ')';
                        });
-           //  };
+
+
        //
        //}
        //
@@ -1087,7 +1088,7 @@ var force;
 
 
 	//
-    d3.select("#models").selectAll("p") // models tab
+    d3.select("#univariate").selectAll("p") // univariate tab
     .on("mouseover", function(d) {
         // REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
 console.log("This model is selected")
@@ -1099,7 +1100,7 @@ console.log("This model is selected")
         //  d3.select("#Display_content")
         .on("click", function(){
             var myColor = d3.select(this).style('background-color');
-            d3.select("#models").selectAll("p")
+            d3.select("#univariate").selectAll("p")
             .style('background-color',varColor);
             d3.select(this)
             .style('background-color',function(d) {
@@ -1196,6 +1197,7 @@ console.log("This model is selected")
         });
 
 //Rohit BHATTACHARJEE circle
+//KRIPANSHU BHARGAVA  code updated for circular ends and mouseover action on link
 //circle = svg.append('svg:g').selectAll('g');
 function restart() {
         // nodes.id is pegged to allNodes, i.e. the order in which variables are read in
@@ -1234,16 +1236,18 @@ function restart() {
         // update existing links
         // VJD: dashed links between pebbles are "selected". this is disabled for now
         path.classed('selected', function(d) { return;})//return d === selected_link; })
-        .style('marker-start', function(d) { return d ? 'url(#start-arrow)' : ''; })
-        .style('marker-end', function(d) { return d ? 'url(#end-arrow)' : ''; });
+        .style('marker-start', function(d) { return d ? 'url(#start-circle)' : ''; })
+        .style('marker-end', function(d) { return d ? 'url(#end-circle)' : ''; })
+            .style('stroke-width',2.5)  ;
 
 
         // add new links
         path.enter().append('svg:path')
         .attr('class', 'link')
+            .style('stroke-width',2.5)
         .classed('selected', function(d) { return;})//return d === selected_link; })
-        .style('marker-start', function(d) { return d ? 'url(#start-arrow)' : ''; })
-        .style('marker-end', function(d) { return d ? 'url(#end-arrow)' : ''; })
+        .style('marker-start', function(d) { return d ? 'url(#start-circle)' : ''; })
+        .style('marker-end', function(d) { return d ? 'url(#end-circle)' : ''; })
         .on('mousedown', function(d) { // do we ever need to select a link? make it delete..
             var obj1 = JSON.stringify(d);
             for(var j =0; j < links.length; j++) {
@@ -1267,7 +1271,7 @@ function restart() {
                 div	.html("<span style='background-color: #d9534f ; padding:2px ; font-style: oblique' >Delete this link</span>")
                     .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
-//d3.select('#start-arrow').style('fill','red');
+//d3.select('#start-circle').style('fill','red');
 */
 
 
@@ -1294,7 +1298,7 @@ function restart() {
 
             });
 
- d3.select('#start-arrow')
+ d3.select('#start-circle')
             .on('mouseover', function(d) {
                 //     if(!mousedown_node || d === mousedown_node) return;
                 d3.select(this)
@@ -1647,7 +1651,7 @@ function restart() {
 
             // reposition drag line
             drag_line
-            .style('marker-end', 'url(#end-arrow)')
+            .style('marker-end', 'url(#end-circle)')
             .classed('hidden', false)
             .attr('d', 'M' + mousedown_node.x + ',' + mousedown_node.y + 'L' + mousedown_node.x + ',' + mousedown_node.y);
 
@@ -1842,9 +1846,24 @@ function restart() {
         circle.exit().remove();
         force.start();
     }
+
+
+
+
+
+
+
+
+
+
+
 //Rohit BHATTACHARJEE TICK
+//KRIPANSHU BHARGAVA NODE'S END CHANGES(EXPLORE APP)
  // update force layout (called automatically each iteration)
         function tick() {
+    // get mouse pointer coordinates
+
+var Xs=0,Xt=0,Ys=0,Yt=0;
             // draw directed edges with proper padding from node centers
             path.attr('d', function(d) {
                       var deltaX = d.target.x - d.source.x,
@@ -1852,20 +1871,70 @@ function restart() {
                       dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
                       normX = deltaX / dist,
                       normY = deltaY / dist,
-                      sourcePadding = d.left ? allR+5 : allR,
-                      targetPadding = d.right ? allR+5 : allR,
-                      sourceX = d.source.x + (sourcePadding * normX),
-                      sourceY = d.source.y + (sourcePadding * normY),
+                      sourcePadding = d ? allR+5 : allR,
+                      targetPadding = d ? allR+5 : allR,
+                      sourceX = d.source.x + (sourcePadding * normX)+1,
+                      sourceY = d.source.y + (sourcePadding * normY)+1,
                       targetX = d.target.x - (targetPadding * normX),
                       targetY = d.target.y - (targetPadding * normY);
                       return 'M' + sourceX + ',' + sourceY + 'L' + targetX + ',' + targetY;
-                      });
+                      })
+                .on('mouseover', function(d) {
+                Xs=d.source.x;
+                Xt=d.target.x;
+                Ys=d.source.y;
+                Yt=d.target.y;
+
+
+                    d3.select(this)
+                        .style('stroke', 'red')
+                        .style("cursor", "not-allowed")
+                        // Un-sets the "explicit" fill (might need to be null instead of '')
+                        .classed("active", true );
+
+                    /*  div.transition()
+                     .duration(200)
+                     .style("opacity", .9);
+                     div	.html("<span style='background-color: #d9534f ; padding:2px ; font-style: oblique' >Delete this link</span>")
+                     .style("left", (d3.event.pageX) + "px")
+                     .style("top", (d3.event.pageY - 28) + "px");
+                     //d3.select('#start-circle').style('fill','red');
+                     */
+
+
+                     console.log("color is red, main function")
+
+
+                })
+
+                .on('mouseout', function(d) {
+                    //    if(!mousedown_node || d === mousedown_node) return;
+                    // unenlarge target node
+                    //tooltip.style("visibility", "hidden");
+                    //    d3.select(this).attr('transform', '');
+                    d3.select(this)
+                        .style('stroke', '#000')
+                        .style("cursor", "pointer")
+                        // Un-sets the "explicit" fill (might need to be null instead of '')
+                        .classed("active", false );
+                    //  div.transition()
+                    //    .duration(500)
+                    //  .style("opacity", 0);
+                     console.log("color was red")
+
+
+                });
+
+
+
 
             //  if(forcetoggle){
             circle.attr('transform', function(d) {
                         return 'translate(' + d.x + ',' + d.y + ')';
                         });
             //  };
+
+
 
         }
 
@@ -1902,7 +1971,7 @@ function writesuccess(btn,json){
 
 	selectLadda.stop();
 	// $("#btnVariables").trigger("click"); // programmatic clicks
-      //  $("#btnModels").trigger("click");
+      //  $("#btnUnivariate").trigger("click");
       $('#btnSave').hide();
 
 
@@ -2184,6 +2253,11 @@ function estimate(btn) {
     //var selectorBase = rappURL+"selectorapp?solaJSON=";
     var selectorurlcall = rappURL+"selectorapp"; //.concat(jsonout);
 
+
+
+
+
+
     function estimateSuccess(btn,json) {
         estimateLadda.stop();  // stop spinner
         allResults.push(json);
@@ -2268,7 +2342,7 @@ function estimate(btn) {
 
 }
 
-
+// This is the main function for explore app
 function explore(btn) {
     if(production && zparams.zsessionid=="") {
         alert("Warning: Data download is not complete. Try again soon.");
@@ -3038,33 +3112,33 @@ function tabLeft(tab) {
 
     document.getElementById(tab).style.display = 'block';
 }
-
+//
 function tabRight(tabid) {
 
-    document.getElementById('models').style.display = 'none';
+    document.getElementById('univariate').style.display = 'none';
     document.getElementById('setx').style.display = 'none';
     document.getElementById('results').style.display = 'none';
 
-    if(tabid=="btnModels") {
-      document.getElementById('btnSetx').setAttribute("class", "btn btn-default");
+    if(tabid=="btnUnivariate") {
+      document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
       document.getElementById('btnResults').setAttribute("class", "btn btn-default");
-      document.getElementById('btnModels').setAttribute("class", "btn active");
-      document.getElementById('models').style.display = 'block';
+      document.getElementById('btnUnivariate').setAttribute("class", "btn active");
+      document.getElementById('univariate').style.display = 'block';
 
         d3.select("#rightpanel")
         .attr("class", "sidepanel container clearfix");
     }
-    else if (tabid=="btnSetx") {
-      document.getElementById('btnModels').setAttribute("class", "btn btn-default");
+    else if (tabid=="btnBivariate") {
+      document.getElementById('btnUnivariate').setAttribute("class", "btn btn-default");
       document.getElementById('btnResults').setAttribute("class", "btn btn-default");
-      document.getElementById('btnSetx').setAttribute("class", "btn active");
+      document.getElementById('btnBivariate').setAttribute("class", "btn active");
       document.getElementById('setx').style.display = 'block';
 
-        if(righttab=="btnSetx"  | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix") {toggleR()};
+        if(righttab=="btnBivariate"  | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix") {toggleR()};
     }
     else if (tabid=="btnResults") {
-      document.getElementById('btnModels').setAttribute("class", "btn btn-default");
-      document.getElementById('btnSetx').setAttribute("class", "btn btn-default");
+      document.getElementById('btnUnivariate').setAttribute("class", "btn btn-default");
+      document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
       document.getElementById('btnResults').setAttribute("class", "btn active");
       document.getElementById('results').style.display = 'block';
 
@@ -3072,7 +3146,7 @@ function tabRight(tabid) {
             d3.select("#rightpanel")
             .attr("class", "sidepanel container clearfix");
         }
-        else if(righttab=="btnResults" | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix") {toggleR()};
+        else if(righttab=="btnBivariate" | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix") {toggleR()};
     }
 
     righttab=tabid; // a global that may be of use
@@ -3081,7 +3155,7 @@ function tabRight(tabid) {
         d3.select("#rightpanel")
         .attr("class", function(d){
               if(this.getAttribute("class")==="sidepanel container clearfix expandpanel") {
-              return "sidepanel container clearfix";
+              return "sidepanel container clearfix expandpanel";
               }
               else {
               return "sidepanel container clearfix expandpanel";
@@ -3570,7 +3644,7 @@ function subsetSelect(btn) {
         console.log(json);
         selectLadda.stop(); // stop motion
         $("#btnVariables").trigger("click"); // programmatic clicks
-        $("#btnModels").trigger("click");
+        $("#btnUnivariate").trigger("click");
 
         var grayOuts = [];
 
@@ -3902,7 +3976,7 @@ function left() {
         document.getElementById('btnForce').setAttribute("class", "btn btn-default");
     }
 
-    d3.select("#models").selectAll("p").style("background-color", varColor);
+    d3.select("#univariate").selectAll("p").style("background-color", varColor);
     selectMe = "#_model_".concat(zparams.zmodel);
     d3.select(selectMe).style("background-color", hexToRgba(selVarColor));
 
@@ -3989,7 +4063,7 @@ function right() {
         document.getElementById('btnForce').setAttribute("class", "btn btn-default");
     }
 
-    d3.select("#models").selectAll("p").style("background-color", varColor);
+    d3.select("#univariate").selectAll("p").style("background-color", varColor);
     selectMe = "#_model_".concat(zparams.zmodel);
     d3.select(selectMe).style("background-color", hexToRgba(selVarColor));
 
