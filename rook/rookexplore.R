@@ -116,9 +116,10 @@ explore.app <- function(env){
           mydata <- executeHistory(data=mydata, history=history)
           write("mydata <- executeHistory(data=mydata, history=history)",mylogfile,append=TRUE)
           imageVector<<-list()
+          plotcount<-0
           
           for(i in 1:nrow(myedges)) {
-              plotcount<-i
+              
               usepair <- unique(myedges[i,])
               usedata <- mydata[,c(usepair)]
               
@@ -126,40 +127,49 @@ explore.app <- function(env){
               isobserved<-apply(missmap,1,all)
               usedata<<-usedata[isobserved,]
               
-              spTEST <- "plot(usedata[,1],usedata[,2])"
               almostCall<-"plot call"
               
-              if(production){
-                  plotpath <- "png(file.path(\"/var/www/html/custom/pic_dir\", paste(mysessionid,\"_\",mymodelcount,qicount,\".png\",sep=\"\")))"
-              }else{
-                  plotpath <- "png(file.path(getwd(), paste(\"output\",mymodelcount,i,\".png\",sep=\"\")))"
-              }
+              for(j in 1:2) {
+                  plotcount<-plotcount+1
+                if(j==1){
+                  spTEST <- "plot(usedata[,1],usedata[,2])"
+                  plotv<-"a"
+                } else{
+                    spTEST <- "plot(usedata[,2],usedata[,1])"
+                    plotv<-"b"
+                }
               
-              eval(parse(text=plotpath))
-              eval(parse(text=spTEST))
-              dev.off()
+                if(production){
+                    plotpath <- "png(file.path(\"/var/www/html/custom/pic_dir\", paste(mysessionid,\"_\",mymodelcount,i,plotv,\".png\",sep=\"\")))"
+                }else{
+                    plotpath <- "png(file.path(getwd(), paste(\"output\",mymodelcount,i,plotv,\".png\",sep=\"\")))"
+                }
+              
+                eval(parse(text=plotpath))
+                eval(parse(text=spTEST))
+                dev.off()
               
               # zplots() recreates Zelig plots
               #images <- zplots(s.out, plotpath, mymodelcount, mysessionid, production=production)
               #write("plot(s.out)",mylogfile,append=TRUE)
               
-              if(production){
-                  imageVector[[plotcount]]<<-paste("https://beta.dataverse.org/custom/pic_dir/", mysessionid,"_",mymodelcount,plotcount,".png", sep = "")
-              }else{
-                  imageVector[[plotcount]]<<-paste("rook/output",mymodelcount,plotcount,".png", sep = "")
+                if(production){
+                    imageVector[[plotcount]]<<-paste("https://beta.dataverse.org/custom/pic_dir/", mysessionid,"_",mymodelcount,i,plotv,".png", sep = "")
+                }else{
+                    imageVector[[plotcount]]<<-paste("rook/output",mymodelcount,i,plotv,".png", sep = "")
+                }
               }
+            images<-imageVector ## zplots() returns imageVector, just for consistency
               
+            if(length(images)>0){
+                names(images)<-paste("output",1:length(images),sep="")
+                result<-list(images=images, call=almostCall)
+            }else{
+                warning<-TRUE
+                result<-list(warning="There are no graphs to show.")
+            }
               
-              images<-imageVector ## zplots() returns imageVector, just for consistency
-              
-              if(length(images)>0){
-                  names(images)<-paste("output",1:length(images),sep="")
-                  result<-list(images=images, call=almostCall)
-              }else{
-                  warning<-TRUE
-                  result<-list(warning="There are no graphs to show.")
-              }
-        }
+          }
         },
         
         error=function(err){
