@@ -258,6 +258,7 @@ if (dataurl) {
      // console.log("test is true");
     }
    else
+       console.log("loading fearonLaitinpreprocess8.json");
    	pURL = "data/fearonLaitinpreprocess8.json";
 
   // console.log("yo value of test",test);
