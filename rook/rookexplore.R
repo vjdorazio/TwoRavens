@@ -53,6 +53,20 @@ explore.app <- function(env){
             result <- list(warning="Problem with zplot.")
         }
     }
+    
+    if(!warning){
+        mynature <- everything$znature
+        if(is.null(mynature)){
+            warning <- TRUE
+            result <- list(warning="Problem with znature.")
+        }
+        vars <- everything$zvars
+        if(is.null(vars)){
+            warning <- TRUE
+            result <- list(warning="Problem with zvars.")
+        }
+        lookup <- data.frame(vars=vars, nature=mynature)
+    }
 
 	if(!warning){
         myedges<-everything$zedges
@@ -120,6 +134,7 @@ explore.app <- function(env){
           tabular<<-list()
           plotcount<-0
           
+          
           for(i in 1:nrow(myedges)) {
               
               usepair <- unique(myedges[i,])
@@ -130,16 +145,18 @@ explore.app <- function(env){
               usedata<<-usedata[isobserved,]
               
               # what will be returned in "statistical"
-              myCor <- cor(usedata[,1],usedata[,2])
+              #myCor <- cor(usedata[,1],usedata[,2])
               
               # what will be returned in "tabular"
               useTab<-usedata
-              
+              colv <- colnames(usedata)[2]
+              rowv <- colnames(usedata)[1]
+
               # this is a default of 10 if greater than 10 unique values. eventually we can incorporate user input to define this
-              if(length(unique(useTab[,1]))>10) {
+              if(length(unique(useTab[,1]))>10 & !isTRUE(lookup[which(lookup[,1]==rowv),2]=="nominal")) {
                   useTab[,1] <- cut(useTab[,1], breaks=10)
               }
-              if(length(unique(useTab[,2]))>10) {
+              if(length(unique(useTab[,2]))>10 & !isTRUE(lookup[which(lookup[,1]==colv),2]=="nominal")) {
                 useTab[,2] <- cut(useTab[,2], breaks=10)
               }
               
@@ -147,8 +164,6 @@ explore.app <- function(env){
               rm(useTab)
               coln <- colnames(myTab)
               rown <- row.names(myTab)
-              colv <- colnames(usedata)[2]
-              rowv <- colnames(usedata)[1]
               tabData <- list()
               
               for (j in 1:nrow(myTab)) {
