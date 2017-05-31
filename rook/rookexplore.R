@@ -116,6 +116,8 @@ explore.app <- function(env){
           mydata <- executeHistory(data=mydata, history=history)
           write("mydata <- executeHistory(data=mydata, history=history)",mylogfile,append=TRUE)
           imageVector<<-list()
+          statistical<<-list()
+          tabular<<-list()
           plotcount<-0
           
           for(i in 1:nrow(myedges)) {
@@ -127,6 +129,33 @@ explore.app <- function(env){
               isobserved<-apply(missmap,1,all)
               usedata<<-usedata[isobserved,]
               
+              # what will be returned in "statistical"
+              myCor <- cor(usedata[,1],usedata[,2])
+              
+              # what will be returned in "tabular"
+              useTab<-usedata
+              
+              # this is a default of 10 if greater than 10 unique values. eventually we can incorporate user input to define this
+              if(length(unique(useTab[,1]))>10) {
+                  useTab[,1] <- cut(useTab[,1], breaks=10)
+              }
+              if(length(unique(useTab[,2]))>10) {
+                useTab[,2] <- cut(useTab[,2], breaks=10)
+              }
+              
+              myTab <- table(useTab[,1],useTab[,2])
+              rm(useTab)
+              coln <- colnames(myTab)
+              rown <- row.names(myTab)
+              colv <- colnames(usedata)[2]
+              rowv <- colnames(usedata)[1]
+              tabData <- list()
+              
+              for (j in 1:nrow(myTab)) {
+                  #                  assign(paste("row", j, sep = ""), c(rown[j],myTab[j,]))
+                  assign("tabData", c(tabData, list(eval(parse(text="myTab[j,]")))))
+              }
+              tabInfo <- list(colnames=coln, rownames=rown, colvar=colv, rowvar=rowv, data=tabData)
               almostCall<-"plot call"
               
               for(j in 1:2) {
@@ -157,18 +186,20 @@ explore.app <- function(env){
                     imageVector[[plotcount]]<<-paste("https://beta.dataverse.org/custom/pic_dir/", mysessionid,"_",mymodelcount,i,plotv,".png", sep = "")
                 }else{
                     imageVector[[plotcount]]<<-paste("rook/output",mymodelcount,i,plotv,".png", sep = "")
+                    #   statistical[[plotcount]]<<-myCor
                 }
               }
             images<-imageVector ## zplots() returns imageVector, just for consistency
-              
-            if(length(images)>0){
-                names(images)<-paste("output",1:length(images),sep="")
-                result<-list(images=images, call=almostCall)
-            }else{
-                warning<-TRUE
-                result<-list(warning="There are no graphs to show.")
-            }
-              
+            tabular[[i]]<<-tabInfo
+          }
+          
+          if(length(images)>0){
+              names(images)<-paste("output",1:length(images),sep="")
+              names(tabular)<- apply(myedges,1,function(x) paste(x[1],x[2],sep=""))
+              result<-list(images=images, call=almostCall, tabular=tabular)
+          }else{
+              warning<-TRUE
+              result<-list(warning="There are no graphs to show.")
           }
         },
         
@@ -179,25 +210,24 @@ explore.app <- function(env){
 	}
 
 
-    ## NOTE: z.out not guaranteed to exist, if some warning is tripped above.
-    #  if(!warning){
-
-#        summaryMatrix <- summary(z.out$zelig.out$z.out[[1]])$coefficients
+    ## for the tabulation
+    #   if(!warning){
+    #    summaryMatrix <- summary(z.out$zelig.out$z.out[[1]])$coefficients
         
-        #        sumColName <- c(" ", "Estimate", "SE", "t-value", "Pr(<|t|)")
+        #            sumColName <- c(" ", "Estimate", "SE", "t-value", "Pr(<|t|)")
         #sumInfo <- list(colnames=sumColName)
     
-    #     sumRowName <- row.names(summaryMatrix)
-    #    row.names(summaryMatrix) <- NULL # this makes remaining parsing cleaner
-    #    colnames(summaryMatrix) <- NULL
+    #sumRowName <- row.names(summaryMatrix)
+    #   row.names(summaryMatrix) <- NULL # this makes remaining parsing cleaner
+    #   colnames(summaryMatrix) <- NULL
     
-    #     for (i in 1:nrow(summaryMatrix)) {
-    #        assign(paste("row", i, sep = ""), c(sumRowName[i],summaryMatrix[i,]))
-    #       assign("sumInfo", c(sumInfo, list(eval(parse(text=paste("row",i,sep=""))))))
-    #    }
-    #    sumMat <- list(sumInfo=sumInfo)
-    
-    #     result<- jsonlite:::toJSON(c(result,sumMat))   # rjson does not format json correctly for a list of lists
+    #    for (i in 1:nrow(summaryMatrix)) {
+    #       assign(paste("row", i, sep = ""), c(sumRowName[i],summaryMatrix[i,]))
+    #      assign("sumInfo", c(sumInfo, list(eval(parse(text=paste("row",i,sep=""))))))
+    #   }
+    #   sumMat <- list(sumInfo=sumInfo)
+    #
+    #    result<- jsonlite:::toJSON(c(result,sumMat))   # rjson does not format json correctly for a list of lists
     #}else{
         result<-jsonlite:::toJSON(result)
         #}
