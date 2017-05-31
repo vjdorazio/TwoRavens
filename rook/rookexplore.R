@@ -152,13 +152,17 @@ explore.app <- function(env){
               
               # what will be returned in "statistical"
               if(colvNature!="nominal" & rowvNature!="nominal") {
-                  c <-round(cor(usedata[,1],usedata[,2], use="complete.obs"), 4)
-                  myCor <- paste("Pearson correlation: ", c, sep="")
+                  p <-round(cor(usedata[,1],usedata[,2], use="complete.obs", method="pearson"), 4)
+                  corp <- paste("Pearson correlation: ", p, sep="")
+                  s <-round(cor(usedata[,1],usedata[,2], use="complete.obs", method="spearman"), 4)
+                  cors <- paste("Spearman correlation: ", s, sep="")
+                  k <-round(cor(usedata[,1],usedata[,2], use="complete.obs", method="kendall"), 4)
+                  cork <- paste("Kendall correlation: ", k, sep="")
               } else {
-                  myCor <- "No correlation reported"
+                  myCor <- "No correlations reported"
               }
               
-              statInfo <- list(var1=rowv, var2=colv, cor=myCor)
+              statInfo <- list(var1=rowv, var2=colv, corp=corp, cors=cors, cork=cork)
               
               # what will be returned in "tabular"
               useTab<-usedata
