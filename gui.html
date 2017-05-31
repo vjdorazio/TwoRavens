@@ -85,6 +85,8 @@
 
         <div id="spacetools" class="spaceTool" style="z-index:16;">
             <button class="btn btn-default" id="btnSave" title="Save any Changes." onclick="writetojson()"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+            <button class="btn btn-default" id="btnDisJoin" title="Delete all connections between nodes." onclick="disconnectAll()"><span class="	glyphicon glyphicon-remove-circle"></span></button>
+            <button class="btn btn-default" id="btnJoin" title="Make all possible connections between nodes." onclick="connectAll()"><span class="	glyphicon glyphicon-link"></span></button>
             <button class="btn btn-default" id="btnForce" title="Pin the variable pebbles to the page." onclick="forceSwitch()"><span class="glyphicon glyphicon-pushpin"></span></button>
             <button class="btn btn-default" id="btnEraser" title="Wipe all variables from the modeling space." onclick="erase()"><span class="glyphicon glyphicon-magnet"></span></button>
         </div>
@@ -192,7 +194,7 @@
 
         <!-- <div class="btn-toolbar" role="toolbar" style="margin-left:.5em;margin-top:.5em;"> -->
         <!-- The following is fix for the longstanding button wrapping problem on small screens -->
-        <div class="btn-group btn-group-justified" role="group" style="margin-top:.5em;" aria-label="...">
+        <div class="btn-group btn-group-justified" role="group" style="margin-top:.5em;" aria-label="....">
              <!--<div class="btn-group" style="margin-right:0;"> -->
                  <button type="button" class="btn active" id="btnUnivariate" onclick="tabRight('btnUnivariate');" style="width: 39%">Univariate</button>
                  <button type="button" class="btn btn-default" id="btnBivariate" onclick="tabRight('btnBivariate');" style="width: 36%">Bivariate</button>

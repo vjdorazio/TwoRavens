@@ -1875,8 +1875,8 @@ var Xs=0,Xt=0,Ys=0,Yt=0;
                       targetPadding = d ? allR+5 : allR,
                       sourceX = d.source.x + (sourcePadding * normX)+1,
                       sourceY = d.source.y + (sourcePadding * normY)+1,
-                      targetX = d.target.x - (targetPadding * normX),
-                      targetY = d.target.y - (targetPadding * normY);
+                      targetX = d.target.x - (targetPadding * normX)+1,
+                      targetY = d.target.y - (targetPadding * normY)+1;
                       return 'M' + sourceX + ',' + sourceY + 'L' + targetX + ',' + targetY;
                       })
                 .on('mouseover', function(d) {
