@@ -55,6 +55,51 @@ if (!production) {
 }
 
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//This part of the code reads in the date-frequency csv file, and reads that data to show the distribution graph, and defines all the variables and functions for this
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+var svg = d3.select("svg"),
+margin = {top: 20, right: 20, bottom: 110, left: 150},
+margin2 = {top: 430, right: 20, bottom: 30, left: 150},
+datewidth = +svg.attr("width") - margin.left - margin.right,
+dateheight = +svg.attr("height") - margin.top - margin.bottom,
+dateheight2 = +svg.attr("height") - margin2.top - margin2.bottom;
+
+var parseDate = d3.timeParse("%b %Y");
+
+var datex = d3.scaleTime().range([0, datewidth]),
+datex2 = d3.scaleTime().range([0, datewidth]),
+datey = d3.scaleLinear().range([dateheight, 0]),
+datey2 = d3.scaleLinear().range([dateheight2, 0]);
+
+var datexAxis = d3.axisBottom(datex),
+datexAxis2 = d3.axisBottom(datex2),
+dateyAxis = d3.axisLeft(datey);
+
+var datebrush = d3.brushX()
+.extent([[0, 0], [datewidth, dateheight2]])
+.on("brush end", brushed);
+
+var datezoom = d3.zoom()
+.scaleExtent([1, Infinity])
+.translateExtent([[0, 0], [datewidth, dateheight]])
+.extent([[0, 0], [datewidth, dateheight]])
+.on("zoom", zoomed);
+
+var datearea = d3.area()
+.curve(d3.curveMonotoneX)
+.x(function(d) { return datex(d.Date); })
+.y0(dateheight)
+.y1(function(d) { return datey(d.Freq); });
+
+var datearea2 = d3.area()
+.curve(d3.curveMonotoneX)
+.x(function(d) { return datex2(d.Date); })
+.y0(dateheight2)
+.y1(function(d) { return datey2(d.Freq); });
+
 
 svg.append("defs").append("clipPath")
     .attr("id", "clip")
@@ -315,52 +360,6 @@ function findValue(json, key) {
 			    }
 			  }
 		}
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//This part of the code reads in the date-frequency csv file, and reads that data to show the distribution graph, and defines all the variables and functions for this
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-var svg = d3.select("svg"),
-    margin = {top: 20, right: 20, bottom: 110, left: 150},
-    margin2 = {top: 430, right: 20, bottom: 30, left: 150},
-    datewidth = +svg.attr("width") - margin.left - margin.right,
-    dateheight = +svg.attr("height") - margin.top - margin.bottom,
-    dateheight2 = +svg.attr("height") - margin2.top - margin2.bottom;
-
-var parseDate = d3.timeParse("%b %Y");
-
-var datex = d3.scaleTime().range([0, datewidth]),
-    datex2 = d3.scaleTime().range([0, datewidth]),
-    datey = d3.scaleLinear().range([dateheight, 0]),
-    datey2 = d3.scaleLinear().range([dateheight2, 0]);
-
-var datexAxis = d3.axisBottom(datex),
-    datexAxis2 = d3.axisBottom(datex2),
-    dateyAxis = d3.axisLeft(datey);
-
-var datebrush = d3.brushX()
-    .extent([[0, 0], [datewidth, dateheight2]])
-    .on("brush end", brushed);
-
-var datezoom = d3.zoom()
-    .scaleExtent([1, Infinity])
-    .translateExtent([[0, 0], [datewidth, dateheight]])
-    .extent([[0, 0], [datewidth, dateheight]])
-    .on("zoom", zoomed);
-
-var datearea = d3.area()
-    .curve(d3.curveMonotoneX)
-    .x(function(d) { return datex(d.Date); })
-    .y0(dateheight)
-    .y1(function(d) { return datey(d.Freq); });
-
-var datearea2 = d3.area()
-    .curve(d3.curveMonotoneX)
-    .x(function(d) { return datex2(d.Date); })
-    .y0(dateheight2)
-    .y1(function(d) { return datey2(d.Freq); });
-
 
 
     function brushed() 
