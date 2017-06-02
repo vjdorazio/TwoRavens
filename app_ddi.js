@@ -2202,9 +2202,11 @@ function zPop() {
 
     zparams.zedges = [];
     zparams.zvars = [];
+    zparams.znature = [];
 
     for(var j =0; j < nodes.length; j++ ) { //populate zvars array
         zparams.zvars.push(nodes[j].name);
+        zparams.znature.push(nodes[j].nature);
         var temp = nodes[j].id;
         //var temp = findNodeIndex(nodes[j].name);
         //console.log("node ",nodes[j].id);
@@ -2369,7 +2371,7 @@ function explore(btn) {
     urlcall = rappURL+"exploreapp"; //base.concat(jsonout);
     var solajsonout = "solaJSON="+jsonout;
     //console.log("urlcall out: ", urlcall);
-    //console.log("POST out: ", solajsonout);
+    console.log("POST out: ", solajsonout);
     
     var jsonout = JSON.stringify(zparams);
     

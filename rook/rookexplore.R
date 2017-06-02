@@ -53,6 +53,20 @@ explore.app <- function(env){
             result <- list(warning="Problem with zplot.")
         }
     }
+    
+    if(!warning){
+        mynature <- everything$znature
+        if(is.null(mynature)){
+            warning <- TRUE
+            result <- list(warning="Problem with znature.")
+        }
+        vars <- everything$zvars
+        if(is.null(vars)){
+            warning <- TRUE
+            result <- list(warning="Problem with zvars.")
+        }
+        lookup <- data.frame(vars=vars, nature=mynature)
+    }
 
 	if(!warning){
         myedges<-everything$zedges
@@ -120,6 +134,7 @@ explore.app <- function(env){
           tabular<<-list()
           plotcount<-0
           
+          
           for(i in 1:nrow(myedges)) {
               
               usepair <- unique(myedges[i,])
@@ -129,17 +144,34 @@ explore.app <- function(env){
               isobserved<-apply(missmap,1,all)
               usedata<<-usedata[isobserved,]
               
+              colv <- colnames(usedata)[2]
+              rowv <- colnames(usedata)[1]
+              
+              colvNature <- lookup[which(lookup[,1]==colv),2]
+              rowvNature <- lookup[which(lookup[,1]==rowv),2]
+              
               # what will be returned in "statistical"
-              myCor <- cor(usedata[,1],usedata[,2])
+              if(colvNature!="nominal" & rowvNature!="nominal") {
+                  p <-round(cor(usedata[,1],usedata[,2], use="complete.obs", method="pearson"), 4)
+                  corp <- paste("Pearson correlation: ", p, sep="")
+                  s <-round(cor(usedata[,1],usedata[,2], use="complete.obs", method="spearman"), 4)
+                  cors <- paste("Spearman correlation: ", s, sep="")
+                  k <-round(cor(usedata[,1],usedata[,2], use="complete.obs", method="kendall"), 4)
+                  cork <- paste("Kendall correlation: ", k, sep="")
+              } else {
+                  myCor <- "No correlations reported"
+              }
+              
+              statInfo <- list(var1=rowv, var2=colv, corp=corp, cors=cors, cork=cork)
               
               # what will be returned in "tabular"
               useTab<-usedata
               
               # this is a default of 10 if greater than 10 unique values. eventually we can incorporate user input to define this
-              if(length(unique(useTab[,1]))>10) {
+              if(length(unique(useTab[,1]))>10 & !isTRUE(rowvNature=="nominal")) {
                   useTab[,1] <- cut(useTab[,1], breaks=10)
               }
-              if(length(unique(useTab[,2]))>10) {
+              if(length(unique(useTab[,2]))>10 & !isTRUE(colvNature=="nominal")) {
                 useTab[,2] <- cut(useTab[,2], breaks=10)
               }
               
@@ -147,8 +179,6 @@ explore.app <- function(env){
               rm(useTab)
               coln <- colnames(myTab)
               rown <- row.names(myTab)
-              colv <- colnames(usedata)[2]
-              rowv <- colnames(usedata)[1]
               tabData <- list()
               
               for (j in 1:nrow(myTab)) {
@@ -191,12 +221,13 @@ explore.app <- function(env){
               }
             images<-imageVector ## zplots() returns imageVector, just for consistency
             tabular[[i]]<<-tabInfo
+            statistical[[i]] <<-statInfo
           }
           
           if(length(images)>0){
               names(images)<-paste("output",1:length(images),sep="")
-              names(tabular)<- apply(myedges,1,function(x) paste(x[1],x[2],sep=""))
-              result<-list(images=images, call=almostCall, tabular=tabular)
+              names(tabular) <- names(statistical) <- apply(myedges,1,function(x) paste(x[1],x[2],sep=""))
+              result<-list(images=images, call=almostCall, tabular=tabular, statistical=statistical)
           }else{
               warning<-TRUE
               result<-list(warning="There are no graphs to show.")
