@@ -131,13 +131,6 @@
         </div>
 
         <div id="logdiv" class="logbox panel panel-default" style="display:none">
-            <div class="panel-heading">
-                <h3 class="panel-title">History <span id="logicon" class="glyphicon glyphicon-large glyphicon-chevron-down pull-right" style="cursor: pointer; cursor: hand;" data-toggle="collapse" data-target="#collapseLog" href="#collapseLog" onclick="$(this).toggleClass('glyphicon-chevron-down').toggleClass('glyphicon-chevron-up');"></span></h3>
-            </div>
-            <div id="collapseLog" class="panel-collapse collapse in">
-              <div class="panel-body">
-              </div>
-            </div>
         </div>
 
         <div id="ticker" style="position:fixed;height:50px;width:100%;background:#F9F9F9;bottom:0;">
@@ -188,7 +181,7 @@
           <div id="toggleRpanelicon" class="panelbar"><span>&#9679;<br/>&#9679;<br/>&#9679;<br/>&#9679;</span></div>
 
           <div class="panel-heading text-center" id="rightpaneltitle">
-              <h3 class="panel-title">Visual Selection</h3>
+              <h3 class="panel-title" style="font-style: normal; ">Result Exploration</h3>
           </div>
 
 
@@ -196,8 +189,9 @@
         <!-- The following is fix for the longstanding button wrapping problem on small screens -->
         <div class="btn-group btn-group-justified" role="group" style="margin-top:.5em;" aria-label="....">
              <!--<div class="btn-group" style="margin-right:0;"> -->
-                 <button type="button" class="btn active" id="btnUnivariate" onclick="tabRight('btnUnivariate');" style="width: 39%">Univariate</button>
-                 <button type="button" class="btn btn-default" id="btnBivariate" onclick="tabRight('btnBivariate');" style="width: 36%">Bivariate</button>
+                 <button type="button" class="btn active" id="btnUnivariate" onclick="tabRight('btnUnivariate');" style="width: 33%">Univariate</button>
+
+            <button type="button" class="btn btn-default" id="btnResults" onclick="tabRight('btnResults');" style="width: 33%">Bivariate</button>
 
              <!-- </div> -->
         </div>
@@ -206,14 +200,24 @@
             <div class="row-fluid">
                 <div id="rightpanelcontent">
                     <div id="rightContentArea" style="overflow:scroll; height:488px;">
-                       <div id="results" style="margin-top:.5em;">
-                            <div id="resultsView" class="container"; style="width:80%; background-color:white; display:none; float:right; overflow:auto; white-space:nowrap;"></div>
-                            <div id="modelView" style="width:20%; background-color:white; display:none; float:left;"></div>
-                            <p id="resultsHolder" style="padding:.5em 1em;"></p>
-                            <!--No results available until a model is estimated.-->
-                    </div>
-                        <div id="setx" style="display:none;">
-                            <p>This is for bivariate</p>
+                       <div id="results" style="margin-top:.5em; height: 100%">
+                           <div id="modelView_Container" style="width: 100%; height: 10%; background-color: white; float: left; overflow: auto; white-space: nowrap;">
+                           <div id="modelView" style="width:100%; height:auto; background-color:white; display:none; float:left;">  </div>
+                           </div>
+                           <div id="resultsView" class="container"; style="width:100%; height: 43%; background-color:white; display:none; float:left; overflow:auto; white-space:nowrap; border-bottom: groove">
+
+
+                           </div>
+                           <div id="resultsView_tabular" class="container1"; style="width:100%; height: 28%; background-color:whitesmoke; display:none; float:left; overflow:auto; white-space:nowrap;border-bottom: groove"> This is for table</div>
+                           <div id="resultsView_statistics" class="container2"; style="width:100%; height: 19%; background-color:whitesmoke; display:none; float:left; overflow:auto; white-space:nowrap;border-bottom: groove"> This is for statistics</div>
+
+                           <p id="resultsHolder" style="padding:.5em 1em;"></p>
+                           <!--No results available until a model is estimated.-->
+
+
+                       </div>
+                       <div id="setx" style="display:none;margin-top:.5em">
+
                         </div>
 
                     <div id="univariate" style="display:block;padding:6px 12px;text-align:center;">

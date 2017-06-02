@@ -2280,6 +2280,12 @@ function estimate(btn) {
         d3.select("#modelView")
         .style("display", "block");
 
+        d3.select("#resultsView_tabular")
+            .style("display", "block");
+
+        d3.select("#resultsView_statistics")
+            .style("display", "block");
+
 
         // programmatic click on Results button
         $("#btnResults").trigger("click");
@@ -2381,14 +2387,22 @@ function explore(btn) {
         estimated=true;
         d3.select("#results")
         .style("display", "block");
-        
+
         d3.select("#resultsView")
         .style("display", "block");
-        
-        d3.select("#modelView")
+
+        d3.select("#modelView_Container")
         .style("display", "block");
-        
-        
+        d3.select("#modelView")
+            .style("display", "block");
+        d3.select("#resultsView_tabular")
+            .style("display", "block");
+        d3.select("#resultsView_statistics")
+            .style("display", "block");
+
+
+
+
         // programmatic click on Results button
         $("#btnResults").trigger("click");
         
@@ -2531,7 +2545,8 @@ function viz(m) {
          }  */
     }
 
-    var table = d3.select("#resultsView")
+
+    var table = d3.select("#resultsView_tabular")
     .append("p")
 //    .html("<center><b>Results</b></center>")
     .append("table");
@@ -2559,7 +2574,7 @@ function viz(m) {
     .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")}) // for no discernable reason
     .on("mouseout", function(){d3.select(this).style("background-color", "#F9F9F9")}) ;  //(but maybe we'll think of one)
 
-    d3.select("#resultsView")
+    d3.select("#resultsView_statistics")
     .append("p")
     .html(function() {
           return "<b>Formula: </b>".concat(json.call[0]);
@@ -3118,28 +3133,21 @@ function tabRight(tabid) {
 
     document.getElementById('univariate').style.display = 'none';
     document.getElementById('setx').style.display = 'none';
-    document.getElementById('results').style.display = 'none';
+   document.getElementById('results').style.display = 'none';
 
     if(tabid=="btnUnivariate") {
-      document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
-      document.getElementById('btnResults').setAttribute("class", "btn btn-default");
+    //  document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
+     document.getElementById('btnResults').setAttribute("class", "btn btn-default");
       document.getElementById('btnUnivariate').setAttribute("class", "btn active");
       document.getElementById('univariate').style.display = 'block';
 
         d3.select("#rightpanel")
         .attr("class", "sidepanel container clearfix");
     }
-    else if (tabid=="btnBivariate") {
-      document.getElementById('btnUnivariate').setAttribute("class", "btn btn-default");
-      document.getElementById('btnResults').setAttribute("class", "btn btn-default");
-      document.getElementById('btnBivariate').setAttribute("class", "btn active");
-      document.getElementById('setx').style.display = 'block';
 
-        if(righttab=="btnBivariate"  | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix") {toggleR()};
-    }
     else if (tabid=="btnResults") {
       document.getElementById('btnUnivariate').setAttribute("class", "btn btn-default");
-      document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
+     // document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
       document.getElementById('btnResults').setAttribute("class", "btn active");
       document.getElementById('results').style.display = 'block';
 
@@ -3147,7 +3155,7 @@ function tabRight(tabid) {
             d3.select("#rightpanel")
             .attr("class", "sidepanel container clearfix");
         }
-        else if(righttab=="btnBivariate" | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix") {toggleR()};
+        else if(righttab=="btnResults" | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix") {toggleR()};
     }
 
     righttab=tabid; // a global that may be of use
