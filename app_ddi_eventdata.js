@@ -60,61 +60,9 @@ if (!production) {
 //This part of the code reads in the date-frequency csv file, and reads that data to show the distribution graph, and defines all the variables and functions for this
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-var svg = d3.select("svg"),
-margin = {top: 20, right: 20, bottom: 110, left: 150},
-margin2 = {top: 430, right: 20, bottom: 30, left: 150},
-datewidth = +svg.attr("width") - margin.left - margin.right,
-dateheight = +svg.attr("height") - margin.top - margin.bottom,
-dateheight2 = +svg.attr("height") - margin2.top - margin2.bottom;
 
-var parseDate = d3.timeParse("%b %Y");
+var svg = d3.select("#mainSVG");
 
-var datex = d3.scaleTime().range([0, datewidth]),
-datex2 = d3.scaleTime().range([0, datewidth]),
-datey = d3.scaleLinear().range([dateheight, 0]),
-datey2 = d3.scaleLinear().range([dateheight2, 0]);
-
-var datexAxis = d3.axisBottom(datex),
-datexAxis2 = d3.axisBottom(datex2),
-dateyAxis = d3.axisLeft(datey);
-
-var datebrush = d3.brushX()
-.extent([[0, 0], [datewidth, dateheight2]])
-.on("brush end", brushed);
-
-var datezoom = d3.zoom()
-.scaleExtent([1, Infinity])
-.translateExtent([[0, 0], [datewidth, dateheight]])
-.extent([[0, 0], [datewidth, dateheight]])
-.on("zoom", zoomed);
-
-var datearea = d3.area()
-.curve(d3.curveMonotoneX)
-.x(function(d) { return datex(d.Date); })
-.y0(dateheight)
-.y1(function(d) { return datey(d.Freq); });
-
-var datearea2 = d3.area()
-.curve(d3.curveMonotoneX)
-.x(function(d) { return datex2(d.Date); })
-.y0(dateheight2)
-.y1(function(d) { return datey2(d.Freq); });
-
-
-svg.append("defs").append("clipPath")
-    .attr("id", "clip")
-  .append("rect")
-    .attr("width", datewidth)
-    .attr("height", dateheight);
-
-var datefocus = svg.append("g")
-    .attr("class", "focus")
-    // .attr("width","500px")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-var datecontext = svg.append("g")
-    .attr("class", "context")
-    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 var logArray = [];
 
           
@@ -134,6 +82,7 @@ var rightClickLast = false;
 
 // this is the initial color scale that is used to establish the initial colors of the nodes.  allNodes.push() below establishes a field for the master node array allNodes called "nodeCol" and assigns a color from this scale to that field.  everything there after should refer to the nodeCol and not the color scale, this enables us to update colors and pass the variable type to R based on its coloring
 // var colors = d3.scaleOrdinal(d3.schemeCategory20);
+var colors = d3.scale.category20();
 
 var colorTime=false;
 var timeColor = '#2d6ca2';
@@ -206,8 +155,8 @@ var arc4 = d3.arc()
 
 // From .csv
 var dataset2 = [];
-//var valueKey = [];
-var valueKey = ["Date","Location","Action","Actor"];
+var valueKey = [];
+var valueKey2 = ["Date","Location","Action","Actor"];
 var lablArray = [];
 var hold = [];
 var allNodes = [];
@@ -294,7 +243,7 @@ if (dataurl) {
     pURL = dataurl+"&format=prep";
 } else {
     // no dataurl/file id supplied; use one of the sample data files distributed with the app in the "data" directory:
-    pURL="data/phoenixpreprocess.json"
+    pURL="data/samplePhoxPreprocess.json"
     dateplot="data/dateplot2.csv"
     //This is testing whether a newer json file exists or not. if yes, we will use that file, else use the default file
    //var test=UrlExists(purltest);
@@ -353,83 +302,7 @@ function findValue(json, key) {
 		}
 
 
-    function brushed() 
-    {   
-      if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-      var s = d3.event.selection || datex2.range();
-      datex.domain(s.map(datex2.invert, datex2));
-      datefocus.select(".area").attr("d", datearea);
-      datefocus.select(".axis--x").call(datexAxis);
-      svg.select(".zoom").call(datezoom.transform, d3.zoomIdentity
-      .scale(datewidth / (s[1] - s[0]))
-      .translate(-s[0], 0));
-}
 
-function zoomed() {
-  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
-  var t = d3.event.transform;
-  datex.domain(t.rescaleX(datex2).domain());
-  datefocus.select(".area").attr("d", datearea);
-  datefocus.select(".axis--x").call(datexAxis);
-  datecontext.select(".brush").call(datebrush.move, datex.range().map(t.invertX, t));
-}
-
-function type(d) {
-  d.Date = parseDate(d.Date);
-  d.Freq = +d.Freq;
-  return d;
-}
-
-d3.csv(dateplot, type, function(error, data) {
-  if (error) throw error;
-  //console.log("Rohit");
-  //console.log(data);
-  datex.domain(d3.extent(data, function(d) { return d.Date; }));
-  datey.domain([0, d3.max(data, function(d) { return d.Freq; })]);
-  datex2.domain(datex.domain());
-  datey2.domain(datey.domain());
-
-
-  datefocus.append("path")
-      .datum(data)
-      .attr("class", "area")
-      .attr("d", datearea);
-
-  datefocus.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + dateheight + ")")
-      .call(datexAxis);
-
-  datefocus.append("g")
-      .attr("class", "axis axis--y")
-      .call(dateyAxis);
-
-  datecontext.append("path")
-      .datum(data)
-      .attr("class", "area")
-      .attr("d", datearea2);
-
-  datecontext.append("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", "translate(0," + dateheight2 + ")")
-      .call(datexAxis2);
-
-  datecontext.append("g")
-      .attr("class", "brush")
-      .call(datebrush)
-      .call(datebrush.move, datex.range());
-
-  svg.append("rect")
-      .attr("class", "zoom")
-      .attr("width", datewidth)
-      .attr("height", dateheight)
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .call(datezoom);
-
-      scaffolding();
-      // callback=layout
-                                     // dataDownload();
-});
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -445,145 +318,138 @@ d3.csv(dateplot, type, function(error, data) {
 
 
 // this is the function and callback routine that loads all external data: metadata (DVN's ddi), preprocessed (for plotting distributions), and zeligmodels (produced by Zelig) and initiates the data download to the server
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-// readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
-//               //console.log(UrlExists(metadataurl));
+ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
+               //console.log(UrlExists(metadataurl));
 
 
-//               	//if(UrlExists(metadataurl)){
-//                //d3.xml(metadataurl, "application/xml", function(xml) {
+               	//if(UrlExists(metadataurl)){
+                //d3.xml(metadataurl, "application/xml", function(xml) {
 
-// 				//				  d3.json(url, function(error, json) {
-//                d3.json(url,function(json){	
-                  
-									
+ 				//				  d3.json(url, function(error, json) {
+                d3.json(url,function(json){
 
-
-//                   var jsondata=json;
-//                    // console.log(jsondata);
-//                     //console.log("Findvalue: ",findValue(jsondata,"fileName"));
-//                     //  var vars = xml.documentElement.getElementsByTagName("var");
-//                       var vars=jsondata.variables;
-// 					  //console.log("value of vars");
-//               //        console.log(vars);
-//                      // var temp = xml.documentElement.getElementsByTagName("fileName");
-//                       var temp = findValue(jsondata,"fileName");
-//                 //      console.log("value of temp");
-//                   //    console.log(temp);
-//                     //
-//                       zparams.zdata = temp;//[0].childNodes[0].nodeValue;
-//                     //  console.log("value of zdata: ",zparams.zdata);
-//                       // function to clean the citation so that the POST is valid json
-//                       function cleanstring(s) {
-//                         s=s.replace(/\&/g, "and");
-//                         s=s.replace(/\;/g, ",");
-//                         s=s.replace(/\%/g, "-");
-//                         return s;
-//                       }
+                   var jsondata=json;
+                    // console.log(jsondata);
+                     //console.log("Findvalue: ",findValue(jsondata,"fileName"));
+                     //  var vars = xml.documentElement.getElementsByTagName("var");
+                       var vars=jsondata.variables;
+ 					  //console.log("value of vars");
+               //        console.log(vars);
+                      // var temp = xml.documentElement.getElementsByTagName("fileName");
+                       var temp = findValue(jsondata,"fileName");
+                 //      console.log("value of temp");
+                   //    console.log(temp);
+                     //
+                       zparams.zdata = temp;//[0].childNodes[0].nodeValue;
+                     //  console.log("value of zdata: ",zparams.zdata);
+                       // function to clean the citation so that the POST is valid json
+                       function cleanstring(s) {
+                         s=s.replace(/\&/g, "and");
+                         s=s.replace(/\;/g, ",");
+                         s=s.replace(/\%/g, "-");
+                         return s;
+                      }
                       
-//                      // var cite = xml.documentElement.getElementsByTagName("biblCit");
-//                       var cite=findValue(jsondata,"biblCit");
-//                       zparams.zdatacite=cite;//[0].childNodes[0].nodeValue;
-//                      // console.log("value of zdatacite: ",zparams.zdatacite);
-//                       if(zparams.zdatacite!== undefined){
-//                         zparams.zdatacite=cleanstring(zparams.zdatacite);
-//                       }
-//                       //console.log("value of zdatacite: ",zparams.zdatacite);
-//                       //
+                      // var cite = xml.documentElement.getElementsByTagName("biblCit");
+                       var cite=findValue(jsondata,"biblCit");
+                       zparams.zdatacite=cite;//[0].childNodes[0].nodeValue;
+                      // console.log("value of zdatacite: ",zparams.zdatacite);
+                       if(zparams.zdatacite!== undefined){
+                         zparams.zdatacite=cleanstring(zparams.zdatacite);
+                       }
+                       //console.log("value of zdatacite: ",zparams.zdatacite);
+                       //
                       
-//                       // dataset name trimmed to 12 chars
-//                       var dataname = zparams.zdata.replace( /\.(.*)/, "") ;  // regular expression to drop any file extension
-//                       // Put dataset name, from meta-data, into top panel
-//                       d3.select("#dataName")
-//                       .html(dataname);
-                      
-//                       $('#cite div.panel-body').text(zparams.zdatacite);
+                       // dataset name trimmed to 12 chars
+                       var dataname = zparams.zdata.replace( /\.(.*)/, "") ;  // regular expression to drop any file extension
+                       // Put dataset name, from meta-data, into top panel
+                       d3.select("#dataName")
+                       .html(dataname);
+                    
+                       $('#cite div.panel-body').text(zparams.zdatacite);
 
-//                       // Put dataset name, from meta-data, into page title
-//                       d3.select("title").html("TwoRavens " +dataname)
-//                       //d3.select("#title").html("blah");
-                      
-//                       // temporary values for hold that correspond to histogram bins
-//                       hold = [.6, .2, .9, .8, .1, .3, .4];
-//                       var myvalues = [0, 0, 0, 0, 0];
-//                        //console.log("length: ",vars.length);
-//                       // console.log(vars);
+                       // Put dataset name, from meta-data, into page title
+                       d3.select("title").html("TwoRavens " +dataname)
+                       //d3.select("#title").html("blah");
+                    
+                       // temporary values for hold that correspond to histogram bins
+                       hold = [.6, .2, .9, .8, .1, .3, .4];
+                       var myvalues = [0, 0, 0, 0, 0];
+                        //console.log("length: ",vars.length);
+                       // console.log(vars);
 						
-// 						//var tmp=vars.ccode;
-// 						//console.log("tmp= ",tmp); 
-// 						var i=0;                     
-// 										for(var key in vars) {
-// 										//	console.log(vars[key]);
-// 							                //p[key] = jsondata["variables"][key];
-// 							                valueKey[i]=key;
+ 						//var tmp=vars.ccode;
+ 						//console.log("tmp= ",tmp); 
+ 						var i=0;                     
+ 										for(var key in vars) {
+ 										//	console.log(vars[key]);
+ 							                //p[key] = jsondata["variables"][key];
+ 							                valueKey[i]=key;
 							                
-// 							                if(vars[key].labl.length===0){lablArray[i]="no label";}
-// 							                else{lablArray[i]=vars[key].labl;}
+ 							                if(vars[key].labl.length===0){lablArray[i]="no label";}
+ 							                else{lablArray[i]=vars[key].labl;}
 							                
 
-// 							                i++;
+ 							                i++;
 
-// 							            }
-// 							            //console.log("test=",ccode.labl.);     
-// 					//console.log("lablArray=",lablArray);                      
+ 							            }
+ 							            //console.log("test=",ccode.labl.);     
+ 					//console.log("lablArray=",lablArray);                      
 					
 
-//                       for (i=0;i<valueKey.length;i++) {
-                    	
+                       for (i=0;i<valueKey.length;i++) {
+                  	
 
-//                       //valueKey[i] = vars[i].attributes.name.nodeValue;
-                      
-//                       //if(vars[i].getElementsByTagName("labl").length === 0) {lablArray[i]="no label";}
-//                       //else {lablArray[i] = vars[i].getElementsByTagName("labl")[0].childNodes[0].nodeValue;}
-                      
-//                       var datasetcount = d3.layout.histogram()
-//                       .bins(barnumber).frequency(false)
-//                       (myvalues);
-                      
-//                       // this creates an object to be pushed to allNodes. this contains all the preprocessed data we have for the variable, as well as UI data pertinent to that variable, such as setx values (if the user has selected them) and pebble coordinates
-//                       var obj1 = {id:i, reflexive: false, "name": valueKey[i], "labl": lablArray[i], data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false};
-                      
-//                       jQuery.extend(true, obj1, preprocess[valueKey[i]]);
-//                       allNodesColors(obj1);
-                      
-//                       // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
-//                       allNodes.push(obj1);
+                       //valueKey[i] = vars[i].attributes.name.nodeValue;
+                    
+                       //if(vars[i].getElementsByTagName("labl").length === 0) {lablArray[i]="no label";}
+                       //else {lablArray[i] = vars[i].getElementsByTagName("labl")[0].childNodes[0].nodeValue;}
+                    
+                     //  var datasetcount = d3.layout.histogram()
+                     //  .bins(barnumber).frequency(false)
+                     //  (myvalues);
+                    
+                       // this creates an object to be pushed to allNodes. this contains all the preprocessed data we have for the variable, as well as UI data pertinent to that variable, such as setx values (if the user has selected them) and pebble coordinates
+                       var obj1 = {id:i, reflexive: false, "name": valueKey[i], "labl": lablArray[i], data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false};
+                    
+                       jQuery.extend(true, obj1, preprocess[valueKey[i]]);
+                       allNodesColors(obj1);
+                    
+                       // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
+                       allNodes.push(obj1);
 					 
-//                       };
+                       };
 						
-//                       //console.log("allNodes: ", allNodes);
-//                       // Reading the zelig models and populating the model list in the right panel.
-//                       d3.json("data/zelig5models.json", function(error, json) {
-//                               if (error) return console.warn(error);
-//                               var jsondata = json;
-                              
-//                               //console.log("zelig models json: ", jsondata);
-//                               for(var key in jsondata.zelig5models) {
-//                               if(jsondata.zelig5models.hasOwnProperty(key)) {
-//                               mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
-//                               }
-//                               }
-                              
-//                               d3.json("data/zelig5choicemodels.json", function(error, json) {
-//                                       if (error) return console.warn(error);
-//                                       var jsondata = json;
-//                                       //console.log("zelig choice models json: ", jsondata);
-//                                       for(var key in jsondata.zelig5choicemodels) {
-//                                       if(jsondata.zelig5choicemodels.hasOwnProperty(key)) {
-//                                       mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
-//                                       }
-//                                       }
-                                      
-//                                       scaffolding(callback=layout);
-//                                       dataDownload();
-//                                       });
-//                               });
-//                       });
+                       //console.log("allNodes: ", allNodes);
+                       // Reading the zelig models and populating the model list in the right panel.
+                       d3.json("data/zelig5models.json", function(error, json) {
+                               if (error) return console.warn(error);
+                               var jsondata = json;
+                            
+                               //console.log("zelig models json: ", jsondata);
+                               for(var key in jsondata.zelig5models) {
+                               if(jsondata.zelig5models.hasOwnProperty(key)) {
+                               mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
+                               }
+                               }
+                            
+                               d3.json("data/zelig5choicemodels.json", function(error, json) {
+                                       if (error) return console.warn(error);
+                                       var jsondata = json;
+                                       //console.log("zelig choice models json: ", jsondata);
+                                       for(var key in jsondata.zelig5choicemodels) {
+                                       if(jsondata.zelig5choicemodels.hasOwnProperty(key)) {
+                                       mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
+                                       }
+                                       }
+                                    
+                                       scaffolding();
+                       //                dataDownload();
+                                       });
+                               });
+                       });
 						
-//                });
+                });
 
 
 ////////////////////////////////////////////
@@ -722,6 +588,46 @@ eventlist=new Array(20)
     .attr("onmouseover", "$(this).popover('toggle');")
     .attr("onmouseout", "$(this).popover('toggle');")
     .attr("data-original-title", "Summary Statistics");
+    
+    
+    
+    d3.select("#tab2").selectAll("p") 			//do something with this..
+    .data(valueKey2)
+    .enter()
+    .append("p")
+    .attr("id",function(d){
+          return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
+          }) // perhapse ensure this id is unique by adding '_' to the front?
+    .text(function(d){return d;})
+    .style('background-color',function(d) {
+           if(d=="Date") {
+            d3date();
+            return hexToRgba(selVarColor);}
+           else {
+            return varColor;}
+           })
+    .attr("data-container", "body")
+    .attr("data-toggle", "popover")
+    .attr("data-trigger", "hover")
+    .attr("data-placement", "right")
+    .attr("data-html", "true")
+//    .attr("onmouseover", "$(this).popover('toggle');")
+//    .attr("onmouseout", "$(this).popover('toggle');")
+ //   .attr("data-original-title", "Summary Statistics")
+    .on("click", function varClick(){
+        if(d3.select(this).text()=="Date") {
+            d3date();
+        }
+        else if(d3.select(this).text()=="Location") {
+            d3loc();
+        }
+        else if(d3.select(this).text()=="Actor") {
+            d3actor();
+        }
+        else if(d3.select(this).text()=="Action") {
+            d3action();
+        }
+        });
 	
 		
 	
@@ -1956,8 +1862,7 @@ function tabLeft(tab) {
                   break;//end of case 1
       case "tab2": summaryHold = false;
       $(".btn-group").children().addClass("btn").addClass("btn-default").removeClass("active");
-        // document.getElementById('btnVariables').setAttribute("class", "btn btn-default");
-        document.getElementById('btnTarget').setAttribute("class", "btn active");
+        document.getElementById('btnSubset').setAttribute("class", "btn active");
         
         d3.select("#leftpanel")
         .attr("class", function(d){
@@ -3169,5 +3074,158 @@ function fakeClick() {
     d3.select(myws)
     .classed('active', false); // remove active class
 }
+
+
+function d3date() {
+    $("#mainSVG").empty();
+    
+    d3.select("#mainSVG"),
+    margin = {top: 20, right: 20, bottom: 110, left: 150},
+    margin2 = {top: 430, right: 20, bottom: 30, left: 150},
+    datewidth = +svg.attr("width") - margin.left - margin.right,
+    dateheight = +svg.attr("height") - margin.top - margin.bottom,
+    dateheight2 = +svg.attr("height") - margin2.top - margin2.bottom;
+    
+    var parseDate = d3.timeParse("%b %Y");
+    
+    var datex = d3.scaleTime().range([0, datewidth]),
+    datex2 = d3.scaleTime().range([0, datewidth]),
+    datey = d3.scaleLinear().range([dateheight, 0]),
+    datey2 = d3.scaleLinear().range([dateheight2, 0]);
+    
+    var datexAxis = d3.axisBottom(datex),
+    datexAxis2 = d3.axisBottom(datex2),
+    dateyAxis = d3.axisLeft(datey);
+    
+    var datebrush = d3.brushX()
+    .extent([[0, 0], [datewidth, dateheight2]])
+    .on("brush end", brushed);
+    
+    var datezoom = d3.zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([[0, 0], [datewidth, dateheight]])
+    .extent([[0, 0], [datewidth, dateheight]])
+    .on("zoom", zoomed);
+    
+    var datearea = d3.area()
+    .curve(d3.curveMonotoneX)
+    .x(function(d) { return datex(d.Date); })
+    .y0(dateheight)
+    .y1(function(d) { return datey(d.Freq); });
+    
+    var datearea2 = d3.area()
+    .curve(d3.curveMonotoneX)
+    .x(function(d) { return datex2(d.Date); })
+    .y0(dateheight2)
+    .y1(function(d) { return datey2(d.Freq); });
+    
+    
+    svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("width", datewidth)
+    .attr("height", dateheight);
+    
+    var datefocus = svg.append("g")
+    .attr("class", "focus")
+    // .attr("width","500px")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    var datecontext = svg.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+    
+    function brushed()
+    {
+        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+        var s = d3.event.selection || datex2.range();
+        datex.domain(s.map(datex2.invert, datex2));
+        datefocus.select(".area").attr("d", datearea);
+        datefocus.select(".axis--x").call(datexAxis);
+        svg.select(".zoom").call(datezoom.transform, d3.zoomIdentity
+                                 .scale(datewidth / (s[1] - s[0]))
+                                 .translate(-s[0], 0));
+    }
+    
+    function zoomed() {
+        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+        var t = d3.event.transform;
+        datex.domain(t.rescaleX(datex2).domain());
+        datefocus.select(".area").attr("d", datearea);
+        datefocus.select(".axis--x").call(datexAxis);
+        datecontext.select(".brush").call(datebrush.move, datex.range().map(t.invertX, t));
+    }
+    
+    function type(d) {
+        d.Date = parseDate(d.Date);
+        d.Freq = +d.Freq;
+        return d;
+    }
+    
+    d3.csv(dateplot, type, function(error, data) {
+           if (error) throw error;
+           //console.log("Rohit");
+           //console.log(data);
+           datex.domain(d3.extent(data, function(d) { return d.Date; }));
+           datey.domain([0, d3.max(data, function(d) { return d.Freq; })]);
+           datex2.domain(datex.domain());
+           datey2.domain(datey.domain());
+           
+           
+           datefocus.append("path")
+           .datum(data)
+           .attr("class", "area")
+           .attr("d", datearea);
+           
+           datefocus.append("g")
+           .attr("class", "axis axis--x")
+           .attr("transform", "translate(0," + dateheight + ")")
+           .call(datexAxis);
+           
+           datefocus.append("g")
+           .attr("class", "axis axis--y")
+           .call(dateyAxis);
+           
+           datecontext.append("path")
+           .datum(data)
+           .attr("class", "area")
+           .attr("d", datearea2);
+           
+           datecontext.append("g")
+           .attr("class", "axis axis--x")
+           .attr("transform", "translate(0," + dateheight2 + ")")
+           .call(datexAxis2);
+           
+           datecontext.append("g")
+           .attr("class", "brush")
+           .call(datebrush)
+           .call(datebrush.move, datex.range());
+           
+           svg.append("rect")
+           .attr("class", "zoom")
+           .attr("width", datewidth)
+           .attr("height", dateheight)
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .call(datezoom);
+           
+           //    scaffolding();
+           // callback=layout
+           // dataDownload();
+           });
+}
+
+function d3loc() {
+    $("#mainSVG").empty();
+}
+
+function d3action() {
+    $("#mainSVG").empty();
+}
+
+function d3actor() {
+    $("#mainSVG").empty();
+}
+
+
 
  
