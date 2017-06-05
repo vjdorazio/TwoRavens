@@ -575,19 +575,15 @@ eventlist=new Array(20)
 			  return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
 			  }) // perhapse ensure this id is unique by adding '_' to the front?
 		.text(function(d){return d;})
-		.style('background-color',function(d) {
-			   if(findNodeIndex(d) > 2) {return varColor;}
-			   else {
-                return hexToRgba(allNodes[findNodeIndex(d)].strokeColor);}
-               })
-    .attr("data-container", "body")
-    .attr("data-toggle", "popover")
-    .attr("data-trigger", "hover")
-    .attr("data-placement", "right")
-    .attr("data-html", "true")
-    .attr("onmouseover", "$(this).popover('toggle');")
-    .attr("onmouseout", "$(this).popover('toggle');")
-    .attr("data-original-title", "Summary Statistics");
+		.style('background-color', varColor)
+        .attr("data-container", "body")
+        .attr("data-toggle", "popover")
+        .attr("data-trigger", "hover")
+        .attr("data-placement", "right")
+        .attr("data-html", "true")
+        .attr("onmouseover", "$(this).popover('toggle');")
+        .attr("onmouseout", "$(this).popover('toggle');")
+        .attr("data-original-title", "Summary Statistics");
     
     
     
@@ -667,6 +663,7 @@ eventlist=new Array(20)
     if(typeof callback === "function") {
         callback(); // this calls layout() because at this point all scaffolding is up and ready
     }
+    populatePopover();
 }
 
 $("#searchvar").ready(function(){
@@ -2121,12 +2118,9 @@ function varSummary(d) {
 }
 
 function populatePopover () {
-    
     d3.select("#tab1").selectAll("p")
     .attr("data-content", function(d) {
-    	
           var onNode = findNodeIndex(d);
-        
           return popoverContent(allNodes[onNode]);
           });
 }
