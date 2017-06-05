@@ -7,9 +7,10 @@ library(scales) # for fancy date scales in ggplot library(countrycode)
 library(xts)
 library(tseries)
 library(forecast)
+library(tidyr)
 
 ## fill in correct working directory
-setwd("TwoRavens/Anh Code")
+setwd("TwoRavens/AnhCode")
 
 events <- read.csv("../data/samplePhox.csv")
 
@@ -18,52 +19,22 @@ events <- read.csv("../data/samplePhox.csv")
 
 sou <- c("USAGOV","RUS")
 tar <- c("KENGOV", "IRQ", "SYR")
-
+QuadClass <- c("0","1","2","3","4")
 ss <- events[grepl(paste(sou, collapse= "|"), events$Source) &
-               grepl(paste(tar, collapse= "|"),events$Target),]
+grepl(paste(tar, collapse= "|"),events$Target),]
+#View(ss)
+df <- data.frame(cbind(ss$Date,ss$Source,ss$Target,ss$QuadClass),stringsAsFactors=FALSE)
+colnames(df) <- c("Date", "sou", "tar", "QuadClass")
+#View(df)
 
-# Function "makets" : to
-makets <- function(x)
-{
-  # Get the daily crosstab
-  x1 <- table(x$Date, x$QuadClass) # get frequency of each Quadclass for each date. All Quadclass in 1 column
-  
-  # Now make the time series
-  x2 <- xts(x1[,1:5], as.Date(rownames(x1),
-                              format="%Y%m%d")) # Divide different Quadclass in different columns
-  colnames(x2) <- c("Neutral", "VCoop", "MCoop", "VConf", "MConf")
-  return(x2)
-}
+library(tidyr)
+aggdata <- df%>%
+group_by(Date,sou,tar, QuadClass)%>%
+summarise(count=n())%>%
+spread(QuadClass,count)
+aggdata[is.na(aggdata)] <- 0
+colnames(aggdata) <- c("Date", "Source", "Target", "Neutral", "VCoop", "MCoop", "VConf", "MConf")
 
-#ss1 <- events[grepl(paste("RUS", collapse= "|"), events$Source) &
-#           grepl(paste("SYR", collapse= "|"),events$Target),]
-#x11 <- table(ss1$Date, ss1$QuadClass)
-#View(x11)
-#x21 <- xts(x11[,1:5], as.Date(rownames(x11),
-#      format="%Y%m%d"))
-#colnames(x21) <- c("Neutral", "VCoop", "MCoop", "VConf", "MConf")
-# View(x21)
-
-## Aggdata: Aggregated dataset by QuadClass for each Source - Target combination 
-
-aggdata <- data.frame(Date="", Neutral=0, VCoop=0, MCoop=0, VConf=0, MConf=0, Source="", Target="")
-aggdata <- aggdata[0,]
-
-for(i in 1:length(sou)) {
-  for(j in 1:length(tar)) {
-    temp <- ss[which(ss$Source==sou[i] & ss$Target==tar[j]),] 
-    if(nrow(temp)==0) next
-    temp1 <- as.data.frame(makets(temp))
-    temp1$Source<-as.character(sou[i])
-    temp1$Target<-as.character(tar[j])
-    if(i==1 & j==1) {
-      aggdata<-temp1
-    }
-    else {
-      aggdata <- rbind(aggdata, temp1)
-    }
-  }
-}
 
 #########
 # Order by Date
