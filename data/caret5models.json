@@ -1,0 +1,1637 @@
+{
+"caret5models":{
+"adaboost":{
+    "parameters":  ["nIter, method"] , 
+    "type":  ["Classification"] , 
+    "name":  ["adaboost"] , 
+    "library":  ["fastAdaboost"] , 
+    "description":  ["AdaBoost Classification Trees"] },
+
+"AdaBoost.M1":{
+    "parameters":  ["mfinal, maxdepth, coeflearn"] , 
+    "type":  ["Classification"] , 
+    "name":  ["AdaBoost.M1"] , 
+    "library":  ["adabag, plyr"] , 
+    "description":  ["AdaBoost.M1"] },
+
+"amdai":{
+    "parameters":  ["model"] , 
+    "type":  ["Classification"] , 
+    "name":  ["amdai"] , 
+    "library":  ["adaptDA"] , 
+    "description":  ["Adaptive Mixture Discriminant Analysis"] },
+
+"ANFIS":{
+    "parameters":  ["num.labels, max.iter"] , 
+    "type":  ["Regression"] , 
+    "name":  ["ANFIS"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Adaptive-Network-Based Fuzzy Inference System"] },
+
+"vglmAdjCat":{
+    "parameters":  ["parallel, link"] , 
+    "type":  ["Classification"] , 
+    "name":  ["vglmAdjCat"] , 
+    "library":  ["VGAM"] , 
+    "description":  ["Adjacent Categories Probability Model for Ordinal Data"] },
+
+"AdaBag":{
+    "parameters":  ["mfinal, maxdepth"] , 
+    "type":  ["Classification"] , 
+    "name":  ["AdaBag"] , 
+    "library":  ["adabag, plyr"] , 
+    "description":  ["Bagged AdaBoost"] },
+
+"treebag":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["treebag"] , 
+    "library":  ["ipred, plyr, e1071"] , 
+    "description":  ["Bagged CART"] },
+
+"bagFDAGCV":{
+    "parameters":  ["degree"] , 
+    "type":  ["Classification"] , 
+    "name":  ["bagFDAGCV"] , 
+    "library":  ["earth"] , 
+    "description":  ["Bagged FDA using gCV Pruning"] },
+
+"bagFDA":{
+    "parameters":  ["degree, nprune"] , 
+    "type":  ["Classification"] , 
+    "name":  ["bagFDA"] , 
+    "library":  ["earth, mda"] , 
+    "description":  ["Bagged Flexible Discriminant Analysis"] },
+
+"logicBag":{
+    "parameters":  ["nleaves, ntrees"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["logicBag"] , 
+    "library":  ["logicFS"] , 
+    "description":  ["Bagged Logic Regression"] },
+
+"bagEarth":{
+    "parameters":  ["nprune, degree"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["bagEarth"] , 
+    "library":  ["earth"] , 
+    "description":  ["Bagged MARS"] },
+
+"bagEarthGCV":{
+    "parameters":  ["degree"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["bagEarthGCV"] , 
+    "library":  ["earth"] , 
+    "description":  ["Bagged MARS using gCV Pruning"] },
+
+"bag":{
+    "parameters":  ["vars"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["bag"] , 
+    "library":  ["caret"] , 
+    "description":  ["Bagged Model"] },
+
+"bartMachine":{
+    "parameters":  ["num_trees, k, alpha, beta, nu"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["bartMachine"] , 
+    "library":  ["bartMachine"] , 
+    "description":  ["Bayesian Additive Regression Trees"] },
+
+"bayesglm":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["bayesglm"] , 
+    "library":  ["arm"] , 
+    "description":  ["Bayesian Generalized Linear Model"] },
+
+"brnn":{
+    "parameters":  ["neurons"] , 
+    "type":  ["Regression"] , 
+    "name":  ["brnn"] , 
+    "library":  ["brnn"] , 
+    "description":  ["Bayesian Regularized Neural Networks"] },
+
+"bridge":{
+    "parameters":  ["None"] , 
+    "type":  ["Regression"] , 
+    "name":  ["bridge"] , 
+    "library":  ["monomvn"] , 
+    "description":  ["Bayesian Ridge Regression"] },
+
+"blassoAveraged":{
+    "parameters":  ["None"] , 
+    "type":  ["Regression"] , 
+    "name":  ["blassoAveraged"] , 
+    "library":  ["monomvn"] , 
+    "description":  ["Bayesian Ridge Regression (Model Averaged)"] },
+
+"binda":{
+    "parameters":  ["lambda.freqs"] , 
+    "type":  ["Classification"] , 
+    "name":  ["binda"] , 
+    "library":  ["binda"] , 
+    "description":  ["Binary Discriminant Analysis"] },
+
+"ada":{
+    "parameters":  ["iter, maxdepth, nu"] , 
+    "type":  ["Classification"] , 
+    "name":  ["ada"] , 
+    "library":  ["ada, plyr"] , 
+    "description":  ["Boosted Classification Trees"] },
+
+"gamboost":{
+    "parameters":  ["mstop, prune"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gamboost"] , 
+    "library":  ["mboost, plyr"] , 
+    "description":  ["Boosted Generalized Additive Model"] },
+
+"glmboost":{
+    "parameters":  ["mstop, prune"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["glmboost"] , 
+    "library":  ["plyr, mboost"] , 
+    "description":  ["Boosted Generalized Linear Model"] },
+
+"BstLm":{
+    "parameters":  ["mstop, nu"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["BstLm"] , 
+    "library":  ["bst, plyr"] , 
+    "description":  ["Boosted Linear Model"] },
+
+"LogitBoost":{
+    "parameters":  ["nIter"] , 
+    "type":  ["Classification"] , 
+    "name":  ["LogitBoost"] , 
+    "library":  ["caTools"] , 
+    "description":  ["Boosted Logistic Regression"] },
+
+"bstSm":{
+    "parameters":  ["mstop, nu"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["bstSm"] , 
+    "library":  ["bst, plyr"] , 
+    "description":  ["Boosted Smoothing Spline"] },
+
+"blackboost":{
+    "parameters":  ["mstop, maxdepth"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["blackboost"] , 
+    "library":  ["party, mboost, plyr"] , 
+    "description":  ["Boosted Tree"] },
+
+"bstTree":{
+    "parameters":  ["mstop, maxdepth, nu"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["bstTree"] , 
+    "library":  ["bst, plyr"] , 
+    "description":  ["Boosted Tree"] },
+
+"J48":{
+    "parameters":  ["C, M"] , 
+    "type":  ["Classification"] , 
+    "name":  ["J48"] , 
+    "library":  ["RWeka"] , 
+    "description":  ["C4.5-like Trees"] },
+
+"C5.0":{
+    "parameters":  ["trials, model, winnow"] , 
+    "type":  ["Classification"] , 
+    "name":  ["C5.0"] , 
+    "library":  ["C50, plyr"] , 
+    "description":  ["C5.0"] },
+
+"rpart":{
+    "parameters":  ["cp"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["rpart"] , 
+    "library":  ["rpart"] , 
+    "description":  ["CART"] },
+
+"rpart1SE":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["rpart1SE"] , 
+    "library":  ["rpart"] , 
+    "description":  ["CART"] },
+
+"rpart2":{
+    "parameters":  ["maxdepth"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["rpart2"] , 
+    "library":  ["rpart"] , 
+    "description":  ["CART"] },
+
+"rpartScore":{
+    "parameters":  ["cp, split, prune"] , 
+    "type":  ["Classification"] , 
+    "name":  ["rpartScore"] , 
+    "library":  ["rpartScore, plyr"] , 
+    "description":  ["CART or Ordinal Responses"] },
+
+"chaid":{
+    "parameters":  ["alpha2, alpha3, alpha4"] , 
+    "type":  ["Classification"] , 
+    "name":  ["chaid"] , 
+    "library":  ["CHAID"] , 
+    "description":  ["CHi-squared Automated Interaction Detection"] },
+
+"cforest":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["cforest"] , 
+    "library":  ["party"] , 
+    "description":  ["Conditional Inference Random Forest"] },
+
+"ctree":{
+    "parameters":  ["mincriterion"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["ctree"] , 
+    "library":  ["party"] , 
+    "description":  ["Conditional Inference Tree"] },
+
+"ctree2":{
+    "parameters":  ["maxdepth, mincriterion"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["ctree2"] , 
+    "library":  ["party"] , 
+    "description":  ["Conditional Inference Tree"] },
+
+"vglmContRatio":{
+    "parameters":  ["parallel, link"] , 
+    "type":  ["Classification"] , 
+    "name":  ["vglmContRatio"] , 
+    "library":  ["VGAM"] , 
+    "description":  ["Continuation Ratio Model for Ordinal Data"] },
+
+"C5.0Cost":{
+    "parameters":  ["trials, model, winnow, cost"] , 
+    "type":  ["Classification"] , 
+    "name":  ["C5.0Cost"] , 
+    "library":  ["C50, plyr"] , 
+    "description":  ["Cost-Sensitive C5.0"] },
+
+"rpartCost":{
+    "parameters":  ["cp, Cost"] , 
+    "type":  ["Classification"] , 
+    "name":  ["rpartCost"] , 
+    "library":  ["rpart"] , 
+    "description":  ["Cost-Sensitive CART"] },
+
+"cubist":{
+    "parameters":  ["committees, neighbors"] , 
+    "type":  ["Regression"] , 
+    "name":  ["cubist"] , 
+    "library":  ["Cubist"] , 
+    "description":  ["Cubist"] },
+
+"vglmCumulative":{
+    "parameters":  ["parallel, link"] , 
+    "type":  ["Classification"] , 
+    "name":  ["vglmCumulative"] , 
+    "library":  ["VGAM"] , 
+    "description":  ["Cumulative Probability Model for Ordinal Data"] },
+
+"deepboost":{
+    "parameters":  ["num_iter, tree_depth, beta, lambda, loss_type"] , 
+    "type":  ["Classification"] , 
+    "name":  ["deepboost"] , 
+    "library":  ["deepboost"] , 
+    "description":  ["DeepBoost"] },
+
+"dda":{
+    "parameters":  ["model, shrinkage"] , 
+    "type":  ["Classification"] , 
+    "name":  ["dda"] , 
+    "library":  ["sparsediscrim"] , 
+    "description":  ["Diagonal Discriminant Analysis"] },
+
+"dwdPoly":{
+    "parameters":  ["lambda, qval, degree, scale"] , 
+    "type":  ["Classification"] , 
+    "name":  ["dwdPoly"] , 
+    "library":  ["kerndwd"] , 
+    "description":  ["Distance Weighted Discrimination with Polynomial Kernel"] },
+
+"dwdRadial":{
+    "parameters":  ["lambda, qval, sigma"] , 
+    "type":  ["Classification"] , 
+    "name":  ["dwdRadial"] , 
+    "library":  ["kernlab, kerndwd"] , 
+    "description":  ["Distance Weighted Discrimination with Radial Basis Function Kernel"] },
+
+"DENFIS":{
+    "parameters":  ["Dthr, max.iter"] , 
+    "type":  ["Regression"] , 
+    "name":  ["DENFIS"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Dynamic Evolving Neural-Fuzzy Inference System "] },
+
+"enet":{
+    "parameters":  ["fraction, lambda"] , 
+    "type":  ["Regression"] , 
+    "name":  ["enet"] , 
+    "library":  ["elasticnet"] , 
+    "description":  ["Elasticnet"] },
+
+"enpls":{
+    "parameters":  ["maxcomp"] , 
+    "type":  ["Regression"] , 
+    "name":  ["enpls"] , 
+    "library":  ["enpls"] , 
+    "description":  ["Ensemble Partial Least Squares Regression"] },
+
+"enpls.fs":{
+    "parameters":  ["maxcomp, threshold"] , 
+    "type":  ["Regression"] , 
+    "name":  ["enpls.fs"] , 
+    "library":  ["enpls"] , 
+    "description":  ["Ensemble Partial Least Squares Regression with Feature Selection"] },
+
+"randomGLM":{
+    "parameters":  ["maxInteractionOrder"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["randomGLM"] , 
+    "library":  ["randomGLM"] , 
+    "description":  ["Ensembles of Generalized Lienar Models"] },
+
+"xgbLinear":{
+    "parameters":  ["nrounds, lambda, alpha, eta"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["xgbLinear"] , 
+    "library":  ["xgboost"] , 
+    "description":  ["eXtreme Gradient Boosting"] },
+
+"xgbTree":{
+    "parameters":  ["nrounds, max_depth, eta, gamma, colsample_bytree, min_child_weight, subsample"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["xgbTree"] , 
+    "library":  ["xgboost, plyr"] , 
+    "description":  ["eXtreme Gradient Boosting"] },
+
+"elm":{
+    "parameters":  ["nhid, actfun"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["elm"] , 
+    "library":  ["elmNN"] , 
+    "description":  ["Extreme Learning Machine"] },
+
+"RFlda":{
+    "parameters":  ["q"] , 
+    "type":  ["Classification"] , 
+    "name":  ["RFlda"] , 
+    "library":  ["HiDimDA"] , 
+    "description":  ["Factor-Based Linear Discriminant Analysis"] },
+
+"fda":{
+    "parameters":  ["degree, nprune"] , 
+    "type":  ["Classification"] , 
+    "name":  ["fda"] , 
+    "library":  ["earth, mda"] , 
+    "description":  ["Flexible Discriminant Analysis"] },
+
+"FIR.DM":{
+    "parameters":  ["num.labels, max.iter"] , 
+    "type":  ["Regression"] , 
+    "name":  ["FIR.DM"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Fuzzy Inference Rules by Descent Method"] },
+
+"FRBCS.CHI":{
+    "parameters":  ["num.labels, type.mf"] , 
+    "type":  ["Classification"] , 
+    "name":  ["FRBCS.CHI"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Fuzzy Rules Using Chi\\'s Method"] },
+
+"GFS.GCCL":{
+    "parameters":  ["num.labels, popu.size, max.gen"] , 
+    "type":  ["Classification"] , 
+    "name":  ["GFS.GCCL"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Fuzzy Rules Using Genetic Cooperative-Competitive Learning"] },
+
+"FH.GBML":{
+    "parameters":  ["max.num.rule, popu.size, max.gen"] , 
+    "type":  ["Classification"] , 
+    "name":  ["FH.GBML"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Fuzzy Rules Using Genetic Cooperative-Competitive Learning and Pittsburgh"] },
+
+"SLAVE":{
+    "parameters":  ["num.labels, max.iter, max.gen"] , 
+    "type":  ["Classification"] , 
+    "name":  ["SLAVE"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Fuzzy Rules Using the Structural Learning Algorithm on Vague Environment"] },
+
+"GFS.FR.MOGUL":{
+    "parameters":  ["max.gen, max.iter, max.tune"] , 
+    "type":  ["Regression"] , 
+    "name":  ["GFS.FR.MOGUL"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Fuzzy Rules via MOGUL"] },
+
+"GFS.THRIFT":{
+    "parameters":  ["popu.size, num.labels, max.gen"] , 
+    "type":  ["Regression"] , 
+    "name":  ["GFS.THRIFT"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Fuzzy Rules via Thrift"] },
+
+"FRBCS.W":{
+    "parameters":  ["num.labels, type.mf"] , 
+    "type":  ["Classification"] , 
+    "name":  ["FRBCS.W"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Fuzzy Rules with Weight Factor"] },
+
+"gaussprLinear":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gaussprLinear"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Gaussian Process"] },
+
+"gaussprPoly":{
+    "parameters":  ["degree, scale"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gaussprPoly"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Gaussian Process with Polynomial Kernel"] },
+
+"gaussprRadial":{
+    "parameters":  ["sigma"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gaussprRadial"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Gaussian Process with Radial Basis Function Kernel"] },
+
+"gamLoess":{
+    "parameters":  ["span, degree"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gamLoess"] , 
+    "library":  ["gam"] , 
+    "description":  ["Generalized Additive Model using LOESS"] },
+
+"bam":{
+    "parameters":  ["select, method"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["bam"] , 
+    "library":  ["mgcv"] , 
+    "description":  ["Generalized Additive Model using Splines"] },
+
+"gam":{
+    "parameters":  ["select, method"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gam"] , 
+    "library":  ["mgcv"] , 
+    "description":  ["Generalized Additive Model using Splines"] },
+
+"gamSpline":{
+    "parameters":  ["df"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gamSpline"] , 
+    "library":  ["gam"] , 
+    "description":  ["Generalized Additive Model using Splines"] },
+
+"glm":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["glm"] , 
+    "library":  [""] , 
+    "description":  ["Generalized Linear Model"] },
+
+"glmStepAIC":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["glmStepAIC"] , 
+    "library":  ["MASS"] , 
+    "description":  ["Generalized Linear Model with Stepwise Feature Selection"] },
+
+"gpls":{
+    "parameters":  ["K.prov"] , 
+    "type":  ["Classification"] , 
+    "name":  ["gpls"] , 
+    "library":  ["gpls"] , 
+    "description":  ["Generalized Partial Least Squares"] },
+
+"GFS.LT.RS":{
+    "parameters":  ["popu.size, num.labels, max.gen"] , 
+    "type":  ["Regression"] , 
+    "name":  ["GFS.LT.RS"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Genetic Lateral Tuning and Rule Selection of Linguistic Fuzzy Systems"] },
+
+"gbm_h2o":{
+    "parameters":  ["ntrees, max_depth, min_rows, learn_rate, col_sample_rate"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gbm_h2o"] , 
+    "library":  ["h2o"] , 
+    "description":  ["glmnet"] },
+
+"glmnet":{
+    "parameters":  ["alpha, lambda"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["glmnet"] , 
+    "library":  ["glmnet, Matrix"] , 
+    "description":  ["glmnet"] },
+
+"glmnet_h2o":{
+    "parameters":  ["alpha, lambda"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["glmnet_h2o"] , 
+    "library":  ["h2o"] , 
+    "description":  ["glmnet"] },
+
+"protoclass":{
+    "parameters":  ["eps, Minkowski"] , 
+    "type":  ["Classification"] , 
+    "name":  ["protoclass"] , 
+    "library":  ["proxy, protoclass"] , 
+    "description":  ["Greedy Prototype Selection"] },
+
+"hda":{
+    "parameters":  ["gamma, lambda, newdim"] , 
+    "type":  ["Classification"] , 
+    "name":  ["hda"] , 
+    "library":  ["hda"] , 
+    "description":  ["Heteroscedastic Discriminant Analysis"] },
+
+"hdda":{
+    "parameters":  ["threshold, model"] , 
+    "type":  ["Classification"] , 
+    "name":  ["hdda"] , 
+    "library":  ["HDclassif"] , 
+    "description":  ["High Dimensional Discriminant Analysis"] },
+
+"hdrda":{
+    "parameters":  ["gamma, lambda, shrinkage_type"] , 
+    "type":  ["Classification"] , 
+    "name":  ["hdrda"] , 
+    "library":  ["sparsediscrim"] , 
+    "description":  ["High-Dimensional Regularized Discriminant Analysis"] },
+
+"HYFIS":{
+    "parameters":  ["num.labels, max.iter"] , 
+    "type":  ["Regression"] , 
+    "name":  ["HYFIS"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Hybrid Neural Fuzzy Inference System"] },
+
+"icr":{
+    "parameters":  ["n.comp"] , 
+    "type":  ["Regression"] , 
+    "name":  ["icr"] , 
+    "library":  ["fastICA"] , 
+    "description":  ["Independent Component Regression"] },
+
+"kknn":{
+    "parameters":  ["kmax, distance, kernel"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["kknn"] , 
+    "library":  ["kknn"] , 
+    "description":  ["k-Nearest Neighbors"] },
+
+"knn":{
+    "parameters":  ["k"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["knn"] , 
+    "library":  [""] , 
+    "description":  ["k-Nearest Neighbors"] },
+
+"pythonKnnReg":{
+    "parameters":  ["n_neighbors, weights, algorithm, leaf_size, metric, p"] , 
+    "type":  ["Regression"] , 
+    "name":  ["pythonKnnReg"] , 
+    "library":  ["rPython"] , 
+    "description":  ["Knn regression via sklearn.neighbors.KNeighborsRegressor"] },
+
+"svmLinearWeights2":{
+    "parameters":  ["cost, Loss, weight"] , 
+    "type":  ["Classification"] , 
+    "name":  ["svmLinearWeights2"] , 
+    "library":  ["LiblineaR"] , 
+    "description":  ["L2 Regularized Linear Support Vector Machines with Class Weights"] },
+
+"svmLinear3":{
+    "parameters":  ["cost, Loss"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["svmLinear3"] , 
+    "library":  ["LiblineaR"] , 
+    "description":  ["L2 Regularized Support Vector Machine (dual) with Linear Kernel"] },
+
+"lvq":{
+    "parameters":  ["size, k"] , 
+    "type":  ["Classification"] , 
+    "name":  ["lvq"] , 
+    "library":  ["class"] , 
+    "description":  ["Learning Vector Quantization"] },
+
+"lars":{
+    "parameters":  ["fraction"] , 
+    "type":  ["Regression"] , 
+    "name":  ["lars"] , 
+    "library":  ["lars"] , 
+    "description":  ["Least Angle Regression"] },
+
+"lars2":{
+    "parameters":  ["step"] , 
+    "type":  ["Regression"] , 
+    "name":  ["lars2"] , 
+    "library":  ["lars"] , 
+    "description":  ["Least Angle Regression"] },
+
+"lssvmLinear":{
+    "parameters":  ["tau"] , 
+    "type":  ["Classification"] , 
+    "name":  ["lssvmLinear"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Least Squares Support Vector Machine"] },
+
+"lssvmPoly":{
+    "parameters":  ["degree, scale, tau"] , 
+    "type":  ["Classification"] , 
+    "name":  ["lssvmPoly"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Least Squares Support Vector Machine with Polynomial Kernel"] },
+
+"lssvmRadial":{
+    "parameters":  ["sigma, tau"] , 
+    "type":  ["Classification"] , 
+    "name":  ["lssvmRadial"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Least Squares Support Vector Machine with Radial Basis Function Kernel"] },
+
+"lda":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["lda"] , 
+    "library":  ["MASS"] , 
+    "description":  ["Linear Discriminant Analysis"] },
+
+"lda2":{
+    "parameters":  ["dimen"] , 
+    "type":  ["Classification"] , 
+    "name":  ["lda2"] , 
+    "library":  ["MASS"] , 
+    "description":  ["Linear Discriminant Analysis"] },
+
+"stepLDA":{
+    "parameters":  ["maxvar, direction"] , 
+    "type":  ["Classification"] , 
+    "name":  ["stepLDA"] , 
+    "library":  ["klaR, MASS"] , 
+    "description":  ["Linear Discriminant Analysis with Stepwise Feature Selection"] },
+
+"dwdLinear":{
+    "parameters":  ["lambda, qval"] , 
+    "type":  ["Classification"] , 
+    "name":  ["dwdLinear"] , 
+    "library":  ["kerndwd"] , 
+    "description":  ["Linear Distance Weighted Discrimination"] },
+
+"lm":{
+    "parameters":  ["intercept"] , 
+    "type":  ["Regression"] , 
+    "name":  ["lm"] , 
+    "library":  [""] , 
+    "description":  ["Linear Regression"] },
+
+"leapBackward":{
+    "parameters":  ["nvmax"] , 
+    "type":  ["Regression"] , 
+    "name":  ["leapBackward"] , 
+    "library":  ["leaps"] , 
+    "description":  ["Linear Regression with Backwards Selection"] },
+
+"leapForward":{
+    "parameters":  ["nvmax"] , 
+    "type":  ["Regression"] , 
+    "name":  ["leapForward"] , 
+    "library":  ["leaps"] , 
+    "description":  ["Linear Regression with Forward Selection"] },
+
+"leapSeq":{
+    "parameters":  ["nvmax"] , 
+    "type":  ["Regression"] , 
+    "name":  ["leapSeq"] , 
+    "library":  ["leaps"] , 
+    "description":  ["Linear Regression with Stepwise Selection"] },
+
+"lmStepAIC":{
+    "parameters":  ["None"] , 
+    "type":  ["Regression"] , 
+    "name":  ["lmStepAIC"] , 
+    "library":  ["MASS"] , 
+    "description":  ["Linear Regression with Stepwise Selection"] },
+
+"svmLinearWeights":{
+    "parameters":  ["cost, weight"] , 
+    "type":  ["Classification"] , 
+    "name":  ["svmLinearWeights"] , 
+    "library":  ["e1071"] , 
+    "description":  ["Linear Support Vector Machines with Class Weights"] },
+
+"loclda":{
+    "parameters":  ["k"] , 
+    "type":  ["Classification"] , 
+    "name":  ["loclda"] , 
+    "library":  ["klaR"] , 
+    "description":  ["Localized Linear Discriminant Analysis"] },
+
+"logreg":{
+    "parameters":  ["treesize, ntrees"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["logreg"] , 
+    "library":  ["LogicReg"] , 
+    "description":  ["Logic Regression"] },
+
+"LMT":{
+    "parameters":  ["iter"] , 
+    "type":  ["Classification"] , 
+    "name":  ["LMT"] , 
+    "library":  ["RWeka"] , 
+    "description":  ["Logistic Model Trees"] },
+
+"Mlda":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["Mlda"] , 
+    "library":  ["HiDimDA"] , 
+    "description":  ["Maximum Uncertainty Linear Discriminant Analysis"] },
+
+"mda":{
+    "parameters":  ["subclasses"] , 
+    "type":  ["Classification"] , 
+    "name":  ["mda"] , 
+    "library":  ["mda"] , 
+    "description":  ["Mixture Discriminant Analysis"] },
+
+"manb":{
+    "parameters":  ["smooth, prior"] , 
+    "type":  ["Classification"] , 
+    "name":  ["manb"] , 
+    "library":  ["bnclassify"] , 
+    "description":  ["Model Averaged Naive Bayes Classifier"] },
+
+"avNNet":{
+    "parameters":  ["size, decay, bag"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["avNNet"] , 
+    "library":  ["nnet"] , 
+    "description":  ["Model Averaged Neural Network"] },
+
+"M5Rules":{
+    "parameters":  ["pruned, smoothed"] , 
+    "type":  ["Regression"] , 
+    "name":  ["M5Rules"] , 
+    "library":  ["RWeka"] , 
+    "description":  ["Model Rules"] },
+
+"M5":{
+    "parameters":  ["pruned, smoothed, rules"] , 
+    "type":  ["Regression"] , 
+    "name":  ["M5"] , 
+    "library":  ["RWeka"] , 
+    "description":  ["Model Tree"] },
+
+"mlp":{
+    "parameters":  ["size"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["mlp"] , 
+    "library":  ["RSNNS"] , 
+    "description":  ["Multi-Layer Perceptron"] },
+
+"mlpWeightDecay":{
+    "parameters":  ["size, decay"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["mlpWeightDecay"] , 
+    "library":  ["RSNNS"] , 
+    "description":  ["Multi-Layer Perceptron"] },
+
+"mlpWeightDecayML":{
+    "parameters":  ["layer1, layer2, layer3, decay"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["mlpWeightDecayML"] , 
+    "library":  ["RSNNS"] , 
+    "description":  ["Multi-Layer Perceptron, multiple layers"] },
+
+"mlpML":{
+    "parameters":  ["layer1, layer2, layer3"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["mlpML"] , 
+    "library":  ["RSNNS"] , 
+    "description":  ["Multi-Layer Perceptron, with multiple layers"] },
+
+"mlpSGD":{
+    "parameters":  ["size, l2reg, lambda, learn_rate, momentum, gamma, minibatchsz, repeats"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["mlpSGD"] , 
+    "library":  ["FCNN4R, plyr"] , 
+    "description":  ["Multilayer Perceptron Network by Stochastic Gradient Descent"] },
+
+"earth":{
+    "parameters":  ["nprune, degree"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["earth"] , 
+    "library":  ["earth"] , 
+    "description":  ["Multivariate Adaptive Regression Spline"] },
+
+"gcvEarth":{
+    "parameters":  ["degree"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gcvEarth"] , 
+    "library":  ["earth"] , 
+    "description":  ["Multivariate Adaptive Regression Splines"] },
+
+"nb":{
+    "parameters":  ["fL, usekernel, adjust"] , 
+    "type":  ["Classification"] , 
+    "name":  ["nb"] , 
+    "library":  ["klaR"] , 
+    "description":  ["Naive Bayes"] },
+
+"nbDiscrete":{
+    "parameters":  ["smooth"] , 
+    "type":  ["Classification"] , 
+    "name":  ["nbDiscrete"] , 
+    "library":  ["bnclassify"] , 
+    "description":  ["Naive Bayes Classifier"] },
+
+"awnb":{
+    "parameters":  ["smooth"] , 
+    "type":  ["Classification"] , 
+    "name":  ["awnb"] , 
+    "library":  ["bnclassify"] , 
+    "description":  ["Naive Bayes Classifier with Attribute Weighting"] },
+
+"pam":{
+    "parameters":  ["threshold"] , 
+    "type":  ["Classification"] , 
+    "name":  ["pam"] , 
+    "library":  ["pamr"] , 
+    "description":  ["Nearest Shrunken Centroids"] },
+
+"glm.nb":{
+    "parameters":  ["link"] , 
+    "type":  ["Regression"] , 
+    "name":  ["glm.nb"] , 
+    "library":  [""] , 
+    "description":  ["Negative Binomial Generalized Linear Model"] },
+
+"neuralnet":{
+    "parameters":  ["layer1, layer2, layer3"] , 
+    "type":  ["Regression"] , 
+    "name":  ["neuralnet"] , 
+    "library":  ["neuralnet"] , 
+    "description":  ["Neural Network"] },
+
+"nnet":{
+    "parameters":  ["size, decay"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["nnet"] , 
+    "library":  ["nnet"] , 
+    "description":  ["Neural Network"] },
+
+"pcaNNet":{
+    "parameters":  ["size, decay"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["pcaNNet"] , 
+    "library":  ["nnet"] , 
+    "description":  ["Neural Networks with Feature Extraction"] },
+
+"rqnc":{
+    "parameters":  ["lambda, penalty"] , 
+    "type":  ["Regression"] , 
+    "name":  ["rqnc"] , 
+    "library":  ["rqPen"] , 
+    "description":  ["Non-Convex Penalized Quantile Regression"] },
+
+"nnls":{
+    "parameters":  ["None"] , 
+    "type":  ["Regression"] , 
+    "name":  ["nnls"] , 
+    "library":  ["nnls"] , 
+    "description":  ["Non-Negative Least Squares"] },
+
+"ORFlog":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification"] , 
+    "name":  ["ORFlog"] , 
+    "library":  ["obliqueRF"] , 
+    "description":  ["Oblique Random Forest"] },
+
+"ORFpls":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification"] , 
+    "name":  ["ORFpls"] , 
+    "library":  ["obliqueRF"] , 
+    "description":  ["Oblique Random Forest"] },
+
+"ORFridge":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification"] , 
+    "name":  ["ORFridge"] , 
+    "library":  ["obliqueRF"] , 
+    "description":  ["Oblique Random Forest"] },
+
+"ORFsvm":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification"] , 
+    "name":  ["ORFsvm"] , 
+    "library":  ["obliqueRF"] , 
+    "description":  ["Oblique Random Forest"] },
+
+"oblique.tree":{
+    "parameters":  ["oblique.splits, variable.selection"] , 
+    "type":  ["Classification"] , 
+    "name":  ["oblique.tree"] , 
+    "library":  ["oblique.tree"] , 
+    "description":  ["Oblique Trees"] },
+
+"ownn":{
+    "parameters":  ["K"] , 
+    "type":  ["Classification"] , 
+    "name":  ["ownn"] , 
+    "library":  ["snn"] , 
+    "description":  ["Optimal Weighted Nearest Neighbor Classifier"] },
+
+"polr":{
+    "parameters":  ["method"] , 
+    "type":  ["Classification"] , 
+    "name":  ["polr"] , 
+    "library":  ["MASS"] , 
+    "description":  ["Ordered Logistic or Probit Regression"] },
+
+"parRF":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["parRF"] , 
+    "library":  ["e1071, randomForest, foreach"] , 
+    "description":  ["Parallel Random Forest"] },
+
+"partDSA":{
+    "parameters":  ["cut.off.growth, MPD"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["partDSA"] , 
+    "library":  ["partDSA"] , 
+    "description":  ["partDSA"] },
+
+"kernelpls":{
+    "parameters":  ["ncomp"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["kernelpls"] , 
+    "library":  ["pls"] , 
+    "description":  ["Partial Least Squares"] },
+
+"pls":{
+    "parameters":  ["ncomp"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["pls"] , 
+    "library":  ["pls"] , 
+    "description":  ["Partial Least Squares"] },
+
+"simpls":{
+    "parameters":  ["ncomp"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["simpls"] , 
+    "library":  ["pls"] , 
+    "description":  ["Partial Least Squares"] },
+
+"widekernelpls":{
+    "parameters":  ["ncomp"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["widekernelpls"] , 
+    "library":  ["pls"] , 
+    "description":  ["Partial Least Squares"] },
+
+"plsRglm":{
+    "parameters":  ["nt, alpha.pvals.expli"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["plsRglm"] , 
+    "library":  ["plsRglm"] , 
+    "description":  ["Partial Least Squares Generalized Linear Models "] },
+
+"pda":{
+    "parameters":  ["lambda"] , 
+    "type":  ["Classification"] , 
+    "name":  ["pda"] , 
+    "library":  ["mda"] , 
+    "description":  ["Penalized Discriminant Analysis"] },
+
+"pda2":{
+    "parameters":  ["df"] , 
+    "type":  ["Classification"] , 
+    "name":  ["pda2"] , 
+    "library":  ["mda"] , 
+    "description":  ["Penalized Discriminant Analysis"] },
+
+"PenalizedLDA":{
+    "parameters":  ["lambda, K"] , 
+    "type":  ["Classification"] , 
+    "name":  ["PenalizedLDA"] , 
+    "library":  ["penalizedLDA, plyr"] , 
+    "description":  ["Penalized Linear Discriminant Analysis"] },
+
+"penalized":{
+    "parameters":  ["lambda1, lambda2"] , 
+    "type":  ["Regression"] , 
+    "name":  ["penalized"] , 
+    "library":  ["penalized"] , 
+    "description":  ["Penalized Linear Regression"] },
+
+"plr":{
+    "parameters":  ["lambda, cp"] , 
+    "type":  ["Classification"] , 
+    "name":  ["plr"] , 
+    "library":  ["stepPlr"] , 
+    "description":  ["Penalized Logistic Regression"] },
+
+"multinom":{
+    "parameters":  ["decay"] , 
+    "type":  ["Classification"] , 
+    "name":  ["multinom"] , 
+    "library":  ["nnet"] , 
+    "description":  ["Penalized Multinomial Regression"] },
+
+"ordinalNet":{
+    "parameters":  ["alpha, criteria, link"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["ordinalNet"] , 
+    "library":  ["ordinalNet, plyr"] , 
+    "description":  ["Penalized Ordinal Regression"] },
+
+"krlsPoly":{
+    "parameters":  ["lambda, degree"] , 
+    "type":  ["Regression"] , 
+    "name":  ["krlsPoly"] , 
+    "library":  ["KRLS"] , 
+    "description":  ["Polynomial Kernel Regularized Least Squares"] },
+
+"pcr":{
+    "parameters":  ["ncomp"] , 
+    "type":  ["Regression"] , 
+    "name":  ["pcr"] , 
+    "library":  ["pls"] , 
+    "description":  ["Principal Component Analysis"] },
+
+"ppr":{
+    "parameters":  ["nterms"] , 
+    "type":  ["Regression"] , 
+    "name":  ["ppr"] , 
+    "library":  [""] , 
+    "description":  ["Projection Pursuit Regression"] },
+
+"qda":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["qda"] , 
+    "library":  ["MASS"] , 
+    "description":  ["Quadratic Discriminant Analysis"] },
+
+"stepQDA":{
+    "parameters":  ["maxvar, direction"] , 
+    "type":  ["Classification"] , 
+    "name":  ["stepQDA"] , 
+    "library":  ["klaR, MASS"] , 
+    "description":  ["Quadratic Discriminant Analysis with Stepwise Feature Selection"] },
+
+"qrf":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Regression"] , 
+    "name":  ["qrf"] , 
+    "library":  ["quantregForest"] , 
+    "description":  ["Quantile Random Forest"] },
+
+"qrnn":{
+    "parameters":  ["n.hidden, penalty, bag"] , 
+    "type":  ["Regression"] , 
+    "name":  ["qrnn"] , 
+    "library":  ["qrnn"] , 
+    "description":  ["Quantile Regression Neural Network"] },
+
+"rqlasso":{
+    "parameters":  ["lambda"] , 
+    "type":  ["Regression"] , 
+    "name":  ["rqlasso"] , 
+    "library":  ["rqPen"] , 
+    "description":  ["Quantile Regression with LASSO penalty"] },
+
+"krlsRadial":{
+    "parameters":  ["lambda, sigma"] , 
+    "type":  ["Regression"] , 
+    "name":  ["krlsRadial"] , 
+    "library":  ["KRLS, kernlab"] , 
+    "description":  ["Radial Basis Function Kernel Regularized Least Squares"] },
+
+"rbf":{
+    "parameters":  ["size"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["rbf"] , 
+    "library":  ["RSNNS"] , 
+    "description":  ["Radial Basis Function Network"] },
+
+"rbfDDA":{
+    "parameters":  ["negativeThreshold"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["rbfDDA"] , 
+    "library":  ["RSNNS"] , 
+    "description":  ["Radial Basis Function Network"] },
+
+"rFerns":{
+    "parameters":  ["depth"] , 
+    "type":  ["Classification"] , 
+    "name":  ["rFerns"] , 
+    "library":  ["rFerns"] , 
+    "description":  ["Random Ferns"] },
+
+"ranger":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["ranger"] , 
+    "library":  ["e1071, ranger"] , 
+    "description":  ["Random Forest"] },
+
+"Rborist":{
+    "parameters":  ["predFixed"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["Rborist"] , 
+    "library":  ["Rborist"] , 
+    "description":  ["Random Forest"] },
+
+"rf":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["rf"] , 
+    "library":  ["randomForest"] , 
+    "description":  ["Random Forest"] },
+
+"extraTrees":{
+    "parameters":  ["mtry, numRandomCuts"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["extraTrees"] , 
+    "library":  ["extraTrees"] , 
+    "description":  ["Random Forest by Randomization"] },
+
+"rfRules":{
+    "parameters":  ["mtry, maxdepth"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["rfRules"] , 
+    "library":  ["randomForest, inTrees, plyr"] , 
+    "description":  ["Random Forest Rule-Based Model"] },
+
+"Boruta":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["Boruta"] , 
+    "library":  ["Boruta, randomForest"] , 
+    "description":  ["Random Forest with Additional Feature Selection"] },
+
+"rda":{
+    "parameters":  ["gamma, lambda"] , 
+    "type":  ["Classification"] , 
+    "name":  ["rda"] , 
+    "library":  ["klaR"] , 
+    "description":  ["Regularized Discriminant Analysis"] },
+
+"rlda":{
+    "parameters":  ["estimator"] , 
+    "type":  ["Classification"] , 
+    "name":  ["rlda"] , 
+    "library":  ["sparsediscrim"] , 
+    "description":  ["Regularized Linear Discriminant Analysis"] },
+
+"RRF":{
+    "parameters":  ["mtry, coefReg, coefImp"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["RRF"] , 
+    "library":  ["randomForest, RRF"] , 
+    "description":  ["Regularized Random Forest"] },
+
+"RRFglobal":{
+    "parameters":  ["mtry, coefReg"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["RRFglobal"] , 
+    "library":  ["RRF"] , 
+    "description":  ["Regularized Random Forest"] },
+
+"relaxo":{
+    "parameters":  ["lambda, phi"] , 
+    "type":  ["Regression"] , 
+    "name":  ["relaxo"] , 
+    "library":  ["relaxo, plyr"] , 
+    "description":  ["Relaxed Lasso"] },
+
+"rvmLinear":{
+    "parameters":  ["None"] , 
+    "type":  ["Regression"] , 
+    "name":  ["rvmLinear"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Relevance Vector Machines with Linear Kernel"] },
+
+"rvmPoly":{
+    "parameters":  ["scale, degree"] , 
+    "type":  ["Regression"] , 
+    "name":  ["rvmPoly"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Relevance Vector Machines with Polynomial Kernel"] },
+
+"rvmRadial":{
+    "parameters":  ["sigma"] , 
+    "type":  ["Regression"] , 
+    "name":  ["rvmRadial"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Relevance Vector Machines with Radial Basis Function Kernel"] },
+
+"ridge":{
+    "parameters":  ["lambda"] , 
+    "type":  ["Regression"] , 
+    "name":  ["ridge"] , 
+    "library":  ["elasticnet"] , 
+    "description":  ["Ridge Regression"] },
+
+"foba":{
+    "parameters":  ["k, lambda"] , 
+    "type":  ["Regression"] , 
+    "name":  ["foba"] , 
+    "library":  ["foba"] , 
+    "description":  ["Ridge Regression with Variable Selection"] },
+
+"Linda":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["Linda"] , 
+    "library":  ["rrcov"] , 
+    "description":  ["Robust Linear Discriminant Analysis"] },
+
+"rlm":{
+    "parameters":  ["intercept, psi"] , 
+    "type":  ["Regression"] , 
+    "name":  ["rlm"] , 
+    "library":  ["MASS"] , 
+    "description":  ["Robust Linear Model"] },
+
+"rmda":{
+    "parameters":  ["K, model"] , 
+    "type":  ["Classification"] , 
+    "name":  ["rmda"] , 
+    "library":  ["robustDA"] , 
+    "description":  ["Robust Mixture Discriminant Analysis"] },
+
+"QdaCov":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["QdaCov"] , 
+    "library":  ["rrcov"] , 
+    "description":  ["Robust Quadratic Discriminant Analysis"] },
+
+"rrlda":{
+    "parameters":  ["lambda, hp, penalty"] , 
+    "type":  ["Classification"] , 
+    "name":  ["rrlda"] , 
+    "library":  ["rrlda"] , 
+    "description":  ["Robust Regularized Linear Discriminant Analysis"] },
+
+"RSimca":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["RSimca"] , 
+    "library":  ["rrcovHD"] , 
+    "description":  ["Robust SIMCA"] },
+
+"rocc":{
+    "parameters":  ["xgenes"] , 
+    "type":  ["Classification"] , 
+    "name":  ["rocc"] , 
+    "library":  ["rocc"] , 
+    "description":  ["ROC-Based Classifier"] },
+
+"rotationForest":{
+    "parameters":  ["K, L"] , 
+    "type":  ["Classification"] , 
+    "name":  ["rotationForest"] , 
+    "library":  ["rotationForest"] , 
+    "description":  ["Rotation Forest"] },
+
+"rotationForestCp":{
+    "parameters":  ["K, L, cp"] , 
+    "type":  ["Classification"] , 
+    "name":  ["rotationForestCp"] , 
+    "library":  ["rpart, plyr, rotationForest"] , 
+    "description":  ["Rotation Forest"] },
+
+"JRip":{
+    "parameters":  ["NumOpt, NumFolds, MinWeights"] , 
+    "type":  ["Classification"] , 
+    "name":  ["JRip"] , 
+    "library":  ["RWeka"] , 
+    "description":  ["Rule-Based Classifier"] },
+
+"PART":{
+    "parameters":  ["threshold, pruned"] , 
+    "type":  ["Classification"] , 
+    "name":  ["PART"] , 
+    "library":  ["RWeka"] , 
+    "description":  ["Rule-Based Classifier"] },
+
+"bdk":{
+    "parameters":  ["xdim, ydim, xweight, topo"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["bdk"] , 
+    "library":  ["kohonen"] , 
+    "description":  ["Self-Organizing Map"] },
+
+"xyf":{
+    "parameters":  ["xdim, ydim, xweight, topo"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["xyf"] , 
+    "library":  ["kohonen"] , 
+    "description":  ["Self-Organizing Maps"] },
+
+"nbSearch":{
+    "parameters":  ["k, epsilon, smooth, final_smooth, direction"] , 
+    "type":  ["Classification"] , 
+    "name":  ["nbSearch"] , 
+    "library":  ["bnclassify"] , 
+    "description":  ["Semi-Naive Structure Learner Wrapper"] },
+
+"sda":{
+    "parameters":  ["diagonal, lambda"] , 
+    "type":  ["Classification"] , 
+    "name":  ["sda"] , 
+    "library":  ["sda"] , 
+    "description":  ["Shrinkage Discriminant Analysis"] },
+
+"CSimca":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["CSimca"] , 
+    "library":  ["rrcovHD"] , 
+    "description":  ["SIMCA"] },
+
+"FS.HGD":{
+    "parameters":  ["num.labels, max.iter"] , 
+    "type":  ["Regression"] , 
+    "name":  ["FS.HGD"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Simplified TSK Fuzzy Rules"] },
+
+"C5.0Rules":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["C5.0Rules"] , 
+    "library":  ["C50"] , 
+    "description":  ["Single C5.0 Ruleset"] },
+
+"C5.0Tree":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["C5.0Tree"] , 
+    "library":  ["C50"] , 
+    "description":  ["Single C5.0 Tree"] },
+
+"OneR":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["OneR"] , 
+    "library":  ["RWeka"] , 
+    "description":  ["Single Rule Classification"] },
+
+"sdwd":{
+    "parameters":  ["lambda, lambda2"] , 
+    "type":  ["Classification"] , 
+    "name":  ["sdwd"] , 
+    "library":  ["sdwd"] , 
+    "description":  ["Sparse Distance Weighted Discrimination"] },
+
+"sparseLDA":{
+    "parameters":  ["NumVars, lambda"] , 
+    "type":  ["Classification"] , 
+    "name":  ["sparseLDA"] , 
+    "library":  ["sparseLDA"] , 
+    "description":  ["Sparse Linear Discriminant Analysis"] },
+
+"smda":{
+    "parameters":  ["NumVars, lambda, R"] , 
+    "type":  ["Classification"] , 
+    "name":  ["smda"] , 
+    "library":  ["sparseLDA"] , 
+    "description":  ["Sparse Mixture Discriminant Analysis"] },
+
+"spls":{
+    "parameters":  ["K, eta, kappa"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["spls"] , 
+    "library":  ["spls"] , 
+    "description":  ["Sparse Partial Least Squares"] },
+
+"spikeslab":{
+    "parameters":  ["vars"] , 
+    "type":  ["Regression"] , 
+    "name":  ["spikeslab"] , 
+    "library":  ["spikeslab, plyr"] , 
+    "description":  ["Spike and Slab Regression"] },
+
+"slda":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["slda"] , 
+    "library":  ["ipred"] , 
+    "description":  ["Stabilized Linear Discriminant Analysis"] },
+
+"snn":{
+    "parameters":  ["lambda"] , 
+    "type":  ["Classification"] , 
+    "name":  ["snn"] , 
+    "library":  ["snn"] , 
+    "description":  ["Stabilized Nearest Neighbor Classifier"] },
+
+"dnn":{
+    "parameters":  ["layer1, layer2, layer3, hidden_dropout, visible_dropout"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["dnn"] , 
+    "library":  ["deepnet"] , 
+    "description":  ["Stacked AutoEncoder Deep Neural Network"] },
+
+"sddaLDA":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["sddaLDA"] , 
+    "library":  ["SDDA"] , 
+    "description":  ["Stepwise Diagonal Linear Discriminant Analysis"] },
+
+"sddaQDA":{
+    "parameters":  ["None"] , 
+    "type":  ["Classification"] , 
+    "name":  ["sddaQDA"] , 
+    "library":  ["SDDA"] , 
+    "description":  ["Stepwise Diagonal Quadratic Discriminant Analysis"] },
+
+"gbm":{
+    "parameters":  ["n.trees, interaction.depth, shrinkage, n.minobsinnode"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gbm"] , 
+    "library":  ["gbm, plyr"] , 
+    "description":  ["Stochastic Gradient Boosting"] },
+
+"SBC":{
+    "parameters":  ["r.a, eps.high, eps.low"] , 
+    "type":  ["Regression"] , 
+    "name":  ["SBC"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Subtractive Clustering and Fuzzy c-Means Rules"] },
+
+"superpc":{
+    "parameters":  ["threshold, n.components"] , 
+    "type":  ["Regression"] , 
+    "name":  ["superpc"] , 
+    "library":  ["superpc"] , 
+    "description":  ["Supervised Principal Component Analysis"] },
+
+"svmBoundrangeString":{
+    "parameters":  ["length, C"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["svmBoundrangeString"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Support Vector Machines with Boundrange String Kernel"] },
+
+"svmRadialWeights":{
+    "parameters":  ["sigma, C, Weight"] , 
+    "type":  ["Classification"] , 
+    "name":  ["svmRadialWeights"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Support Vector Machines with Class Weights"] },
+
+"svmExpoString":{
+    "parameters":  ["lambda, C"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["svmExpoString"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Support Vector Machines with Exponential String Kernel"] },
+
+"svmLinear":{
+    "parameters":  ["C"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["svmLinear"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Support Vector Machines with Linear Kernel"] },
+
+"svmLinear2":{
+    "parameters":  ["cost"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["svmLinear2"] , 
+    "library":  ["e1071"] , 
+    "description":  ["Support Vector Machines with Linear Kernel"] },
+
+"svmPoly":{
+    "parameters":  ["degree, scale, C"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["svmPoly"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Support Vector Machines with Polynomial Kernel"] },
+
+"svmRadial":{
+    "parameters":  ["sigma, C"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["svmRadial"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Support Vector Machines with Radial Basis Function Kernel"] },
+
+"svmRadialCost":{
+    "parameters":  ["C"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["svmRadialCost"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Support Vector Machines with Radial Basis Function Kernel"] },
+
+"svmRadialSigma":{
+    "parameters":  ["sigma, C"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["svmRadialSigma"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Support Vector Machines with Radial Basis Function Kernel"] },
+
+"svmSpectrumString":{
+    "parameters":  ["length, C"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["svmSpectrumString"] , 
+    "library":  ["kernlab"] , 
+    "description":  ["Support Vector Machines with Spectrum String Kernel"] },
+
+"blasso":{
+    "parameters":  ["sparsity"] , 
+    "type":  ["Regression"] , 
+    "name":  ["blasso"] , 
+    "library":  ["monomvn"] , 
+    "description":  ["The Bayesian lasso"] },
+
+"lasso":{
+    "parameters":  ["fraction"] , 
+    "type":  ["Regression"] , 
+    "name":  ["lasso"] , 
+    "library":  ["elasticnet"] , 
+    "description":  ["The lasso"] },
+
+"tan":{
+    "parameters":  ["score, smooth"] , 
+    "type":  ["Classification"] , 
+    "name":  ["tan"] , 
+    "library":  ["bnclassify"] , 
+    "description":  ["Tree Augmented Naive Bayes Classifier"] },
+
+"tanSearch":{
+    "parameters":  ["k, epsilon, smooth, final_smooth, sp"] , 
+    "type":  ["Classification"] , 
+    "name":  ["tanSearch"] , 
+    "library":  ["bnclassify"] , 
+    "description":  ["Tree Augmented Naive Bayes Classifier Structure Learner Wrapper"] },
+
+"awtan":{
+    "parameters":  ["score, smooth"] , 
+    "type":  ["Classification"] , 
+    "name":  ["awtan"] , 
+    "library":  ["bnclassify"] , 
+    "description":  ["Tree Augmented Naive Bayes Classifier with Attribute Weighting"] },
+
+"evtree":{
+    "parameters":  ["alpha"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["evtree"] , 
+    "library":  ["evtree"] , 
+    "description":  ["Tree Models from Genetic Algorithms"] },
+
+"nodeHarvest":{
+    "parameters":  ["maxinter, mode"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["nodeHarvest"] , 
+    "library":  ["nodeHarvest"] , 
+    "description":  ["Tree-Based Ensembles"] },
+
+"vbmpRadial":{
+    "parameters":  ["estimateTheta"] , 
+    "type":  ["Classification"] , 
+    "name":  ["vbmpRadial"] , 
+    "library":  ["vbmp"] , 
+    "description":  ["Variational Bayesian Multinomial Probit Regression"] },
+
+"WM":{
+    "parameters":  ["num.labels, type.mf"] , 
+    "type":  ["Regression"] , 
+    "name":  ["WM"] , 
+    "library":  ["frbs"] , 
+    "description":  ["Wang and Mendel Fuzzy Rules"] },
+
+"wsrf":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification"] , 
+    "name":  ["wsrf"] , 
+    "library":  ["wsrf"] , 
+    "description":  ["Weighted Subspace Random Forest"] }
+
+	}
+}
+
+
