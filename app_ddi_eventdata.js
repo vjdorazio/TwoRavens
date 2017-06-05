@@ -206,7 +206,8 @@ var arc4 = d3.arc()
 
 // From .csv
 var dataset2 = [];
-var valueKey = [];
+//var valueKey = [];
+var valueKey = ["Date","Location","Action","Actor"];
 var lablArray = [];
 var hold = [];
 var allNodes = [];
@@ -709,7 +710,7 @@ eventlist=new Array(20)
     .attr("onmouseout", "$(this).popover('toggle');")
     .attr("data-original-title", "Summary Statistics");
   
-    
+    console.log(valueKey);
     d3.select("#tab1").selectAll("p") 			//do something with this..
 		.data(valueKey)
 		.enter()
