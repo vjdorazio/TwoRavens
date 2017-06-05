@@ -272,8 +272,7 @@ if (ddiurl) {
     // supplied or configured:
     metadataurl=dataverseurl+"/api/meta/datafile/"+fileid;
 } else {
-    // neither a full ddi url, nor file id supplied; use one of the sample DDIs that come with
-    // the app, in the data directory:
+    // neither a full ddi url, nor file id supplied; use one of the sample DDIs that come with the app, in the data directory:
     // metadataurl="data/qog137.xml"; // quality of government
     metadataurl="~/TwoRavens/data/fearonLaitin.xml"; // This is Fearon Laitin
     //metadataurl="data/PUMS5small-ddi.xml"; // This is California PUMS subset
@@ -294,12 +293,9 @@ if (dataurl) {
     // data url is supplied
     pURL = dataurl+"&format=prep";
 } else {
-    // no dataurl/file id supplied; use one of the sample data files distributed with the
-    // app in the "data" directory:
-    //pURL = "data/preprocess2429360.txt";   // This is the Strezhnev Voeten JSON data
-   // pURL = "data/fearonLaitin.json";     // This is the Fearon Laitin JSON data
-    //pURL = "data/fearonLaitinNewPreprocess3long.json";     // This is the revised (May 29, 2015) Fearon Laitin JSON data
-    purl="dateplot2.csv"
+    // no dataurl/file id supplied; use one of the sample data files distributed with the app in the "data" directory:
+    pURL="data/phoenixpreprocess.json"
+    dateplot="data/dateplot2.csv"
     //This is testing whether a newer json file exists or not. if yes, we will use that file, else use the default file
    //var test=UrlExists(purltest);
    //if(test==true){
@@ -333,14 +329,8 @@ if (dataurl) {
 		    http.send();
 		    return http.status!=404;
 		}
-    //pURL = "data/fearonLaitinPreprocess4.json";
-	
     //console.log(purltest);
-   // console.log(pURL);	
-	//pURL = "data/preprocessPUMS5small.json";   // This is California PUMS subset
-    //pURL = "data/FL_insurance_sample.tab.json";
-
-    // pURL = "data/qog_pp.json";   // This is Qual of Gov
+   // console.log(pURL);
 }
 
  // .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
@@ -390,7 +380,7 @@ function type(d) {
   return d;
 }
 
-d3.csv(purl, type, function(error, data) {
+d3.csv(dateplot, type, function(error, data) {
   if (error) throw error;
   //console.log("Rohit");
   //console.log(data);
