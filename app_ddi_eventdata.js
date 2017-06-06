@@ -244,7 +244,7 @@ if (dataurl) {
 } else {
     // no dataurl/file id supplied; use one of the sample data files distributed with the app in the "data" directory:
     pURL="data/samplePhoxPreprocess.json"
-    dateplot="data/dateplot2.csv"
+    dateplot="data/dateplot.csv"
     //This is testing whether a newer json file exists or not. if yes, we will use that file, else use the default file
    //var test=UrlExists(purltest);
    //if(test==true){
