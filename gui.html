@@ -184,15 +184,19 @@
           <div class="panel-heading text-center" id="rightpaneltitle">
               <h3 class="panel-title">Model Selection</h3>
           </div>
-         
+          <div id="tab1" style="display:block;padding:6px 12px;text-align:center">
+              
+              <input type="text" id="searchvar" placeholder="Search Variables and Labels" class="form-control" style="width:100%; margin-bottom:5px;"/>
+              
+              
+          </div>
 
         <!-- <div class="btn-toolbar" role="toolbar" style="margin-left:.5em;margin-top:.5em;"> -->
         <!-- The following is fix for the longstanding button wrapping problem on small screens -->
         <div class="btn-group btn-group-justified" role="group" style="margin-top:.5em;" aria-label="...">   
              <!--<div class="btn-group" style="margin-right:0;"> -->
-                 <button type="button" class="btn active" id="btnModels" onclick="tabRight('btnModels');" style="width: 33%">ML</button>
-				 <!--<button type="button" class="btn active" id="btnML" onclick="tabRight('btnML');" style="width: 25%">ML</button>-->
-                 <button type="button" class="btn btn-default" id="btnSetx" onclick="tabRight('btnSetx');" style="width: 34%">Covar</button>
+                 <button type="button" class="btn active" id="btnModels" onclick="tabRight('btnModels');" style="width: 33%">Models</button>
+                 <button type="button" class="btn btn-default" id="btnSetx" onclick="tabRight('btnSetx');" style="width: 34%">Set Covar.</button>
                  <button type="button" class="btn btn-default" id="btnResults" onclick="tabRight('btnResults');" style="width: 33%">Results</button>
              <!-- </div> -->
         </div> 
@@ -208,10 +212,20 @@
                             <!--No results available until a model is estimated.-->
                         </div>
                         <div id="setx" style="display:none;"></div>
-                        <div id="models" style="display:block;padding:6px 12px;text-align:center;"></div>
-						<!--<div id="ml_algorithm", style="display:block;padding:6px 12px;text-align:center;"></div>-->
+                        <div id="models" style="display:block;padding:6px 12px;text-align:center;">
+                          
+
+                        </div>
+                        
                     </div>
                 </div>
+            </div>
+            <div class="btn-group btn-group-justified" role="group" style="margin-top:.5em;" aria-label="...">
+                <!--<div class="btn-group" style="margin-right:0;"> -->
+                <button type="button" class="btn active" id="btnModels1" onclick="tabRight('btnModels');" style="width: 33%">ML</button>
+                <button type="button" class="btn btn-default" id="btnSetx1" onclick="tabRight('btnSetx');" style="width: 34%">PP</button>
+                <button type="button" class="btn btn-default" id="btnResults1" onclick="tabRight('btnResults');" style="width: 33%">Reg</button>
+                <!-- </div> -->
             </div>
         </div>
 
