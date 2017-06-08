@@ -1,0 +1,30 @@
+.unclicked {
+	cursor:pointer;
+	fill: none;
+}
+	
+.clicked {
+	cursor:pointer;
+	fill: gray;
+}
+	
+.clickable {
+	cursor:pointer;
+}
+	
+.labelClicked {
+	paint-order: stroke;
+	stroke: gray;
+	stroke-width: 1px;
+	stroke-linecap: butt;
+	stroke-linejoin: miter;
+}
+	
+.main_graph_head_border{
+	display:block;
+}
+	
+.sub_graph_head_border {
+	display:block;
+}
+		

@@ -3210,6 +3210,10 @@ function d3date() {
 
 function d3loc() {
     $("#mainSVG").empty();
+	
+	var data = getMainGraphData();
+	drawMainGraph(data);
+	
 }
 
 function d3action() {
@@ -3220,6 +3224,595 @@ function d3actor() {
     $("#mainSVG").empty();
 }
 
+/**
+ * Variables declared for location
+ *
+ **/
+ var mapGraphSVG = new Object();
+ var mapLocationObj = new Object();
+ 
+/**
+ * Draw the main graph
+ *
+ **/
+function drawMainGraph(data) {
+	
+	var scale = d3.scale.linear()
+        .domain([1, 5])   // Data space
+        .range([10, 200]); // Pixel space
+		
+	mapLocationObj["scale"] = scale;
+	
+	var table = $("#main").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td'></td></tr></table>");
+	var svg1 = d3.select("#main_graph_td").append("svg:svg")
+        .attr("width",  500)
+        .attr("height", 350);
+	
+	mapLocationObj["main_graph"] = svg1;
+	
+	axis_MainGraph(svg1);
+	mainGraphLabel(svg1);
+	
+	render1(data, "black"); 
+}
+	
+	
+/**
+ * render1 to render/draw the main graph with the data provided in form of array of Objects
+ * with the links to create the sub-graph based on the data
+ *
+**/
+function render1(data, color){
+	
+	console.log("Rendering Main Graph...");
+	
+	var scale = mapLocationObj["scale"];
+	var svg = mapLocationObj["main_graph"];
+	
+    // Bind data
+	var rectGroup= svg.append("g");
+		        
+	var rects = rectGroup.selectAll("rect").data(data).enter().append("rect");
+    var texts = rectGroup.selectAll("text").data(data).enter().append("text");
+   
+    // Enter
+    rects.attr("x", 100)
+     .attr("height", 30)
+	 .attr("class", "main_graph")
+	 .attr("fill", color);
+		
+	texts.attr("x", 30)
+	 .attr("class", "main_graph")
+	 .attr("style", "cursor:pointer")
+	 .attr("fill", "black");
+        
+	// Update
+    rects.attr("y", function (d) { return scale(d.cid) + 50;})
+	 .attr("width",  function (d) { return scale(d.w);});
+    		
+			
+	texts.attr("y", function (d) { return scale(d.cid) + 70;})
+	 .text(function (d) { mapGraphSVG[d.cname] = null; return d.cname;})		
+	 .attr("id", function (d) { return d.cname;})
+	 .attr("onclick", "javascript:maingraphYLabelClicked(this.textContent)");
+       
+	// Exit
+    //rects.exit().remove();
+	//texts.exit().remove();
+		
+}
 
+/**
+ * render2 to render/draw the sub graphs with the data provided in form of array of Objects 
+ *
+**/
+function render2(svg, data, color){
+	 
+	var scale = mapLocationObj["scale"];
+	
+    // Bind data
+	var rectGroup= svg.append("g");
+		        
+	var rects = rectGroup.selectAll("rect").data(data).enter().append("rect");
+    var texts = rectGroup.selectAll("text").data(data).enter().append("text");
+	
+    // Enter
+    rects.attr("x", 100)
+     .attr("height", 30);
+		
+	texts.attr("x", 30);
+        
+	// Update
+    rects.attr("y", function (d) { return 50+scale(d.cid);})
+	 .attr("width",  function (d) { return scale(d.w);})
+     .attr("fill", color);
+		
+			
+	texts.attr("y", function (d) { return scale(d.cid) + 70;})
+	 .attr("fill", "black")
+	 .text(function (d) { return d.cname;});
+				
+       
+	// Exit
+    rects.exit().remove();
+		
+}
 
  
+/**
+ * fetchJSONObjectForSubGraph by the cname or id of the main graph
+ * and do the rendering of the sub graph
+ *
+**/
+function fetchJSONObjectForSubGraph(cname) {
+				
+	console.log("fetchJSONObjectForSubGraph for : " + cname);
+	
+	if(mapGraphSVG[cname] != null) {
+		
+		var svgToRemove = mapGraphSVG[cname];
+		svgToRemove.remove();
+		$("#"+cname).removeClass("labelClicked");
+		$("#sub_graph_td_"+cname).parent().remove();
+		mapGraphSVG[cname] = null;	
+			
+		return;
+	}
+		
+	$("#"+cname).addClass("labelClicked");
+		
+	$("#svg_graph_table").append('<tr><td id="sub_graph_td_'+cname +'"></td></tr>');
+	var svg2 = d3.select("#sub_graph_td_"+cname).append("svg:svg")
+       .attr("width",  500)
+       .attr("height", 350);
+		
+	mapGraphSVG[cname] = svg2; 
+			
+	axis_SubGraph(svg2, cname);
+	var data = getSubgraphData(cname);
+	render2(svg2, data, "black"); 
+        
+}
+
+/**
+ * maingraphAction -> to map the header function {All, None, Expand/Collapse} for the main graph
+ *
+ **/
+function maingraphAction(action) {
+
+	if(action == 'Expand_Collapse') {
+		
+		action = $('#Expand_Collapse_Main_Text').text();
+	}
+	
+	maingraphHeaderClicked(action);	  
+		
+	if(action == 'All') {
+						
+		removeAllSubGraphSVG();
+		for(var cname in mapGraphSVG) {
+			
+			if(cname != null && mapGraphSVG[cname] == null) {
+				console.log(cname);
+				fetchJSONObjectForSubGraph(cname);
+			}
+		}
+
+	}		
+	else if(action == 'None') {
+			
+		removeAllSubGraphSVG();
+	}
+	else if(action == 'Collapse') {
+		
+		$("#Expand_Collapse_Main_Text").text("Expand");
+		$(".main_graph").hide();
+		$(".main_graph_head_border").show();
+		
+		var svg = mapLocationObj["main_graph"];
+		svg.attr("height", 50);
+	}
+	else if(action == 'Expand') {
+		
+		$("#Expand_Collapse_Main_Text").text("Collapse");
+		$(".main_graph").show();
+		$(".main_graph_head_border").hide();
+		
+		var svg = mapLocationObj["main_graph"];
+		svg.attr("height", 350);
+	}
+}
+
+
+/**
+ * subgraphAction-> to map the subgraph function {All, None, Expand/Collapse}
+ *
+ **/  
+function subgraphAction(action, textId) {
+	  
+	var cname = textId.substring(21);
+
+	if(action == 'Collapse') {
+		
+		$("#"+textId).text("Expand");
+		$(".sub_graph_"+cname).hide();
+		$("#sub_graph_head_border_"+cname).show();
+			
+		var svg = mapGraphSVG[cname];
+		svg.attr("height", 50);
+			
+	}
+	else if(action == 'Expand') {
+		
+		$("#"+textId).text("Collapse");
+		$(".sub_graph_"+cname).show();
+		$("#sub_graph_head_border_"+cname).hide();
+		var svg = mapGraphSVG[cname];
+		svg.attr("height", 350);			
+	}
+}
+ 
+
+/**
+ * removeAllSubGraphSVG - to remove all the subgraph when clicked on "None" in the main graph
+ *
+ **/
+function removeAllSubGraphSVG(){
+	
+	for(var cname in mapGraphSVG) {
+			
+		if(cname != null && mapGraphSVG[cname] != null) {
+			console.log(cname);
+			var svgToRemove = mapGraphSVG[cname];
+			svgToRemove.remove();
+			$("#sub_graph_td_"+cname).parent().remove();
+			$("#"+cname).removeClass("labelClicked");
+			mapGraphSVG[cname] = null;
+		}
+	}
+}
+
+/**
+ * maingraphHeaderClicked - when any of the header is clicked 
+ * in the main graph, take these actions
+ *
+ **/
+function maingraphHeaderClicked(name) {
+	  
+	maingraphHeaderUnClickAll();
+		
+	$("#"+name).removeClass("unclicked");
+	$("#"+name).addClass("clicked");
+}
+
+/**
+ * maingraphHeaderUnClickAll - when any of the header is clicked 
+ * in the main graph, take these actions
+ *
+ **/
+function maingraphHeaderUnClickAll(){
+
+	$("#All").removeClass("clicked");
+	$("#None").removeClass("clicked");
+	$("#Collapse").removeClass("clicked");
+		
+	$("#All").addClass("unclicked");
+	$("#None").addClass("unclicked");
+	$("#Collapse").addClass("unclicked");
+		
+	for(var cname in mapGraphSVG) {
+			
+		if(mapGraphSVG[cname] != null) {
+			
+			if($("#"+cname).hasClass("labelClicked")) {
+					
+			$("#"+cname).removeClass("labelClicked");
+			}
+	
+			$("#"+cname).addClass("labelClicked");
+		}
+		else {
+		
+			$("#"+cname).removeClass("labelClicked");
+		}
+	}
+		
+}
+
+/**
+ * maingraphYLabelClicked - when any of the Y Axis label is clicked 
+ * in the main graph, take these actions
+ *
+ **/
+function maingraphYLabelClicked(cname) {
+	
+	maingraphHeaderUnClickAll();
+			
+	fetchJSONObjectForSubGraph(cname);
+}
+
+/**
+ * axis_MainGraph - To draw the main Graph with X-Axis and Y-Axis 
+ * with the Frequency Label for the Y-Axis
+ *
+ **/
+function axis_MainGraph(svg) {
+						
+	svg.append("line")
+	 .attr("x1", 99)
+	 .attr("y1", 50)
+	 .attr("x2", 99)
+	 .attr("y2", 300)
+	 .attr("stroke-width", 1)
+	 .attr("stroke", "black")
+	 .attr("class", "main_graph");
+		
+	svg.append("line")
+	 .attr("x1", 99)
+	 .attr("y1", 300)
+	 .attr("x2", 499)
+	 .attr("y2", 300)
+	 .attr("stroke-width", 1)
+	 .attr("stroke", "black")
+	 .attr("class", "main_graph");
+		
+		
+	svg.append("text")
+	 .attr("x", 220)
+	 .attr("y", 320)
+	 .attr("fill", "black")
+	 .text("Frequency")
+	 .attr("class", "main_graph");
+		
+}
+
+
+/**
+ * axis_SubGraph - To draw the sub Graph with X-Axis and Y-Axis 
+ * with the Frequency Label for the Y-Axis
+ * Along with the Cname and Expand/Collapse Button
+ *
+ **/	  
+ function axis_SubGraph(svg, cname) {
+						
+	mapGraphSVG[cname] = svg;
+		
+	svg.append("line")
+ 	 .attr("x1", 99)
+	 .attr("y1", 50)
+	 .attr("x2", 99)
+	 .attr("y2", 300)
+	 .attr("stroke-width", 1)
+	 .attr("stroke", "black")
+	 .attr("class", "sub_graph_"+cname);
+		
+		
+	svg.append("line")
+	 .attr("x1", 99)
+	 .attr("y1", 300)
+	 .attr("x2", 499)
+	 .attr("y2", 300)
+	 .attr("stroke-width", 1)
+	 .attr("stroke", "black")
+	 .attr("class", "sub_graph_"+cname);
+		
+		
+	svg.append("text")
+	 .attr("x", 220)
+	 .attr("y", 320)
+	 .attr("fill", "black")
+	 .text("Frequency")
+	 .attr("class", "sub_graph_"+cname);
+	
+		
+	svg.append("rect")
+	 .attr("x", 20)
+	 .attr("y", 10)
+	 .attr("width", 470)
+	 .attr("height", 35)
+	 .attr("fill", "none")
+	 .attr("stroke-width", 1)
+	 .attr("stroke", "black")
+	 .attr("class", "sub_graph_head_border")
+	 .attr("id", "sub_graph_head_border_"+cname);
+		
+	svg.append("text")
+	 .attr("x", 30)
+	 .attr("y", 30)
+	 .attr("fill", "black")
+	 .text(cname + ":");
+		
+	svg.append("rect")
+	 .attr("x", 200)
+	 .attr("y", 10)
+	 .attr("width", 75)
+	 .attr("height", 30)
+	 .attr("class", "sub_graph_"+cname)
+	 .text("Collapse")
+	 .attr("class", "unclicked");			
+
+	 svg.append("text")
+ 	 .attr("x", 210)
+ 	 .attr("y", 30)
+	 .attr("class", "clickable")
+	 .attr("id", "expand_collapse_text_"+cname)
+	 .text("Collapse")
+	 .attr("onclick", "javascript:subgraphAction(this.textContent, this.id)");
+		
+}
+
+/** 
+ * mainGraphLabel - to put the header Labels in the main graph
+ *
+ **/
+function mainGraphLabel(svg) {
+	  
+	svg.append("rect")
+		.attr("x", 20)
+		.attr("y", 10)
+		.attr("width", 470)
+		.attr("height", 35)
+		.attr("fill", "none")
+		.attr("stroke-width", 1)
+		.attr("stroke", "black")
+		.attr("class", "main_graph_head_border");
+		
+	svg.append("text")
+		.attr("x", 30)
+		.attr("y", 30)
+		.attr("fill", "black")
+		.text("Region:");
+		
+	svg.append("rect")
+		.attr("x", 110)
+		.attr("y", 10)
+		.attr("width", 40)
+		.attr("height", 30)
+		.attr("id", "All")
+		.text("All")
+		.attr("class", "unclicked")
+		.attr("onclick", "javascript:maingraphAction('All')");
+		
+	svg.append("text")
+		.attr("x", 120)
+		.attr("y", 30)
+		.text("All")
+		.attr("class", "clickable");
+		
+		
+	svg.append("rect")
+		.attr("x", 150)
+		.attr("y", 10)
+		.attr("width", 55)
+		.attr("height", 30)
+		.attr("id", "None")
+		.attr("class", "unclicked")
+		.attr("onclick", "javascript:maingraphAction('None')");
+		
+	svg.append("text")
+		.attr("x", 160)
+		.attr("y", 30)
+		.text("None")
+		.attr("class", "clickable");
+		
+
+	svg.append("rect")
+		.attr("x", 200)
+		.attr("y", 10)
+		.attr("width", 75)
+		.attr("height", 30)
+		.attr("id", "Expand_Collapse_Main_Rect")
+		.text("Collapse")
+		.attr("class", "unclicked")
+		.attr("onclick", "javascript:maingraphAction('Expand_Collapse')");
+		
+				
+		
+	svg.append("text")
+		.attr("x", 210)
+		.attr("y", 30)
+		.attr("id", "Expand_Collapse_Main_Text")
+		.text("Collapse")
+		.attr("class", "clickable");
+		
+		
+}
+
+/**
+ * START NOT REQUIRED
+ *
+ **/
+ 
+ function getSubgraphData(cname) {
+	  
+	  var myArrayOfObjects;
+	  
+		if(cname == 'ABC') {
+		
+			myArrayOfObjects = [ 
+				{ cid: 1, cname:'abc1', w: 3}, 
+				{ cid: 2, cname:'abc2', w: 5}, 
+				{ cid: 3, cname:'abc3', w: 1}, 
+				{ cid: 4, cname:'abc4', w: 8}, 
+				{ cid: 5, cname:'abc5', w: 4} 
+			];
+			
+		}
+		
+		else if(cname == 'DEF') {
+			myArrayOfObjects = [ 
+				{ cid: 1, cname:'def1', w: 10}, 
+				{ cid: 2, cname:'def2', w: 2}, 
+				{ cid: 3, cname:'def3', w: 5}, 
+				{ cid: 4, cname:'def4', w: 1}, 
+				{ cid: 5, cname:'def5', w: 9} 
+			];
+		
+		}
+		else if(cname == 'GHI') {
+			myArrayOfObjects = [ 
+				{ cid: 1, cname:'ghi1', w: 1}, 
+				{ cid: 2, cname:'ghi2', w: 6}, 
+				{ cid: 3, cname:'ghi3', w: 1}, 
+				{ cid: 4, cname:'ghi4', w: 9}, 
+				{ cid: 5, cname:'ghi5', w: 4} 
+			];
+		
+		}
+		else if(cname == 'JKL') {
+			myArrayOfObjects = [ 
+				{ cid: 1, cname:'jkl1', w: 1}, 
+				{ cid: 2, cname:'jkl2', w: 4}, 
+				{ cid: 3, cname:'jkl3', w: 5}, 
+				{ cid: 4, cname:'jkl4', w: 4}, 
+				{ cid: 5, cname:'jkl5', w: 10} 
+			];
+		
+		}
+		else if(cname == 'MNO') {
+			myArrayOfObjects = [ 
+				{ cid: 1, cname:'mno1', w: 1}, 
+				{ cid: 2, cname:'mno2', w: 2}, 
+				{ cid: 3, cname:'mno3', w: 8}, 
+				{ cid: 4, cname:'mno4', w: 14}, 
+				{ cid: 5, cname:'mno5', w: 10} 
+			];
+		
+		}
+		
+		return myArrayOfObjects;
+	  }
+     	
+	function getMainGraphData() {
+	
+		var myArrayOfObjects = [ 
+			{ cid: 1, cname:'ABC', w: 1}, 
+			{ cid: 2, cname:'DEF', w: 2}, 
+			{ cid: 3, cname:'GHI', w: 8}, 
+			{ cid: 4, cname:'JKL', w: 4}, 
+			{ cid: 5, cname:'MNO', w: 4} 
+		];
+	  
+	  return myArrayOfObjects
+	}
+	
+/**
+ * END NOT REQUIRED
+ *
+ **/
+
+d3.selection.prototype.moveToFront = function() {  
+
+    return this.each(function(){
+		this.parentNode.appendChild(this);
+    });
+};
+
+d3.selection.prototype.moveToBack = function() {  
+    return this.each(function() { 
+        var firstChild = this.parentNode.firstChild; 
+        if (firstChild) { 
+			this.parentNode.insertBefore(this, firstChild); 
+        } 
+    });
+};
