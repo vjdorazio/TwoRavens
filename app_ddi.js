@@ -111,7 +111,7 @@ var righttab = "btnUnivariate"; // global for current tab in right panel
 
 var zparams = { zdata:[], zedges:[], ztime:[], znom:[], zcross:[], zmodel:"", zvars:[], zdv:[], zdataurl:"", zsubset:[], zsetx:[], zmodelcount:0, zplot:[], zsessionid:"", zdatacite:"", zmetadataurl:"", zusername:""};
 
-
+var json_data_explore="empty";
 // Radius of circle
 var allR = 40;
 
@@ -640,7 +640,7 @@ function scaffolding(callback) {
     .style('overfill', 'scroll');
 
     var modellist = Object.keys(mods);
-console.log("This data would be written "+  modellist);
+//console.log("This data would be written "+  modellist);
     d3.select("#univariate").selectAll("p")
     .data(modellist)
     .enter()
@@ -1876,8 +1876,8 @@ var Xs=0,Xt=0,Ys=0,Yt=0;
                       targetPadding = d ? allR+5 : allR,
                       sourceX = d.source.x + (sourcePadding * normX)+1,
                       sourceY = d.source.y + (sourcePadding * normY)+1,
-                      targetX = d.target.x - (targetPadding * normX)+1,
-                      targetY = d.target.y - (targetPadding * normY)+1;
+                      targetX = d.target.x - (targetPadding * normX)+2,
+                      targetY = d.target.y - (targetPadding * normY)+2;
                       return 'M' + sourceX + ',' + sourceY + 'L' + targetX + ',' + targetY;
                       })
                 .on('mouseover', function(d) {
@@ -2230,7 +2230,7 @@ function zPop() {
 }
 
 function estimate(btn) {
-
+    console.log("Estimate method called");
     if(production && zparams.zsessionid=="") {
         alert("Warning: Data download is not complete. Try again soon.");
         return;
@@ -2262,10 +2262,13 @@ function estimate(btn) {
 
 
     function estimateSuccess(btn,json) {
+        console.log("EstimateSuccess method called");
         estimateLadda.stop();  // stop spinner
         allResults.push(json);
-       // console.log(allResults);
+        json_data_explore=json;
+        console.log("all results"+allResults);
         //console.log("json in: ", json);
+        console.log("json explore",json_data_explore );
 
         var myparent = document.getElementById("results");
         if(estimated==false) {
@@ -2290,7 +2293,7 @@ function estimate(btn) {
 
 
         // programmatic click on Results button
-        $("#btnResults").trigger("click");
+        $("#btnBivariate").trigger("click");
 
 
         modelCount = modelCount+1;
@@ -2353,11 +2356,12 @@ function estimate(btn) {
 
 // This is the main function for explore app
 function explore(btn) {
+    console.log("Explore method called");
     if(production && zparams.zsessionid=="") {
         alert("Warning: Data download is not complete. Try again soon.");
         return;
     }
-    
+  //  console.log("Explore method called");
     zPop();
     console.log("zpop: ",zparams);
     // write links to file & run R CMD
@@ -2374,12 +2378,19 @@ function explore(btn) {
     console.log("POST out: ", solajsonout);
     
     var jsonout = JSON.stringify(zparams);
-    
+
+
+
+
+    // explore success method
     function exploreSuccess(btn,json) {
+        console.log("ExploreSuccess method called");
         estimateLadda.stop();  // stop spinner
         allResults.push(json);
-        // console.log(allResults);
+      var  json_explore=json;
+         console.log("the allResults is : " +allResults);
         console.log("json in: ", json);
+
         
         var myparent = document.getElementById("results");
         if(estimated==false) {
@@ -2395,54 +2406,90 @@ function explore(btn) {
 
         d3.select("#modelView_Container")
         .style("display", "block");
+
         d3.select("#modelView")
+
             .style("display", "block");
+
         d3.select("#resultsView_tabular")
             .style("display", "block");
+
         d3.select("#resultsView_statistics")
             .style("display", "block");
 
+        d3.select("#modelView")
+            .style('background-color', hexToRgba(varColor))
+            .style("overflow-y","hidden")
+            .style("overflow-x","scroll")
+            .append("span")
+            .style("white-space","pre")
+
+            .style("margin-top",0)
+            .style("float","left")
+            .style("position","relative")
+            .style("color","#757575")
+            .text("MODEL SELECTION :  ");
 
 
 
         // programmatic click on Results button
-        $("#btnResults").trigger("click");
-        
-        
+        $("#btnBivariate").trigger("click");
+
+        for(var i in json_explore.tabular) {
+            // console.log("this is data : " + i)
+            var value = i;
+            console.log("This is the model name : " + value);
+            model_selection(value); // for entering all the variables
+        }
         modelCount = modelCount+1;
         var model = "Model".concat(modelCount);
-        
-        function modCol() {
+        var model_name=i;
+       function modCol() {
             d3.select("#modelView")
             .selectAll("p")
-            .style('background-color', hexToRgba(varColor));
+                .style('background-color', "#FFD54F");
         }
+
         
         modCol();
-        
-        d3.select("#modelView")
-        .insert("p",":first-child") // top stack for results
-        .attr("id",model)
-        .text(model)
-        .style('background-color', hexToRgba(selVarColor))
-        .on("click", function(){
-            var a = this.style.backgroundColor.replace(/\s*/g, "");
-            var b = hexToRgba(selVarColor).replace(/\s*/g, "");
-            if(a.substr(0,17)===b.substr(0,17)) {
-            return; //escapes the function early if the displayed model is clicked
-            }
-            modCol();
-            d3.select(this)
-            .style('background-color', hexToRgba(selVarColor));
-            viz(this.id);
-            });
-        
+        function model_selection(model_selection_name) {
+
+            d3.select("#modelView")
+
+                .append("span")
+                .text(" | ")
+                .style("margin-top",0)
+                .style("float","left")
+                .style("white-space","pre")
+                .append("p", ":first-child")// top stack for results
+                .attr("id", model)
+                .text(model_selection_name)
+                .style('background-color',"#FFD54F")
+                .style("margin-top",0)
+                .style("float","left")
+
+
+                .on("click", function () {
+
+                    var a = this.style.backgroundColor.replace(/\s*/g, "");
+                    var b = hexToRgba(selVarColor).replace(/\s*/g, "");
+                    if (a.substr(0, 17) === b.substr(0, 17)) {
+                        return; //escapes the function early if the displayed model is clicked
+                    }
+                    viz_explore(this.id, json_explore,model_selection_name);
+                    modCol();
+                    d3.select(this)
+                        .style('background-color',selVarColor);
+                    // console.log("json explore viz first",json_explore );
+
+                });
+        }
         var rCall = [];
         rCall[0] = json.call;
         logArray.push("explore: ".concat(rCall[0]));
         showLog();
-        
-        viz(model);
+     //   console.log("json explore viz second",json_explore );
+       // viz_explore(model,json_explore,model_name);
     }
     
     function exploreFail(btn) {
@@ -2458,6 +2505,7 @@ function explore(btn) {
 
 
 function dataDownload() {
+    console.log("dataDownload method called");
     zPop();
     // write links to file & run R CMD
 
@@ -2476,7 +2524,10 @@ function dataDownload() {
    // console.log("POST out: ", solajsonout);
 
     function downloadSuccess(btn, json) {
+        console.log("DownloadSuccess method called");
+      //  json_data_explore.push(json);
         //console.log("dataDownload json in: ", json);
+        console.log("json explore",json_data_explore );
         zparams.zsessionid=json.sessionid[0];
 
         // set the link URL
@@ -2501,6 +2552,7 @@ function dataDownload() {
 
 
 function viz(m) {
+    console.log("Viz method called");
     var mym = +m.substr(5,5) - 1;
 
     function removeKids(parent) {
@@ -2516,18 +2568,40 @@ function viz(m) {
 
     // pipe in figures to right panel
     var filelist = new Array;
-    for(var i in json.images) {
-        var zfig = document.createElement("img");
-        zfig.setAttribute("src", json.images[i]);
-        zfig.setAttribute('width', 200);
-        zfig.setAttribute('height', 200);
-        document.getElementById("resultsView").appendChild(zfig);
-    }
 
+  /*  var resultsView_content=d3.select("#resultsView").append("svg");
+    var g = resultsView_content.append("g");
+    var img1=  g.append("svg:image")
+        .attr("xlink:href",json.images[i])
+        .attr("width", 200)
+        .attr("height", 200)
+    ;
+    */
+    for(var i in json.images) {
+
+
+
+             var zfig = document.createElement("img");
+         zfig.setAttribute("src", json.images[i]);
+         zfig.setAttribute('width', 200);
+         zfig.setAttribute('height', 200);
+
+
+
+         document.getElementById("resultsView").appendChild(zfig);
+
+
+    }
    // var rCall = [];
    // rCall[0] = json.call;
    // logArray.push("estimate: ".concat(rCall[0]));
    // showLog();
+
+
+
+
+
+    for(var i=0; i <zparams.zvars.length; i++)
 
 
     // write the results table
@@ -2546,6 +2620,7 @@ function viz(m) {
          }
          }  */
     }
+
 
 
     var table = d3.select("#resultsView_tabular")
@@ -2582,6 +2657,266 @@ function viz(m) {
           return "<b>Formula: </b>".concat(json.call[0]);
           });
 }
+
+
+
+//KRIPANSHU BHARGAVA, this is viz for explore
+function viz_explore(m,json_vizexplore,model_name1) {
+    //console.log("Viz explore method called: " + model_name);
+
+var model_name=model_name1.trim();
+
+
+    var mym = +m.substr(5, 5) - 1;
+//console.log("mym is : "+ mym);
+    function removeKids(parent) {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+    }
+
+    var myparent = document.getElementById("resultsView");
+    removeKids(myparent);
+
+    var json = json_vizexplore;
+    //   console.log("json explore viz:"+json.toString());
+    // pipe in figures to right panel
+    var filelist = new Array;
+
+    /*  var resultsView_content=d3.select("#resultsView").append("svg");
+     var g = resultsView_content.append("g");
+     var img1=  g.append("svg:image")
+     .attr("xlink:href",json.images[i])
+     .attr("width", 200)
+     .attr("height", 200)
+     ;
+     */
+    for (var i in json.images) {
+
+
+        var zfig = document.createElement("img");
+        zfig.setAttribute("src", json.images[i]);
+        zfig.setAttribute('width', 200);
+        zfig.setAttribute('height', 200);
+
+
+        document.getElementById("resultsView").appendChild(zfig);
+
+
+    }
+    var colnames=[];
+    var colvar=[];
+    var table_data=[];
+    var rowvar=[];
+    var rownames=[];
+
+
+    // data for statistics
+
+    var cork=[];
+    var corp=[];
+    var cors=[];
+    var var1=[];
+    var var2=[];
+    for(var i in json.tabular) {
+        //console.log("this is data : " + i)
+        if (i == model_name) {
+            for (var j in json.tabular[i].colnames) {
+
+
+                console.log("colnames: ");
+                console.log(json.tabular[i].colnames[j]);
+                colnames.push(json.tabular[i].colnames[j]);
+
+            }
+        }
+    }
+
+
+    for(var i in json.tabular) {
+        console.log("rownames: ");
+        if (i == model_name) {
+            for (var k in json.tabular[i].rownames) {
+
+                console.log(json.tabular[i].rownames[k]);
+                rownames.push(json.tabular[i].rownames[k]);
+            }
+        }
+    }
+    for(var i in json.tabular) {
+        if (i == model_name) {
+            for (var l in json.tabular[i].rowvar) {
+                console.log("rowvar: ");
+                console.log(json.tabular[i].rowvar[l]);
+                rowvar.push(json.tabular[i].rowvar[l]);
+            }
+        }
+    }
+    for(var i in json.tabular) {
+        if (i == model_name) {
+            for (var m in json.tabular[i].colvar) {
+                console.log("colavar: ");
+                console.log(json.tabular[i].colvar[m]);
+                colvar.push(json.tabular[i].colvar[m]);
+            }
+        }
+    }
+  for(var i in json.tabular){
+        for(var n in json.tabular[i].data)
+        {
+            for( var k=0; k<colnames.length;k++){}
+
+        }
+
+
+    }
+
+
+    // for the statistics]
+    console.log("The data for the statistical"+ json.statistical)
+    for(var key in json.statistical) {
+        if (key == model_name) {
+            for (var a in json.statistical[key].cork) {
+                console.log("cork: ");
+                console.log(json.statistical[key].cork[a]);
+                cork.push(json.statistical[key].cork[a]);
+            }
+        }
+    }
+    for(var key1 in json.statistical) {
+        if (key1 == model_name) {
+            for (var b in json.statistical[key1].corp) {
+                console.log("corp: ");
+                console.log(json.statistical[key1].corp[b]);
+                corp.push(json.statistical[key1].corp[b]);
+            }
+        }
+    }
+    for(var key2 in json.statistical)
+    {if (key2 == model_name) {
+        for(var c in json.statistical[key2].cors)
+        {
+            console.log("cors: ");
+            console.log(json.statistical[key2].cors[c]);
+            cors.push(json.statistical[key2].cors[c]);
+        }
+    }
+        }
+
+    for(var key3 in json.statistical) {
+        if (key3 == model_name) {
+            for (var d in json.statistical[key3].var1) {
+                console.log("var1: ");
+                console.log(json.statistical[key3].var1[d]);
+                var1.push(json.statistical[key3].var1[d]);
+            }
+        }
+    }
+    for(var key4 in json.statistical) {
+        if (key4 == model_name) {
+            for (var e in json.statistical[key4].var2) {
+                console.log("var2: ");
+                console.log(json.statistical[key4].var2[e]);
+                var2.push(json.statistical[key4].var2[e]);
+            }
+        }
+    }
+
+    // var rCall = [];
+    // rCall[0] = json.call;
+    // logArray.push("estimate: ".concat(rCall[0]));
+    // showLog();
+
+
+    for (var i = 0; i < zparams.zvars.length; i++)
+
+
+        // write the results table
+         var resultsArray = [];
+    for (var key in json.tabular) {
+        if (key == "colnames") {
+console.log("colnames found");
+            continue;
+        }
+
+        var obj = json.tabular[key];
+        resultsArray.push(obj);
+        //console.log("This is the JSON obj : "+ obj);
+        /* SO says this is important check, but I don't see how it helps here...
+         for (var prop in obj) {
+         // important check that this is objects own property
+         // not from prototype prop inherited
+         if(obj.hasOwnProperty(prop)){
+         alert(prop + " = " + obj[prop]);
+         }
+         }  */
+    }
+
+
+d3.select("#resultsView_tabular").html("");
+
+
+    var table = d3.select("#resultsView_tabular")
+        .append("p")
+        //.html("<center><b>Results</b></center>")
+        .append("table");
+
+   var thead = table.append("thead");
+    thead.append("tr")
+        .selectAll("th")
+        .data(colnames)
+        .enter()
+        .append("th")
+        .text(function(d) { return d;});
+
+    var tbody = table.append("tbody");
+    tbody.selectAll("tr")
+        .data(rownames)
+        .enter().append("tr")
+        .selectAll("td")
+        .data(function(d){return d;})
+        .enter().append("td")
+        .text(function(d){
+            var myNum = Number(d);
+            if(isNaN(myNum)) { return d;}
+            return myNum.toPrecision(3);
+        })
+        .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")}) // for no discernable reason
+        .on("mouseout", function(){d3.select(this).style("background-color", "#F9F9F9")}) ;  //(but maybe we'll think of one)
+
+    d3.select("resultsView_statistics").html("");
+    d3.select("#resultsView_statistics")
+        .html("")
+        .style("background-color","#fff")
+        .append("h5")
+        .text("EXPLORE STATISTICS")
+        .style("color","#757575")
+        .append("p")
+        .html(function() {
+            return "<b></b>".concat(cork.toString());
+                        })
+        .style("background-color",selVarColor)
+
+
+        .append("p")
+
+        .html(function() {
+            return "<b></b>".concat(corp.toString());
+        })
+         .style("background-color","#E1F5FE")
+        .append("p")
+
+        .html(function() {
+            return "<b></b>".concat(cors.toString());
+        })
+        .style("background-color",grayColor)
+    ;
+
+}
+
+
+
+
 
 // this function parses the transformation input. variable names are often nested inside one another, e.g., ethwar, war, wars, and so this is handled
 function transParse(n) {
@@ -2693,6 +3028,8 @@ function transform(n,t, typeTransform) {
 
     function transformSuccess(btn, json) {
         estimateLadda.stop();
+        json_data_explore=json;
+        console.log("json explore",json_data_explore );
         //console.log("json in: ", json);
 
         if(json.typeTransform[0]) {
@@ -3139,7 +3476,7 @@ function tabRight(tabid) {
 
     if(tabid=="btnUnivariate") {
     //  document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
-     document.getElementById('btnResults').setAttribute("class", "btn btn-default");
+     document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
       document.getElementById('btnUnivariate').setAttribute("class", "btn active");
       document.getElementById('univariate').style.display = 'block';
 
@@ -3147,17 +3484,17 @@ function tabRight(tabid) {
         .attr("class", "sidepanel container clearfix");
     }
 
-    else if (tabid=="btnResults") {
+    else if (tabid=="btnBivariate") {
       document.getElementById('btnUnivariate').setAttribute("class", "btn btn-default");
      // document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
-      document.getElementById('btnResults').setAttribute("class", "btn active");
+      document.getElementById('btnBivariate').setAttribute("class", "btn active");
       document.getElementById('results').style.display = 'block';
 
         if(estimated===false) {
             d3.select("#rightpanel")
             .attr("class", "sidepanel container clearfix");
         }
-        else if(righttab=="btnResults" | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix") {toggleR()};
+        else if(righttab=="btnBivariate" | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix") {toggleR()};
     }
 
     righttab=tabid; // a global that may be of use

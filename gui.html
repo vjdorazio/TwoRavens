@@ -82,8 +82,10 @@
         <!-- Carousel items -->
         <div class="carousel-inner">
         </div>
+        <button id="handle_spaceTool" class="spaceTool" onclick="handle_spacetools()"><span class="glyphicons glyphicons-circle-arrow-left"></span></button>
 
-        <div id="spacetools" class="spaceTool" style="z-index:16;">
+        <div id="spacetools" class="spaceTool" style="z-index:16;  ">
+
             <button class="btn btn-default" id="btnSave" title="Save any Changes." onclick="writetojson()"><span class="glyphicon glyphicon-floppy-disk"></span></button>
             <button class="btn btn-default" id="btnDisJoin" title="Delete all connections between nodes." onclick="disconnectAll()"><span class="	glyphicon glyphicon-remove-circle"></span></button>
             <button class="btn btn-default" id="btnJoin" title="Make all possible connections between nodes." onclick="connectAll()"><span class="	glyphicon glyphicon-link"></span></button>
@@ -189,9 +191,9 @@
         <!-- The following is fix for the longstanding button wrapping problem on small screens -->
         <div class="btn-group btn-group-justified" role="group" style="margin-top:.5em;" aria-label="....">
              <!--<div class="btn-group" style="margin-right:0;"> -->
-                 <button type="button" class="btn active" id="btnUnivariate" onclick="tabRight('btnUnivariate');" style="width: 33%">Univariate</button>
+                 <button type="button" class="btn active" id="btnUnivariate" onclick="tabRight('btnUnivariate');" style="width: 130px">Univariate</button>
 
-            <button type="button" class="btn btn-default" id="btnResults" onclick="tabRight('btnResults');" style="width: 33%">Bivariate</button>
+            <button type="button" class="btn btn-default" id="btnBivariate" onclick="tabRight('btnBivariate');" style="width: 130px">Bivariate</button>
 
              <!-- </div> -->
         </div>
