@@ -33,8 +33,17 @@
 .graph_collapse {
     overflow: hidden;
     display:inline-block; /* or float:left; */
-    height: 30px;
+    height: 50px;
 	width:650px;
+	-webkit-transition: all 1s ease;
+}
+
+.graph_close {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 0px;
+	width:650px;
+	-webkit-transition: all 1s ease;
 }
 
 .graph_config {
@@ -42,10 +51,15 @@
     display:inline-block; /* or float:left; */
     height: 450px;
 	width:650px;
+	-webkit-transition: all 1s ease;
 }
-		
-.graph_header {
-    overflow: hidden;
-    display:inline-block; /* or float:left; */
-	width:650px;
-}
+
+.hide {
+	display:none;
+}	
+
+.show {
+	display:block;
+	cursor:pointer;
+	
+}		

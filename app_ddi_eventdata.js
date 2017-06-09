@@ -3368,7 +3368,14 @@ function fetchJSONObjectForSubGraph(cname) {
 		var svgToRemove = mapGraphSVG[cname];
 		svgToRemove.remove();
 		$("#"+cname).removeClass("labelClicked");
-		$("#sub_graph_td_"+cname).parent().remove();
+		
+		$("#sub_graph_td_" + cname).removeClass('graph_config');
+		$("#sub_graph_td_" + cname).addClass('graph_close');
+		
+		 setTimeout(function() {
+			$("#sub_graph_td_"+cname).parent().remove();
+		}, 1000);
+		
 		mapGraphSVG[cname] = null;	
 			
 		return;
@@ -3380,10 +3387,22 @@ function fetchJSONObjectForSubGraph(cname) {
 	
 	
 	var label1 = $('<label>'+cname+':</label>');
-	var label2 = $('<label class="unclicked" id="expand_collapse_text_'+cname+'" onclick="javascript:subgraphAction(this.id)">Collapse</label>');
+	var label2 = $('<label class="hide" id="expand_collapse_text_'+cname+'">Collapse</label>');
 	$("#sub_graph_td_"+cname).append(label1);
 	$("#sub_graph_td_"+cname).append("&nbsp;&nbsp;&nbsp;");
 	$("#sub_graph_td_"+cname).append(label2);
+	
+	var label4 = $('<label><i class="fa fa-compress fa-2x fa-border show" id="Collapse_Main_Icon_'+cname+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cname+'\')"></i></label>');
+	$("#sub_graph_td_"+cname).append(label4);	
+	
+	var label5 = $('<label><i class="fa fa-expand fa-2x fa-border hide" id="Expand_Main_Icon_'+cname+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cname+'\')"></i></label>');
+	$("#sub_graph_td_"+cname).append(label5);	
+	
+	$("#sub_graph_td_"+cname).append("&nbsp;&nbsp;");
+	
+	var label6 = $('<label><i class="fa fa-times fa-2x fa-border show" onclick="javascript:maingraphYLabelClicked(\''+cname+'\')"></i></label>');
+	$("#sub_graph_td_"+cname).append(label6);	
+	
 	
 	var svg2 = d3.select("#sub_graph_td_"+cname).append("svg:svg")
        .attr("width",  500)
@@ -3408,9 +3427,6 @@ function maingraphAction(action) {
 	if(action == 'Expand_Collapse') {
 		
 		action = $('#Expand_Collapse_Main_Text').text();
-				
-		$("#Expand_Collapse_Main_Text").removeClass("unclicked");
-		$("#Expand_Collapse_Main_Text").addClass("clicked");
 	}
 	else {
 		
@@ -3437,7 +3453,12 @@ function maingraphAction(action) {
 	else if(action == 'Collapse') {
 		
 		$("#Expand_Collapse_Main_Text").text("Expand");
-		$(".main_graph").hide();
+		
+		$("#Collapse_Main_Icon").removeClass("show");
+		$("#Collapse_Main_Icon").addClass("hide");
+		$("#Expand_Main_Icon").removeClass("hide");
+		$("#Expand_Main_Icon").addClass("show");
+		//$(".main_graph").hide();
 		
 		
 		$("#main_graph_td").removeClass('graph_config');
@@ -3447,7 +3468,12 @@ function maingraphAction(action) {
 	else if(action == 'Expand') {
 		
 		$("#Expand_Collapse_Main_Text").text("Collapse");
-		$(".main_graph").show();
+		
+		$("#Collapse_Main_Icon").removeClass("hide");
+		$("#Collapse_Main_Icon").addClass("show");
+		$("#Expand_Main_Icon").removeClass("show");
+		$("#Expand_Main_Icon").addClass("hide");
+		//$(".main_graph").show();
 		
 		
 		$("#main_graph_td").removeClass('graph_collapse');
@@ -3469,7 +3495,13 @@ function subgraphAction(textId) {
 	if(action == 'Collapse') {
 		
 		$("#"+textId).text("Expand");
-		$(".sub_graph_"+ cname).hide();
+		
+		$("#Collapse_Main_Icon_"+cname).removeClass("show");
+		$("#Collapse_Main_Icon_"+cname).addClass("hide");
+		$("#Expand_Main_Icon_"+cname).removeClass("hide");
+		$("#Expand_Main_Icon_"+cname).addClass("show");
+			
+		//$(".sub_graph_"+ cname).hide();
 		
 		
 		$("#sub_graph_td_" + cname).removeClass('graph_config');
@@ -3479,7 +3511,12 @@ function subgraphAction(textId) {
 	else if(action == 'Expand') {
 		
 		$("#"+textId).text("Collapse");
-		$(".sub_graph_"+ cname).show();
+		
+		$("#Collapse_Main_Icon_"+cname).removeClass("hide");
+		$("#Collapse_Main_Icon_"+cname).addClass("show");
+		$("#Expand_Main_Icon_"+cname).removeClass("show");
+		$("#Expand_Main_Icon_"+cname).addClass("hide");
+	//$(".sub_graph_"+ cname).show();
 		
 		$("#sub_graph_td_" + cname).removeClass('graph_collapse');
 		$("#sub_graph_td_" + cname).addClass('graph_config');
@@ -3582,7 +3619,8 @@ function axis_MainGraph(svg) {
 		.attr("x", 30)
 		.attr("y", 30)
 		.attr("fill", "black")
-		.text("Region:");
+		.text("Region:")
+		 .attr("class", "main_graph");
 		
 	svg.append("text")
 	 .attr("x", 220)
@@ -3659,9 +3697,13 @@ function mainGraphLabel(svg) {
 	$("#main_graph_td").append(label2);	
 	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
 	
-	var label3 = $('<label align="right" id="Expand_Collapse_Main_Text" class="unclicked" onclick = "javascript:maingraphAction(\'Expand_Collapse\')">Collapse</label>');
+	var label3 = $('<label align="right" id="Expand_Collapse_Main_Text" class="hide">Collapse</label>');
 	$("#main_graph_td").append(label3);	
-		
+	var label4 = $('<label><i class="fa fa-compress fa-2x fa-border show" id="Collapse_Main_Icon" onclick = "javascript:maingraphAction(\'Expand_Collapse\')"></i></label>');
+	$("#main_graph_td").append(label4);	
+	var label5 = $('<label><i class="fa fa-expand fa-2x fa-border hide" id="Expand_Main_Icon" onclick = "javascript:maingraphAction(\'Expand_Collapse\')"></i></label>');
+	$("#main_graph_td").append(label5);	
+			
 }
 
 /**
