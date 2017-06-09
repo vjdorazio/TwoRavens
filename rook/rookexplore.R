@@ -267,8 +267,12 @@ explore.app <- function(env){
     if(production){
         sink()
     }
+
+     write(result, "myresult2.json")
     response$write(result)
     response$finish()
+    
+
     
 }
 
