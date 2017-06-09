@@ -2726,7 +2726,7 @@ var model_name=model_name1.trim();
 
                 console.log("colnames: ");
                 console.log(json.tabular[i].colnames[j]);
-                colnames.push(json.tabular[i].colnames[j]);
+                colnames.push(json.tabular[i].colnames);
 
             }
         }
@@ -2739,7 +2739,7 @@ var model_name=model_name1.trim();
             for (var k in json.tabular[i].rownames) {
 
                 console.log(json.tabular[i].rownames[k]);
-                rownames.push(json.tabular[i].rownames[k]);
+                rownames.push(json.tabular[i].rownames);
             }
         }
     }
@@ -2762,13 +2762,30 @@ var model_name=model_name1.trim();
         }
     }
   for(var i in json.tabular){
-        for(var n in json.tabular[i].data)
+      if (i == model_name) {
+          // console.log("This is data : ");
+          for (var n in json.tabular[i].data) {
+table_data[n]=[];
+              //  console.log(json.tabular[i].data[n]);
+              console.log("this is data for : " + json.tabular[i].data[n]);
+              for (var a = 0; a < colnames.length; a++) {
+                 // console.log("data : ");
+                 // console.log(json.tabular[i].data[n][a]);
+                  table_data[n].push(json.tabular[i].data[n][a]);
+              }
+
+          }
+
+      }
+    }
+
+    for(var p=0; p<rownames.length;p++)
+    { console.log(" row data : "+ p);
+        for(var l=0;l<colnames.length;l++)
         {
-            for( var k=0; k<colnames.length;k++){}
-
+            console.log("col data : ");
+            console.log(table_data[p][l]);
         }
-
-
     }
 
 
@@ -2859,7 +2876,11 @@ d3.select("#resultsView_tabular").html("");
     var table = d3.select("#resultsView_tabular")
         .append("p")
         //.html("<center><b>Results</b></center>")
-        .append("table");
+        .append("table")
+        .style("font-size",10)
+        .style("line-height",10)
+            .style("border",1)
+        ;
 
    var thead = table.append("thead");
     thead.append("tr")
