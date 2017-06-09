@@ -3243,7 +3243,9 @@ function drawMainGraph(data) {
 		
 	mapLocationObj["scale"] = scale;
 	
-	var table = $("#main").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td'></td></tr></table>");
+	var table = $("#main_loc").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
+	mainGraphLabel(svg1);
+	
 	var svg1 = d3.select("#main_graph_td").append("svg:svg")
         .attr("width",  500)
         .attr("height", 350);
@@ -3251,7 +3253,6 @@ function drawMainGraph(data) {
 	mapLocationObj["main_graph"] = svg1;
 	
 	axis_MainGraph(svg1);
-	mainGraphLabel(svg1);
 	
 	render1(data, "black"); 
 }
@@ -3271,30 +3272,40 @@ function render1(data, color){
 	
     // Bind data
 	var rectGroup= svg.append("g");
+	
+	var textGroup= svg.append("g");
 		        
 	var rects = rectGroup.selectAll("rect").data(data).enter().append("rect");
-    var texts = rectGroup.selectAll("text").data(data).enter().append("text");
+	var tg_rects = textGroup.selectAll("rect").data(data).enter().append("rect");
+	var tg_texts = textGroup.selectAll("text").data(data).enter().append("text");
    
     // Enter
     rects.attr("x", 100)
      .attr("height", 30)
-	 .attr("class", "main_graph")
-	 .attr("fill", color);
+	 .attr("class", "main_graph");
 		
-	texts.attr("x", 30)
+	tg_rects.attr("x", 25)
+     .attr("height", 30)
+	 .attr("class", "main_graph clickable");
+	 
+	tg_texts.attr("x", 30)
 	 .attr("class", "main_graph")
-	 .attr("style", "cursor:pointer")
-	 .attr("fill", "black");
+	 .attr("style", "cursor:pointer");
+	 
         
 	// Update
     rects.attr("y", function (d) { return scale(d.cid) + 50;})
-	 .attr("width",  function (d) { return scale(d.w);});
+	 .attr("width",  function (d) { return scale(d.w);})
+	 .attr("fill", color);
     		
+	tg_rects.attr("y", function (d) { return scale(d.cid) + 50;})
+	 .attr("width",  function (d) { return 40;})
+	 .attr("onclick", function (d) { return "javascript:maingraphYLabelClicked('"+d.cname+"')"; });
 			
-	texts.attr("y", function (d) { return scale(d.cid) + 70;})
+	tg_texts.attr("y", function (d) { return scale(d.cid) + 70;})
 	 .text(function (d) { mapGraphSVG[d.cname] = null; return d.cname;})		
 	 .attr("id", function (d) { return d.cname;})
-	 .attr("onclick", "javascript:maingraphYLabelClicked(this.textContent)");
+	 .attr("fill", "black");
        
 	// Exit
     //rects.exit().remove();
@@ -3306,8 +3317,9 @@ function render1(data, color){
  * render2 to render/draw the sub graphs with the data provided in form of array of Objects 
  *
 **/
-function render2(svg, data, color){
+function render2(cname, data, color){
 	 
+	var svg = mapGraphSVG[cname];
 	var scale = mapLocationObj["scale"];
 	
     // Bind data
@@ -3316,11 +3328,14 @@ function render2(svg, data, color){
 	var rects = rectGroup.selectAll("rect").data(data).enter().append("rect");
     var texts = rectGroup.selectAll("text").data(data).enter().append("text");
 	
+	
     // Enter
     rects.attr("x", 100)
-     .attr("height", 30);
+     .attr("height", 30)
+	 .attr("class", "sub_graph_"+ cname);
 		
-	texts.attr("x", 30);
+	texts.attr("x", 30)
+	.attr("class", "sub_graph_"+ cname);
         
 	// Update
     rects.attr("y", function (d) { return 50+scale(d.cid);})
@@ -3361,7 +3376,15 @@ function fetchJSONObjectForSubGraph(cname) {
 		
 	$("#"+cname).addClass("labelClicked");
 		
-	$("#svg_graph_table").append('<tr><td id="sub_graph_td_'+cname +'"></td></tr>');
+	$("#svg_graph_table").append('<tr id="sub_graph_tr_'+cname +'"><td id="sub_graph_td_'+cname +'" class="graph_config"></td></tr>');
+	
+	
+	var label1 = $('<label>'+cname+':</label>');
+	var label2 = $('<label class="unclicked" id="expand_collapse_text_'+cname+'" onclick="javascript:subgraphAction(this.id)">Collapse</label>');
+	$("#sub_graph_td_"+cname).append(label1);
+	$("#sub_graph_td_"+cname).append("&nbsp;&nbsp;&nbsp;");
+	$("#sub_graph_td_"+cname).append(label2);
+	
 	var svg2 = d3.select("#sub_graph_td_"+cname).append("svg:svg")
        .attr("width",  500)
        .attr("height", 350);
@@ -3370,7 +3393,7 @@ function fetchJSONObjectForSubGraph(cname) {
 			
 	axis_SubGraph(svg2, cname);
 	var data = getSubgraphData(cname);
-	render2(svg2, data, "black"); 
+	render2(cname, data, "black"); 
         
 }
 
@@ -3380,12 +3403,20 @@ function fetchJSONObjectForSubGraph(cname) {
  **/
 function maingraphAction(action) {
 
+	maingraphHeaderUnClickAll();
+	
 	if(action == 'Expand_Collapse') {
 		
 		action = $('#Expand_Collapse_Main_Text').text();
+				
+		$("#Expand_Collapse_Main_Text").removeClass("unclicked");
+		$("#Expand_Collapse_Main_Text").addClass("clicked");
 	}
-	
-	maingraphHeaderClicked(action);	  
+	else {
+		
+		$("#"+action).removeClass("unclicked");
+		$("#"+action).addClass("clicked");
+	}
 		
 	if(action == 'All') {
 						
@@ -3407,19 +3438,21 @@ function maingraphAction(action) {
 		
 		$("#Expand_Collapse_Main_Text").text("Expand");
 		$(".main_graph").hide();
-		$(".main_graph_head_border").show();
 		
-		var svg = mapLocationObj["main_graph"];
-		svg.attr("height", 50);
+		
+		$("#main_graph_td").removeClass('graph_config');
+		$("#main_graph_td").removeClass('graph_config');
+		$("#main_graph_td").addClass('graph_collapse');
 	}
 	else if(action == 'Expand') {
 		
 		$("#Expand_Collapse_Main_Text").text("Collapse");
 		$(".main_graph").show();
-		$(".main_graph_head_border").hide();
 		
-		var svg = mapLocationObj["main_graph"];
-		svg.attr("height", 350);
+		
+		$("#main_graph_td").removeClass('graph_collapse');
+		$("#main_graph_td").addClass('graph_config');
+		$("#main_graph_td").addClass('graph_config');
 	}
 }
 
@@ -3428,27 +3461,28 @@ function maingraphAction(action) {
  * subgraphAction-> to map the subgraph function {All, None, Expand/Collapse}
  *
  **/  
-function subgraphAction(action, textId) {
+function subgraphAction(textId) {
 	  
 	var cname = textId.substring(21);
+	var action = $("#" + textId).text();
 
 	if(action == 'Collapse') {
 		
 		$("#"+textId).text("Expand");
-		$(".sub_graph_"+cname).hide();
-		$("#sub_graph_head_border_"+cname).show();
-			
-		var svg = mapGraphSVG[cname];
-		svg.attr("height", 50);
+		$(".sub_graph_"+ cname).hide();
+		
+		
+		$("#sub_graph_td_" + cname).removeClass('graph_config');
+		$("#sub_graph_td_" + cname).addClass('graph_collapse');
 			
 	}
 	else if(action == 'Expand') {
 		
 		$("#"+textId).text("Collapse");
-		$(".sub_graph_"+cname).show();
-		$("#sub_graph_head_border_"+cname).hide();
-		var svg = mapGraphSVG[cname];
-		svg.attr("height", 350);			
+		$(".sub_graph_"+ cname).show();
+		
+		$("#sub_graph_td_" + cname).removeClass('graph_collapse');
+		$("#sub_graph_td_" + cname).addClass('graph_config');
 	}
 }
  
@@ -3472,18 +3506,6 @@ function removeAllSubGraphSVG(){
 	}
 }
 
-/**
- * maingraphHeaderClicked - when any of the header is clicked 
- * in the main graph, take these actions
- *
- **/
-function maingraphHeaderClicked(name) {
-	  
-	maingraphHeaderUnClickAll();
-		
-	$("#"+name).removeClass("unclicked");
-	$("#"+name).addClass("clicked");
-}
 
 /**
  * maingraphHeaderUnClickAll - when any of the header is clicked 
@@ -3494,11 +3516,11 @@ function maingraphHeaderUnClickAll(){
 
 	$("#All").removeClass("clicked");
 	$("#None").removeClass("clicked");
-	$("#Collapse").removeClass("clicked");
+	$("#Expand_Collapse_Main_Rect").removeClass("clicked");
 		
 	$("#All").addClass("unclicked");
 	$("#None").addClass("unclicked");
-	$("#Collapse").addClass("unclicked");
+	$("#Expand_Collapse_Main_Rect").addClass("unclicked");
 		
 	for(var cname in mapGraphSVG) {
 			
@@ -3556,6 +3578,11 @@ function axis_MainGraph(svg) {
 	 .attr("stroke", "black")
 	 .attr("class", "main_graph");
 		
+	svg.append("text")
+		.attr("x", 30)
+		.attr("y", 30)
+		.attr("fill", "black")
+		.text("Region:");
 		
 	svg.append("text")
 	 .attr("x", 220)
@@ -3605,40 +3632,13 @@ function axis_MainGraph(svg) {
 	 .attr("class", "sub_graph_"+cname);
 	
 		
-	svg.append("rect")
-	 .attr("x", 20)
-	 .attr("y", 10)
-	 .attr("width", 470)
-	 .attr("height", 35)
-	 .attr("fill", "none")
-	 .attr("stroke-width", 1)
-	 .attr("stroke", "black")
-	 .attr("class", "sub_graph_head_border")
-	 .attr("id", "sub_graph_head_border_"+cname);
-		
 	svg.append("text")
 	 .attr("x", 30)
 	 .attr("y", 30)
 	 .attr("fill", "black")
-	 .text(cname + ":");
-		
-	svg.append("rect")
-	 .attr("x", 200)
-	 .attr("y", 10)
-	 .attr("width", 75)
-	 .attr("height", 30)
-	 .attr("class", "sub_graph_"+cname)
-	 .text("Collapse")
-	 .attr("class", "unclicked");			
-
-	 svg.append("text")
- 	 .attr("x", 210)
- 	 .attr("y", 30)
-	 .attr("class", "clickable")
-	 .attr("id", "expand_collapse_text_"+cname)
-	 .text("Collapse")
-	 .attr("onclick", "javascript:subgraphAction(this.textContent, this.id)");
-		
+	 .text(cname + ":")
+	 .attr("class", "sub_graph_"+cname);;
+			
 }
 
 /** 
@@ -3646,75 +3646,21 @@ function axis_MainGraph(svg) {
  *
  **/
 function mainGraphLabel(svg) {
-	  
-	svg.append("rect")
-		.attr("x", 20)
-		.attr("y", 10)
-		.attr("width", 470)
-		.attr("height", 35)
-		.attr("fill", "none")
-		.attr("stroke-width", 1)
-		.attr("stroke", "black")
-		.attr("class", "main_graph_head_border");
+	  	
+	var label = $('<label align="right" id="Region">Region:</label>');
+	$("#main_graph_td").append(label);
+	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
 		
-	svg.append("text")
-		.attr("x", 30)
-		.attr("y", 30)
-		.attr("fill", "black")
-		.text("Region:");
-		
-	svg.append("rect")
-		.attr("x", 110)
-		.attr("y", 10)
-		.attr("width", 40)
-		.attr("height", 30)
-		.attr("id", "All")
-		.text("All")
-		.attr("class", "unclicked")
-		.attr("onclick", "javascript:maingraphAction('All')");
-		
-	svg.append("text")
-		.attr("x", 120)
-		.attr("y", 30)
-		.text("All")
-		.attr("class", "clickable");
-		
-		
-	svg.append("rect")
-		.attr("x", 150)
-		.attr("y", 10)
-		.attr("width", 55)
-		.attr("height", 30)
-		.attr("id", "None")
-		.attr("class", "unclicked")
-		.attr("onclick", "javascript:maingraphAction('None')");
-		
-	svg.append("text")
-		.attr("x", 160)
-		.attr("y", 30)
-		.text("None")
-		.attr("class", "clickable");
-		
-
-	svg.append("rect")
-		.attr("x", 200)
-		.attr("y", 10)
-		.attr("width", 75)
-		.attr("height", 30)
-		.attr("id", "Expand_Collapse_Main_Rect")
-		.text("Collapse")
-		.attr("class", "unclicked")
-		.attr("onclick", "javascript:maingraphAction('Expand_Collapse')");
-		
-				
-		
-	svg.append("text")
-		.attr("x", 210)
-		.attr("y", 30)
-		.attr("id", "Expand_Collapse_Main_Text")
-		.text("Collapse")
-		.attr("class", "clickable");
-		
+	var label1 = $('<label align="right" id="All" class="unclicked" onclick = "javascript:maingraphAction(\'All\')">All</label>');
+	$("#main_graph_td").append(label1);	
+	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
+	
+	var label2 = $('<label align="right" id="None" class="unclicked" onclick = "javascript:maingraphAction(\'None\')">None</label>');
+	$("#main_graph_td").append(label2);	
+	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
+	
+	var label3 = $('<label align="right" id="Expand_Collapse_Main_Text" class="unclicked" onclick = "javascript:maingraphAction(\'Expand_Collapse\')">Collapse</label>');
+	$("#main_graph_td").append(label3);	
 		
 }
 
@@ -3741,7 +3687,7 @@ function mainGraphLabel(svg) {
 		
 		else if(cname == 'DEF') {
 			myArrayOfObjects = [ 
-				{ cid: 1, cname:'def1', w: 10}, 
+				{ cid: 1, cname:'def1', w: 7}, 
 				{ cid: 2, cname:'def2', w: 2}, 
 				{ cid: 3, cname:'def3', w: 5}, 
 				{ cid: 4, cname:'def4', w: 1}, 

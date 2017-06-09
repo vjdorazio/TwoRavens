@@ -1,6 +1,6 @@
 .unclicked {
 	cursor:pointer;
-	fill: none;
+	fill: white;
 }
 	
 .clicked {
@@ -10,6 +10,7 @@
 	
 .clickable {
 	cursor:pointer;
+	fill: white;
 }
 	
 .labelClicked {
@@ -27,4 +28,24 @@
 .sub_graph_head_border {
 	display:block;
 }
+
+
+.graph_collapse {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 30px;
+	width:650px;
+}
+
+.graph_config {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 450px;
+	width:650px;
+}
 		
+.graph_header {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+	width:650px;
+}
