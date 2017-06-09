@@ -225,8 +225,9 @@ explore.app <- function(env){
           }
           
           if(length(images)>0){
-              names(images)<-paste("output",1:length(images),sep="")
-              names(tabular) <- names(statistical) <- apply(myedges,1,function(x) paste(x[1],x[2],sep=""))
+              #  names(images)<-paste("output",1:length(images),sep="")
+              names(images) <- apply(myedges,1,function(x) c(paste(x[1],x[2],sep="-"),paste(x[2],x[1],sep="-")))
+              names(tabular) <- names(statistical) <- apply(myedges,1,function(x) paste(x[1],x[2],sep="-"))
               result<-list(images=images, call=almostCall, tabular=tabular, statistical=statistical)
           }else{
               warning<-TRUE
