@@ -1,11 +1,21 @@
 .unclicked {
 	cursor:pointer;
+	background-color: white;
 	fill: white;
+	text-align:center;
 }
 	
 .clicked {
 	cursor:pointer;
+	background-color:gray;
+	paint-order: stroke;
+	stroke: gray;
+	stroke-width: 2px;
+	stroke-linecap: butt;
+	stroke-linejoin: miter;
+	max-width:auto;
 	fill: gray;
+	text-align:center;
 }
 	
 .clickable {
@@ -19,6 +29,8 @@
 	stroke-width: 1px;
 	stroke-linecap: butt;
 	stroke-linejoin: miter;
+	fill: white;
+	cursor:pointer;
 }
 	
 .main_graph_head_border{
@@ -33,7 +45,7 @@
 .graph_collapse {
     overflow: hidden;
     display:inline-block; /* or float:left; */
-    height: 50px;
+    height: 55px;
 	width:650px;
 	-webkit-transition: all 1s ease;
 }
@@ -41,7 +53,7 @@
 .graph_close {
     overflow: hidden;
     display:inline-block; /* or float:left; */
-    height: 0px;
+    height: 55px;
 	width:650px;
 	-webkit-transition: all 1s ease;
 }
@@ -63,3 +75,10 @@
 	cursor:pointer;
 	
 }		
+
+.graph_container {
+	width:auto; 
+	height:500px;
+	overflow-x: scroll; 
+	overflow-y: scroll;
+}

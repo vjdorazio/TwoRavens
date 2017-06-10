@@ -3211,6 +3211,13 @@ function d3date() {
 function d3loc() {
     $("#mainSVG").empty();
 	
+	// d3.select("#mainSVG").append("svg:svg")
+    // .attr("width", 600)
+    // .attr("height", 1500)
+	// .attr("id", "main_loc")
+	// .attr("style", "overflow:scroll");
+	
+	
 	var data = getMainGraphData();
 	drawMainGraph(data);
 	
@@ -3236,6 +3243,13 @@ function d3actor() {
  *
  **/
 function drawMainGraph(data) {
+	
+	d3.select("#mainSVG").append("foreignObject")
+    .attr("width", 700)
+    .attr("height", 1500)
+	.append("xhtml:body")
+    .attr("class", "graph_container")
+    .html("<div id='main_loc' align='left'></div>");
 	
 	var scale = d3.scale.linear()
         .domain([1, 5])   // Data space
@@ -3285,12 +3299,10 @@ function render1(data, color){
 	 .attr("class", "main_graph");
 		
 	tg_rects.attr("x", 25)
-     .attr("height", 30)
-	 .attr("class", "main_graph clickable");
+     .attr("height", 30);
 	 
 	tg_texts.attr("x", 30)
-	 .attr("class", "main_graph")
-	 .attr("style", "cursor:pointer");
+	 .attr("class", "main_graph");
 	 
         
 	// Update
@@ -3300,11 +3312,13 @@ function render1(data, color){
     		
 	tg_rects.attr("y", function (d) { return scale(d.cid) + 50;})
 	 .attr("width",  function (d) { return 40;})
-	 .attr("onclick", function (d) { return "javascript:maingraphYLabelClicked('"+d.cname+"')"; });
+	 .attr("onclick", function (d) { return "javascript:maingraphYLabelClicked('"+d.cname+"')"; })
+	 .attr("id", function (d) { return "tg_rect_" + d.cname;})
+	 .attr("class", "main_graph clickable");
 			
 	tg_texts.attr("y", function (d) { return scale(d.cid) + 70;})
 	 .text(function (d) { mapGraphSVG[d.cname] = null; return d.cname;})		
-	 .attr("id", function (d) { return d.cname;})
+	 .attr("id", function (d) { return "tg_text_" + d.cname;})
 	 .attr("fill", "black");
        
 	// Exit
@@ -3367,7 +3381,11 @@ function fetchJSONObjectForSubGraph(cname) {
 		
 		var svgToRemove = mapGraphSVG[cname];
 		svgToRemove.remove();
-		$("#"+cname).removeClass("labelClicked");
+		
+		$("#tg_rect_"+cname).removeClass("labelClicked");
+		$("#tg_rect_"+cname).addClass("clickable");
+		
+		$("#tg_rect_"+cname).attr("class", "main_graph clickable");
 		
 		$("#sub_graph_td_" + cname).removeClass('graph_config');
 		$("#sub_graph_td_" + cname).addClass('graph_close');
@@ -3380,8 +3398,11 @@ function fetchJSONObjectForSubGraph(cname) {
 			
 		return;
 	}
-		
-	$("#"+cname).addClass("labelClicked");
+	
+	$("#tg_rect_"+cname).removeClass("clickable");
+	$("#tg_rect_"+cname).addClass("labelClicked");	
+	
+	$("#tg_rect_"+cname).attr("class", "main_graph labelClicked");
 		
 	$("#svg_graph_table").append('<tr id="sub_graph_tr_'+cname +'"><td id="sub_graph_td_'+cname +'" class="graph_config"></td></tr>');
 	
@@ -3421,8 +3442,6 @@ function fetchJSONObjectForSubGraph(cname) {
  *
  **/
 function maingraphAction(action) {
-
-	maingraphHeaderUnClickAll();
 	
 	if(action == 'Expand_Collapse') {
 		
@@ -3435,7 +3454,8 @@ function maingraphAction(action) {
 	}
 		
 	if(action == 'All') {
-						
+
+		maingraphHeaderUnClickAll();
 		removeAllSubGraphSVG();
 		for(var cname in mapGraphSVG) {
 			
@@ -3445,9 +3465,13 @@ function maingraphAction(action) {
 			}
 		}
 
+		$("#All").removeClass("unclicked");
+		$("#All").addClass("clicked");
+		
 	}		
 	else if(action == 'None') {
-			
+	
+		maingraphHeaderUnClickAll();
 		removeAllSubGraphSVG();
 	}
 	else if(action == 'Collapse') {
@@ -3461,7 +3485,6 @@ function maingraphAction(action) {
 		//$(".main_graph").hide();
 		
 		
-		$("#main_graph_td").removeClass('graph_config');
 		$("#main_graph_td").removeClass('graph_config');
 		$("#main_graph_td").addClass('graph_collapse');
 	}
@@ -3477,7 +3500,6 @@ function maingraphAction(action) {
 		
 		
 		$("#main_graph_td").removeClass('graph_collapse');
-		$("#main_graph_td").addClass('graph_config');
 		$("#main_graph_td").addClass('graph_config');
 	}
 }
@@ -3537,7 +3559,12 @@ function removeAllSubGraphSVG(){
 			var svgToRemove = mapGraphSVG[cname];
 			svgToRemove.remove();
 			$("#sub_graph_td_"+cname).parent().remove();
-			$("#"+cname).removeClass("labelClicked");
+			
+			$("#tg_rect_"+cname).removeClass("labelClicked");
+			$("#tg_rect_"+cname).addClass("clickable");
+			
+			$("#tg_rect_"+cname).attr("class", "main_graph clickable");
+			
 			mapGraphSVG[cname] = null;
 		}
 	}
@@ -3553,26 +3580,28 @@ function maingraphHeaderUnClickAll(){
 
 	$("#All").removeClass("clicked");
 	$("#None").removeClass("clicked");
-	$("#Expand_Collapse_Main_Rect").removeClass("clicked");
 		
 	$("#All").addClass("unclicked");
 	$("#None").addClass("unclicked");
-	$("#Expand_Collapse_Main_Rect").addClass("unclicked");
 		
 	for(var cname in mapGraphSVG) {
 			
 		if(mapGraphSVG[cname] != null) {
 			
-			if($("#"+cname).hasClass("labelClicked")) {
+			if($("#tg_rect_"+cname).hasClass("labelClicked") != true) {
 					
-			$("#"+cname).removeClass("labelClicked");
+				$("#tg_rect_"+cname).removeClass("clickable");
+				$("#tg_rect_"+cname).addClass("labelClicked");
+				
+				$("#tg_rect_"+cname).attr("class", "main_graph labelClicked");
 			}
-	
-			$("#"+cname).addClass("labelClicked");
 		}
 		else {
 		
-			$("#"+cname).removeClass("labelClicked");
+			$("#tg_rect_"+cname).removeClass("labelClicked");
+			$("#tg_rect_"+cname).addClass("clickable");
+			
+			$("#tg_rect_"+cname).attr("class", "main_graph clickable");
 		}
 	}
 		
@@ -3689,11 +3718,11 @@ function mainGraphLabel(svg) {
 	$("#main_graph_td").append(label);
 	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
 		
-	var label1 = $('<label align="right" id="All" class="unclicked" onclick = "javascript:maingraphAction(\'All\')">All</label>');
+	var label1 = $('<label><i class="fa fa-border fa-2x"><label align="right" id="All" class="unclicked" onclick = "javascript:maingraphAction(\'All\')">All</label></i></label>');
 	$("#main_graph_td").append(label1);	
 	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
 	
-	var label2 = $('<label align="right" id="None" class="unclicked" onclick = "javascript:maingraphAction(\'None\')">None</label>');
+	var label2 = $('<label><i class="fa fa-border fa-2x"><label align="right" id="None" class="unclicked" onclick = "javascript:maingraphAction(\'None\')">None</label></i></label>');
 	$("#main_graph_td").append(label2);	
 	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
 	
