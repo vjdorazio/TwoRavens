@@ -2270,14 +2270,19 @@ function estimate(btn) {
         //console.log("json in: ", json);
         console.log("json explore",json_data_explore );
 
-        var myparent = document.getElementById("results");
+        var myparent = document.getElementById("rightContentArea");
         if(estimated==false) {
             myparent.removeChild(document.getElementById("resultsHolder"));
         }
 
         estimated=true;
-        d3.select("#results")
-        .style("display", "block");
+       // d3.select("#results")
+       // .style("display", "block");
+        d3.select("#result_left")
+            .style("display", "block");
+
+        d3.select("#result_right")
+            .style("display", "block");
 
         d3.select("#resultsView")
         .style("display", "block");
@@ -2392,15 +2397,21 @@ function explore(btn) {
         console.log("json in: ", json);
 
         
-        var myparent = document.getElementById("results");
+       var myparent = document.getElementById("rightContentArea");
         if(estimated==false) {
             myparent.removeChild(document.getElementById("resultsHolder"));
         }
+
         
         estimated=true;
-        d3.select("#results")
-        .style("display", "block");
+      //  d3.select("#results")
+       // .style("display", "block");
 
+       d3.select("#result_left")
+          .style("display", "block");
+
+        d3.select("#result_right")
+            .style("display", "block");
         d3.select("#resultsView")
         .style("display", "block");
 
@@ -2423,7 +2434,6 @@ function explore(btn) {
             .style("overflow-x","scroll")
             .append("span")
             .style("white-space","pre")
-
             .style("margin-top",0)
             .style("float","left")
             .style("position","relative")
@@ -2435,7 +2445,7 @@ function explore(btn) {
         // programmatic click on Results button
         $("#btnBivariate").trigger("click");
 
-        for(var i in json_explore.tabular) {
+        for(var i in json_explore.images) {
             // console.log("this is data : " + i)
             var value = i;
             console.log("This is the model name : " + value);
@@ -2443,7 +2453,7 @@ function explore(btn) {
         }
         modelCount = modelCount+1;
         var model = "Model".concat(modelCount);
-        var model_name=i;
+        var model_name=value;
        function modCol() {
             d3.select("#modelView")
             .selectAll("p")
@@ -2455,16 +2465,18 @@ function explore(btn) {
         function model_selection(model_selection_name) {
 
             d3.select("#modelView")
-
                 .append("span")
                 .text(" | ")
                 .style("margin-top",0)
                 .style("float","left")
                 .style("white-space","pre")
+                .style("overflow-y","hidden")
+                .style("overflow-x","scroll")
                 .append("p", ":first-child")// top stack for results
                 .attr("id", model)
                 .text(model_selection_name)
                 .style('background-color',"#FFD54F")
+                .style("white-space","pre")
                 .style("margin-top",0)
                 .style("float","left")
 
@@ -2489,7 +2501,7 @@ function explore(btn) {
         logArray.push("explore: ".concat(rCall[0]));
         showLog();
      //   console.log("json explore viz second",json_explore );
-       // viz_explore(model,json_explore,model_name);
+        viz_explore(model,json_explore,model_name);
     }
     
     function exploreFail(btn) {
@@ -2590,7 +2602,7 @@ function viz(m) {
 
          document.getElementById("resultsView").appendChild(zfig);
 
-
+d3.select("#resultView").style("background-color","#F3E5F5").style("z-index",16).style("box-shadow"," 10px 10px grey;");
     }
    // var rCall = [];
    // rCall[0] = json.call;
@@ -2661,10 +2673,16 @@ function viz(m) {
 
 
 //KRIPANSHU BHARGAVA, this is viz for explore
-function viz_explore(m,json_vizexplore,model_name1) {
+function viz_explore(m,json_vizexplore,model_name_set) {
     //console.log("Viz explore method called: " + model_name);
 
-var model_name=model_name1.trim();
+    var get_data=[];
+    get_data=model_name_set.split("-");
+   // console.log("asdasdsdisudwiudiquwndiuawndiuawndiwudnqiuwdnaiuwndiuawndiuawndiuwnadiwd");
+  //  console.log(get_data[0]+" and "+get_data[1]);
+
+    var model_name1=get_data[0]+"-"+get_data[1];
+var model_name2=get_data[1]+"-"+get_data[0];
 
 
     var mym = +m.substr(5, 5) - 1;
@@ -2691,18 +2709,23 @@ var model_name=model_name1.trim();
      .attr("height", 200)
      ;
      */
+
+
+    // image added to the div
     for (var i in json.images) {
 
-
-        var zfig = document.createElement("img");
-        zfig.setAttribute("src", json.images[i]);
-        zfig.setAttribute('width', 200);
-        zfig.setAttribute('height', 200);
-
-
-        document.getElementById("resultsView").appendChild(zfig);
+if(i==model_name_set) {
+    var zfig = document.createElement("img");
+    zfig.setAttribute("src", json.images[i]);
+    zfig.setAttribute('width', 450);
+    zfig.setAttribute('height', 450);
 
 
+    document.getElementById("resultsView").appendChild(zfig);
+
+    d3.select("#resultsView").style("box-shadow","1px 1px 3px grey").style("background-color","#F5F5F5");
+
+}
     }
     var colnames=[];
     var colvar=[];
@@ -2720,7 +2743,7 @@ var model_name=model_name1.trim();
     var var2=[];
     for(var i in json.tabular) {
         //console.log("this is data : " + i)
-        if (i == model_name) {
+        if (i == model_name1 || i== model_name2) {
             for (var j in json.tabular[i].colnames) {
 
 
@@ -2735,7 +2758,7 @@ var model_name=model_name1.trim();
 
     for(var i in json.tabular) {
         console.log("rownames: ");
-        if (i == model_name) {
+        if (i == model_name1 || i== model_name2) {
             for (var k in json.tabular[i].rownames) {
 
                 console.log(json.tabular[i].rownames[k]);
@@ -2744,7 +2767,7 @@ var model_name=model_name1.trim();
         }
     }
     for(var i in json.tabular) {
-        if (i == model_name) {
+        if (i == model_name1 || i== model_name2) {
             for (var l in json.tabular[i].rowvar) {
                 console.log("rowvar: ");
                 console.log(json.tabular[i].rowvar[l]);
@@ -2753,7 +2776,7 @@ var model_name=model_name1.trim();
         }
     }
     for(var i in json.tabular) {
-        if (i == model_name) {
+        if (i == model_name1 || i== model_name2) {
             for (var m in json.tabular[i].colvar) {
                 console.log("colavar: ");
                 console.log(json.tabular[i].colvar[m]);
@@ -2762,7 +2785,7 @@ var model_name=model_name1.trim();
         }
     }
   for(var i in json.tabular){
-      if (i == model_name) {
+      if (i == model_name1 || i== model_name2) {
           // console.log("This is data : ");
           for (var n in json.tabular[i].data) {
 table_data[n]=[];
@@ -2792,7 +2815,8 @@ table_data[n]=[];
     // for the statistics]
     console.log("The data for the statistical"+ json.statistical)
     for(var key in json.statistical) {
-        if (key == model_name) {
+      console.log(key);
+        if (key == model_name1 || key== model_name2) {
             for (var a in json.statistical[key].cork) {
                 console.log("cork: ");
                 console.log(json.statistical[key].cork[a]);
@@ -2801,7 +2825,7 @@ table_data[n]=[];
         }
     }
     for(var key1 in json.statistical) {
-        if (key1 == model_name) {
+        if (key1 == model_name1 || key1== model_name2) {
             for (var b in json.statistical[key1].corp) {
                 console.log("corp: ");
                 console.log(json.statistical[key1].corp[b]);
@@ -2809,32 +2833,32 @@ table_data[n]=[];
             }
         }
     }
-    for(var key2 in json.statistical)
-    {if (key2 == model_name) {
-        for(var c in json.statistical[key2].cors)
+    for(var key in json.statistical)
+    {if (key == model_name1 || key== model_name2) {
+        for(var c in json.statistical[key].cors)
         {
             console.log("cors: ");
-            console.log(json.statistical[key2].cors[c]);
-            cors.push(json.statistical[key2].cors[c]);
+            console.log(json.statistical[key].cors[c]);
+            cors.push(json.statistical[key].cors[c]);
         }
     }
         }
 
-    for(var key3 in json.statistical) {
-        if (key3 == model_name) {
-            for (var d in json.statistical[key3].var1) {
+    for(var key in json.statistical) {
+        if (key == model_name1 || key== model_name2) {
+            for (var d in json.statistical[key].var1) {
                 console.log("var1: ");
-                console.log(json.statistical[key3].var1[d]);
-                var1.push(json.statistical[key3].var1[d]);
+                console.log(json.statistical[key].var1[d]);
+                var1.push(json.statistical[key].var1[d]);
             }
         }
     }
     for(var key4 in json.statistical) {
-        if (key4 == model_name) {
-            for (var e in json.statistical[key4].var2) {
+        if (key == model_name1 || key== model_name2) {
+            for (var e in json.statistical[key].var2) {
                 console.log("var2: ");
-                console.log(json.statistical[key4].var2[e]);
-                var2.push(json.statistical[key4].var2[e]);
+                console.log(json.statistical[key].var2[e]);
+                var2.push(json.statistical[key].var2[e]);
             }
         }
     }
@@ -2870,6 +2894,7 @@ console.log("colnames found");
     }
 
 
+    // table not completed yet ( 06/11/2017)
 d3.select("#resultsView_tabular").html("");
 
 
@@ -2879,7 +2904,8 @@ d3.select("#resultsView_tabular").html("");
         .append("table")
         .style("font-size",10)
         .style("line-height",10)
-            .style("border",1)
+            .style("border","1px solid #ddd").style("text-align","left")
+            .style("border-collapse","collapse")
         ;
 
    var thead = table.append("thead");
@@ -2888,33 +2914,96 @@ d3.select("#resultsView_tabular").html("");
         .data(colnames)
         .enter()
         .append("th")
+        .style("border-style","solid")
+        .style("border-width",0.5)
+        .style("border-left","transparent")
+        .style("border-collapse","collapse")
+        .style("text-align","right").style("position","relative")
         .text(function(d) { return d;});
 
-    var tbody = table.append("tbody");
+    var tbody = table.append("tbody").style("float","left");
     tbody.selectAll("tr")
         .data(rownames)
         .enter().append("tr")
+        .style("border-style","solid")
+        .style("border-width",0.5).style("border-left","transparent")
+        .style("text-align","right").style("position","relative")
         .selectAll("td")
         .data(function(d){return d;})
         .enter().append("td")
-        .text(function(d){
+        .style("text-align","left").style("position","relative")
+        .style("border-style","solid")
+        .style("border-width",0.5)
+        .style("border-right","transparent")
+
+        .text(
+
+
+            function(d){
             var myNum = Number(d);
             if(isNaN(myNum)) { return d;}
             return myNum.toPrecision(3);
         })
+
         .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")}) // for no discernable reason
         .on("mouseout", function(){d3.select(this).style("background-color", "#F9F9F9")}) ;  //(but maybe we'll think of one)
 
-    d3.select("resultsView_statistics").html("");
+
+    // data for the statistical div
+    var string1 = cork.toString();
+    var string3= string1.substring(string1.indexOf(":"),string1.length);
+    //  console.log(string3);
+    var string2= string1.substring(0,string1.indexOf("c"));
+    //  console.log(string2);
+    var string4 = corp.toString();
+    var string6= string4.substring(string4.indexOf(":"),string4.length);
+    //  console.log(string3);
+    var string5= string4.substring(0,string4.indexOf("c"));
+    //  console.log(string2);
+    var string7 = cors.toString();
+    var string9= string7.substring(string7.indexOf(":"),string7.length);
+    //  console.log(string3);
+    var string8= string7.substring(0,string7.indexOf("c"));
+    //  console.log(string2);
+    var statistical_data= [
+    { correlation : string2, value: string3},
+        {correlation : string5 , value: string6},
+        { correlation : string8, value: string9}
+    ];
+
+    function d3table( data){
+        d3.select("#resultsView_statistics")
+            .html("")
+            .style("background-color","#fff")
+            .append("h5")
+            .text("CORRELATION STATISTICS")
+            .style("color","#424242");
+        var table = d3.select("#resultsView_statistics").append("table").attr("class","table").style("border-collapse"," collapse"),
+            th = table.append("tr").style("border",1);
+
+        for (var i in Object.keys(data[0])){
+            th.append("td").style("border-bottom",1).style("text-align","left").style("background-color",selVarColor).append("b").text(Object.keys(data[0])[i]);
+        }
+
+        for(var row in data){
+            var tr = table.append("tr").style("margin-left",40).style("border",1).style("text-align","left");
+            for(var td in data[row])
+                tr.append("td").style("border",1).style("text-align","left").style("position","relative").style("background-color",varColor).text(data[row][td]);
+        }
+    }
+    d3table(statistical_data);
+
+  /*  d3.select("resultsView_statistics").html("");
     d3.select("#resultsView_statistics")
         .html("")
         .style("background-color","#fff")
         .append("h5")
-        .text("EXPLORE STATISTICS")
+        .text("CORRELATION STATISTICS")
         .style("color","#757575")
         .append("p")
         .html(function() {
-            return "<b></b>".concat(cork.toString());
+
+            return "<b></b>".concat(string2.concat(string3));
                         })
         .style("background-color",selVarColor)
 
@@ -2922,17 +3011,27 @@ d3.select("#resultsView_tabular").html("");
         .append("p")
 
         .html(function() {
-            return "<b></b>".concat(corp.toString());
+            var string1 = corp.toString();
+            var string3= string1.substring(string1.indexOf(":"),string1.length);
+         //   console.log(string3);
+            var string2= string1.substring(0,string1.indexOf("c"));
+        //    console.log(string2);
+            return "<b></b>".concat(string2.concat(string3));
         })
          .style("background-color","#E1F5FE")
         .append("p")
 
         .html(function() {
-            return "<b></b>".concat(cors.toString());
+            var string1 = cors.toString();
+            var string3= string1.substring(string1.indexOf(":"),string1.length);
+           // console.log(string3);
+            var string2= string1.substring(0,string1.indexOf(" c"));
+         //   console.log(string2);
+            return "<b></b>".concat(string2.concat(string3));
         })
         .style("background-color",grayColor)
     ;
-
+*/
 }
 
 
@@ -3451,6 +3550,7 @@ function tabLeft(tab) {
     document.getElementById('tab1').style.display = 'none';
     document.getElementById('tab2').style.display = 'none';
     document.getElementById('tab3').style.display = 'none';
+    document.getElementById('modelView_Container').style.display='none';
 
     if(tab==="tab1") {
         summaryHold = false;
@@ -3488,12 +3588,15 @@ function tabLeft(tab) {
 
     document.getElementById(tab).style.display = 'block';
 }
-//
+
 function tabRight(tabid) {
 
     document.getElementById('univariate').style.display = 'none';
     document.getElementById('setx').style.display = 'none';
-   document.getElementById('results').style.display = 'none';
+  // document.getElementById('results').style.display = 'none';
+   document.getElementById('result_left').style.display = 'none';
+    document.getElementById('result_right').style.display = 'none';
+    document.getElementById('modelView_Container').style.display='none';
 
     if(tabid=="btnUnivariate") {
     //  document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
@@ -3509,7 +3612,10 @@ function tabRight(tabid) {
       document.getElementById('btnUnivariate').setAttribute("class", "btn btn-default");
      // document.getElementById('btnBivariate').setAttribute("class", "btn btn-default");
       document.getElementById('btnBivariate').setAttribute("class", "btn active");
-      document.getElementById('results').style.display = 'block';
+    //  document.getElementById('results').style.display = 'block';
+        document.getElementById('modelView_Container').style.display='block';
+        document.getElementById('result_left').style.display = 'block';
+        document.getElementById('result_right').style.display = 'block';
 
         if(estimated===false) {
             d3.select("#rightpanel")
