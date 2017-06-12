@@ -1,0 +1,87 @@
+{
+"caret5preprocess":{
+		"Box-Cox":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["Box-Cox"] , 
+			"description":  ["The Box-Cox transformation was developed for transforming the response variable,values must be non-zero and positive"] },
+
+		"YeoJohnson":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["YeoJohnson"] ,  
+			"description":  ["Similar to the Box-Cox model but can accommodate predictors with zero and/or negativevalues"] },
+			
+		"expoTrans":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["expoTrans"] , 
+			"description":  ["exponential of transformation"] },
+			
+		"center":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["center"] , 
+			"description":  ["Subtracts the mean of the predictor¡¯s data (again from the data inx) from thepredictor values "] },
+			
+		"scale":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["scale"] , 
+			"description":  ["Calculates the standard deviation for an attribute and divides each value by that standard deviation"] },
+			
+		"range":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["range"] , 
+			"description":  [" Scales the data to be within [0, 1]."] },
+			
+		"knnImpute":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["knnImpute"] , 
+			"description":  ["Using the most similar (nearest) neighbors to impute the missing values using the average value of its neighbors for that column"] },
+			
+		"bagImpute":{
+			
+			"type":  ["Preprocessing"] , 
+			"name":  ["bagImpute"] , 
+			"description":  ["Handle the missing values"] },
+			
+		"medianImpute":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["wsrf"] , 
+			"description":  ["Handle the missing values"] },
+			
+		"pca":{
+			
+			"type":  ["Preprocessing"] , 
+			"name":  ["pca"] , 
+			 
+			"description":  ["Transform the data to the principal components. The transform keeps components above the variance threshold (default=0.95) or the number of components can be specified (pcaComp)."] },
+			
+		"ica":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["ica"] , 
+			"description":  ["Transform the data to the independent components. Unlike PCA, ICA retains those components that are independent."] },
+			
+		"spatialSign":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["spatialSign"] , 
+			"description":  ["Project data onto a unit circle."] },
+			
+		"corr":{
+			
+			"type":  ["Preprocessing"] , 
+			"name":  ["corr"] , 	 
+			"description":  ["Seeking to filter out highly correlated predictors"] },
+			
+		"zv":{	
+			"type":  ["Preprocessing"] , 
+			"name":  ["zv"] , 
+			"description":  ["Remove attributes with a zero variance (all the same value)."] },
+			
+		"nzv":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["nzv"] , 
+			"description":  ["Remove attributes with a near zero variance (close to the same value)."] },
+			
+		"conditionalX":{
+			"type":  ["Preprocessing"] , 
+			"name":  ["conditionalX"] , 
+			"description":  ["Examines the distribution of each predictor conditional on the outcome. If there is only one unique value within any class, the predictor is excludedfrom further calculations."] }
+	}
+}
