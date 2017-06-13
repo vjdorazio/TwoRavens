@@ -595,6 +595,7 @@ eventlist=new Array(20)
           return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
           }) // perhapse ensure this id is unique by adding '_' to the front?
     .text(function(d){return d;})
+	.style("text-align", "center")
     .style('background-color',function(d) {
            if(d=="Date") {
             d3date();
@@ -612,22 +613,31 @@ eventlist=new Array(20)
  //   .attr("data-original-title", "Summary Statistics")
     .on("click", function varClick(){
         if(d3.select(this).text()=="Date") {
+			selectionMade("Date");
             d3date();
         }
         else if(d3.select(this).text()=="Location") {
+			selectionMade("Location");
             d3loc();
         }
         else if(d3.select(this).text()=="Actor") {
+			selectionMade("Actor");
             d3actor();
         }
         else if(d3.select(this).text()=="Action") {
+			selectionMade("Action");
             d3action();
         }
         });
 	
-		
-	
-		
+    function selectionMade(n) {
+    	d3.select("#tab2").selectAll("p").style('background-color',function(d) {
+    		if(d==n)
+    			return hexToRgba(selVarColor);
+    		else
+    			return varColor;
+    	})
+    }	
 
 	
     
