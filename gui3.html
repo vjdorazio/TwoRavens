@@ -37,7 +37,6 @@
       
     <nav id="option" class="navbar navbar-default" role="navigation">
           <div>
-              </span>
               <div class="navbar-header" id="navbarheader">
                   <img src="images/TwoRavens.png" alt="TwoRavens" width="100" style="margin-left:2em;margin-top:-0.5em" onmouseover="about();" onmouseout="closeabout();">
                       
@@ -64,14 +63,12 @@
       </nav>
 
     <div id="main" class="left svg-leftpanel svg-rightpanel carousel slide">
-
         <div id="dateInterval" class="form-group" style="float:right;height:150px;width:20%;bottom:0;margin:35px">
-            <label id='dateFromLab' for='dateFromBox'>From:</label>
-            <input id='dateFromBox' class="form-control" type='text'>
-            <label id='dateToLab' for='dateToBox'>To:</label>
-            <input id='dateToBox' class="form-control" type='text'>
+            <label id='dateFromLab' for='fromdate'>From:</label>
+            <input id='fromdate' class="form-control" type='text'>
+            <label id='dateToLab' for='todate'>To:</label>
+            <input id='todate' class="form-control" type='text'>
         </div>
-        
         <!-- Carousel items -->
         <svg id="mainSVG" width="600" height="500"></svg>
 
@@ -177,7 +174,7 @@
                         <div id="tab4">
                             <p style="padding:.5em 1em;">Select From Date 
                             <input type="text" id="fromdate" >     
-                            </1p>
+                            </p>
                         
                            
                             <p style="padding:.5em 1em;">Select To Date 
@@ -256,7 +253,7 @@
           $('#main').toggleClass('svg-leftpanel');
           $('#btnSelect').css('display','none'); 
       }
-  };
+  }
   function closeRightPanel() {
       if ($('#leftpanel').hasClass('forceclosepanel')) {
         // do nothing
@@ -267,7 +264,7 @@
       $('#rightpanel').toggleClass('closepanel');
       $('#main').toggleClass('svg-rightpanel');
       }
-  };
+  }
 
   var myurl=window.location.toString();
   var fileid="";
@@ -277,24 +274,24 @@
     cindex=fileid.indexOf("&");
     if (cindex > 0) {
       fileid=fileid.substring(0,cindex);
-    };
-  };
+    }
+  }
   var hostname="";
   if (myurl.indexOf("host=") > 0) {
     hostname=myurl.substring(myurl.indexOf("host=")+5);
     cindex=hostname.indexOf("&");
     if (cindex > 0) {
       hostname=hostname.substring(0,cindex);
-    };
-  };
+    }
+  }
   var apikey="";
   if (myurl.indexOf("key=") > 0) {
     apikey=myurl.substring(myurl.indexOf("key=")+4);
     cindex=apikey.indexOf("&");
     if (cindex > 0) {
       apikey=apikey.substring(0,cindex);
-    };
-  };
+    }
+  }
   var ddiurl="";
   if (myurl.indexOf("ddiurl=") > 0) {
     ddiurl=myurl.substring(myurl.indexOf("ddiurl=")+7);
@@ -304,8 +301,8 @@
     cindex=ddiurl.indexOf("&");
     if (cindex > 0) {
       ddiurl=ddiurl.substring(0,cindex);
-    };
-  };
+    }
+  }
   var dataurl="";
   if (myurl.indexOf("dataurl=") > 0) {
     dataurl=myurl.substring(myurl.indexOf("dataurl=")+8);
@@ -315,8 +312,8 @@
     cindex=dataurl.indexOf("&");
     if (cindex > 0) {
       dataurl=dataurl.substring(0,cindex);
-    };
-  };
+    }
+  }
 
   var username="";
   if (myurl.indexOf("username=") > 0) {
@@ -327,7 +324,7 @@
     username=username.indexOf("&");
     if (cindex > 0) {
       username=username.substring(0,cindex);
-    };
+    }
   }
   else{username="rohit";}
 
