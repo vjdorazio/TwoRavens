@@ -156,7 +156,7 @@ var arc4 = d3.arc()
 // From .csv
 var dataset2 = [];
 var valueKey = [];
-var valueKey2 = ["Date","Location","Action","Actor"];
+var variableSubsetKeys = ["Date","Location","Action","Actor"];
 var lablArray = [];
 var hold = [];
 var allNodes = [];
@@ -588,12 +588,12 @@ eventlist=new Array(20)
     
     
     d3.select("#tab2").selectAll("p") 			//do something with this..
-    .data(valueKey2)
+    .data(variableSubsetKeys)
     .enter()
     .append("p")
     .attr("id",function(d){
           return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
-          }) // perhapse ensure this id is unique by adding '_' to the front?
+          }) // perhaps ensure this id is unique by adding '_' to the front?
     .text(function(d){return d;})
     .style('background-color',function(d) {
            if(d=="Date") {
@@ -3072,7 +3072,8 @@ function fakeClick() {
 
 function d3date() {
     $("#mainSVG").empty();
-    
+    d3.select('#dateInterval');
+
     d3.select("#mainSVG"),
     margin = {top: 20, right: 20, bottom: 110, left: 150},
     margin2 = {top: 430, right: 20, bottom: 30, left: 150},
