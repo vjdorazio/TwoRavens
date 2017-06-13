@@ -293,7 +293,8 @@ if (dataurl) {
 
 var preprocess = {};
 var mods = new Object;
-//var mods_ml = new Object;
+var mods_ml = new Object;
+var mods_pre = new Object;
 console.log("Value of username: ",username);
 //This function finds whether a key is present in the json file, and sends the key's value if present.
 function findValue(json, key) {
@@ -424,31 +425,31 @@ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
                       //console.log("allNodes: ", allNodes);
                       // Reading the zelig models and populating the model list in the right panel.
 					  
-                      //d3.json("data/zelig5models.json", function(error, json) {
-                      //        if (error) return console.warn(error);
-                      //        var jsondata = json;
+                      d3.json("data/zelig5models.json", function(error, json) {
+                              if (error) return console.warn(error);
+                              var jsondata = json;
                               
                               //console.log("zelig models json: ", jsondata);
-                      //        for(var key in jsondata.zelig5models) {
-                      //        if(jsondata.zelig5models.hasOwnProperty(key)) {
-                      //        mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
-                      //        }
-                      //        }
+                              for(var key in jsondata.zelig5models) {
+                              if(jsondata.zelig5models.hasOwnProperty(key)) {
+                              mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
+                              }
+                              }
                               
-                      //        d3.json("data/zelig5choicemodels.json", function(error, json) {
-                      //                if (error) return console.warn(error);
-                      //                var jsondata = json;
+                              d3.json("data/zelig5choicemodels.json", function(error, json) {
+                                      if (error) return console.warn(error);
+                                      var jsondata = json;
                                       //console.log("zelig choice models json: ", jsondata);
-                      //                for(var key in jsondata.zelig5choicemodels) {
-                      //                if(jsondata.zelig5choicemodels.hasOwnProperty(key)) {
-                      //                mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
-                      //                }
-                      //                }
+                                      for(var key in jsondata.zelig5choicemodels) {
+                                      if(jsondata.zelig5choicemodels.hasOwnProperty(key)) {
+                                      mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
+                                      }
+                                      }
                                       
-                      //                scaffolding(callback=layout);
-                      //                dataDownload();
-                      //                });
-                      //        });
+                                      scaffolding(callback=layout);
+                                      dataDownload();
+                                      });
+                              });
 							  
 							  
 						                      
@@ -460,10 +461,33 @@ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
                               //console.log("caret models json: ", jsondata);
                               for(var key in jsondata.caret5models) {
                               if(jsondata.caret5models.hasOwnProperty(key)) {
-                              mods[jsondata.caret5models[key].name[0]] = jsondata.caret5models[key].description[0];
+                              mods_ml[jsondata.caret5models[key].name[0]] = jsondata.caret5models[key].description[0];
                               }
                               }
+
+                                      scaffolding(callback=layout);
+                                      dataDownload();
+
+
+                              });
+							  
+						
+						// Reading the caret preprocess and populating the process list in the right panel.
+					    d3.json("data/caret5preprocess.json", function(error, json) {
+                              if (error) return console.warn(error);
+                              var jsondata = json;
                               
+                              //console.log("caret models json: ", jsondata);
+                              for(var key in jsondata.caret5preprocess) {
+                              if(jsondata.caret5preprocess.hasOwnProperty(key)) {
+                              mods_pre[jsondata.caret5preprocess[key].name[0]] = jsondata.caret5preprocess[key].description[0];
+                              }
+                              }
+
+                                      scaffolding(callback=layout);
+                                      dataDownload();
+
+
                               });
 						
                       });
@@ -680,34 +704,64 @@ function scaffolding(callback) {
           });
     
 	
-	//d3.select("#ml_algorithm")
-    //.style('height', 2000)
-    //.style('overfill', 'scroll');
+	d3.select("#ml_algorithm")
+    .style('height', 2000)
+    .style('overfill', 'scroll');
     
-    //var ml_list = Object.keys(mods_ml);
+    var ml_list = Object.keys(mods_ml);
     
-    //d3.select("#ml_algorithm").selectAll("p")
-    //.data(ml_list)
-    //.enter()
-    //.append("p")
-    //.attr("id", function(d){
-    //      return "_ml_".concat(d);
-    //      })
-    //.text(function(d){return d;})
-    //.style('background-color',function(d) {
-    //      return varColor;
-    //       })
-    //.attr("data-container", "body")
-    //.attr("data-toggle", "popover")
-    //.attr("data-trigger", "hover")
-    //.attr("data-placement", "top")
-    //.attr("data-html", "true")
-    //.attr("onmouseover", "$(this).popover('toggle');")
-    //.attr("onmouseout", "$(this).popover('toggle');")
-    //.attr("data-original-title", "ml Description")
-    //.attr("data-content", function(d){
-    //      return mods_ml[d];
-    //      });
+    d3.select("#ml_algorithm").selectAll("p")
+    .data(ml_list)
+    .enter()
+    .append("p")
+    .attr("id", function(d){
+          return "_ml_".concat(d);
+          })
+    .text(function(d){return d;})
+    .style('background-color',function(d) {
+          return varColor;
+           })
+    .attr("data-container", "body")
+    .attr("data-toggle", "popover")
+    .attr("data-trigger", "hover")
+    .attr("data-placement", "top")
+    .attr("data-html", "true")
+    .attr("onmouseover", "$(this).popover('toggle');")
+    .attr("onmouseout", "$(this).popover('toggle');")
+    .attr("data-original-title", "ml Description")
+    .attr("data-content", function(d){
+          return mods_ml[d];
+          });
+		  
+		  
+	d3.select("#ml_preprocess")
+    .style('height', 2000)
+    .style('overfill', 'scroll');
+    
+    var pre_list = Object.keys(mods_pre);
+    
+    d3.select("#ml_algorithm").selectAll("p")
+    .data(pre_list)
+    .enter()
+    .append("p")
+    .attr("id", function(d){
+          return "_pre_".concat(d);
+          })
+    .text(function(d){return d;})
+    .style('background-color',function(d) {
+          return varColor;
+           })
+    .attr("data-container", "body")
+    .attr("data-toggle", "popover")
+    .attr("data-trigger", "hover")
+    .attr("data-placement", "top")
+    .attr("data-html", "true")
+    .attr("onmouseover", "$(this).popover('toggle');")
+    .attr("onmouseout", "$(this).popover('toggle');")
+    .attr("data-original-title", "ml Description")
+    .attr("data-content", function(d){
+          return mods_pre[d];
+          });
 	
 	
     if(typeof callback === "function") {
