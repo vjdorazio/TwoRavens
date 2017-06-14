@@ -61,7 +61,7 @@ if (!production) {
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-var svg = d3.select("#mainSVG");
+var svg = d3.select("#dateSVG");
 
 var logArray = [];
 
@@ -1840,7 +1840,7 @@ function tabLeft(tab) {
      
     //if(tab!="tab3") {lefttab=tab;}
     var tabi = tab.substring(3);
-    
+
     document.getElementById('tab1').style.display = 'none';
     document.getElementById('tab2').style.display = 'none';
     document.getElementById('tab3').style.display = 'none';
@@ -3071,10 +3071,10 @@ function fakeClick() {
 
 
 function d3date() {
-    $("#mainSVG").empty();
+    $("#dateSVG").empty();
     d3.select('#dateInterval');
 
-    d3.select("#mainSVG"),
+    d3.select("#dateSVG"),
     margin = {top: 20, right: 20, bottom: 110, left: 150},
     margin2 = {top: 430, right: 20, bottom: 30, left: 150},
     datewidth = +svg.attr("width") - margin.left - margin.right,
@@ -3210,15 +3210,12 @@ function d3date() {
 }
 
 function d3loc() {
-    $("#mainSVG").empty();
 }
 
 function d3action() {
-    $("#mainSVG").empty();
 }
 
 function d3actor() {
-    $("#mainSVG").empty();
 }
 
 
