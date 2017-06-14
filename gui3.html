@@ -35,45 +35,114 @@
 
   <body>
 
-    <nav id="option" class="navbar navbar-default" role="navigation">
-        <div>
-            <div class="navbar-header" id="navbarheader">
-                <img src="images/TwoRavens.png" alt="TwoRavens" width="100" style="margin-left:2em;margin-top:-0.5em"
-                     onmouseover="about();" onmouseout="closeabout();">
+    <nav id="navbar" class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <a class="navbar-brand" style="margin-left:0">
+            <img src="images/TwoRavens.png" alt="TwoRavens" width="100" style="margin-left:2em;margin-top:-0.5em;"
+                 onmouseover="about();" onmouseout="closeabout();">
+        </a>
+        <div id="navbarNav" style="margin-top:11px">
+            <button class="btn btn-default ladda-button navbar-right" style="margin-left:2em;margin-right:1em;"
+                    id="btnEstimate" onclick="estimate('btnEstimate')" data-spinner-color="#000000"
+                    data-style="zoom-in"><span class="ladda-label">Subset</span></button>
+            <button class="btn btn-default navbar-right" id="btnReset" title="Reset" onclick="reset()"
+                    style="margin-left:2.0em;"><span style="font-size:1em;color:#818181; pointer-events:none;"
+                                                     class="glyphicon glyphicon-repeat"></span></button>
+            <!--<div id="transformations" class="transformTool"-->
+            <!--title="Construct transformations of existing variables using valid R syntax. For example, assuming a variable named d, you could enter 'log(d)' or 'd^2'.">-->
+            <!--</div>-->
 
-                <div id="about" class="panel panel-default" style="display:None;z-index:50;">
-                <div class="panel-body"> </div>
+            <!-- HIDE THE DATA BROWSER BUTTON FOR NOW
+            <button class="btn btn-default" id="makeTable" title="Make Table" style="margin-left:1em;"><span style="font-size:1em;color:#818181; pointer-events:none;" class="glyphicon glyphicon-list-alt"></span></button>
+-->
+        </div>
+        <div id="about" class="panel panel-default" style="display:None;z-index:50;">
+            <div class="panel-body"> </div>
+        </div>
+
+    </nav>
+
+    <div id="leftpanel" class="sidepanel container clearfix">
+
+        <div id="toggleLpanelicon" class="panelbar"><span>&#9679;<br/>&#9679;<br/>&#9679;<br/>&#9679;</span></div>
+        <div class="panel-heading text-center" id="leftpaneltitle">
+            <h3 class="panel-title">Variable Selection</h3>
+        </div>
+
+        <div class="btn-toolbar" role="toolbar" style="margin-left:.5em;margin-top:.5em;">
+            <div class="btn-group">
+                <button type="button" class="btn active" id="btnVariables" title="Click variable name to add or remove the variable pebble from the modeling space." onclick="tabLeft('tab1');">Variables</button>
+                <button type="button" class="btn btn-default" id="btnSubset" onclick="tabLeft('tab2');">Subset</button>
+            </div>
+            <button type="button" class="btn btn-default ladda-button" id="btnSelect" title="Subset data by the intersection of all selected values." style="display:none; float:right; margin-right:10px" onclick="subsetSelect('btnSelect');" data-spinner-color="#000000" data-style="zoom-in"><span class="ladda-label" style="pointer-events:none;">Select</span></button>
+        </div>
+        <div class="row-fluid">
+            <div id="leftpanelcontent">
+                <div id="leftContentArea" style="overflow:auto;">
+                    <div id="tab1" style="display:block;padding:6px 12px;text-align:center;">
+
+                        <input type="text" id="searchvar" placeholder="Search Variables and Labels" class="form-control" style="width:100%; margin-bottom:5px;"/>
+
+
+                    </div>
+                    <div id="tab2" style="display:none; margin-top:.5em;">
+                    </div>
+                    <div id="tab3">
+                        <p style="padding:.5em 1em;">Select a variable from within the visualization in the center panel to view its summary statistics.</p>
+                    </div>
+                    <div id="tab4">
+                    </div>
+                    <div id="tab5">
+                        <!-- <p style="padding:.5em 1em;">Select a variable from within the visualization in the center panel to view its summary statistics.</p> -->
+                    </div>
                 </div>
 
             </div>
+        </div>
+    </div>
 
-            <div class="field" id="dataField" style="text-align:center; margin-top:0.5em">
-                <h4 id="dataName" style="display:inline;" onclick="citetoggle=clickcite(citetoggle);"
-                    onmouseover="opencite();" onmouseout="closecite(citetoggle);">Dataset Name</h4>
-                <div id="cite" class="panel panel-default"
-                     style="position:absolute; right:50%; width:380px; display:none; z-index:50;text-align:left;">
-                    <div class="panel-body"></div>
-                </div>
-                <!-- HIDE THE DATA BROWSER BUTTON FOR NOW
-                <button class="btn btn-default" id="makeTable" title="Make Table" style="margin-left:1em;"><span style="font-size:1em;color:#818181; pointer-events:none;" class="glyphicon glyphicon-list-alt"></span></button>
--->
-                <button class="btn btn-default ladda-button navbar-right" style="margin-left:2em;margin-right:1em;"
-                        id="btnEstimate" onclick="estimate('btnEstimate')" data-spinner-color="#000000"
-                        data-style="zoom-in"><span class="ladda-label">Subset</span></button>
-                <button class="btn btn-default navbar-right" id="btnReset" title="Reset" onclick="reset()"
-                        style="margin-left:2.0em;"><span style="font-size:1em;color:#818181; pointer-events:none;"
-                                                         class="glyphicon glyphicon-repeat"></span></button>
+    <div id="rightpanel" class="sidepanel container clearfix">
 
-                <div id="transformations" class="transformTool"
-                     title="Construct transformations of existing variables using valid R syntax. For example, assuming a variable named d, you could enter 'log(d)' or 'd^2'.">
+        <div id="toggleRpanelicon" class="panelbar"><span>&#9679;<br/>&#9679;<br/>&#9679;<br/>&#9679;</span></div>
+
+        <div class="panel-heading text-center" id="rightpaneltitle">
+            <h3 class="panel-title">Model Selection</h3>
+        </div>
+
+
+        <!-- <div class="btn-toolbar" role="toolbar" style="margin-left:.5em;margin-top:.5em;"> -->
+        <!-- The following is fix for the longstanding button wrapping problem on small screens -->
+        <div class="btn-group btn-group-justified" role="group" style="margin-top:.5em;" aria-label="...">
+            <!--<div class="btn-group" style="margin-right:0;"> -->
+            <button type="button" class="btn active" id="btnModels" onclick="tabRight('btnModels');" style="width: 33%">Models</button>
+            <button type="button" class="btn btn-default" id="btnSetx" onclick="tabRight('btnSetx');" style="width: 34%">Set Covar.</button>
+            <button type="button" class="btn btn-default" id="btnResults" onclick="tabRight('btnResults');" style="width: 33%">Results</button>
+            <!-- </div> -->
+        </div>
+
+
+        <div class="row-fluid">
+            <div id="rightpanelcontent">
+                <div id="rightContentArea" style="overflow:auto; height:453px;">
+                    <div id="results" style="margin-top:.5em;">
+                        <div id="resultsView" class="container"; style="width:80%; background-color:white; display:none; float:right; overflow:auto; white-space:nowrap;"></div>
+                        <div id="modelView" style="width:20%; background-color:white; display:none; float:left;"></div>
+                        <p id="resultsHolder" style="padding:.5em 1em;"></p>
+                        <!--No results available until a model is estimated.-->
+                    </div>
+                    <div id="setx" style="display:none;"></div>
+                    <div id="models" style="display:block;padding:6px 12px;text-align:center;"></div>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <div id="main" class="left svg-leftpanel svg-rightpanel carousel slide" style="overflow:auto;">
+    <div id="ticker" class="ticker">
+        <a href="somelink" target="_blank" id="logID">Replication</a>
+    </div>
 
-        <div id="subsetDate" class="panel">
+    <div id="main" class="left">
+
+        <div id="subsetDate" class="canvas">
             <!-- Carousel items -->
             <svg id="dateSVG" width="600" height="500"></svg>
 
@@ -134,91 +203,10 @@
             </div>
         </div>
 
-        <div id="ticker" style="position:fixed;height:40px;width:100%;background:#F9F9F9;bottom:0;border-top:1px solid #ADADAD;">
-            <a href="somelink" target="_blank" id="logID">Replication</a>
-        </div>
-
         <!--<div id="tooltip" style="display: none;">
          <h3 class="popover-title">Summary Statistics</h3>
          <div id="tooltiptext" class="popover-content form-horizontal"></div>
          </div>-->
-
-        <div id="leftpanel" class="sidepanel container clearfix" style="height:calc(100% - 60px)">
-
-            <div id="toggleLpanelicon" class="panelbar" style="height:calc(100% - 60px)"><span>&#9679;<br/>&#9679;<br/>&#9679;<br/>&#9679;</span></div>
-            <div class="panel-heading text-center" id="leftpaneltitle">
-                <h3 class="panel-title">Variable Selection</h3>
-            </div>
-
-            <div class="btn-toolbar" role="toolbar" style="margin-left:.5em;margin-top:.5em;">
-                <div class="btn-group">
-                    <button type="button" class="btn active" id="btnVariables" title="Click variable name to add or remove the variable pebble from the modeling space." onclick="tabLeft('tab1');">Variables</button>
-                    <button type="button" class="btn btn-default" id="btnSubset" onclick="tabLeft('tab2');">Subset</button>
-                </div>
-                <button type="button" class="btn btn-default ladda-button" id="btnSelect" title="Subset data by the intersection of all selected values." style="display:none; float:right; margin-right:10px" onclick="subsetSelect('btnSelect');" data-spinner-color="#000000" data-style="zoom-in"><span class="ladda-label" style="pointer-events:none;">Select</span></button>
-            </div>
-            <div class="row-fluid">
-                <div id="leftpanelcontent">
-                    <div id="leftContentArea" style="overflow: auto; height:453px;">
-                        <div id="tab1" style="display:block;padding:6px 12px;text-align:center">
-
-						<input type="text" id="searchvar" placeholder="Search Variables and Labels" class="form-control" style="width:100%; margin-bottom:5px;"/>
-
-
-						</div>
-                        <div id="tab2" style="display:none; margin-top:.5em;">
-                        </div>
-                        <div id="tab3">
-                            <p style="padding:.5em 1em;">Select a variable from within the visualization in the center panel to view its summary statistics.</p>
-                        </div>
-                        <div id="tab4">
-                        </div>
-                        <div id="tab5">
-                            <!-- <p style="padding:.5em 1em;">Select a variable from within the visualization in the center panel to view its summary statistics.</p> -->
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div id="rightpanel" class="sidepanel container clearfix" style="height:calc(100% - 60px)">
-
-          <div id="toggleRpanelicon" class="panelbar" style="height:calc(100% - 60px)"><span>&#9679;<br/>&#9679;<br/>&#9679;<br/>&#9679;</span></div>
-
-          <div class="panel-heading text-center" id="rightpaneltitle">
-              <h3 class="panel-title">Model Selection</h3>
-          </div>
-
-
-        <!-- <div class="btn-toolbar" role="toolbar" style="margin-left:.5em;margin-top:.5em;"> -->
-        <!-- The following is fix for the longstanding button wrapping problem on small screens -->
-        <div class="btn-group btn-group-justified" role="group" style="margin-top:.5em;" aria-label="...">
-             <!--<div class="btn-group" style="margin-right:0;"> -->
-                 <button type="button" class="btn active" id="btnModels" onclick="tabRight('btnModels');" style="width: 33%">Models</button>
-                 <button type="button" class="btn btn-default" id="btnSetx" onclick="tabRight('btnSetx');" style="width: 34%">Set Covar.</button>
-                 <button type="button" class="btn btn-default" id="btnResults" onclick="tabRight('btnResults');" style="width: 33%">Results</button>
-             <!-- </div> -->
-        </div>
-
-
-            <div class="row-fluid">
-                <div id="rightpanelcontent">
-                    <div id="rightContentArea" style="overflow:auto; height:453px;">
-                        <div id="results" style="margin-top:.5em;">
-                            <div id="resultsView" class="container"; style="width:80%; background-color:white; display:none; float:right; overflow:auto; white-space:nowrap;"></div>
-                            <div id="modelView" style="width:20%; background-color:white; display:none; float:left;"></div>
-                            <p id="resultsHolder" style="padding:.5em 1em;"></p>
-                            <!--No results available until a model is estimated.-->
-                        </div>
-                        <div id="setx" style="display:none;"></div>
-                        <div id="models" style="display:block;padding:6px 12px;text-align:center;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="clearfix"></div>
 
     </div>
 

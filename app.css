@@ -116,9 +116,11 @@ text.id {
     box-sizing: border-box; margin: 0;
     overflow:scroll;
 }
-#main{
-  width:100%;
+
+.navbar-default {
+    height: 62px;
 }
+
 #main svg {
     width:700px;
     height:500px;   /*was 600px;*/
@@ -134,14 +136,6 @@ text.id {
 /* #main.svg-marg-left svg {margin-left:0px;}
 #main.svg-marg-right svg {margin-right:0px;} */
 
-#option.navbar {
-    padding:.5em;
-    margin-bottom:0;
-}
-#option {
-    position:relative;
-}
-
 div.popover.variables {
     max-width:none;
     width:300px;
@@ -155,37 +149,37 @@ div.popover.variables div.popover-content.form-horizontal .form-group {
 
 #leftpanel {
     border:1px solid #ADADAD;
-    width: 20%;
-    height:calc(100% - 17px);
-    position:absolute;top:10px;left:10px;
+    position:fixed;top:72px;left:10px; /* navbar: 62px, spacer: 10px */
+    width: 250px;
+    height:calc(100% - 122px);      /* top: 72px, bottom:50px */
     background:#F9F9F9;
-    padding-right:16px;padding-left:0;padding-top:0;
+    padding: 0 16px 0 0;
     z-index:25;
 }
 #leftpanel #leftContentArea div {display:none;}
 #leftpanel #leftContentArea div.active {display:block;}
 
-#leftpanel.expandpanel {width:40%;}
 #leftpanel.closepanel {width:1px;}
 #leftpanel.closepanel #leftpaneltitle, #leftpanel.closepanel div.btn-toolbar, #leftpanel.closepanel div.row-fluid.closepanel {display:none;}
 
 #rightpanel {
     border:1px solid #ADADAD;
-    width:20%;
-    height:calc(100% - 17px);
-    position:absolute;top:10px;right:10px;
+    width:250px;
+    position:fixed;top:72px;right:27px; /* buffer: 10px, scrollbar: 17px */
+    height:calc(100% - 122px);      /* top: 72px, bottom:50px */
     background:#F9F9F9;
-    padding-left:16px;padding-right:0;padding-top:0; 
+    padding: 0 0 0 16px;
     z-index:25;
 }
 #rightpanel #rightContentArea div {display:none;}
 #rightpanel #rightContentArea div.active {display:block;}
-#rightpanel.expandpanel {width:40%;}
+
 #rightpanel.closepanel {width:1px;}
 #rightpanel.closepanel #rightpaneltitle, #rightpanel.closepanel div.btn-group-justified, #rightpanel.closepanel div.row-fluid.closepanel {display:none;}
 
 div.sidepanel div.panelbar {
-  position:absolute;
+    position:absolute;
+    height:calc(100% - 60px)
 }
 #leftpanel div#toggleLpanelicon.panelbar {
   left:calc(100% - 16px);
@@ -193,8 +187,9 @@ div.sidepanel div.panelbar {
 #rightpanel div#toggleRpanelicon.panelbar {
   right:calc(100% - 16px);
 }
+
 div.sidepanel div.panelbar span {
-  display: block;
+  display:block;
   width:16px;
   height:533px;
   text-align: center;
@@ -205,8 +200,28 @@ div.sidepanel div.panelbar span {
 }
 #main {
     width: 100%;
-    margin-bottom:0px;   /* This is the hard coded height of the ticker div.  Was 160px; which gave too much padding and empty bottom space.*/
-    position: relative;
+    height: calc(100% - 62px - 40px);
+    margin-top:62px;
+    position: fixed;
+    overflow:auto;
+}
+
+#canvas {
+    width: 100%;
+    height: calc(100% - 62px - 40px);
+    margin:62px 0 0 0;
+    position: fixed;
+    overflow:auto;
+}
+
+#ticker {
+    position:fixed;
+    height:40px;
+    width:100%;
+    background:#F9F9F9;
+    bottom:0;
+    border-top:1px solid #ADADAD;
+    z-index:1000;
 }
 
 #spacetools {
@@ -580,12 +595,12 @@ a {
 }
 
 /*source actor*/
-.dropdownactorl1,.dropdownactorl2,.dropdownactorl3,.dropdownactorl4,{
+.dropdownactorl1,.dropdownactorl2,.dropdownactorl3,.dropdownactorl4 {
   position: relative;
   float: left;
   /*margin-left: 43%;*/
   height:50px;
-  z-index=100;
+  z-index:100;
   
 }
 
@@ -595,7 +610,7 @@ a {
   
   /*margin-left: 43%;*/
   height:50px;
-  z-index=100;
+  z-index:100;
   
 }
 
@@ -604,7 +619,7 @@ a {
   
   /*margin-left: 43%;*/
   height:50px;
-  z-index=100;
+  z-index:100;
    
 }
 a {
@@ -620,13 +635,13 @@ a {
 .dropdownactorl3 dd,
 .dropdownactorl3 dt,
 .dropdownactorl4 dd,
-.dropdownactorl4 dt,
+.dropdownactorl4 dt
 {
   /*margin-left: 43%;*/
   text-align: center;
   padding: 0px;
   width:100%;
-  z-index=100;
+  z-index:100;
 
 }
 
@@ -642,7 +657,7 @@ a {
   /*margin-left: 43%;*/
   padding: 0px;
   width:100%;
-  z-index=100;
+  z-index:100;
   text-align: center;
 }
 
@@ -650,7 +665,7 @@ a {
 .dropdownevent dt{
  padding: 0px;
   width:100%;
-  z-index=100;
+  z-index:100;
   text-align: center; 
 }
 
@@ -785,7 +800,7 @@ display: inline;}
   margin: 0 0 0 0;
   width: 272px;
   /*margin-left: 43%;*/
-  z-index=100;
+  z-index:100;
 }
 
 .dropdownactorl1 dd,
@@ -798,7 +813,7 @@ display: inline;}
 .tdropdownactorl4 dd,
 .dropdownevent {
   position: relative;
-  z-index=100;
+  z-index:100;
 }
 
 .dropdownactorl1 a,
@@ -842,7 +857,7 @@ display: inline;}
   overflow: hidden;
   border: 0;
   width: 272px;
-  z-index=100;
+  z-index:100;
 }
 
 .dropdownactorl1 dt a span,
