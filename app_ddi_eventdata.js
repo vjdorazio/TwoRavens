@@ -61,12 +61,12 @@ if (!production) {
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-var svg = d3.select("#mainSVG");
+var svg = d3.select("#dateSVG");
 
 var logArray = [];
 
-          
-var tempWidth = d3.select("#main.left").style("width")
+
+var tempWidth = d3.select("#main.left").style("width");
 var width = tempWidth.substring(0,(tempWidth.length-2));
 
 
@@ -156,7 +156,7 @@ var arc4 = d3.arc()
 // From .csv
 var dataset2 = [];
 var valueKey = [];
-var valueKey2 = ["Date","Location","Action","Actor"];
+var variableSubsetKeys = ["Date","Location","Action","Actor"];
 var lablArray = [];
 var hold = [];
 var allNodes = [];
@@ -204,7 +204,7 @@ $('#collapseLog').on('hidden.bs.collapse', function () {
 
 // text for the about box
 // note that .textContent is the new way to write text to a div
-$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cummulative guidance and meta-analysis.'); //This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
+$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cumulative guidance and meta-analysis.'); //This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
 
 
 
@@ -567,7 +567,7 @@ eventlist=new Array(20)
     .attr("data-original-title", "Summary Statistics");
   
     console.log(valueKey);
-    d3.select("#tab1").selectAll("p") 			//do something with this..
+    d3.select("#variableList").selectAll("p") 			//do something with this..
 		.data(valueKey)
 		.enter()
 		.append("p")
@@ -588,12 +588,12 @@ eventlist=new Array(20)
     
     
     d3.select("#tab2").selectAll("p") 			//do something with this..
-    .data(valueKey2)
+    .data(variableSubsetKeys)
     .enter()
     .append("p")
     .attr("id",function(d){
           return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
-          }) // perhapse ensure this id is unique by adding '_' to the front?
+          }) // perhaps ensure this id is unique by adding '_' to the front?
     .text(function(d){return d;})
 	.style("text-align", "center")
     .style('background-color',function(d) {
@@ -785,10 +785,10 @@ $(document).on('input', '#searchvar', function() {
 		nodename[i]=nodes[i].name;
 	}
 	
-	d3.select("#tab1").selectAll("p").data(valueKey).remove();
+	d3.select("#variableList").selectAll("p").data(valueKey).remove();
 	
 	
-	d3.select("#tab1").selectAll("p")
+	d3.select("#variableList").selectAll("p")
 		//do something with this..
 		
 		.data(value)
@@ -939,7 +939,7 @@ makeCorsRequest(urlcall, btn, writesuccess, writefail, solajsonout);
 
 	//ROHIT BHATTACHARJEE ad listener function
 	function addlistener(nodes){
-	d3.select("#tab1").selectAll("p")
+	d3.select("#variableList").selectAll("p")
     .on("mouseover", function(d) {
         
 		// REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
@@ -1605,7 +1605,7 @@ function transform(n,t, typeTransform) {
 
 function scaffoldingPush(v) { // adding a variable to the variable list after a transformation
     
-        d3.select("#tab1")
+        d3.select("#variableList")
         .data(v)
         .append("p")
         .attr("id",function(){
@@ -1802,7 +1802,7 @@ function erase() {
     rightpanelMedium();
     document.getElementById("legend").setAttribute("style", "display:none");
     
-    tabLeft('tab1');
+    tabLeft('variableList');
     
     jQuery.fn.d3Click = function () {
         this.children().each(function (i, e) {
@@ -1814,7 +1814,7 @@ function erase() {
                   e.dispatchEvent(evt);
                   });
     };
-    $("#tab1").d3Click();
+    $("#variableList").d3Click();
 }
 
 
@@ -1847,15 +1847,12 @@ function loadXMLDoc(XMLname)
 
 
 function tabLeft(tab) {
-     
+
     //if(tab!="tab3") {lefttab=tab;}
-    var tabi = tab.substring(3);
-    
+    // var tabi = tab.substring(3);
+
     document.getElementById('tab1').style.display = 'none';
     document.getElementById('tab2').style.display = 'none';
-    document.getElementById('tab3').style.display = 'none';
-    document.getElementById('tab4').style.display = 'none';
-    document.getElementById('tab5').style.display = 'none';
 
     switch(tab){
       case "tab1": summaryHold = false;
@@ -1863,14 +1860,14 @@ function tabLeft(tab) {
         // document.getElementById('btnSubset').setAttribute("class", "btn btn-default");
         document.getElementById('btnVariables').setAttribute("class", "btn active");
         document.getElementById("btnSelect").style.display = 'none';
-        
+
         d3.select("#leftpanel")
         .attr("class", "sidepanel container clearfix");
                   break;//end of case 1
       case "tab2": summaryHold = false;
       $(".btn-group").children().addClass("btn").addClass("btn-default").removeClass("active");
         document.getElementById('btnSubset').setAttribute("class", "btn active");
-        
+
         d3.select("#leftpanel")
         .attr("class", function(d){
               //if(this.getAttribute("class")==="sidepanel container clearfix expandpanel") {
@@ -1887,7 +1884,7 @@ function tabLeft(tab) {
       $(".btn-group").children().addClass("btn btn-default").removeClass("active");
         // document.getElementById('btnVariables').setAttribute("class", "btn btn-default");
         document.getElementById('btnLocation').setAttribute("class", "btn active");
-        
+
         d3.select("#leftpanel")
         .attr("class", function(d){
              // if(this.getAttribute("class")==="sidepanel container clearfix expandpanel") {
@@ -1898,13 +1895,13 @@ function tabLeft(tab) {
               //   document.getElementById("btnSelect").style.display = 'block';
               //   return "sidepanel container clearfix expandpanel";
               // }
-              }); 
+              });
                   break;//end of case 3
       case "tab4":summaryHold = false;
       $(".btn-group").children().addClass("btn btn-default").removeClass("active");
         // document.getElementById('btnVariables').setAttribute("class", "btn btn-default");
         document.getElementById('btnDate').setAttribute("class", "btn active");
-        
+
         d3.select("#leftpanel")
         .attr("class", function(d){
               if(this.getAttribute("class")==="sidepanel container clearfix expandpanel") {
@@ -1915,13 +1912,13 @@ function tabLeft(tab) {
                 document.getElementById("btnSelect").style.display = 'none';
                 return "sidepanel container clearfix expandpanel";
               }
-              }); 
+              });
                   break;//end of case 4
       case "tab5":summaryHold = false;
         $(".btn-group").children().addClass("btn btn-default").removeClass("active");
         //document.getElementById('btnVariables').setAttribute("class", "btn btn-default");
         document.getElementById('btnEvent').setAttribute("class", "btn active");
-        
+
         d3.select("#leftpanel")
         .attr("class", function(d){
               //if(this.getAttribute("class")==="sidepanel container clearfix expandpanel") {
@@ -1932,19 +1929,19 @@ function tabLeft(tab) {
               //   document.getElementById("btnSelect").style.display = 'none';
               //   return "sidepanel container clearfix expandpanel";
               // }
-              }); 
+              });
                   break;//end of case 5
-      default: 
+      default:
         $(".btn-group").children().addClass("btn btn-default").removeClass("active");
         // document.getElementById('btnSubset').setAttribute("class", "btn btn-default");
         // document.getElementById('btnVariables').setAttribute("class", "btn btn-default");
-        
+
         d3.select("#leftpanel")
         .attr("class", "sidepanel container clearfix");
         break;
 
     }//end of switch
-    
+
     console.log("Tab:"+tab);
     document.getElementById(tab).style.display = 'block';
 }
@@ -1957,56 +1954,58 @@ var qr={};
 //populating date tab
 // todate=new Date("2015-12-31");
 fromdate=new Date("2012-01-01");
-min="2012",max="2015";
+min="2012";
+max="2015";
 maxdate=new Date("2015-12-31".replace(/-/g, '\/'));
 mindate=new Date("2012-01-01".replace(/-/g, '\/'));
-                
+
 $("#fromdate").datepicker({
-                    dateFormat:'mm-dd-yy',
-                    changeYear:true,
-                    changeMonth:true,
-                    defaultDate:fromdate, 
-                    yearRange:min+':'+max,
-                    minDate:mindate,
-                    maxDate:maxdate,
-                    orientation:top,
-                    onSelect: function()
-                    { 
-                         fromdate = $(this).datepicker('getDate'); 
-                         $("#todate").datepicker('option','minDate',fromdate);
-                         $("#todate").datepicker('option','defaultDate',fromdate);
-                         fromdatestring=fromdate.getFullYear()+""+('0' + (fromdate.getMonth()+1)).slice(-2)+""+('0' + fromdate.getDate()).slice(-2);
-                         qr["query"]["date8"]["$gte"]=fromdatestring;
+    dateFormat: 'mm-dd-yy',
+    changeYear: true,
+    changeMonth: true,
+    defaultDate: fromdate,
+    yearRange: min + ':' + max,
+    minDate: mindate,
+    maxDate: maxdate,
+    orientation: top,
+    onSelect: function () {
+        fromdate = $(this).datepicker('getDate');
+        $("#todate").datepicker('option', 'minDate', fromdate);
+        $("#todate").datepicker('option', 'defaultDate', fromdate);
+        fromdatestring = fromdate.getFullYear() + "" + ('0' + (fromdate.getMonth() + 1)).slice(-2) + "" + ('0' + fromdate.getDate()).slice(-2);
+        qr["query"]["date8"]["$gte"] = fromdatestring;
 
-                         console.log("fromdate clicked,query:",qr);
-                    },
-                    onClose:function(){
-                      $("#todate").datepicker("show");
-                    }
+        console.log("fromdate clicked,query:", qr);
+    },
+    onClose: function () {
+        $("#todate").datepicker("show");
+    }
 
-                                    //yearRange:min+":"+max
-                    });
+    //yearRange:min+":"+max
+});
 
-                   
-                   
-                   $("#todate").datepicker({
-                    changeYear:true,
-                    changeMonth:true,
-                    yearRange:min+':'+max,  
-                    dateFormat:'mm-dd-yy',
-                    defaultDate:fromdate,
-                    minDate:mindate,
-                    maxDate:maxdate,
-                    orientation:top,
-                    onSelect: function()
-                    { 
-                        todate = $(this).datepicker('getDate');
-                        todatestring=todate.getFullYear()+""+('0' + (todate.getMonth()+1)).slice(-2)+""+('0' + todate.getDate()).slice(-2);
-                        qr["query"]["date8"]["$lte"]=todatestring;       
-                        console.log("todate selected,query string:",qr); 
-                    
-                    }
-                  });
+
+$("#todate").datepicker({
+    changeYear: true,
+    changeMonth: true,
+    yearRange: min + ':' + max,
+    dateFormat: 'mm-dd-yy',
+    defaultDate: fromdate,
+    minDate: mindate,
+    maxDate: maxdate,
+    orientation: top,
+    onSelect: function () {
+        todate = $(this).datepicker('getDate');
+        todatestring = todate.getFullYear() + "" + ('0' + (todate.getMonth() + 1)).slice(-2) + "" + ('0' + todate.getDate()).slice(-2);
+        qr["query"]["date8"]["$lte"] = todatestring;
+        console.log("todate selected,query string:", qr);
+        plotHighlight()
+    }
+});
+
+function plotHighlight() {
+
+}
 
 
 
@@ -2090,45 +2089,45 @@ function varSummary(d) {
         };
 
   //  //console.log(summarydata);
-    d3.select("#tab3") //tab when you mouseover a pebble
-    .select("p")
-    .html("<center><b>" +d.name+ "</b><br><i>" +d.labl+ "</i></center>")
-    .append("table")
-    .selectAll("tr")
-    .data(summarydata)
-    .enter().append("tr")
-    .selectAll("td")
-    .data(function(d){return d;})
-    .enter().append("td")
-    .text(function(d){return d;})
-    .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")}) // for no discernable reason
-    .on("mouseout", function(){d3.select(this).style("background-color", "#F9F9F9")}) ;  //(but maybe we'll think of one)
-//    .style("font-size", "12px");
-
-    
-    var plotsvg = d3.select("#tab3")
-    .selectAll("svg")
-    .remove();
-    
-    if(typeof d.plottype === "undefined") { // .properties is undefined for some vars
-        return;
-    }
-    else if (d.plottype === "continuous") {
-        density(d, div="varSummary", private);
-    }
-    else if (d.plottype === "bar") {
-        bars(d, div="varSummary", private);
-    }
-    else {
-        var plotsvg = d3.select("#tab3")      // no graph to draw, but still need to remove previous graph
-        .selectAll("svg")
-        .remove();
-    };
+//     d3.select("#tab3") //tab when you mouseover a pebble
+//     .select("p")
+//     .html("<center><b>" +d.name+ "</b><br><i>" +d.labl+ "</i></center>")
+//     .append("table")
+//     .selectAll("tr")
+//     .data(summarydata)
+//     .enter().append("tr")
+//     .selectAll("td")
+//     .data(function(d){return d;})
+//     .enter().append("td")
+//     .text(function(d){return d;})
+//     .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")}) // for no discernable reason
+//     .on("mouseout", function(){d3.select(this).style("background-color", "#F9F9F9")}) ;  //(but maybe we'll think of one)
+// //    .style("font-size", "12px");
+//
+//
+//     var plotsvg = d3.select("#tab3")
+//     .selectAll("svg")
+//     .remove();
+//
+//     if(typeof d.plottype === "undefined") { // .properties is undefined for some vars
+//         return;
+//     }
+//     else if (d.plottype === "continuous") {
+//         density(d, div="varSummary", private);
+//     }
+//     else if (d.plottype === "bar") {
+//         bars(d, div="varSummary", private);
+//     }
+//     else {
+//         var plotsvg = d3.select("#tab3")      // no graph to draw, but still need to remove previous graph
+//         .selectAll("svg")
+//         .remove();
+//     };
 
 }
 
 function populatePopover () {
-    d3.select("#tab1").selectAll("p")
+    d3.select("#variableList").selectAll("p")
     .attr("data-content", function(d) {
           var onNode = findNodeIndex(d);
           return popoverContent(allNodes[onNode]);
@@ -2344,7 +2343,7 @@ function setColors (n, c) {
             transform(n.name, t=null, typeTransform=true);
         }
         
-        d3.select("#tab1").select("p#".concat(n.name))
+        d3.select("#variableList").select("p#".concat(n.name))
         .style('background-color', hexToRgba(c));
     }
     else if (n.strokeWidth=='4') {
@@ -2352,7 +2351,7 @@ function setColors (n, c) {
             n.strokeWidth = '1';
             n.strokeColor = selVarColor;
             n.nodeCol=colors(n.id);
-            d3.select("#tab1").select("p#".concat(n.name))
+            d3.select("#variableList").select("p#".concat(n.name))
             .style('background-color', hexToRgba(selVarColor));
             
             if(dvColor==c) {
@@ -2397,7 +2396,7 @@ function setColors (n, c) {
                 }
             }
             n.strokeColor = c;
-            d3.select("#tab1").select("p#".concat(n.name))
+            d3.select("#variableList").select("p#".concat(n.name))
             .style('background-color', hexToRgba(c));
             
             if(dvColor==c) {zparams.zdv.push(n.name);}
@@ -3081,11 +3080,12 @@ function fakeClick() {
 
 
 function d3date() {
-    $("#mainSVG").empty();
-    
-    d3.select("#mainSVG"),
-    margin = {top: 20, right: 20, bottom: 110, left: 150},
-    margin2 = {top: 430, right: 20, bottom: 30, left: 150},
+    $("#dateSVG").empty();
+    d3.select('#dateInterval');
+
+    d3.select("#dateSVG"),
+    margin = {top: 20, right: 20, bottom: 110, left: 30},
+    margin2 = {top: 430, right: 20, bottom: 30, left: 30},
     datewidth = +svg.attr("width") - margin.left - margin.right,
     dateheight = +svg.attr("height") - margin.top - margin.bottom,
     dateheight2 = +svg.attr("height") - margin2.top - margin2.bottom;
@@ -3219,15 +3219,12 @@ function d3date() {
 }
 
 function d3loc() {
-    $("#mainSVG").empty();
 }
 
 function d3action() {
-    $("#mainSVG").empty();
 }
 
 function d3actor() {
-    $("#mainSVG").empty();
 }
 
 
