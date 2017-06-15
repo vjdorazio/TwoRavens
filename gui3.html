@@ -90,16 +90,7 @@
                     </div>
                     <div id="tab2" style="display:none; margin-top:.5em;">
                     </div>
-                    <div id="tab3">
-                        <p style="padding:.5em 1em;">Select a variable from within the visualization in the center panel to view its summary statistics.</p>
-                    </div>
-                    <div id="tab4">
-                    </div>
-                    <div id="tab5">
-                        <!-- <p style="padding:.5em 1em;">Select a variable from within the visualization in the center panel to view its summary statistics.</p> -->
-                    </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -117,9 +108,10 @@
         <a href="somelink" target="_blank" id="logID">Replication</a>
     </div>
 
-    <div id="main" class="left">
+    <div id="main" class="left" onresize=rightpanelMargin()>
+
         <!-- VJD: These divs, subsetDate and subsetLocation, should be hidden and visible according to which button is clicked in the left panel -->
-        <div id="subsetDate" class="canvas" style="text-align:center;">
+        <div id="subsetDate" class="canvas">
             <svg id="dateSVG" width="500" height="500"></svg>
 
             <div id="dateInterval" class="form-group" style="display: inline-block;vertical-align:top;width:20%;margin:20px">
@@ -130,7 +122,13 @@
             </div>
         </div>
         
-        <div id="subsetLocation" class="canvas" style="text-align:center;">
+        <div id="subsetLocation" class="canvas">
+        </div>
+
+        <div id="subsetAction" class="canvas">
+        </div>
+
+        <div id="subsetActor" class="canvas">
         </div>
 
         <div id="legend" class="legendary panel panel-default" style="display:none">

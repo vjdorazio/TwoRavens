@@ -167,7 +167,9 @@ div.popover.variables div.popover-content.form-horizontal .form-group {
 #rightpanel {
     border:1px solid #ADADAD;
     width:250px;
-    position:fixed;top:72px;right:27px; /* buffer: 10px, scrollbar: 17px */
+    position:fixed;
+    top:72px;
+    right:10px; /* buffer: 10px, scrollbar: 17px */
     height:calc(100% - 122px);      /* top: 72px, bottom:50px */
     background:#F9F9F9;
     padding: 0 0 0 16px;
@@ -202,7 +204,8 @@ div.sidepanel div.panelbar span {
     background: #eee;
 }
 #main {
-    width: 100%;
+    margin-left:270px;
+    width:calc(100% - 270px);
     height: calc(100% - 62px - 40px);
     margin-top:62px;
     position: fixed;

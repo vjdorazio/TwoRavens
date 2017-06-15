@@ -613,18 +613,38 @@ eventlist=new Array(20)
  //   .attr("data-original-title", "Summary Statistics")
     .on("click", function varClick(){
         if(d3.select(this).text()=="Date") {
+            document.getElementById("subsetDate").style.display = 'inline';
+
+            document.getElementById("subsetLocation").style.display = 'none';
+            document.getElementById("subsetActor").style.display = 'none';
+            document.getElementById("subsetAction").style.display = 'none';
 			selectionMade("Date");
             d3date();
         }
         else if(d3.select(this).text()=="Location") {
+            document.getElementById("subsetLocation").style.display = 'inline';
+
+            document.getElementById("subsetDate").style.display = 'none';
+            document.getElementById("subsetActor").style.display = 'none';
+            document.getElementById("subsetAction").style.display = 'none';
 			selectionMade("Location");
             d3loc();
         }
         else if(d3.select(this).text()=="Actor") {
+            document.getElementById("subsetActor").style.display = 'inline';
+
+            document.getElementById("subsetDate").style.display = 'none';
+            document.getElementById("subsetLocation").style.display = 'none';
+            document.getElementById("subsetAction").style.display = 'none';
 			selectionMade("Actor");
             d3actor();
         }
         else if(d3.select(this).text()=="Action") {
+            document.getElementById("subsetAction").style.display = 'inline';
+
+            document.getElementById("subsetDate").style.display = 'none';
+            document.getElementById("subsetLocation").style.display = 'none';
+            document.getElementById("subsetActor").style.display = 'none';
 			selectionMade("Action");
             d3action();
         }
@@ -2484,7 +2504,6 @@ function nodeReset (n) {
 }
 
 function subsetSelect(btn) {
-
     if (dataurl) {
 	zparams.zdataurl = dataurl;
     }
@@ -3646,4 +3665,16 @@ function mainGraphLabel(svg) {
 	var label5 = $('<label><i class="fa fa-expand fa-2x fa-border hide" id="Expand_Main_Icon" onclick = "javascript:maingraphAction(\'Expand_Collapse\')"></i></label>');
 	$("#main_graph_td").append(label5);	
 			
+}
+
+window.onresize = rightpanelMargin;
+rightpanelMargin();
+
+function rightpanelMargin() {
+    main = $("#main");
+    if (main.get(0).scrollHeight > main.get(0).clientHeight) {
+        document.getElementById("rightpanel").style.right = "27px";
+    } else {
+        document.getElementById("rightpanel").style.right = "10px";
+    }
 }
