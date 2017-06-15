@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html>
   <head>
-      <meta charset="utf-8">
-      <title>TwoRavens</title>
-
-      <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
-      <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
-
-      <link rel="stylesheet" href="app.css">
-      <link rel="stylesheet" href="Ladda/dist/ladda-themeless.min.css">
-      <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css">
-
-      <script src="Ladda/dist/spin.min.js"></script>
-      <script src="Ladda/dist/ladda.min.js"></script>
-
-      <script type="text/javascript" src="jquery/jquery.min.js"></script>
-      <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
-      <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
-      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-      <script type="text/javascript" src="d3.v3.min.js"></script>
-      <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
-      <!-- <script type="text/javascript" src="plots.js"></script> -->
+    <meta charset="utf-8">
+    <title>TwoRavens</title>
+        
+        <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+        <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
+        
+        <link rel="stylesheet" href="app.css">
+		
+		<!-- START Added for Location -->
+		<link rel="stylesheet" href="location.css">		
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		
+        <link rel="stylesheet" href="Ladda/dist/ladda-themeless.min.css">
+         <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css">
+           
+        <script src="Ladda/dist/spin.min.js"></script>
+        <script src="Ladda/dist/ladda.min.js"></script>
+        
+        <script type="text/javascript" src="jquery/jquery.min.js"></script>
+          <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+        <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+          <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        
+        <script type="text/javascript" src="d3.v3.min.js"></script>
+        <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+        <!-- <script type="text/javascript" src="plots.js"></script> -->
   </head>
 
 <!--svg id="accidents">
@@ -113,7 +118,7 @@
     </div>
 
     <div id="main" class="left">
-
+        <!-- VJD: These divs, subsetDate and subsetLocation, should be hidden and visible according to which button is clicked in the left panel -->
         <div id="subsetDate" class="canvas" style="text-align:center;">
             <svg id="dateSVG" width="500" height="500"></svg>
 
@@ -123,6 +128,9 @@
                 <label id="dateToLab" for="todate" style="text-align:left;width:100%;margin-top:10px;">To:</label>
                 <input id="todate" class="form-control" type="text">
             </div>
+        </div>
+        
+        <div id="subsetLocation" class="canvas" style="text-align:center;">
         </div>
 
         <div id="legend" class="legendary panel panel-default" style="display:none">
