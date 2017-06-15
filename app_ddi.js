@@ -294,7 +294,7 @@ if (dataurl) {
 var preprocess = {};
 var mods = new Object;
 var mods_ml = new Object;
-var mods_pre = new Object;
+var mods_pp = new Object;
 console.log("Value of username: ",username);
 //This function finds whether a key is present in the json file, and sends the key's value if present.
 function findValue(json, key) {
@@ -419,37 +419,36 @@ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
                       
                       // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
                       allNodes.push(obj1);
-					 92
                       };
 						
                       //console.log("allNodes: ", allNodes);
                       // Reading the zelig models and populating the model list in the right panel.
 					  
                       d3.json("data/zelig5models.json", function(error, json) {
-                              if (error) return console.warn(error);
-                              var jsondata = json;
+                             if (error) return console.warn(error);
+                             var jsondata = json;
                               
-                              //console.log("zelig models json: ", jsondata);
-                              for(var key in jsondata.zelig5models) {
-                              if(jsondata.zelig5models.hasOwnProperty(key)) {
-                              mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
-                              }
-                              }
+                            //console.log("zelig models json: ", jsondata);
+                             for(var key in jsondata.zelig5models) {
+                             if(jsondata.zelig5models.hasOwnProperty(key)) {
+                             mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
+                             }
+                             }
                               
-                              d3.json("data/zelig5choicemodels.json", function(error, json) {
-                                      if (error) return console.warn(error);
-                                      var jsondata = json;
-                                      //console.log("zelig choice models json: ", jsondata);
-                                      for(var key in jsondata.zelig5choicemodels) {
-                                      if(jsondata.zelig5choicemodels.hasOwnProperty(key)) {
-                                      mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
-                                      }
-                                      }
+                             d3.json("data/zelig5choicemodels.json", function(error, json) {
+                                     if (error) return console.warn(error);
+                                     var jsondata = json;
+                                      console.log("zelig choice models json: ", jsondata);
+                                     for(var key in jsondata.zelig5choicemodels) {
+                                     if(jsondata.zelig5choicemodels.hasOwnProperty(key)) {
+                                     mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
+                                     }
+                                     }
                                       
-                                      scaffolding(callback=layout);
-                                      dataDownload();
-                                      });
-                              });
+                                     scaffolding(callback=layout);
+                                     dataDownload();
+                                     });
+                             });
 							  
 							  
 						                      
@@ -464,23 +463,24 @@ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
                               mods_ml[jsondata.caret5models[key].name[0]] = jsondata.caret5models[key].description[0];
                               }
                               }
-
+                    
+                                      
                                       scaffolding(callback=layout);
                                       dataDownload();
 
 
                               });
-							  
-						
-						// Reading the caret preprocess and populating the process list in the right panel.
-					    d3.json("data/caret5preprocess.json", function(error, json) {
+
+
+                      // Reading the caret preprocess and populating the process list in the right panel.
+                      d3.json("data/caret5preprocess.json", function(error, json) {
                               if (error) return console.warn(error);
                               var jsondata = json;
                               
                               //console.log("caret models json: ", jsondata);
                               for(var key in jsondata.caret5preprocess) {
                               if(jsondata.caret5preprocess.hasOwnProperty(key)) {
-                              mods_pre[jsondata.caret5preprocess[key].name[0]] = jsondata.caret5preprocess[key].description[0];
+                              mods_pp[jsondata.caret5preprocess[key].name[0]] = jsondata.caret5preprocess[key].description[0];
                               }
                               }
 
@@ -489,6 +489,9 @@ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
 
 
                               });
+
+
+
 						
                       });
 						
@@ -704,23 +707,23 @@ function scaffolding(callback) {
           });
     
 	
-	d3.select("#ml_algorithm")
+	d3.select("#ml_model")
     .style('height', 2000)
     .style('overfill', 'scroll');
     
     var ml_list = Object.keys(mods_ml);
     
-    d3.select("#ml_algorithm").selectAll("p")
+    d3.select("#ml_model").selectAll("p")
     .data(ml_list)
     .enter()
     .append("p")
     .attr("id", function(d){
-          return "_ml_".concat(d);
-          })
+         return "_ml_".concat(d);
+         })
     .text(function(d){return d;})
     .style('background-color',function(d) {
-          return varColor;
-           })
+         return varColor;
+          })
     .attr("data-container", "body")
     .attr("data-toggle", "popover")
     .attr("data-trigger", "hover")
@@ -730,27 +733,27 @@ function scaffolding(callback) {
     .attr("onmouseout", "$(this).popover('toggle');")
     .attr("data-original-title", "ml Description")
     .attr("data-content", function(d){
-          return mods_ml[d];
-          });
-		  
-		  
-	d3.select("#ml_preprocess")
+         return mods_ml[d];
+         });
+
+
+  d3.select("#preprocess")
     .style('height', 2000)
     .style('overfill', 'scroll');
     
-    var pre_list = Object.keys(mods_pre);
+    var pp_list = Object.keys(mods_pp);
     
-    d3.select("#ml_algorithm").selectAll("p")
-    .data(pre_list)
+    d3.select("#preprocess").selectAll("p")
+    .data(pp_list)
     .enter()
     .append("p")
     .attr("id", function(d){
-          return "_pre_".concat(d);
-          })
+         return "_preprocess_".concat(d);
+         })
     .text(function(d){return d;})
     .style('background-color',function(d) {
-          return varColor;
-           })
+         return varColor;
+          })
     .attr("data-container", "body")
     .attr("data-toggle", "popover")
     .attr("data-trigger", "hover")
@@ -758,10 +761,10 @@ function scaffolding(callback) {
     .attr("data-html", "true")
     .attr("onmouseover", "$(this).popover('toggle');")
     .attr("onmouseout", "$(this).popover('toggle');")
-    .attr("data-original-title", "ml Description")
+    .attr("data-original-title", "Preprocess Description")
     .attr("data-content", function(d){
-          return mods_pre[d];
-          });
+         return mods_pp[d];
+         });
 	
 	
     if(typeof callback === "function") {
@@ -1186,6 +1189,62 @@ var force;
         .on("click", function(){
             var myColor = d3.select(this).style('background-color');
             d3.select("#models").selectAll("p")
+            .style('background-color',varColor);
+            d3.select(this)
+            .style('background-color',function(d) {
+                   if(d3.rgb(myColor).toString() === varColor.toString()) {
+                    zparams.zmodel = d.toString();
+                    return hexToRgba(selVarColor);
+                   }
+                   else {
+                    zparams.zmodel = "";
+                    return varColor;
+                   }
+                   });
+            restart();
+            });
+
+
+    d3.select("#ml_model").selectAll("p") // ml_model tab
+    .on("mouseover", function(d) {
+        // REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
+        })
+    .on("mouseout", function() {
+        //Remove the tooltip
+        //d3.select("#tooltip").style("display", "none");
+        })
+        //  d3.select("#Display_content")
+        .on("click", function(){
+            var myColor = d3.select(this).style('background-color');
+            d3.select("#ml_model").selectAll("p")
+            .style('background-color',varColor);
+            d3.select(this)
+            .style('background-color',function(d) {
+                   if(d3.rgb(myColor).toString() === varColor.toString()) {
+                    zparams.zmodel = d.toString();
+                    return hexToRgba(selVarColor);
+                   }
+                   else {
+                    zparams.zmodel = "";
+                    return varColor;
+                   }
+                   });
+            restart();
+            });
+
+
+    d3.select("#preprocess").selectAll("p") // preprocess tab
+    .on("mouseover", function(d) {
+        // REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
+        })
+    .on("mouseout", function() {
+        //Remove the tooltip
+        //d3.select("#tooltip").style("display", "none");
+        })
+        //  d3.select("#Display_content")
+        .on("click", function(){
+            var myColor = d3.select(this).style('background-color');
+            d3.select("#preprocess").selectAll("p")
             .style('background-color',varColor);
             d3.select(this)
             .style('background-color',function(d) {
@@ -2959,10 +3018,12 @@ function tabLeft(tab) {
     document.getElementById(tab).style.display = 'block';
 }
 
+
 function tabRight(tabid) {
 
     document.getElementById('models').style.display = 'none';
-	//document.getElementById('ml_algorithm').style.display = 'none';
+	  document.getElementById('ml_model').style.display = 'none';
+    document.getElementById('preprocess').style.display = 'none';
     document.getElementById('setx').style.display = 'none';
     document.getElementById('results').style.display = 'none';
 	
@@ -2970,6 +3031,8 @@ function tabRight(tabid) {
     if(tabid=="btnModels") {
       document.getElementById('btnSetx').setAttribute("class", "btn btn-default");
       document.getElementById('btnResults').setAttribute("class", "btn btn-default");
+      document.getElementById('btnML').setAttribute("class", "btn btn-default");
+      document.getElementById('btnPP').setAttribute("class", "btn btn-default");
       document.getElementById('btnModels').setAttribute("class", "btn active");
       document.getElementById('models').style.display = 'block';
         
@@ -2977,18 +3040,36 @@ function tabRight(tabid) {
         .attr("class", "sidepanel container clearfix");
     }
 	
-	//else if(tabid=="btnML"){
-	//  document.getElementById('btnSetx').setAttribute("class", "btn btn-default");
-    //  document.getElementById('btnResults').setAttribute("class", "btn btn-default");
-    //  document.getElementById('btnModels').setAttribute("class", "btn active");
-    //  document.getElementById('ml_algorithm').style.display = 'block';
+	else if(tabid=="btnML"){
+	   document.getElementById('btnSetx').setAttribute("class", "btn btn-default");
+     document.getElementById('btnResults').setAttribute("class", "btn btn-default");
+     document.getElementById('btnModels').setAttribute("class", "btn btn-default");
+     document.getElementById('btnPP').setAttribute("class", "btn btn-default");
+     document.getElementById('btnML').setAttribute("class", "btn active");
+     document.getElementById('ml_model').style.display = 'block';
 	  
-	//  d3.select("#rightpanel")
-    //    .attr("class", "sidepanel container clearfix");
-	//}
+	 d3.select("#rightpanel")
+       .attr("class", "sidepanel container clearfix");
+	}
+
+
+  else if(tabid=="btnPP"){
+     document.getElementById('btnSetx').setAttribute("class", "btn btn-default");
+     document.getElementById('btnResults').setAttribute("class", "btn btn-default");
+     document.getElementById('btnModels').setAttribute("class", "btn btn-default");
+     document.getElementById('btnML').setAttribute("class", "btn btn-default");
+     document.getElementById('btnPP').setAttribute("class", "btn active");
+     document.getElementById('preprocess').style.display = 'block';
+    
+   d3.select("#rightpanel")
+       .attr("class", "sidepanel container clearfix");
+  }
+
 	
     else if (tabid=="btnSetx") {
       document.getElementById('btnModels').setAttribute("class", "btn btn-default");
+      document.getElementById('btnPP').setAttribute("class", "btn btn-default");
+      document.getElementById('btnML').setAttribute("class", "btn btn-default");
       document.getElementById('btnResults').setAttribute("class", "btn btn-default");
       document.getElementById('btnSetx').setAttribute("class", "btn active");
       document.getElementById('setx').style.display = 'block';
@@ -2997,6 +3078,8 @@ function tabRight(tabid) {
     }
     else if (tabid=="btnResults") {
       document.getElementById('btnModels').setAttribute("class", "btn btn-default");
+      document.getElementById('btnPP').setAttribute("class", "btn btn-default");
+      document.getElementById('btnML').setAttribute("class", "btn btn-default");
       document.getElementById('btnSetx').setAttribute("class", "btn btn-default");
       document.getElementById('btnResults').setAttribute("class", "btn active");
       document.getElementById('results').style.display = 'block';
@@ -3504,6 +3587,8 @@ function subsetSelect(btn) {
         selectLadda.stop(); // stop motion
         $("#btnVariables").trigger("click"); // programmatic clicks
         $("#btnModels").trigger("click");
+        $("#btnML").trigger("click");
+        $("#btnPP").trigger("click");
         
         var grayOuts = [];
         
