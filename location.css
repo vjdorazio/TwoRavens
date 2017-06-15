@@ -3,24 +3,26 @@
 	background-color: white;
 	fill: white;
 	text-align:center;
+	width:100px;
 }
 	
 .clicked {
 	cursor:pointer;
-	background-color:gray;
+	background-color:white;
 	paint-order: stroke;
 	stroke: gray;
 	stroke-width: 2px;
 	stroke-linecap: butt;
 	stroke-linejoin: miter;
 	max-width:auto;
-	fill: gray;
+	fill: white;
 	text-align:center;
+	width:100px;
 }
 	
-.clickable {
-	cursor:pointer;
-	fill: white;
+.graph_axis_label {
+	font-family: "Times New Roman";
+	 font-size:20px;
 }
 	
 .labelClicked {
@@ -32,15 +34,6 @@
 	fill: white;
 	cursor:pointer;
 }
-	
-.main_graph_head_border{
-	display:block;
-}
-	
-.sub_graph_head_border {
-	display:block;
-}
-
 
 .graph_collapse {
     overflow: hidden;
@@ -81,4 +74,44 @@
 	height:500px;
 	overflow-x: scroll; 
 	overflow-y: scroll;
+}
+
+.bar {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+.bar_open {
+	fill: brown;
+	cursor: pointer;
+}
+
+.bar:hover {
+	fill: brown;
+	cursor: pointer;
+}
+
+.bar_open:hover {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #D4D8DA;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+.x path {
+	display: none;
+}
+.toolTip {
+  position: absolute;
+  display: none;
+  min-width: 80px;
+  height: auto;
+  background: none repeat scroll 0 0 #ffffff;
+  border: 1px solid #6F257F;
+  padding: 14px;
+  text-align: center;
 }

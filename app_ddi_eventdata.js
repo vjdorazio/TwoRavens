@@ -3210,16 +3210,8 @@ function d3date() {
 
 function d3loc() {
     $("#mainSVG").empty();
-	
-	// d3.select("#mainSVG").append("svg:svg")
-    // .attr("width", 600)
-    // .attr("height", 1500)
-	// .attr("id", "main_loc")
-	// .attr("style", "overflow:scroll");
-	
-	
-	var data = getMainGraphData();
-	drawMainGraph(data);
+		
+	drawMainGraph();
 	
 }
 
@@ -3237,12 +3229,13 @@ function d3actor() {
  **/
  var mapGraphSVG = new Object();
  var mapLocationObj = new Object();
+ var mapIdCname = new Object();
  
 /**
  * Draw the main graph
  *
  **/
-function drawMainGraph(data) {
+function drawMainGraph() {
 	
 	d3.select("#mainSVG").append("foreignObject")
     .attr("width", 700)
@@ -3251,190 +3244,200 @@ function drawMainGraph(data) {
     .attr("class", "graph_container")
     .html("<div id='main_loc' align='left'></div>");
 	
-	var scale = d3.scale.linear()
-        .domain([1, 5])   // Data space
-        .range([10, 200]); // Pixel space
-		
-	mapLocationObj["scale"] = scale;
 	
 	var table = $("#main_loc").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
-	mainGraphLabel(svg1);
+	mainGraphLabel(svg);
 	
-	var svg1 = d3.select("#main_graph_td").append("svg:svg")
+	var svg = d3.select("#main_graph_td").append("svg:svg")
         .attr("width",  500)
-        .attr("height", 350);
-	
-	mapLocationObj["main_graph"] = svg1;
-	
-	axis_MainGraph(svg1);
-	
-	render1(data, "black"); 
+        .attr("height", 350)
+		.attr("id", "main_graph_svg");
+		
+	mapLocationObj["main_graph"] = svg;
+		
+	render("steelblue", false, 0); 
 }
 	
 	
 /**
- * render1 to render/draw the main graph with the data provided in form of array of Objects
+ * render to render/draw the main/sub graph with the data provided in form of array of Objects
  * with the links to create the sub-graph based on the data
  *
 **/
-function render1(data, color){
-	
-	console.log("Rendering Main Graph...");
-	
-	var scale = mapLocationObj["scale"];
-	var svg = mapLocationObj["main_graph"];
-	
-    // Bind data
-	var rectGroup= svg.append("g");
-	
-	var textGroup= svg.append("g");
-		        
-	var rects = rectGroup.selectAll("rect").data(data).enter().append("rect");
-	var tg_rects = textGroup.selectAll("rect").data(data).enter().append("rect");
-	var tg_texts = textGroup.selectAll("text").data(data).enter().append("text");
-   
-    // Enter
-    rects.attr("x", 100)
-     .attr("height", 30)
-	 .attr("class", "main_graph");
+function render(color, blnIsSubgraph, cid){
 		
-	tg_rects.attr("x", 25)
-     .attr("height", 30);
-	 
-	tg_texts.attr("x", 30)
-	 .attr("class", "main_graph");
-	 
-        
-	// Update
-    rects.attr("y", function (d) { return scale(d.cid) + 50;})
-	 .attr("width",  function (d) { return scale(d.w);})
-	 .attr("fill", color);
-    		
-	tg_rects.attr("y", function (d) { return scale(d.cid) + 50;})
-	 .attr("width",  function (d) { return 40;})
-	 .attr("onclick", function (d) { return "javascript:maingraphYLabelClicked('"+d.cname+"')"; })
-	 .attr("id", function (d) { return "tg_rect_" + d.cname;})
-	 .attr("class", "main_graph clickable");
-			
-	tg_texts.attr("y", function (d) { return scale(d.cid) + 70;})
-	 .text(function (d) { mapGraphSVG[d.cname] = null; return d.cname;})		
-	 .attr("id", function (d) { return "tg_text_" + d.cname;})
-	 .attr("fill", "black");
-       
-	// Exit
-    //rects.exit().remove();
-	//texts.exit().remove();
+	var dataFile = "";
+	var svg;
+	if(blnIsSubgraph == false) {
+	
+		console.log("Rendering Main Graph...");
+		dataFile = "data/loc_main.csv";
+		svg = d3.select("#main_graph_svg");
+	}
+	else {
 		
-}
+		console.log("Rendering Sub Graph... id = " + cid);
+		dataFile = "data/loc_sub_"+cid+".csv";
+		svg = d3.select("#sub_graph_td_svg_"+cid);
+	}
+		
+	var margin = {top: 20, right: 20, bottom: 30, left: 80},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom;
+  
+	var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+  
+	var x = d3.scaleLinear().range([0, width]);
+	var y = d3.scaleBand().range([height, 0]);
 
-/**
- * render2 to render/draw the sub graphs with the data provided in form of array of Objects 
- *
-**/
-function render2(cname, data, color){
-	 
-	var svg = mapGraphSVG[cname];
-	var scale = mapLocationObj["scale"];
+	var g = svg.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		  
+	d3.csv(dataFile, function(d) {
+		d.freq = +d.freq;
+		return d;
+	}, function(error, data) {
+		if (error) throw error;
+  
+		data.sort(function(a, b) { return b.freq - a.freq; });
+  
+		x.domain([0, d3.max(data, function(d) { return d.freq; })]);
+		y.domain(data.map(function(d) { return d.cname; })).padding(0.1);
+
+		g.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0," + height + ")")
+			.call(d3.axisBottom(x).ticks(5).tickFormat(function(d) { return parseInt(d); }).tickSizeInner([-height]));
+
+		g.append("g")
+			.attr("class", "y axis")
+			.call(d3.axisLeft(y));
+
 	
-    // Bind data
-	var rectGroup= svg.append("g");
-		        
-	var rects = rectGroup.selectAll("rect").data(data).enter().append("rect");
-    var texts = rectGroup.selectAll("text").data(data).enter().append("text");
-	
-	
-    // Enter
-    rects.attr("x", 100)
-     .attr("height", 30)
-	 .attr("class", "sub_graph_"+ cname);
+		if(blnIsSubgraph == false) {
 		
-	texts.attr("x", 30)
-	.attr("class", "sub_graph_"+ cname);
-        
-	// Update
-    rects.attr("y", function (d) { return 50+scale(d.cid);})
-	 .attr("width",  function (d) { return scale(d.w);})
-     .attr("fill", color);
-		
+			g.selectAll(".bar")
+			.data(data)
+			.enter().append("rect")
+			.attr("class", "bar")
+			.attr("x", 0)
+			.attr("height", y.bandwidth())
+			.attr("y", function(d) { return y(d.cname); })
+			.attr("width", function(d) { return x(d.freq); })
+			.attr("onclick",  function (d) { mapGraphSVG[d.id] = null; mapIdCname[d.id] = d.cname; return "javascript:maingraphYLabelClicked('"+d.id+"')"; })
+			.attr("id", function(d) { return "tg_rect_" + d.id; })
+			.on("mousemove", function(d){
+				tooltip
+					.style("left", d3.event.pageX - 50 + "px")
+					.style("top", d3.event.pageY - 70 + "px")
+					.style("display", "inline-block")
+					.html((d.cname) + "<br>" + (d.freq));
+			})
+    		.on("mouseout", function(d){ tooltip.style("display", "none");});
 			
-	texts.attr("y", function (d) { return scale(d.cid) + 70;})
-	 .attr("fill", "black")
-	 .text(function (d) { return d.cname;});
+			g.append("text")
+            .attr("text-anchor", "middle") 
+            .attr("transform", "translate("+ (-50) +","+(height/2)+")rotate(-90)") 
+			.attr("class", "graph_axis_label")
+            .text("Region");
+		}
+		else {
+			
+			g.selectAll(".bar")
+			.data(data)
+			.enter().append("rect")
+			.attr("class", "bar")
+			.attr("x", 0)
+			.attr("height", y.bandwidth())
+			.attr("y", function(d) { return y(d.cname); })
+			.attr("width", function(d) { return x(d.freq); })
+			.on("mousemove", function(d){
+				tooltip
+					.style("left", d3.event.pageX - 50 + "px")
+					.style("top", d3.event.pageY - 70 + "px")
+					.style("display", "inline-block")
+					.html((d.cname) + "<br>" + (d.freq));
+			})
+    		.on("mouseout", function(d){ tooltip.style("display", "none");});
+			
+			g.append("text")
+            .attr("text-anchor", "middle") 
+            .attr("transform", "translate("+ (-50) +","+(height/2)+")rotate(-90)") 
+			.attr("class", "graph_axis_label")
+            .text("Sub-Region of " + mapIdCname[cid]);
+		}
+		
 				
-       
-	// Exit
-    rects.exit().remove();
-		
+
+        g.append("text")
+            .attr("text-anchor", "middle") 
+            .attr("transform", "translate("+ (width/2) +","+(height+30)+")") 
+			.attr("class", "graph_axis_label")
+            .text("Frequency");
+
+	});
 }
 
- 
+
 /**
  * fetchJSONObjectForSubGraph by the cname or id of the main graph
  * and do the rendering of the sub graph
  *
 **/
-function fetchJSONObjectForSubGraph(cname) {
+function fetchJSONObjectForSubGraph(cid) {
 				
-	console.log("fetchJSONObjectForSubGraph for : " + cname);
+	console.log("fetchJSONObjectForSubGraph for cid : " + cid);
 	
-	if(mapGraphSVG[cname] != null) {
+	if(mapGraphSVG[cid] != null) {
 		
-		var svgToRemove = mapGraphSVG[cname];
+		var svgToRemove = mapGraphSVG[cid];
 		svgToRemove.remove();
+					
+		$("#tg_rect_"+cid).attr("class", "bar");
 		
-		$("#tg_rect_"+cname).removeClass("labelClicked");
-		$("#tg_rect_"+cname).addClass("clickable");
-		
-		$("#tg_rect_"+cname).attr("class", "main_graph clickable");
-		
-		$("#sub_graph_td_" + cname).removeClass('graph_config');
-		$("#sub_graph_td_" + cname).addClass('graph_close');
+		$("#sub_graph_td_" + cid).removeClass('graph_config');
+		$("#sub_graph_td_" + cid).addClass('graph_close');
 		
 		 setTimeout(function() {
-			$("#sub_graph_td_"+cname).parent().remove();
+			$("#sub_graph_td_"+cid).parent().remove();
 		}, 1000);
 		
-		mapGraphSVG[cname] = null;	
+		mapGraphSVG[cid] = null;	
 			
 		return;
 	}
 	
-	$("#tg_rect_"+cname).removeClass("clickable");
-	$("#tg_rect_"+cname).addClass("labelClicked");	
-	
-	$("#tg_rect_"+cname).attr("class", "main_graph labelClicked");
+	$("#tg_rect_"+cid).attr("class", "bar_open");
 		
-	$("#svg_graph_table").append('<tr id="sub_graph_tr_'+cname +'"><td id="sub_graph_td_'+cname +'" class="graph_config"></td></tr>');
+	$("#svg_graph_table").append('<tr id="sub_graph_tr_'+cid +'"><td id="sub_graph_td_'+cid +'" class="graph_config"></td></tr>');
 	
 	
+	var cname = mapIdCname[cid];
 	var label1 = $('<label>'+cname+':</label>');
-	var label2 = $('<label class="hide" id="expand_collapse_text_'+cname+'">Collapse</label>');
-	$("#sub_graph_td_"+cname).append(label1);
-	$("#sub_graph_td_"+cname).append("&nbsp;&nbsp;&nbsp;");
-	$("#sub_graph_td_"+cname).append(label2);
+	var label2 = $('<label class="hide" id="expand_collapse_text_'+cid+'">Collapse</label>');
+	$("#sub_graph_td_"+cid).append(label1);
+	$("#sub_graph_td_"+cid).append("&nbsp;&nbsp;&nbsp;");
+	$("#sub_graph_td_"+cid).append(label2);
 	
-	var label4 = $('<label><i class="fa fa-compress fa-2x fa-border show" id="Collapse_Main_Icon_'+cname+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cname+'\')"></i></label>');
-	$("#sub_graph_td_"+cname).append(label4);	
+	var label4 = $('<label><i class="fa fa-compress fa-2x fa-border show" id="Collapse_Main_Icon_'+cid+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cid+'\')"></i></label>');
+	$("#sub_graph_td_"+cid).append(label4);	
 	
-	var label5 = $('<label><i class="fa fa-expand fa-2x fa-border hide" id="Expand_Main_Icon_'+cname+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cname+'\')"></i></label>');
-	$("#sub_graph_td_"+cname).append(label5);	
+	var label5 = $('<label><i class="fa fa-expand fa-2x fa-border hide" id="Expand_Main_Icon_'+cid+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cid+'\')"></i></label>');
+	$("#sub_graph_td_"+cid).append(label5);	
 	
-	$("#sub_graph_td_"+cname).append("&nbsp;&nbsp;");
+	$("#sub_graph_td_"+cid).append("&nbsp;&nbsp;");
 	
-	var label6 = $('<label><i class="fa fa-times fa-2x fa-border show" onclick="javascript:maingraphYLabelClicked(\''+cname+'\')"></i></label>');
-	$("#sub_graph_td_"+cname).append(label6);	
+	var label6 = $('<label><i class="fa fa-times fa-2x fa-border show" onclick="javascript:maingraphYLabelClicked(\''+cid+'\')"></i></label>');
+	$("#sub_graph_td_"+cid).append(label6);	
 	
 	
-	var svg2 = d3.select("#sub_graph_td_"+cname).append("svg:svg")
+	var svg = d3.select("#sub_graph_td_"+cid).append("svg:svg")
        .attr("width",  500)
-       .attr("height", 350);
+       .attr("height", 350)
+	   .attr("id", "sub_graph_td_svg_"+cid);
 		
-	mapGraphSVG[cname] = svg2; 
-			
-	axis_SubGraph(svg2, cname);
-	var data = getSubgraphData(cname);
-	render2(cname, data, "black"); 
-        
+	mapGraphSVG[cid] = svg; 
+	render("steelblue", true, cid);         
 }
 
 /**
@@ -3447,32 +3450,43 @@ function maingraphAction(action) {
 		
 		action = $('#Expand_Collapse_Main_Text').text();
 	}
+	else if(action == 'All_None') {
+		action = $('#All_None').text();
+	}
 	else {
 		
-		$("#"+action).removeClass("unclicked");
-		$("#"+action).addClass("clicked");
+		return;
 	}
 		
 	if(action == 'All') {
 
+		$("#All_None").text("None");
+		
 		maingraphHeaderUnClickAll();
 		removeAllSubGraphSVG();
-		for(var cname in mapGraphSVG) {
+		for(var cid in mapGraphSVG) {
 			
-			if(cname != null && mapGraphSVG[cname] == null) {
-				console.log(cname);
-				fetchJSONObjectForSubGraph(cname);
+			if(cid != null && mapGraphSVG[cid] == null) {
+				console.log(cid);
+				fetchJSONObjectForSubGraph(cid);
 			}
 		}
 
-		$("#All").removeClass("unclicked");
-		$("#All").addClass("clicked");
+		$("#All_None").removeClass("unclicked");
+		$("#All_None").addClass("clicked");
+		
+		$("#All_None").text("None");
 		
 	}		
 	else if(action == 'None') {
 	
 		maingraphHeaderUnClickAll();
 		removeAllSubGraphSVG();
+		
+		$("#All_None").removeClass("clicked");
+		$("#All_None").addClass("unclicked");
+		
+		$("#All_None").text("All");
 	}
 	else if(action == 'Collapse') {
 		
@@ -3482,8 +3496,7 @@ function maingraphAction(action) {
 		$("#Collapse_Main_Icon").addClass("hide");
 		$("#Expand_Main_Icon").removeClass("hide");
 		$("#Expand_Main_Icon").addClass("show");
-		//$(".main_graph").hide();
-		
+				
 		
 		$("#main_graph_td").removeClass('graph_config');
 		$("#main_graph_td").addClass('graph_collapse');
@@ -3496,8 +3509,7 @@ function maingraphAction(action) {
 		$("#Collapse_Main_Icon").addClass("show");
 		$("#Expand_Main_Icon").removeClass("show");
 		$("#Expand_Main_Icon").addClass("hide");
-		//$(".main_graph").show();
-		
+			
 		
 		$("#main_graph_td").removeClass('graph_collapse');
 		$("#main_graph_td").addClass('graph_config');
@@ -3511,37 +3523,37 @@ function maingraphAction(action) {
  **/  
 function subgraphAction(textId) {
 	  
-	var cname = textId.substring(21);
+	var cid = textId.substring(21);
 	var action = $("#" + textId).text();
 
 	if(action == 'Collapse') {
 		
 		$("#"+textId).text("Expand");
 		
-		$("#Collapse_Main_Icon_"+cname).removeClass("show");
-		$("#Collapse_Main_Icon_"+cname).addClass("hide");
-		$("#Expand_Main_Icon_"+cname).removeClass("hide");
-		$("#Expand_Main_Icon_"+cname).addClass("show");
+		$("#Collapse_Main_Icon_"+cid).removeClass("show");
+		$("#Collapse_Main_Icon_"+cid).addClass("hide");
+		$("#Expand_Main_Icon_"+cid).removeClass("hide");
+		$("#Expand_Main_Icon_"+cid).addClass("show");
 			
-		//$(".sub_graph_"+ cname).hide();
+		//$(".sub_graph_"+ cid).hide();
 		
 		
-		$("#sub_graph_td_" + cname).removeClass('graph_config');
-		$("#sub_graph_td_" + cname).addClass('graph_collapse');
+		$("#sub_graph_td_" + cid).removeClass('graph_config');
+		$("#sub_graph_td_" + cid).addClass('graph_collapse');
 			
 	}
 	else if(action == 'Expand') {
 		
 		$("#"+textId).text("Collapse");
 		
-		$("#Collapse_Main_Icon_"+cname).removeClass("hide");
-		$("#Collapse_Main_Icon_"+cname).addClass("show");
-		$("#Expand_Main_Icon_"+cname).removeClass("show");
-		$("#Expand_Main_Icon_"+cname).addClass("hide");
-	//$(".sub_graph_"+ cname).show();
+		$("#Collapse_Main_Icon_"+cid).removeClass("hide");
+		$("#Collapse_Main_Icon_"+cid).addClass("show");
+		$("#Expand_Main_Icon_"+cid).removeClass("show");
+		$("#Expand_Main_Icon_"+cid).addClass("hide");
+		//$(".sub_graph_"+ cid).show();
 		
-		$("#sub_graph_td_" + cname).removeClass('graph_collapse');
-		$("#sub_graph_td_" + cname).addClass('graph_config');
+		$("#sub_graph_td_" + cid).removeClass('graph_collapse');
+		$("#sub_graph_td_" + cid).addClass('graph_config');
 	}
 }
  
@@ -3552,20 +3564,17 @@ function subgraphAction(textId) {
  **/
 function removeAllSubGraphSVG(){
 	
-	for(var cname in mapGraphSVG) {
+	for(var cid in mapGraphSVG) {
 			
-		if(cname != null && mapGraphSVG[cname] != null) {
-			console.log(cname);
-			var svgToRemove = mapGraphSVG[cname];
+		if(cid != null && mapGraphSVG[cid] != null) {
+			console.log(cid);
+			var svgToRemove = mapGraphSVG[cid];
 			svgToRemove.remove();
-			$("#sub_graph_td_"+cname).parent().remove();
+			$("#sub_graph_td_"+cid).parent().remove();
+					
+			$("#tg_rect_"+cid).attr("class", "bar");
 			
-			$("#tg_rect_"+cname).removeClass("labelClicked");
-			$("#tg_rect_"+cname).addClass("clickable");
-			
-			$("#tg_rect_"+cname).attr("class", "main_graph clickable");
-			
-			mapGraphSVG[cname] = null;
+			mapGraphSVG[cid] = null;
 		}
 	}
 }
@@ -3578,30 +3587,22 @@ function removeAllSubGraphSVG(){
  **/
 function maingraphHeaderUnClickAll(){
 
-	$("#All").removeClass("clicked");
-	$("#None").removeClass("clicked");
+	$("#All_None").removeClass("clicked");
+	$("#All_None").addClass("unclicked");
+	$("#All_None").text("None");	
 		
-	$("#All").addClass("unclicked");
-	$("#None").addClass("unclicked");
-		
-	for(var cname in mapGraphSVG) {
+	for(var cid in mapGraphSVG) {
 			
-		if(mapGraphSVG[cname] != null) {
+		if(mapGraphSVG[cid] != null) {
 			
-			if($("#tg_rect_"+cname).hasClass("labelClicked") != true) {
-					
-				$("#tg_rect_"+cname).removeClass("clickable");
-				$("#tg_rect_"+cname).addClass("labelClicked");
-				
-				$("#tg_rect_"+cname).attr("class", "main_graph labelClicked");
+			if($("#tg_rect_"+cid).hasClass("labelClicked") != true) {
+									
+				$("#tg_rect_"+cid).attr("class", "bar_open");
 			}
 		}
 		else {
-		
-			$("#tg_rect_"+cname).removeClass("labelClicked");
-			$("#tg_rect_"+cname).addClass("clickable");
 			
-			$("#tg_rect_"+cname).attr("class", "main_graph clickable");
+			$("#tg_rect_"+cid).attr("class", "bar");
 		}
 	}
 		
@@ -3612,100 +3613,11 @@ function maingraphHeaderUnClickAll(){
  * in the main graph, take these actions
  *
  **/
-function maingraphYLabelClicked(cname) {
+function maingraphYLabelClicked(cid) {
 	
 	maingraphHeaderUnClickAll();
 			
-	fetchJSONObjectForSubGraph(cname);
-}
-
-/**
- * axis_MainGraph - To draw the main Graph with X-Axis and Y-Axis 
- * with the Frequency Label for the Y-Axis
- *
- **/
-function axis_MainGraph(svg) {
-						
-	svg.append("line")
-	 .attr("x1", 99)
-	 .attr("y1", 50)
-	 .attr("x2", 99)
-	 .attr("y2", 300)
-	 .attr("stroke-width", 1)
-	 .attr("stroke", "black")
-	 .attr("class", "main_graph");
-		
-	svg.append("line")
-	 .attr("x1", 99)
-	 .attr("y1", 300)
-	 .attr("x2", 499)
-	 .attr("y2", 300)
-	 .attr("stroke-width", 1)
-	 .attr("stroke", "black")
-	 .attr("class", "main_graph");
-		
-	svg.append("text")
-		.attr("x", 30)
-		.attr("y", 30)
-		.attr("fill", "black")
-		.text("Region:")
-		 .attr("class", "main_graph");
-		
-	svg.append("text")
-	 .attr("x", 220)
-	 .attr("y", 320)
-	 .attr("fill", "black")
-	 .text("Frequency")
-	 .attr("class", "main_graph");
-		
-}
-
-
-/**
- * axis_SubGraph - To draw the sub Graph with X-Axis and Y-Axis 
- * with the Frequency Label for the Y-Axis
- * Along with the Cname and Expand/Collapse Button
- *
- **/	  
- function axis_SubGraph(svg, cname) {
-						
-	mapGraphSVG[cname] = svg;
-		
-	svg.append("line")
- 	 .attr("x1", 99)
-	 .attr("y1", 50)
-	 .attr("x2", 99)
-	 .attr("y2", 300)
-	 .attr("stroke-width", 1)
-	 .attr("stroke", "black")
-	 .attr("class", "sub_graph_"+cname);
-		
-		
-	svg.append("line")
-	 .attr("x1", 99)
-	 .attr("y1", 300)
-	 .attr("x2", 499)
-	 .attr("y2", 300)
-	 .attr("stroke-width", 1)
-	 .attr("stroke", "black")
-	 .attr("class", "sub_graph_"+cname);
-		
-		
-	svg.append("text")
-	 .attr("x", 220)
-	 .attr("y", 320)
-	 .attr("fill", "black")
-	 .text("Frequency")
-	 .attr("class", "sub_graph_"+cname);
-	
-		
-	svg.append("text")
-	 .attr("x", 30)
-	 .attr("y", 30)
-	 .attr("fill", "black")
-	 .text(cname + ":")
-	 .attr("class", "sub_graph_"+cname);;
-			
+	fetchJSONObjectForSubGraph(cid);
 }
 
 /** 
@@ -3718,12 +3630,8 @@ function mainGraphLabel(svg) {
 	$("#main_graph_td").append(label);
 	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
 		
-	var label1 = $('<label><i class="fa fa-border fa-2x"><label align="right" id="All" class="unclicked" onclick = "javascript:maingraphAction(\'All\')">All</label></i></label>');
+	var label1 = $('<label><i class="fa fa-border fa-2x"><label align="right" id="All_None" class="unclicked" onclick = "javascript:maingraphAction(\'All_None\')">All</label></i></label>');
 	$("#main_graph_td").append(label1);	
-	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
-	
-	var label2 = $('<label><i class="fa fa-border fa-2x"><label align="right" id="None" class="unclicked" onclick = "javascript:maingraphAction(\'None\')">None</label></i></label>');
-	$("#main_graph_td").append(label2);	
 	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
 	
 	var label3 = $('<label align="right" id="Expand_Collapse_Main_Text" class="hide">Collapse</label>');
@@ -3734,102 +3642,3 @@ function mainGraphLabel(svg) {
 	$("#main_graph_td").append(label5);	
 			
 }
-
-/**
- * START NOT REQUIRED
- *
- **/
- 
- function getSubgraphData(cname) {
-	  
-	  var myArrayOfObjects;
-	  
-		if(cname == 'ABC') {
-		
-			myArrayOfObjects = [ 
-				{ cid: 1, cname:'abc1', w: 3}, 
-				{ cid: 2, cname:'abc2', w: 5}, 
-				{ cid: 3, cname:'abc3', w: 1}, 
-				{ cid: 4, cname:'abc4', w: 8}, 
-				{ cid: 5, cname:'abc5', w: 4} 
-			];
-			
-		}
-		
-		else if(cname == 'DEF') {
-			myArrayOfObjects = [ 
-				{ cid: 1, cname:'def1', w: 7}, 
-				{ cid: 2, cname:'def2', w: 2}, 
-				{ cid: 3, cname:'def3', w: 5}, 
-				{ cid: 4, cname:'def4', w: 1}, 
-				{ cid: 5, cname:'def5', w: 9} 
-			];
-		
-		}
-		else if(cname == 'GHI') {
-			myArrayOfObjects = [ 
-				{ cid: 1, cname:'ghi1', w: 1}, 
-				{ cid: 2, cname:'ghi2', w: 6}, 
-				{ cid: 3, cname:'ghi3', w: 1}, 
-				{ cid: 4, cname:'ghi4', w: 9}, 
-				{ cid: 5, cname:'ghi5', w: 4} 
-			];
-		
-		}
-		else if(cname == 'JKL') {
-			myArrayOfObjects = [ 
-				{ cid: 1, cname:'jkl1', w: 1}, 
-				{ cid: 2, cname:'jkl2', w: 4}, 
-				{ cid: 3, cname:'jkl3', w: 5}, 
-				{ cid: 4, cname:'jkl4', w: 4}, 
-				{ cid: 5, cname:'jkl5', w: 10} 
-			];
-		
-		}
-		else if(cname == 'MNO') {
-			myArrayOfObjects = [ 
-				{ cid: 1, cname:'mno1', w: 1}, 
-				{ cid: 2, cname:'mno2', w: 2}, 
-				{ cid: 3, cname:'mno3', w: 8}, 
-				{ cid: 4, cname:'mno4', w: 14}, 
-				{ cid: 5, cname:'mno5', w: 10} 
-			];
-		
-		}
-		
-		return myArrayOfObjects;
-	  }
-     	
-	function getMainGraphData() {
-	
-		var myArrayOfObjects = [ 
-			{ cid: 1, cname:'ABC', w: 1}, 
-			{ cid: 2, cname:'DEF', w: 2}, 
-			{ cid: 3, cname:'GHI', w: 8}, 
-			{ cid: 4, cname:'JKL', w: 4}, 
-			{ cid: 5, cname:'MNO', w: 4} 
-		];
-	  
-	  return myArrayOfObjects
-	}
-	
-/**
- * END NOT REQUIRED
- *
- **/
-
-d3.selection.prototype.moveToFront = function() {  
-
-    return this.each(function(){
-		this.parentNode.appendChild(this);
-    });
-};
-
-d3.selection.prototype.moveToBack = function() {  
-    return this.each(function() { 
-        var firstChild = this.parentNode.firstChild; 
-        if (firstChild) { 
-			this.parentNode.insertBefore(this, firstChild); 
-        } 
-    });
-};
