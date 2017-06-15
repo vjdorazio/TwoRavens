@@ -8,14 +8,16 @@ svg {
   user-select: none;
 }
 
-.ui-datepicker-prev{
+.ui-datepicker-prev {
     display: inline-block;
-    float: left;
-  }
-  .ui-datepicker-next {
-display: inline-block;
-float: right;
-  }
+    margin-left: 0;
+}
+
+.ui-datepicker-next {
+    display: inline-block;
+    float: right;
+}
+
 
   #tab5{
     text-align: center;
@@ -122,10 +124,8 @@ text.id {
 }
 
 #main svg {
-    width:700px;
+    width:500px;
     height:500px;   /*was 600px;*/
-    margin-left:22%;
-    margin-top:5%;
 }
 
 /*#main.svg-leftpanel svg, #main.svg-rightpanel svg {width: 100%;}  This is size when left/right panel minimized. Was: calc(100% - 300px);}*/
@@ -211,9 +211,9 @@ div.sidepanel div.panelbar span {
 
 #canvas {
     width: 100%;
-    height: calc(100% - 62px - 40px);
+    height:calc(100% - 62px - 40px);
     margin:62px 0 0 0;
-    position: fixed;
+    position:fixed;
     overflow:auto;
 }
 

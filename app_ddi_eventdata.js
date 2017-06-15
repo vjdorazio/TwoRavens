@@ -65,8 +65,8 @@ var svg = d3.select("#dateSVG");
 
 var logArray = [];
 
-          
-var tempWidth = d3.select("#main.left").style("width")
+
+var tempWidth = d3.select("#main.left").style("width");
 var width = tempWidth.substring(0,(tempWidth.length-2));
 
 
@@ -1944,56 +1944,58 @@ var qr={};
 //populating date tab
 // todate=new Date("2015-12-31");
 fromdate=new Date("2012-01-01");
-min="2012",max="2015";
+min="2012";
+max="2015";
 maxdate=new Date("2015-12-31".replace(/-/g, '\/'));
 mindate=new Date("2012-01-01".replace(/-/g, '\/'));
-                
+
 $("#fromdate").datepicker({
-                    dateFormat:'mm-dd-yy',
-                    changeYear:true,
-                    changeMonth:true,
-                    defaultDate:fromdate, 
-                    yearRange:min+':'+max,
-                    minDate:mindate,
-                    maxDate:maxdate,
-                    orientation:top,
-                    onSelect: function()
-                    { 
-                         fromdate = $(this).datepicker('getDate'); 
-                         $("#todate").datepicker('option','minDate',fromdate);
-                         $("#todate").datepicker('option','defaultDate',fromdate);
-                         fromdatestring=fromdate.getFullYear()+""+('0' + (fromdate.getMonth()+1)).slice(-2)+""+('0' + fromdate.getDate()).slice(-2);
-                         qr["query"]["date8"]["$gte"]=fromdatestring;
+    dateFormat: 'mm-dd-yy',
+    changeYear: true,
+    changeMonth: true,
+    defaultDate: fromdate,
+    yearRange: min + ':' + max,
+    minDate: mindate,
+    maxDate: maxdate,
+    orientation: top,
+    onSelect: function () {
+        fromdate = $(this).datepicker('getDate');
+        $("#todate").datepicker('option', 'minDate', fromdate);
+        $("#todate").datepicker('option', 'defaultDate', fromdate);
+        fromdatestring = fromdate.getFullYear() + "" + ('0' + (fromdate.getMonth() + 1)).slice(-2) + "" + ('0' + fromdate.getDate()).slice(-2);
+        qr["query"]["date8"]["$gte"] = fromdatestring;
 
-                         console.log("fromdate clicked,query:",qr);
-                    },
-                    onClose:function(){
-                      $("#todate").datepicker("show");
-                    }
+        console.log("fromdate clicked,query:", qr);
+    },
+    onClose: function () {
+        $("#todate").datepicker("show");
+    }
 
-                                    //yearRange:min+":"+max
-                    });
+    //yearRange:min+":"+max
+});
 
-                   
-                   
-                   $("#todate").datepicker({
-                    changeYear:true,
-                    changeMonth:true,
-                    yearRange:min+':'+max,  
-                    dateFormat:'mm-dd-yy',
-                    defaultDate:fromdate,
-                    minDate:mindate,
-                    maxDate:maxdate,
-                    orientation:top,
-                    onSelect: function()
-                    { 
-                        todate = $(this).datepicker('getDate');
-                        todatestring=todate.getFullYear()+""+('0' + (todate.getMonth()+1)).slice(-2)+""+('0' + todate.getDate()).slice(-2);
-                        qr["query"]["date8"]["$lte"]=todatestring;       
-                        console.log("todate selected,query string:",qr); 
-                    
-                    }
-                  });
+
+$("#todate").datepicker({
+    changeYear: true,
+    changeMonth: true,
+    yearRange: min + ':' + max,
+    dateFormat: 'mm-dd-yy',
+    defaultDate: fromdate,
+    minDate: mindate,
+    maxDate: maxdate,
+    orientation: top,
+    onSelect: function () {
+        todate = $(this).datepicker('getDate');
+        todatestring = todate.getFullYear() + "" + ('0' + (todate.getMonth() + 1)).slice(-2) + "" + ('0' + todate.getDate()).slice(-2);
+        qr["query"]["date8"]["$lte"] = todatestring;
+        console.log("todate selected,query string:", qr);
+        plotHighlight()
+    }
+});
+
+function plotHighlight() {
+
+}
 
 
 
@@ -3072,8 +3074,8 @@ function d3date() {
     d3.select('#dateInterval');
 
     d3.select("#dateSVG"),
-    margin = {top: 20, right: 20, bottom: 110, left: 150},
-    margin2 = {top: 430, right: 20, bottom: 30, left: 150},
+    margin = {top: 20, right: 20, bottom: 110, left: 30},
+    margin2 = {top: 430, right: 20, bottom: 30, left: 30},
     datewidth = +svg.attr("width") - margin.left - margin.right,
     dateheight = +svg.attr("height") - margin.top - margin.bottom,
     dateheight2 = +svg.attr("height") - margin2.top - margin2.bottom;
