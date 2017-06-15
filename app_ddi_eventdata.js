@@ -567,7 +567,7 @@ eventlist=new Array(20)
     .attr("data-original-title", "Summary Statistics");
   
     console.log(valueKey);
-    d3.select("#tab1").selectAll("p") 			//do something with this..
+    d3.select("#variableList").selectAll("p") 			//do something with this..
 		.data(valueKey)
 		.enter()
 		.append("p")
@@ -775,10 +775,10 @@ $(document).on('input', '#searchvar', function() {
 		nodename[i]=nodes[i].name;
 	}
 	
-	d3.select("#tab1").selectAll("p").data(valueKey).remove();
+	d3.select("#variableList").selectAll("p").data(valueKey).remove();
 	
 	
-	d3.select("#tab1").selectAll("p")
+	d3.select("#variableList").selectAll("p")
 		//do something with this..
 		
 		.data(value)
@@ -929,7 +929,7 @@ makeCorsRequest(urlcall, btn, writesuccess, writefail, solajsonout);
 
 	//ROHIT BHATTACHARJEE ad listener function
 	function addlistener(nodes){
-	d3.select("#tab1").selectAll("p")
+	d3.select("#variableList").selectAll("p")
     .on("mouseover", function(d) {
         
 		// REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
@@ -1595,7 +1595,7 @@ function transform(n,t, typeTransform) {
 
 function scaffoldingPush(v) { // adding a variable to the variable list after a transformation
     
-        d3.select("#tab1")
+        d3.select("#variableList")
         .data(v)
         .append("p")
         .attr("id",function(){
@@ -1792,7 +1792,7 @@ function erase() {
     rightpanelMedium();
     document.getElementById("legend").setAttribute("style", "display:none");
     
-    tabLeft('tab1');
+    tabLeft('variableList');
     
     jQuery.fn.d3Click = function () {
         this.children().each(function (i, e) {
@@ -1804,7 +1804,7 @@ function erase() {
                   e.dispatchEvent(evt);
                   });
     };
-    $("#tab1").d3Click();
+    $("#variableList").d3Click();
 }
 
 
@@ -1837,15 +1837,12 @@ function loadXMLDoc(XMLname)
 
 
 function tabLeft(tab) {
-     
+
     //if(tab!="tab3") {lefttab=tab;}
-    var tabi = tab.substring(3);
+    // var tabi = tab.substring(3);
 
     document.getElementById('tab1').style.display = 'none';
     document.getElementById('tab2').style.display = 'none';
-    document.getElementById('tab3').style.display = 'none';
-    document.getElementById('tab4').style.display = 'none';
-    document.getElementById('tab5').style.display = 'none';
 
     switch(tab){
       case "tab1": summaryHold = false;
@@ -1853,14 +1850,14 @@ function tabLeft(tab) {
         // document.getElementById('btnSubset').setAttribute("class", "btn btn-default");
         document.getElementById('btnVariables').setAttribute("class", "btn active");
         document.getElementById("btnSelect").style.display = 'none';
-        
+
         d3.select("#leftpanel")
         .attr("class", "sidepanel container clearfix");
                   break;//end of case 1
       case "tab2": summaryHold = false;
       $(".btn-group").children().addClass("btn").addClass("btn-default").removeClass("active");
         document.getElementById('btnSubset').setAttribute("class", "btn active");
-        
+
         d3.select("#leftpanel")
         .attr("class", function(d){
               //if(this.getAttribute("class")==="sidepanel container clearfix expandpanel") {
@@ -1877,7 +1874,7 @@ function tabLeft(tab) {
       $(".btn-group").children().addClass("btn btn-default").removeClass("active");
         // document.getElementById('btnVariables').setAttribute("class", "btn btn-default");
         document.getElementById('btnLocation').setAttribute("class", "btn active");
-        
+
         d3.select("#leftpanel")
         .attr("class", function(d){
              // if(this.getAttribute("class")==="sidepanel container clearfix expandpanel") {
@@ -1888,13 +1885,13 @@ function tabLeft(tab) {
               //   document.getElementById("btnSelect").style.display = 'block';
               //   return "sidepanel container clearfix expandpanel";
               // }
-              }); 
+              });
                   break;//end of case 3
       case "tab4":summaryHold = false;
       $(".btn-group").children().addClass("btn btn-default").removeClass("active");
         // document.getElementById('btnVariables').setAttribute("class", "btn btn-default");
         document.getElementById('btnDate').setAttribute("class", "btn active");
-        
+
         d3.select("#leftpanel")
         .attr("class", function(d){
               if(this.getAttribute("class")==="sidepanel container clearfix expandpanel") {
@@ -1905,13 +1902,13 @@ function tabLeft(tab) {
                 document.getElementById("btnSelect").style.display = 'none';
                 return "sidepanel container clearfix expandpanel";
               }
-              }); 
+              });
                   break;//end of case 4
       case "tab5":summaryHold = false;
         $(".btn-group").children().addClass("btn btn-default").removeClass("active");
         //document.getElementById('btnVariables').setAttribute("class", "btn btn-default");
         document.getElementById('btnEvent').setAttribute("class", "btn active");
-        
+
         d3.select("#leftpanel")
         .attr("class", function(d){
               //if(this.getAttribute("class")==="sidepanel container clearfix expandpanel") {
@@ -1922,19 +1919,19 @@ function tabLeft(tab) {
               //   document.getElementById("btnSelect").style.display = 'none';
               //   return "sidepanel container clearfix expandpanel";
               // }
-              }); 
+              });
                   break;//end of case 5
-      default: 
+      default:
         $(".btn-group").children().addClass("btn btn-default").removeClass("active");
         // document.getElementById('btnSubset').setAttribute("class", "btn btn-default");
         // document.getElementById('btnVariables').setAttribute("class", "btn btn-default");
-        
+
         d3.select("#leftpanel")
         .attr("class", "sidepanel container clearfix");
         break;
 
     }//end of switch
-    
+
     console.log("Tab:"+tab);
     document.getElementById(tab).style.display = 'block';
 }
@@ -2080,45 +2077,45 @@ function varSummary(d) {
         };
 
   //  //console.log(summarydata);
-    d3.select("#tab3") //tab when you mouseover a pebble
-    .select("p")
-    .html("<center><b>" +d.name+ "</b><br><i>" +d.labl+ "</i></center>")
-    .append("table")
-    .selectAll("tr")
-    .data(summarydata)
-    .enter().append("tr")
-    .selectAll("td")
-    .data(function(d){return d;})
-    .enter().append("td")
-    .text(function(d){return d;})
-    .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")}) // for no discernable reason
-    .on("mouseout", function(){d3.select(this).style("background-color", "#F9F9F9")}) ;  //(but maybe we'll think of one)
-//    .style("font-size", "12px");
-
-    
-    var plotsvg = d3.select("#tab3")
-    .selectAll("svg")
-    .remove();
-    
-    if(typeof d.plottype === "undefined") { // .properties is undefined for some vars
-        return;
-    }
-    else if (d.plottype === "continuous") {
-        density(d, div="varSummary", private);
-    }
-    else if (d.plottype === "bar") {
-        bars(d, div="varSummary", private);
-    }
-    else {
-        var plotsvg = d3.select("#tab3")      // no graph to draw, but still need to remove previous graph
-        .selectAll("svg")
-        .remove();
-    };
+//     d3.select("#tab3") //tab when you mouseover a pebble
+//     .select("p")
+//     .html("<center><b>" +d.name+ "</b><br><i>" +d.labl+ "</i></center>")
+//     .append("table")
+//     .selectAll("tr")
+//     .data(summarydata)
+//     .enter().append("tr")
+//     .selectAll("td")
+//     .data(function(d){return d;})
+//     .enter().append("td")
+//     .text(function(d){return d;})
+//     .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")}) // for no discernable reason
+//     .on("mouseout", function(){d3.select(this).style("background-color", "#F9F9F9")}) ;  //(but maybe we'll think of one)
+// //    .style("font-size", "12px");
+//
+//
+//     var plotsvg = d3.select("#tab3")
+//     .selectAll("svg")
+//     .remove();
+//
+//     if(typeof d.plottype === "undefined") { // .properties is undefined for some vars
+//         return;
+//     }
+//     else if (d.plottype === "continuous") {
+//         density(d, div="varSummary", private);
+//     }
+//     else if (d.plottype === "bar") {
+//         bars(d, div="varSummary", private);
+//     }
+//     else {
+//         var plotsvg = d3.select("#tab3")      // no graph to draw, but still need to remove previous graph
+//         .selectAll("svg")
+//         .remove();
+//     };
 
 }
 
 function populatePopover () {
-    d3.select("#tab1").selectAll("p")
+    d3.select("#variableList").selectAll("p")
     .attr("data-content", function(d) {
           var onNode = findNodeIndex(d);
           return popoverContent(allNodes[onNode]);
@@ -2334,7 +2331,7 @@ function setColors (n, c) {
             transform(n.name, t=null, typeTransform=true);
         }
         
-        d3.select("#tab1").select("p#".concat(n.name))
+        d3.select("#variableList").select("p#".concat(n.name))
         .style('background-color', hexToRgba(c));
     }
     else if (n.strokeWidth=='4') {
@@ -2342,7 +2339,7 @@ function setColors (n, c) {
             n.strokeWidth = '1';
             n.strokeColor = selVarColor;
             n.nodeCol=colors(n.id);
-            d3.select("#tab1").select("p#".concat(n.name))
+            d3.select("#variableList").select("p#".concat(n.name))
             .style('background-color', hexToRgba(selVarColor));
             
             if(dvColor==c) {
@@ -2387,7 +2384,7 @@ function setColors (n, c) {
                 }
             }
             n.strokeColor = c;
-            d3.select("#tab1").select("p#".concat(n.name))
+            d3.select("#variableList").select("p#".concat(n.name))
             .style('background-color', hexToRgba(c));
             
             if(dvColor==c) {zparams.zdv.push(n.name);}
