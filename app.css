@@ -218,6 +218,7 @@ div.sidepanel div.panelbar span {
     margin:62px 0 0 0;
     position:fixed;
     overflow:auto;
+    white-space:nowrap;
 }
 
 #ticker {

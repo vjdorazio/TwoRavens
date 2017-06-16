@@ -618,6 +618,7 @@ eventlist=new Array(20)
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
+            rightpanelMargin();
 			selectionMade("Date");
             d3date();
         }
@@ -627,6 +628,7 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
+            rightpanelMargin();
 			selectionMade("Location");
             d3loc();
         }
@@ -636,6 +638,7 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
+            rightpanelMargin();
 			selectionMade("Actor");
             d3actor();
         }
@@ -645,6 +648,7 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
+            rightpanelMargin();
 			selectionMade("Action");
             d3action();
         }
@@ -3103,73 +3107,90 @@ function d3date() {
     d3.select('#dateInterval');
 
     d3.select("#dateSVG"),
-    margin = {top: 20, right: 20, bottom: 110, left: 30},
-    margin2 = {top: 430, right: 20, bottom: 30, left: 30},
-    datewidth = +svg.attr("width") - margin.left - margin.right,
-    dateheight = +svg.attr("height") - margin.top - margin.bottom,
-    dateheight2 = +svg.attr("height") - margin2.top - margin2.bottom;
-    
+        margin = {top: 20, right: 20, bottom: 110, left: 30},
+        margin2 = {top: 430, right: 20, bottom: 30, left: 30},
+        datewidth = +svg.attr("width") - margin.left - margin.right,
+        dateheight = +svg.attr("height") - margin.top - margin.bottom,
+        dateheight2 = +svg.attr("height") - margin2.top - margin2.bottom;
+
     var parseDate = d3.timeParse("%b %Y");
-    
+
+    // The date range needs to be transformed to image width. Range defined here, domain defined below
+    // Range of X:
     var datex = d3.scaleTime().range([0, datewidth]),
-    datex2 = d3.scaleTime().range([0, datewidth]),
-    datey = d3.scaleLinear().range([dateheight, 0]),
-    datey2 = d3.scaleLinear().range([dateheight2, 0]);
-    
+        datex2 = d3.scaleTime().range([0, datewidth]),
+        datey = d3.scaleLinear().range([dateheight, 0]),
+        datey2 = d3.scaleLinear().range([dateheight2, 0]);
+
     var datexAxis = d3.axisBottom(datex),
-    datexAxis2 = d3.axisBottom(datex2),
-    dateyAxis = d3.axisLeft(datey);
-    
+        datexAxis2 = d3.axisBottom(datex2),
+        dateyAxis = d3.axisLeft(datey);
+
+    // Range of X: Highlight variables
+    var datexUser = d3.scaleTime().range([0, datewidth]),
+        datex2User = d3.scaleTime().range([0, datewidth]);
+
+    // Brush and zoom elements
     var datebrush = d3.brushX()
-    .extent([[0, 0], [datewidth, dateheight2]])
-    .on("brush end", brushed);
-    
+        .extent([[0, 0], [datewidth, dateheight2]])
+        .on("brush end", brushed);
+
     var datezoom = d3.zoom()
-    .scaleExtent([1, Infinity])
-    .translateExtent([[0, 0], [datewidth, dateheight]])
-    .extent([[0, 0], [datewidth, dateheight]])
-    .on("zoom", zoomed);
-    
+        .scaleExtent([1, Infinity])
+        .translateExtent([[0, 0], [datewidth, dateheight]])
+        .extent([[0, 0], [datewidth, dateheight]])
+        .on("zoom", zoomed);
+
+    // Focus data element:
     var datearea = d3.area()
-    .curve(d3.curveMonotoneX)
-    .x(function(d) { return datex(d.Date); })
-    .y0(dateheight)
-    .y1(function(d) { return datey(d.Freq); });
-    
+        .curve(d3.curveMonotoneX)
+        .x(function (d) {
+            return datex(d.Date);
+        })
+        .y0(dateheight)
+        .y1(function (d) {
+            return datey(d.Freq);
+        });
+
+    // Context data element:
     var datearea2 = d3.area()
-    .curve(d3.curveMonotoneX)
-    .x(function(d) { return datex2(d.Date); })
-    .y0(dateheight2)
-    .y1(function(d) { return datey2(d.Freq); });
-    
-    
+        .curve(d3.curveMonotoneX)
+        .x(function (d) {
+            return datex2(d.Date);
+        })
+        .y0(dateheight2)
+        .y1(function (d) {
+            return datey2(d.Freq);
+        });
+
+    // Set the svg metadata:
     svg.append("defs").append("clipPath")
-    .attr("id", "clip")
-    .append("rect")
-    .attr("width", datewidth)
-    .attr("height", dateheight);
-    
+        .attr("id", "clip")
+        .append("rect")
+        .attr("width", datewidth)
+        .attr("height", dateheight);
+
+    // Add svg groups for the focus and context portions of the graphic
     var datefocus = svg.append("g")
-    .attr("class", "focus")
-    // .attr("width","500px")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    
+        .attr("class", "focus")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
     var datecontext = svg.append("g")
-    .attr("class", "context")
-    .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-    
-    function brushed()
-    {
+        .attr("class", "context")
+        .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+    // Invoked on initialization and interaction
+    function brushed() {
         if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
         var s = d3.event.selection || datex2.range();
         datex.domain(s.map(datex2.invert, datex2));
         datefocus.select(".area").attr("d", datearea);
         datefocus.select(".axis--x").call(datexAxis);
         svg.select(".zoom").call(datezoom.transform, d3.zoomIdentity
-                                 .scale(datewidth / (s[1] - s[0]))
-                                 .translate(-s[0], 0));
+            .scale(datewidth / (s[1] - s[0]))
+            .translate(-s[0], 0));
     }
-    
+
     function zoomed() {
         if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
         var t = d3.event.transform;
@@ -3178,63 +3199,93 @@ function d3date() {
         datefocus.select(".axis--x").call(datexAxis);
         datecontext.select(".brush").call(datebrush.move, datex.range().map(t.invertX, t));
     }
-    
+
+    // Accessor for csv read
     function type(d) {
         d.Date = parseDate(d.Date);
         d.Freq = +d.Freq;
         return d;
     }
-    
-    d3.csv(dateplot, type, function(error, data) {
-           if (error) throw error;
-           //console.log("Rohit");
-           //console.log(data);
-           datex.domain(d3.extent(data, function(d) { return d.Date; }));
-           datey.domain([0, d3.max(data, function(d) { return d.Freq; })]);
-           datex2.domain(datex.domain());
-           datey2.domain(datey.domain());
-           
-           
-           datefocus.append("path")
-           .datum(data)
-           .attr("class", "area")
-           .attr("d", datearea);
-           
-           datefocus.append("g")
-           .attr("class", "axis axis--x")
-           .attr("transform", "translate(0," + dateheight + ")")
-           .call(datexAxis);
-           
-           datefocus.append("g")
-           .attr("class", "axis axis--y")
-           .call(dateyAxis);
-           
-           datecontext.append("path")
-           .datum(data)
-           .attr("class", "area")
-           .attr("d", datearea2);
-           
-           datecontext.append("g")
-           .attr("class", "axis axis--x")
-           .attr("transform", "translate(0," + dateheight2 + ")")
-           .call(datexAxis2);
-           
-           datecontext.append("g")
-           .attr("class", "brush")
-           .call(datebrush)
-           .call(datebrush.move, datex.range());
-           
-           svg.append("rect")
-           .attr("class", "zoom")
-           .attr("width", datewidth)
-           .attr("height", dateheight)
-           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-           .call(datezoom);
-           
-           //    scaffolding();
-           // callback=layout
-           // dataDownload();
-           });
+
+    // d3.csv([data], [accessor], [callback])
+    d3.csv(dateplot, type, function (error, data) {
+        if (error) throw error;
+
+        // Domain of X: (note range was set in variable initialization)
+        datex.domain(d3.extent(data, function (d) {
+            return d.Date;
+        }));
+        datey.domain([0, d3.max(data, function (d) {
+            return d.Freq;
+        })]);
+        datex2.domain(datex.domain());
+        datey2.domain(datey.domain());
+
+        // Domain of X: Highlighted portion
+        datexUser.domain(d3.extent(data, function (d) {
+            return d.Date;
+        }));
+        datex2User.domain(datex.domain());
+
+        // Draw data on focus portion of svg (datefocus) with the area variable attribute
+        datefocus.append("path")
+            .datum(data)
+            .attr("class", "area")
+            .attr("d", datearea);
+
+        // Add x and y axes to focus group
+        datefocus.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + dateheight + ")")
+            .call(datexAxis);
+
+        datefocus.append("g")
+            .attr("class", "axis axis--y")
+            .call(dateyAxis);
+
+        // Draw data on context portion of svg (datecontext)
+        datecontext.append("path")
+            .datum(data)
+            .attr("class", "area")
+            .attr("d", datearea2);
+
+        // Draw a path to focus portion of svg within datearea parameters
+        // TODO: subset data based on user dates
+        datefocus.append("path")
+            .datum(data)
+            .attr("class", "area")
+            .attr("d", datearea);
+
+        // Draw a path to context portion of svg
+        datecontext.append("path")
+            .datum(data)
+            .attr("class", "area")
+            .attr("d", datearea2);
+
+        // Add x axis to context group
+        datecontext.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + dateheight2 + ")")
+            .call(datexAxis2);
+
+        // Add brushes to context group
+        datecontext.append("g")
+            .attr("class", "brush")
+            .call(datebrush)
+            .call(datebrush.move, datex.range());
+
+        // Draw a box? Maybe for buffering?
+        svg.append("rect")
+            .attr("class", "zoom")
+            .attr("width", datewidth)
+            .attr("height", dateheight)
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .call(datezoom);
+
+        //    scaffolding();
+        // callback=layout
+        // dataDownload();
+    });
 }
 
 function d3loc() {
@@ -3676,5 +3727,11 @@ function rightpanelMargin() {
         document.getElementById("rightpanel").style.right = "27px";
     } else {
         document.getElementById("rightpanel").style.right = "10px";
+    }
+
+    if (main.get(0).scrollWidth > main.get(0).clientWidth) {
+        document.getElementById("rightpanel").style.height = "calc(100% - 139px)";
+    } else {
+        document.getElementById("rightpanel").style.height = "calc(100% - 122px)";
     }
 }
