@@ -2401,7 +2401,9 @@ function explore(btn) {
         if(estimated==false) {
             myparent.removeChild(document.getElementById("resultsHolder"));
         }
-
+        d3.select("#modelView").html("");
+        d3.select("#resultsView_tabular").html("");
+        d3.select("#resultsView_statistics").html("");
         
         estimated=true;
       //  d3.select("#results")
@@ -2479,8 +2481,6 @@ function explore(btn) {
                 .style("white-space","pre")
                 .style("margin-top",0)
                 .style("float","left")
-
-
                 .on("click", function () {
 
                     var a = this.style.backgroundColor.replace(/\s*/g, "");
@@ -2488,13 +2488,13 @@ function explore(btn) {
                     if (a.substr(0, 17) === b.substr(0, 17)) {
                         return; //escapes the function early if the displayed model is clicked
                     }
-                    viz_explore(this.id, json_explore,model_selection_name);
+                    viz_explore(this.id, json_explore, model_selection_name);
                     modCol();
                     d3.select(this)
-                        .style('background-color',selVarColor);
+                        .style('background-color', selVarColor);
                     // console.log("json explore viz first",json_explore );
-
-                });
+                })
+            ;
         }
         var rCall = [];
         rCall[0] = json.call;
@@ -2717,8 +2717,9 @@ var model_name2=get_data[1]+"-"+get_data[0];
 if(i==model_name_set) {
     var zfig = document.createElement("img");
     zfig.setAttribute("src", json.images[i]);
-    zfig.setAttribute('width', 450);
-    zfig.setAttribute('height', 450);
+    zfig.setAttribute('width', 500);
+    zfig.setAttribute('height', 500);
+    zfig.setAttribute('padding',5);
 
 
     document.getElementById("resultsView").appendChild(zfig);
@@ -2727,6 +2728,8 @@ if(i==model_name_set) {
 
 }
     }
+
+    var table_obj=[];
     var colnames=[];
     var colvar=[];
     var table_data=[];
@@ -2749,11 +2752,12 @@ if(i==model_name_set) {
 
                 console.log("colnames: ");
                 console.log(json.tabular[i].colnames[j]);
-                colnames.push(json.tabular[i].colnames);
+                colnames.push(json.tabular[i].colnames[j]);
 
             }
         }
     }
+
 
 
     for(var i in json.tabular) {
@@ -2762,7 +2766,7 @@ if(i==model_name_set) {
             for (var k in json.tabular[i].rownames) {
 
                 console.log(json.tabular[i].rownames[k]);
-                rownames.push(json.tabular[i].rownames);
+                rownames.push(json.tabular[i].rownames[k]);
             }
         }
     }
@@ -2808,9 +2812,16 @@ table_data[n]=[];
         {
             console.log("col data : ");
             console.log(table_data[p][l]);
+             table_obj.push({ rowname: rownames[p], colname: colnames[l], value: table_data[p][l]  });
+            //console.log(" the dynamic object data : rowname = "+ objd.rowname + " colname :  "+ objd.colname + " value : "+ objd.value );
         }
     }
 
+for(var t=0; t<table_obj.length; t++)
+    {
+
+        console.log("These are the values : row : "+table_obj[t].rowname + " col :" + table_obj[t].colname + " value  : " + table_obj[t].value);
+    }
 
     // for the statistics]
     console.log("The data for the statistical"+ json.statistical)
@@ -2894,59 +2905,44 @@ console.log("colnames found");
     }
 
 
-    // table not completed yet ( 06/11/2017)
+
 d3.select("#resultsView_tabular").html("");
+    function d3table1(data) {
+        d3.select("#resultsView_tabular")
+            .html("")
+            .style("background-color", "#fff")
+            .append("h5")
+            .text("CROSS-TABS ")
+            .style("color", "#424242");
+        var table = d3.select("#resultsView_tabular").append("table").attr("class", "table").style("border-collapse", " collapse"),
+            th = table.append("tr").style("border", 1).text("_").style("color","#fff");
+
+        for (var i = 0; i < colnames.length; i++) {
+
+            th.append("td").style("border-bottom", 1).style("span", colnames.length + 1).style("span", 1).style("text-align", "center").style("background-color", selVarColor).append("b").text(colnames[i]);
+
+        }
 
 
-    var table = d3.select("#resultsView_tabular")
-        .append("p")
-        //.html("<center><b>Results</b></center>")
-        .append("table")
-        .style("font-size",10)
-        .style("line-height",10)
-            .style("border","1px solid #ddd").style("text-align","left")
-            .style("border-collapse","collapse")
-        ;
+        for (var k = 0; k < rownames.length; k++) {
+            var pos = 0;
+            var tr = table.append("tr").style("margin-left", 20).style("span", 1).style("background-color", "#BDBDBD").style("border", 1).style("text-align", "center").text(rownames[k]);
+for(var m=0; m<colnames.length; m++)
+{
+    for(var z=0; z<data.length; z++)
+    {
+        if(rownames[k]== data[z].rowname && colnames[m]== data[z].colname)
+        {
+            tr.append("td").style("border", 1).style("text-align", "center").style("position", "relative").style("background-color", varColor).text(data[z].value);
+        }
+    }
 
-   var thead = table.append("thead");
-    thead.append("tr")
-        .selectAll("th")
-        .data(colnames)
-        .enter()
-        .append("th")
-        .style("border-style","solid")
-        .style("border-width",0.5)
-        .style("border-left","transparent")
-        .style("border-collapse","collapse")
-        .style("text-align","right").style("position","relative")
-        .text(function(d) { return d;});
-
-    var tbody = table.append("tbody").style("float","left");
-    tbody.selectAll("tr")
-        .data(rownames)
-        .enter().append("tr")
-        .style("border-style","solid")
-        .style("border-width",0.5).style("border-left","transparent")
-        .style("text-align","right").style("position","relative")
-        .selectAll("td")
-        .data(function(d){return d;})
-        .enter().append("td")
-        .style("text-align","left").style("position","relative")
-        .style("border-style","solid")
-        .style("border-width",0.5)
-        .style("border-right","transparent")
-
-        .text(
+}
+        }
+    }
+    d3table1(table_obj);
 
 
-            function(d){
-            var myNum = Number(d);
-            if(isNaN(myNum)) { return d;}
-            return myNum.toPrecision(3);
-        })
-
-        .on("mouseover", function(){d3.select(this).style("background-color", "aliceblue")}) // for no discernable reason
-        .on("mouseout", function(){d3.select(this).style("background-color", "#F9F9F9")}) ;  //(but maybe we'll think of one)
 
 
     // data for the statistical div
@@ -2971,12 +2967,12 @@ d3.select("#resultsView_tabular").html("");
         { correlation : string8, value: string9}
     ];
 
-    function d3table( data){
+    function d3table(data){
         d3.select("#resultsView_statistics")
             .html("")
             .style("background-color","#fff")
             .append("h5")
-            .text("CORRELATION STATISTICS")
+            .text("CORRELATION STATISTICS ")
             .style("color","#424242");
         var table = d3.select("#resultsView_statistics").append("table").attr("class","table").style("border-collapse"," collapse"),
             th = table.append("tr").style("border",1);
@@ -2993,45 +2989,7 @@ d3.select("#resultsView_tabular").html("");
     }
     d3table(statistical_data);
 
-  /*  d3.select("resultsView_statistics").html("");
-    d3.select("#resultsView_statistics")
-        .html("")
-        .style("background-color","#fff")
-        .append("h5")
-        .text("CORRELATION STATISTICS")
-        .style("color","#757575")
-        .append("p")
-        .html(function() {
 
-            return "<b></b>".concat(string2.concat(string3));
-                        })
-        .style("background-color",selVarColor)
-
-
-        .append("p")
-
-        .html(function() {
-            var string1 = corp.toString();
-            var string3= string1.substring(string1.indexOf(":"),string1.length);
-         //   console.log(string3);
-            var string2= string1.substring(0,string1.indexOf("c"));
-        //    console.log(string2);
-            return "<b></b>".concat(string2.concat(string3));
-        })
-         .style("background-color","#E1F5FE")
-        .append("p")
-
-        .html(function() {
-            var string1 = cors.toString();
-            var string3= string1.substring(string1.indexOf(":"),string1.length);
-           // console.log(string3);
-            var string2= string1.substring(0,string1.indexOf(" c"));
-         //   console.log(string2);
-            return "<b></b>".concat(string2.concat(string3));
-        })
-        .style("background-color",grayColor)
-    ;
-*/
 }
 
 
