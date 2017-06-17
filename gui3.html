@@ -110,12 +110,12 @@
 
     <div id="main" class="left" onresize=rightpanelMargin()>
 
-        <!-- VJD: These divs, subsetDate and subsetLocation, should be hidden and visible according to which button is clicked in the left panel -->
         <div id="subsetDate" class="canvas" style="float:none">
             <svg id="dateSVG" width="500" height="500"></svg>
 
             <div id="dateInterval" class="form-group" style="display: inline-block;vertical-align:top;width:20%;margin:20px">
-                <label id="dateFromLab" for="fromdate" style="text-align:left;width:100%;" >From:</label>
+                <button id="setDatefromSlider" type="button" class="btn" onclick="setDatefromSlider()" style="margin-top:10px;">Set Date from Slider</button>
+                <label id="dateFromLab" for="fromdate" style="text-align:left;width:100%;margin-top:10px;" >From:</label>
                 <input id="fromdate" class="form-control" type="text">
                 <label id="dateToLab" for="todate" style="text-align:left;width:100%;margin-top:10px;">To:</label>
                 <input id="todate" class="form-control" type="text">
@@ -283,14 +283,15 @@
   }
   else{username="rohit";}
 
-  console.log("fileid: "+fileid);
-  console.log("hostname: "+hostname);
-  console.log("apikey: "+apikey);
-  console.log("ddiurl: "+ddiurl);
-  console.log("dataurl: "+dataurl);
-  console.log("Username:"+username);
+//  console.log("fileid: "+fileid);
+//  console.log("hostname: "+hostname);
+//  console.log("apikey: "+apikey);
+//  console.log("ddiurl: "+ddiurl);
+//  console.log("dataurl: "+dataurl);
+//  console.log("Username:"+username);
 </script>
 <script src="app_ddi_eventdata.js"></script>
+<script src="app_ddi_eventdata_date.js"></script>
 
   </body>
 </html>

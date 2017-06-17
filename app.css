@@ -739,8 +739,11 @@ float:left;
 
 
 .area {
-  fill: steelblue;
-  clip-path: url(#clip);
+     clip-path: url(#clip);
+ }
+
+.areauser {
+    clip-path: url(#clip);
 }
 
 .zoom {

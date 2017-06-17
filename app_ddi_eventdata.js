@@ -61,8 +61,6 @@ if (!production) {
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-var svg = d3.select("#dateSVG");
-
 var logArray = [];
 
 
@@ -238,13 +236,18 @@ if (ddiurl) {
 // Reading the pre-processed metadata:
 // Pre-processed data:
 var pURL = "";
+
 if (dataurl) {
     // data url is supplied
     pURL = dataurl+"&format=prep";
+    console.log("TEst")
+
 } else {
     // no dataurl/file id supplied; use one of the sample data files distributed with the app in the "data" directory:
-    pURL="data/samplePhoxPreprocess.json"
-    dateplot="data/dateplot.csv"
+    pURL="data/samplePhoxPreprocess.json";
+    datepath="data/dateplot.csv";
+
+
     //This is testing whether a newer json file exists or not. if yes, we will use that file, else use the default file
    //var test=UrlExists(purltest);
    //if(test==true){
@@ -285,7 +288,7 @@ if (dataurl) {
  // .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 var preprocess = {};
 var mods = new Object;
-console.log("Value of username: ",username);
+// console.log("Value of username: ",username);
 
 //This function finds whether a key is present in the json file, and sends the key's value if present.
 function findValue(json, key) {
@@ -542,7 +545,7 @@ eventlist=new Array(20)
     .join().split(',')
     .map(function(item, index){ return ++index;})
 		
-    console.log(eventlist);		
+    // console.log(eventlist);
     //populating event type
 		d3.select("#tab5").selectAll("p")
     .data(eventlist)
@@ -566,7 +569,7 @@ eventlist=new Array(20)
     .attr("onmouseout", "$(this).popover('toggle');")
     .attr("data-original-title", "Summary Statistics");
   
-    console.log(valueKey);
+    // console.log(valueKey);
     d3.select("#variableList").selectAll("p") 			//do something with this..
 		.data(valueKey)
 		.enter()
@@ -852,22 +855,23 @@ $(document).on('input', '#searchvar', function() {
 	
 	}
 	
-
-var circle = svg.append('svg:g').selectAll('g');
- var path = svg.append('svg:g').selectAll('path');
-    
-	
-	// line displayed when dragging new nodes
-       
-		
-	//ROHIT BHATTACHARJEE
-	// mouse event vars
-        var selected_node = null,
-        selected_link = null,
-        mousedown_link = null,
-        mousedown_node = null,
-        mouseup_node = null;
-var force;
+//
+//
+// var circle = svg.append('svg:g').selectAll('g');
+//  var path = svg.append('svg:g').selectAll('path');
+//
+//
+// 	// line displayed when dragging new nodes
+//
+//
+// 	//ROHIT BHATTACHARJEE
+// 	// mouse event vars
+//         var selected_node = null,
+//         selected_link = null,
+//         mousedown_link = null,
+//         mousedown_node = null,
+//         mouseup_node = null;
+// var force;
 
 
  
@@ -1974,66 +1978,8 @@ function tabLeft(tab) {
 var qr={};
     qr["type"]="postquery";
     qr["query"]={"date8":{},"country_code":{},"source":{},"target":{},"root_code":{}};
-        
-//populating date tab
-// todate=new Date("2015-12-31");
-fromdate=new Date("2012-01-01");
-min="2012";
-max="2015";
-maxdate=new Date("2015-12-31".replace(/-/g, '\/'));
-mindate=new Date("2012-01-01".replace(/-/g, '\/'));
-
-$("#fromdate").datepicker({
-    dateFormat: 'mm-dd-yy',
-    changeYear: true,
-    changeMonth: true,
-    defaultDate: fromdate,
-    yearRange: min + ':' + max,
-    minDate: mindate,
-    maxDate: maxdate,
-    orientation: top,
-    onSelect: function () {
-        fromdate = $(this).datepicker('getDate');
-        $("#todate").datepicker('option', 'minDate', fromdate);
-        $("#todate").datepicker('option', 'defaultDate', fromdate);
-        fromdatestring = fromdate.getFullYear() + "" + ('0' + (fromdate.getMonth() + 1)).slice(-2) + "" + ('0' + fromdate.getDate()).slice(-2);
-        qr["query"]["date8"]["$gte"] = fromdatestring;
-
-        console.log("fromdate clicked,query:", qr);
-    },
-    onClose: function () {
-        $("#todate").datepicker("show");
-    }
-
-    //yearRange:min+":"+max
-});
 
 
-$("#todate").datepicker({
-    changeYear: true,
-    changeMonth: true,
-    yearRange: min + ':' + max,
-    dateFormat: 'mm-dd-yy',
-    defaultDate: fromdate,
-    minDate: mindate,
-    maxDate: maxdate,
-    orientation: top,
-    onSelect: function () {
-        todate = $(this).datepicker('getDate');
-        todatestring = todate.getFullYear() + "" + ('0' + (todate.getMonth() + 1)).slice(-2) + "" + ('0' + todate.getDate()).slice(-2);
-        qr["query"]["date8"]["$lte"] = todatestring;
-        console.log("todate selected,query string:", qr);
-        plotHighlight()
-    }
-});
-
-function plotHighlight() {
-
-}
-
-
-
-//end of date picker
 function tabRight(tabid) {
 
     document.getElementById('models').style.display = 'none';
@@ -3103,189 +3049,6 @@ function fakeClick() {
 
 
 function d3date() {
-    $("#dateSVG").empty();
-    d3.select('#dateInterval');
-
-    d3.select("#dateSVG"),
-        margin = {top: 20, right: 20, bottom: 110, left: 30},
-        margin2 = {top: 430, right: 20, bottom: 30, left: 30},
-        datewidth = +svg.attr("width") - margin.left - margin.right,
-        dateheight = +svg.attr("height") - margin.top - margin.bottom,
-        dateheight2 = +svg.attr("height") - margin2.top - margin2.bottom;
-
-    var parseDate = d3.timeParse("%b %Y");
-
-    // The date range needs to be transformed to image width. Range defined here, domain defined below
-    // Range of X:
-    var datex = d3.scaleTime().range([0, datewidth]),
-        datex2 = d3.scaleTime().range([0, datewidth]),
-        datey = d3.scaleLinear().range([dateheight, 0]),
-        datey2 = d3.scaleLinear().range([dateheight2, 0]);
-
-    var datexAxis = d3.axisBottom(datex),
-        datexAxis2 = d3.axisBottom(datex2),
-        dateyAxis = d3.axisLeft(datey);
-
-    // Range of X: Highlight variables
-    var datexUser = d3.scaleTime().range([0, datewidth]),
-        datex2User = d3.scaleTime().range([0, datewidth]);
-
-    // Brush and zoom elements
-    var datebrush = d3.brushX()
-        .extent([[0, 0], [datewidth, dateheight2]])
-        .on("brush end", brushed);
-
-    var datezoom = d3.zoom()
-        .scaleExtent([1, Infinity])
-        .translateExtent([[0, 0], [datewidth, dateheight]])
-        .extent([[0, 0], [datewidth, dateheight]])
-        .on("zoom", zoomed);
-
-    // Focus data element:
-    var datearea = d3.area()
-        .curve(d3.curveMonotoneX)
-        .x(function (d) {
-            return datex(d.Date);
-        })
-        .y0(dateheight)
-        .y1(function (d) {
-            return datey(d.Freq);
-        });
-
-    // Context data element:
-    var datearea2 = d3.area()
-        .curve(d3.curveMonotoneX)
-        .x(function (d) {
-            return datex2(d.Date);
-        })
-        .y0(dateheight2)
-        .y1(function (d) {
-            return datey2(d.Freq);
-        });
-
-    // Set the svg metadata:
-    svg.append("defs").append("clipPath")
-        .attr("id", "clip")
-        .append("rect")
-        .attr("width", datewidth)
-        .attr("height", dateheight);
-
-    // Add svg groups for the focus and context portions of the graphic
-    var datefocus = svg.append("g")
-        .attr("class", "focus")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    var datecontext = svg.append("g")
-        .attr("class", "context")
-        .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-
-    // Invoked on initialization and interaction
-    function brushed() {
-        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-        var s = d3.event.selection || datex2.range();
-        datex.domain(s.map(datex2.invert, datex2));
-        datefocus.select(".area").attr("d", datearea);
-        datefocus.select(".axis--x").call(datexAxis);
-        svg.select(".zoom").call(datezoom.transform, d3.zoomIdentity
-            .scale(datewidth / (s[1] - s[0]))
-            .translate(-s[0], 0));
-    }
-
-    function zoomed() {
-        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
-        var t = d3.event.transform;
-        datex.domain(t.rescaleX(datex2).domain());
-        datefocus.select(".area").attr("d", datearea);
-        datefocus.select(".axis--x").call(datexAxis);
-        datecontext.select(".brush").call(datebrush.move, datex.range().map(t.invertX, t));
-    }
-
-    // Accessor for csv read
-    function type(d) {
-        d.Date = parseDate(d.Date);
-        d.Freq = +d.Freq;
-        return d;
-    }
-
-    // d3.csv([data], [accessor], [callback])
-    d3.csv(dateplot, type, function (error, data) {
-        if (error) throw error;
-
-        // Domain of X: (note range was set in variable initialization)
-        datex.domain(d3.extent(data, function (d) {
-            return d.Date;
-        }));
-        datey.domain([0, d3.max(data, function (d) {
-            return d.Freq;
-        })]);
-        datex2.domain(datex.domain());
-        datey2.domain(datey.domain());
-
-        // Domain of X: Highlighted portion
-        datexUser.domain(d3.extent(data, function (d) {
-            return d.Date;
-        }));
-        datex2User.domain(datex.domain());
-
-        // Draw data on focus portion of svg (datefocus) with the area variable attribute
-        datefocus.append("path")
-            .datum(data)
-            .attr("class", "area")
-            .attr("d", datearea);
-
-        // Add x and y axes to focus group
-        datefocus.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", "translate(0," + dateheight + ")")
-            .call(datexAxis);
-
-        datefocus.append("g")
-            .attr("class", "axis axis--y")
-            .call(dateyAxis);
-
-        // Draw data on context portion of svg (datecontext)
-        datecontext.append("path")
-            .datum(data)
-            .attr("class", "area")
-            .attr("d", datearea2);
-
-        // Draw a path to focus portion of svg within datearea parameters
-        // TODO: subset data based on user dates
-        datefocus.append("path")
-            .datum(data)
-            .attr("class", "area")
-            .attr("d", datearea);
-
-        // Draw a path to context portion of svg
-        datecontext.append("path")
-            .datum(data)
-            .attr("class", "area")
-            .attr("d", datearea2);
-
-        // Add x axis to context group
-        datecontext.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", "translate(0," + dateheight2 + ")")
-            .call(datexAxis2);
-
-        // Add brushes to context group
-        datecontext.append("g")
-            .attr("class", "brush")
-            .call(datebrush)
-            .call(datebrush.move, datex.range());
-
-        // Draw a box? Maybe for buffering?
-        svg.append("rect")
-            .attr("class", "zoom")
-            .attr("width", datewidth)
-            .attr("height", dateheight)
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-            .call(datezoom);
-
-        //    scaffolding();
-        // callback=layout
-        // dataDownload();
-    });
 }
 
 function d3loc() {
