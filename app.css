@@ -955,3 +955,96 @@ display: inline;}
   background-color: #9ca6b7;
   
 }*/
+
+
+/*
+* Added for Location
+*/
+.graph_axis_label {
+	font-family: "Times New Roman";
+	 font-size:20px;
+}
+
+.graph_collapse {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 55px;
+	width:650px;
+	-webkit-transition: all 1s ease;
+}
+
+.graph_close {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 55px;
+	width:650px;
+	-webkit-transition: all 1s ease;
+}
+
+.graph_config {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 450px;
+	width:650px;
+	-webkit-transition: all 1s ease;
+}
+
+.hide_label {
+	display:none;
+}
+
+.graph_container {
+	width:auto; 
+	height:500px;
+	overflow-x: scroll; 
+	overflow-y: scroll;
+}
+
+.bar {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+.bar_open {
+	fill: brown;
+	cursor: pointer;
+}
+
+.bar:hover {
+	fill: brown;
+	cursor: pointer;
+}
+
+.bar_open:hover {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #D4D8DA;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+.x path {
+	display: none;
+}
+.toolTip {
+  position: absolute;
+  display: none;
+  min-width: 80px;
+  height: auto;
+  background: none repeat scroll 0 0 #ffffff;
+  border: 1px solid #6F257F;
+  padding: 14px;
+  text-align: center;
+}
+
+.gi-2x{font-size: 2em;}
+.gi-3x{font-size: 3em;}
+.gi-4x{font-size: 4em;}
+.gi-5x{font-size: 5em;}
+
+.glyphicon_border {
+    border:1px solid black;	
+}
