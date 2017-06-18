@@ -3383,23 +3383,25 @@ function render(color, blnIsSubgraph, cid){
 		
 			g.selectAll(".bar")
 			.data(data)
-			.enter().append("rect")
+			.enter()
+			.append("rect")
 			.attr("class", "bar")
 			.attr("x", 0)
 			.attr("height", y.bandwidth())
 			.attr("y", function(d) { return y(d.cname); })
 			.attr("width", function(d) { return x(d.freq); })
 			.attr("onclick",  function (d) { mapGraphSVG[d.id] = null; mapIdCname[d.id] = d.cname; return "javascript:maingraphYLabelClicked('"+d.id+"')"; })
-			.attr("id", function(d) { return "tg_rect_" + d.id; })
-			.on("mousemove", function(d){
-				tooltip
-					.style("left", d3.event.pageX - 50 + "px")
-					.style("top", d3.event.pageY - 70 + "px")
-					.style("display", "inline-block")
-					.html((d.cname) + "<br>" + (d.freq));
-			})
-    		.on("mouseout", function(d){ tooltip.style("display", "none");});
+			.attr("id", function(d) { return "tg_rect_" + d.id; });
 			
+			g.selectAll(".bar_label")
+			.data(data)
+			.enter()
+			.append("text")
+            .attr("class", "bar_label")        
+			.attr("x", function (d) { return x(d.freq) + 5;})
+            .attr("y", function (d) { return y(d.cname) + y.bandwidth() / 2 + 4;})
+            .text(function (d) { return "" + d.freq;});
+						
 			g.append("text")
             .attr("text-anchor", "middle") 
             .attr("transform", "translate("+ (-50) +","+(height/2)+")rotate(-90)") 
@@ -3415,15 +3417,16 @@ function render(color, blnIsSubgraph, cid){
 			.attr("x", 0)
 			.attr("height", y.bandwidth())
 			.attr("y", function(d) { return y(d.cname); })
-			.attr("width", function(d) { return x(d.freq); })
-			.on("mousemove", function(d){
-				tooltip
-					.style("left", d3.event.pageX - 50 + "px")
-					.style("top", d3.event.pageY - 70 + "px")
-					.style("display", "inline-block")
-					.html((d.cname) + "<br>" + (d.freq));
-			})
-    		.on("mouseout", function(d){ tooltip.style("display", "none");});
+			.attr("width", function(d) { return x(d.freq); });
+			
+			g.selectAll(".bar_label")
+			.data(data)
+			.enter()
+			.append("text")
+            .attr("class", "bar_label")        
+			.attr("x", function (d) { return x(d.freq) + 5;})
+            .attr("y", function (d) { return y(d.cname) + y.bandwidth() / 2 + 4;})
+            .text(function (d) { return "" + d.freq;});
 			
 			g.append("text")
             .attr("text-anchor", "middle") 
@@ -3443,6 +3446,25 @@ function render(color, blnIsSubgraph, cid){
 	});
 }
 
+/**
+ *
+ *
+**/
+function handleMainGraphAllNone() {
+	
+	var noneExpand = true;
+	for(var svg in mapGraphSVG) {
+			
+		if(svg != null) {
+			noneExpand = false;
+		}		
+	}
+	
+	if(noneExpand == false) {
+		$("#All_None").text("All");
+	}
+		
+}
 
 /**
  * fetchJSONObjectForSubGraph by the cname or id of the main graph
@@ -3463,12 +3485,14 @@ function fetchJSONObjectForSubGraph(cid) {
 		$("#sub_graph_td_" + cid).removeClass('graph_config');
 		$("#sub_graph_td_" + cid).addClass('graph_close');
 		
-		 setTimeout(function() {
+		mapGraphSVG[cid] = null;	
+		
+		handleMainGraphAllNone();
+		
+		setTimeout(function() {
 			$("#sub_graph_td_"+cid).parent().remove();
 		}, 1000);
 		
-		mapGraphSVG[cid] = null;	
-			
 		return;
 	}
 	
@@ -3528,9 +3552,6 @@ function maingraphAction(action) {
 	
 		maingraphHeaderUnClickAll();
 		removeAllSubGraphSVG();
-		
-		$("#All_None").removeClass("clicked");
-		$("#All_None").addClass("unclicked");
 		
 		$("#All_None").text("All");
 	}
