@@ -2446,12 +2446,14 @@ function explore(btn) {
 
         // programmatic click on Results button
         $("#btnBivariate").trigger("click");
-
+var count=0;
         for(var i in json_explore.images) {
             // console.log("this is data : " + i)
             var value = i;
             console.log("This is the model name : " + value);
-            model_selection(value); // for entering all the variables
+
+            model_selection(value,count); // for entering all the variables
+            count++;
         }
         modelCount = modelCount+1;
         var model = "Model".concat(modelCount);
@@ -2464,13 +2466,38 @@ function explore(btn) {
 
         
         modCol();
-        function model_selection(model_selection_name) {
+        function model_selection(model_selection_name,count_value) {
 
+            if(count_value%2==0 && count_value!=0)
+            {
+                d3.select("#modelView")
+                    .append("span")
+                    .text("\u00A0 \u00A0 \u00A0 \u00A0   \u00A0 ")
+                    .style("margin-top",0)
+                    .style("white-space","pre")
+                    .style("display","inline-block")
+                    .style("float","left")
+                    .append("span")
+                    .text("|")
+                    .style("margin-top",0)
+                    .style("white-space","pre")
+                    .style("display","inline-block")
+                    .style("float","left")
+                    .append("span")
+                    .text("\u00A0 \u00A0 \u00A0 \u00A0   \u00A0 ")
+                    .style("margin-top",0)
+                    .style("white-space","pre")
+                    .style("display","inline-block")
+                    .style("float","left")
+
+            }
             d3.select("#modelView")
                 .append("span")
-                .text(" | ")
+                .text(" \u00A0")
                 .style("margin-top",0)
                 .style("float","left")
+
+                .style("display","inline-block")
                 .style("white-space","pre")
                 .style("overflow-y","hidden")
                 .style("overflow-x","scroll")
@@ -2478,6 +2505,7 @@ function explore(btn) {
                 .attr("id", model)
                 .text(model_selection_name)
                 .style('background-color',"#FFD54F")
+                .style("display","inline-block")
                 .style("white-space","pre")
                 .style("margin-top",0)
                 .style("float","left")
