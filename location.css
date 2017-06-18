@@ -59,11 +59,11 @@
 	-webkit-transition: all 1s ease;
 }
 
-.hide {
+.hide_label {
 	display:none;
 }	
 
-.show {
+.show_label {
 	display:block;
 	cursor:pointer;
 	

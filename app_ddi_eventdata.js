@@ -3303,33 +3303,23 @@ function d3actor() {
  *
  **/
  var mapGraphSVG = new Object();
- var mapLocationObj = new Object();
- var mapIdCname = new Object();
+  var mapIdCname = new Object();
  
 /**
  * Draw the main graph
  *
  **/
 function drawMainGraph() {
-/**
-	d3.select("#mainSVG").append("foreignObject")
-    .attr("width", 700)
-    .attr("height", 1500)
-	.append("xhtml:body")
-    .attr("class", "graph_container")
-    .html("<div id='main_loc' align='left'></div>");
-	**/
-	
+
+	$("#subsetLocation").empty();
 	var table = $("#subsetLocation").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
-	mainGraphLabel(svg);
+	mainGraphLabel();
 	
 	var svg = d3.select("#main_graph_td").append("svg:svg")
         .attr("width",  500)
         .attr("height", 350)
 		.attr("id", "main_graph_svg");
-		
-	mapLocationObj["main_graph"] = svg;
-		
+				
 	render("steelblue", false, 0); 
 }
 	
@@ -3485,26 +3475,7 @@ function fetchJSONObjectForSubGraph(cid) {
 	$("#tg_rect_"+cid).attr("class", "bar_open");
 		
 	$("#svg_graph_table").append('<tr id="sub_graph_tr_'+cid +'"><td id="sub_graph_td_'+cid +'" class="graph_config"></td></tr>');
-	
-	
-	var cname = mapIdCname[cid];
-	var label1 = $('<label>'+cname+':</label>');
-	var label2 = $('<label class="hide" id="expand_collapse_text_'+cid+'">Collapse</label>');
-	$("#sub_graph_td_"+cid).append(label1);
-	$("#sub_graph_td_"+cid).append("&nbsp;&nbsp;&nbsp;");
-	$("#sub_graph_td_"+cid).append(label2);
-	
-	var label4 = $('<label><i class="fa fa-compress fa-2x fa-border show" id="Collapse_Main_Icon_'+cid+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cid+'\')"></i></label>');
-	$("#sub_graph_td_"+cid).append(label4);	
-	
-	var label5 = $('<label><i class="fa fa-expand fa-2x fa-border hide" id="Expand_Main_Icon_'+cid+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cid+'\')"></i></label>');
-	$("#sub_graph_td_"+cid).append(label5);	
-	
-	$("#sub_graph_td_"+cid).append("&nbsp;&nbsp;");
-	
-	var label6 = $('<label><i class="fa fa-times fa-2x fa-border show" onclick="javascript:maingraphYLabelClicked(\''+cid+'\')"></i></label>');
-	$("#sub_graph_td_"+cid).append(label6);	
-	
+	subGraphLabel(cid);
 	
 	var svg = d3.select("#sub_graph_td_"+cid).append("svg:svg")
        .attr("width",  500)
@@ -3567,11 +3538,9 @@ function maingraphAction(action) {
 		
 		$("#Expand_Collapse_Main_Text").text("Expand");
 		
-		$("#Collapse_Main_Icon").removeClass("show");
-		$("#Collapse_Main_Icon").addClass("hide");
-		$("#Expand_Main_Icon").removeClass("hide");
-		$("#Expand_Main_Icon").addClass("show");
-				
+		$("#Exp_Col_Icon").removeClass("fa-compress");
+		$("#Exp_Col_Icon").addClass("fa-expand");
+			
 		
 		$("#main_graph_td").removeClass('graph_config');
 		$("#main_graph_td").addClass('graph_collapse');
@@ -3580,11 +3549,8 @@ function maingraphAction(action) {
 		
 		$("#Expand_Collapse_Main_Text").text("Collapse");
 		
-		$("#Collapse_Main_Icon").removeClass("hide");
-		$("#Collapse_Main_Icon").addClass("show");
-		$("#Expand_Main_Icon").removeClass("show");
-		$("#Expand_Main_Icon").addClass("hide");
-			
+		$("#Exp_Col_Icon").removeClass("fa-expand");
+		$("#Exp_Col_Icon").addClass("fa-compress");			
 		
 		$("#main_graph_td").removeClass('graph_collapse');
 		$("#main_graph_td").addClass('graph_config');
@@ -3605,13 +3571,8 @@ function subgraphAction(textId) {
 		
 		$("#"+textId).text("Expand");
 		
-		$("#Collapse_Main_Icon_"+cid).removeClass("show");
-		$("#Collapse_Main_Icon_"+cid).addClass("hide");
-		$("#Expand_Main_Icon_"+cid).removeClass("hide");
-		$("#Expand_Main_Icon_"+cid).addClass("show");
-			
-		//$(".sub_graph_"+ cid).hide();
-		
+		$("#Exp_Col_Icon_"+cid).removeClass("fa-compress");
+		$("#Exp_Col_Icon_"+cid).addClass("fa-expand");
 		
 		$("#sub_graph_td_" + cid).removeClass('graph_config');
 		$("#sub_graph_td_" + cid).addClass('graph_collapse');
@@ -3621,11 +3582,8 @@ function subgraphAction(textId) {
 		
 		$("#"+textId).text("Collapse");
 		
-		$("#Collapse_Main_Icon_"+cid).removeClass("hide");
-		$("#Collapse_Main_Icon_"+cid).addClass("show");
-		$("#Expand_Main_Icon_"+cid).removeClass("show");
-		$("#Expand_Main_Icon_"+cid).addClass("hide");
-		//$(".sub_graph_"+ cid).show();
+		$("#Exp_Col_Icon_"+cid).removeClass("fa-expand");
+		$("#Exp_Col_Icon_"+cid).addClass("fa-compress");
 		
 		$("#sub_graph_td_" + cid).removeClass('graph_collapse');
 		$("#sub_graph_td_" + cid).addClass('graph_config');
@@ -3699,23 +3657,47 @@ function maingraphYLabelClicked(cid) {
  * mainGraphLabel - to put the header Labels in the main graph
  *
  **/
-function mainGraphLabel(svg) {
+function mainGraphLabel() {
 	  	
+	$("#main_graph_td").append('<div id="main_graph_td_div"></div>');
+	
 	var label = $('<label align="right" id="Region">Region:</label>');
-	$("#main_graph_td").append(label);
-	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
+	$("#main_graph_td_div").append(label);
+	$("#main_graph_td_div").append("&nbsp; &nbsp; &nbsp;");
 		
 	var label1 = $('<label><i class="fa fa-border fa-2x"><label align="right" id="All_None" class="unclicked" onclick = "javascript:maingraphAction(\'All_None\')">All</label></i></label>');
-	$("#main_graph_td").append(label1);	
-	$("#main_graph_td").append("&nbsp; &nbsp; &nbsp;");
+	$("#main_graph_td_div").append(label1);	
+	$("#main_graph_td_div").append("&nbsp; &nbsp; &nbsp;");
 	
-	var label3 = $('<label align="right" id="Expand_Collapse_Main_Text" class="hide">Collapse</label>');
-	$("#main_graph_td").append(label3);	
-	var label4 = $('<label><i class="fa fa-compress fa-2x fa-border show" id="Collapse_Main_Icon" onclick = "javascript:maingraphAction(\'Expand_Collapse\')"></i></label>');
-	$("#main_graph_td").append(label4);	
-	var label5 = $('<label><i class="fa fa-expand fa-2x fa-border hide" id="Expand_Main_Icon" onclick = "javascript:maingraphAction(\'Expand_Collapse\')"></i></label>');
-	$("#main_graph_td").append(label5);	
+	var label2 = $('<label align="right" id="Expand_Collapse_Main_Text" class="hide_label">Collapse</label>');
+	$("#main_graph_td_div").append(label2);	
+	var label3 = $('<label style="cursor:pointer"><i class="fa fa-compress fa-2x fa-border" id="Exp_Col_Icon" onclick = "javascript:maingraphAction(\'Expand_Collapse\')"></i></label>');
+	$("#main_graph_td_div").append(label3);	
+				
+}
+
+/** 
+ * subGraphLabel - to put the header Labels in the sub graph
+ *
+ **/
+function subGraphLabel(cid) {
+	
+	$("#sub_graph_td_"+cid).append('<div id="sub_graph_td_div_'+cid+'"></div>');
+	
+	var cname = mapIdCname[cid];
+	var label1 = $('<label align="right">'+cname+':</label>');
+	$("#sub_graph_td_div_"+cid).append(label1);
+	$("#sub_graph_td_div_"+cid).append("&nbsp;&nbsp;&nbsp;");
+	
+	var label2 = $('<label style="cursor:pointer"><i class="fa fa-compress fa-2x fa-border" id="Exp_Col_Icon_'+cid+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cid+'\')"></i></label>');
+	$("#sub_graph_td_div_"+cid).append(label2);	
+	$("#sub_graph_td_div_"+cid).append("&nbsp;&nbsp;&nbsp;");
 			
+	var label3 = $('<label style="cursor:pointer"><i class="fa fa-times fa-2x fa-border" onclick="javascript:maingraphYLabelClicked(\''+cid+'\')"></i></label>');
+	$("#sub_graph_td_div_"+cid).append(label3);	
+	
+	var label = $('<label class="hide_label" id="expand_collapse_text_'+cid+'">Collapse</label>');
+	$("#sub_graph_td_div_"+cid).append(label);
 }
 
 window.onresize = rightpanelMargin;
