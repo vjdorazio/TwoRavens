@@ -3291,6 +3291,7 @@ function d3date() {
 function d3loc() {
 	
 	$("#subsetLocation").empty();
+	
 	drawMainGraph();
 }
 
@@ -3312,9 +3313,16 @@ function d3actor() {
  *
  **/
 function drawMainGraph() {
+	$("#subsetLocation").append('<div class="container"><div id="subsetLocation_panel" class="row"></div></div>');
 
-	var table = $("#subsetLocation").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
+	$("#subsetLocation_panel").append("<div class='col-xs-4' id='subsetLocationDivL'></div>");
+	$("#subsetLocation_panel").append("<div class='col-xs-4 location_right'><div class='affix' id='subsetLocationDivR'></div></div>");
 	
+	$("#subsetLocationDivL").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
+	
+	$("#subsetLocationDivR").append("<table id='country_table' border='1' align='left'><tr><td>Location:</td></tr><tr><th>List of Selected Countries</th></tr></table>");
+		
+		
 	mainGraphLabel();
 	
 	var svg = d3.select("#main_graph_td").append("svg:svg")
