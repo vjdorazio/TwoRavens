@@ -312,7 +312,137 @@ function findValue(json, key) {
 			  }
 		}
 
+//KRIPANSHU BHARGAVA : disconnect all the nodes
+function disconnectAll()
+{
+    console.log("DisConnect function called");
 
+
+
+// removing the existing paths
+d3.selectAll('path').style('marker-start', 0)
+    .style('marker-end', 0)
+    .style('stroke-width',0);
+    links=[];//to empty the links
+
+
+
+}
+//KRIPANSHU BHARGAVA : connect all the nodes
+function connectAll() {
+    console.log("Connect All function called");
+    for (var i = 0; i < nodes.length; i++) {
+       // console.log("All nodes: " + nodes[i].name);
+    }
+
+    var string_check=[];
+
+//function to check the duplicate node
+    function  nodesCheck(value1,value2)
+    {
+                        var pair1=value1+value2;
+                        var pair2=value2+value1;
+                        var count=0;
+                        console.log("pair1 : "+ pair1);
+                        console.log("pair2 : "+ pair2);
+                        for(var k=0; k<string_check.length;k++)
+                        {
+                            if(string_check[k]==pair1){count++;}
+                            if(string_check[k]==pair2){count++;}
+                        }
+                        if(count==2 ){return false;}
+                        else {return true;}
+    }
+links=[];
+
+    // loops to add the all possible nodes to the links array
+    for(var i=0;i<nodes.length;i++)
+    {
+        for(var j=nodes.length-1;j>0;j--)
+        {
+            string_check.push(i.toString()+j.toString());
+
+            var val1=i.toString();
+            var val2=j.toString();
+
+            if(nodesCheck(val1,val2) && i!=j)
+            {
+                console.log("PAssed value : "+i.toString()+j.toString());
+                links.push({source: nodes[i], target: nodes[j], left: false, right: true});
+            }
+
+
+        }
+    }
+    path = path.data(links);
+
+    // update existing links
+    // VJD: dashed links between pebbles are "selected". this is disabled for now
+    path.classed('selected', function(d) { return;})//return d === selected_link; })
+        .style('marker-start', function(d) { return d ? 'url(#start-circle)' : ''; })
+        .style('marker-end', function(d) { return d ? 'url(#end-circle)' : ''; })
+        .style('stroke-width',2.5)  ;
+
+
+    // add new links
+    path.enter().append('svg:path')
+        .attr('class', 'link')
+        .style('stroke-width',2.5)
+        .classed('selected', function(d) { return;})//return d === selected_link; })
+        .style('marker-start', function(d) { return d ? 'url(#start-circle)' : ''; })
+        .style('marker-end', function(d) { return d ? 'url(#end-circle)' : ''; })
+        .on('mousedown', function(d) { // do we ever need to select a link? make it delete..
+            var obj1 = JSON.stringify(d);
+            for(var j =0; j < links.length; j++) {
+                if(obj1 === JSON.stringify(links[j])) {
+                    links.splice(j,1);
+                }
+            }
+        })
+
+        .on('mouseover', function(d) {
+            //     if(!mousedown_node || d === mousedown_node) return;
+            d3.select(this)
+                .style('stroke', 'red')
+                .style("cursor", "not-allowed")
+                // Un-sets the "explicit" fill (might need to be null instead of '')
+                .classed("active", true );
+
+            /*  div.transition()
+             .duration(200)
+             .style("opacity", .9);
+             div	.html("<span style='background-color: #d9534f ; padding:2px ; font-style: oblique' >Delete this link</span>")
+             .style("left", (d3.event.pageX) + "px")
+             .style("top", (d3.event.pageY - 28) + "px");
+             //d3.select('#start-circle').style('fill','red');
+             */
+
+
+            // console.log("color is red")
+
+
+        })
+
+        .on('mouseout', function(d) {
+            //    if(!mousedown_node || d === mousedown_node) return;
+            // unenlarge target node
+            //tooltip.style("visibility", "hidden");
+            //    d3.select(this).attr('transform', '');
+            d3.select(this)
+                .style('stroke', '#000')
+                .style("cursor", "pointer")
+                // Un-sets the "explicit" fill (might need to be null instead of '')
+                .classed("active", false );
+            //  div.transition()
+            //    .duration(500)
+            //  .style("opacity", 0);
+            // console.log("color was red")
+
+
+        });
+
+
+}
 
 // this is the function and callback routine that loads all external data: metadata (DVN's ddi), preprocessed (for plotting distributions), and zeligmodels (produced by Zelig) and initiates the data download to the server
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -424,7 +554,7 @@ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
 
                       };
 
-                      //console.log("allNodes: ", allNodes);
+                    //  console.log("allNodes: ", allNodes);
                       // Reading the zelig models and populating the model list in the right panel.
                       d3.json("data/explore.json", function(error, json) {
                               if (error) return console.warn(error);
@@ -863,13 +993,13 @@ var force;
           nodes.push(allNodes[ii]);
             var selectMe = zparams.zvars[j].replace(/\W/g, "_");
             selectMe = "#".concat(selectMe);
-            console.log(selectMe);
+            console.log("select Me"+selectMe);
             d3.select(selectMe).style('background-color',function(){
                                       return hexToRgba(nodes[j].strokeColor);
                                       });
 
 		}
-
+//console.log("All nodes : "+ allNodes.name);
         for(var j=0; j < zparams.zedges.length; j++) {
             var mysrc = nodeIndex(zparams.zedges[j][0]);
             var mytgt = nodeIndex(zparams.zedges[j][1]);
@@ -2209,8 +2339,8 @@ function zPop() {
         zparams.znature.push(nodes[j].nature);
         var temp = nodes[j].id;
         //var temp = findNodeIndex(nodes[j].name);
-        //console.log("node ",nodes[j].id);
-        //console.log("temp ", temp);
+      //  console.log("node ",nodes[j].name);
+       // console.log("temp ", temp);
 
         zparams.zsetx[j] = allNodes[temp].setxvals;
         zparams.zsubset[j] = allNodes[temp].subsetrange;
@@ -2393,8 +2523,8 @@ function explore(btn) {
         estimateLadda.stop();  // stop spinner
         allResults.push(json);
       var  json_explore=json;
-         console.log("the allResults is : " +allResults);
-        console.log("json in: ", json);
+    //     console.log("the allResults is : " +allResults);
+   //     console.log("json in: ", json);
 
         
        var myparent = document.getElementById("rightContentArea");
@@ -2450,7 +2580,7 @@ var count=0;
         for(var i in json_explore.images) {
             // console.log("this is data : " + i)
             var value = i;
-            console.log("This is the model name : " + value);
+        //    console.log("This is the model name : " + value);
 
             model_selection(value,count); // for entering all the variables
             count++;
@@ -2567,7 +2697,7 @@ function dataDownload() {
         console.log("DownloadSuccess method called");
       //  json_data_explore.push(json);
         //console.log("dataDownload json in: ", json);
-        console.log("json explore",json_data_explore );
+       // console.log("json explore",json_data_explore );
         zparams.zsessionid=json.sessionid[0];
 
         // set the link URL
@@ -2778,8 +2908,8 @@ if(i==model_name_set) {
             for (var j in json.tabular[i].colnames) {
 
 
-                console.log("colnames: ");
-                console.log(json.tabular[i].colnames[j]);
+             //   console.log("colnames: ");
+              //  console.log(json.tabular[i].colnames[j]);
                 colnames.push(json.tabular[i].colnames[j]);
 
             }
@@ -2789,11 +2919,11 @@ if(i==model_name_set) {
 
 
     for(var i in json.tabular) {
-        console.log("rownames: ");
+     //   console.log("rownames: ");
         if (i == model_name1 || i== model_name2) {
             for (var k in json.tabular[i].rownames) {
 
-                console.log(json.tabular[i].rownames[k]);
+             //   console.log(json.tabular[i].rownames[k]);
                 rownames.push(json.tabular[i].rownames[k]);
             }
         }
@@ -2801,8 +2931,8 @@ if(i==model_name_set) {
     for(var i in json.tabular) {
         if (i == model_name1 || i== model_name2) {
             for (var l in json.tabular[i].rowvar) {
-                console.log("rowvar: ");
-                console.log(json.tabular[i].rowvar[l]);
+              //  console.log("rowvar: ");
+               // console.log(json.tabular[i].rowvar[l]);
                 rowvar.push(json.tabular[i].rowvar[l]);
             }
         }
@@ -2810,8 +2940,8 @@ if(i==model_name_set) {
     for(var i in json.tabular) {
         if (i == model_name1 || i== model_name2) {
             for (var m in json.tabular[i].colvar) {
-                console.log("colavar: ");
-                console.log(json.tabular[i].colvar[m]);
+               // console.log("colavar: ");
+              //  console.log(json.tabular[i].colvar[m]);
                 colvar.push(json.tabular[i].colvar[m]);
             }
         }
@@ -2822,7 +2952,7 @@ if(i==model_name_set) {
           for (var n in json.tabular[i].data) {
 table_data[n]=[];
               //  console.log(json.tabular[i].data[n]);
-              console.log("this is data for : " + json.tabular[i].data[n]);
+            //  console.log("this is data for : " + json.tabular[i].data[n]);
               for (var a = 0; a < colnames.length; a++) {
                  // console.log("data : ");
                  // console.log(json.tabular[i].data[n][a]);
@@ -2838,27 +2968,23 @@ table_data[n]=[];
     { console.log(" row data : "+ p);
         for(var l=0;l<colnames.length;l++)
         {
-            console.log("col data : ");
-            console.log(table_data[p][l]);
+           // console.log("col data : ");
+          //  console.log(table_data[p][l]);
              table_obj.push({ rowname: rownames[p], colname: colnames[l], value: table_data[p][l]  });
             //console.log(" the dynamic object data : rowname = "+ objd.rowname + " colname :  "+ objd.colname + " value : "+ objd.value );
         }
     }
 
-for(var t=0; t<table_obj.length; t++)
-    {
 
-        console.log("These are the values : row : "+table_obj[t].rowname + " col :" + table_obj[t].colname + " value  : " + table_obj[t].value);
-    }
 
     // for the statistics]
-    console.log("The data for the statistical"+ json.statistical)
+   // console.log("The data for the statistical"+ json.statistical)
     for(var key in json.statistical) {
       console.log(key);
         if (key == model_name1 || key== model_name2) {
             for (var a in json.statistical[key].cork) {
-                console.log("cork: ");
-                console.log(json.statistical[key].cork[a]);
+            //    console.log("cork: ");
+             //   console.log(json.statistical[key].cork[a]);
                 cork.push(json.statistical[key].cork[a]);
             }
         }
@@ -2866,8 +2992,8 @@ for(var t=0; t<table_obj.length; t++)
     for(var key1 in json.statistical) {
         if (key1 == model_name1 || key1== model_name2) {
             for (var b in json.statistical[key1].corp) {
-                console.log("corp: ");
-                console.log(json.statistical[key1].corp[b]);
+              //  console.log("corp: ");
+             //   console.log(json.statistical[key1].corp[b]);
                 corp.push(json.statistical[key1].corp[b]);
             }
         }
@@ -2876,8 +3002,8 @@ for(var t=0; t<table_obj.length; t++)
     {if (key == model_name1 || key== model_name2) {
         for(var c in json.statistical[key].cors)
         {
-            console.log("cors: ");
-            console.log(json.statistical[key].cors[c]);
+          //  console.log("cors: ");
+          //  console.log(json.statistical[key].cors[c]);
             cors.push(json.statistical[key].cors[c]);
         }
     }
@@ -2886,8 +3012,8 @@ for(var t=0; t<table_obj.length; t++)
     for(var key in json.statistical) {
         if (key == model_name1 || key== model_name2) {
             for (var d in json.statistical[key].var1) {
-                console.log("var1: ");
-                console.log(json.statistical[key].var1[d]);
+           //     console.log("var1: ");
+           //     console.log(json.statistical[key].var1[d]);
                 var1.push(json.statistical[key].var1[d]);
             }
         }
@@ -2895,8 +3021,8 @@ for(var t=0; t<table_obj.length; t++)
     for(var key4 in json.statistical) {
         if (key == model_name1 || key== model_name2) {
             for (var e in json.statistical[key].var2) {
-                console.log("var2: ");
-                console.log(json.statistical[key].var2[e]);
+             //   console.log("var2: ");
+             //   console.log(json.statistical[key].var2[e]);
                 var2.push(json.statistical[key].var2[e]);
             }
         }
