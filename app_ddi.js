@@ -68,8 +68,6 @@ var logArray = [];
 var tempWidth = d3.select("#main.left").style("width")
 var width = tempWidth.substring(0,(tempWidth.length-2));
 
-/*var tempHeight = d3.select("#main.left").style("height")
-var height = tempHeight.substring(0,(tempHeight.length-2));*/
 
 var height = $(window).height() -120;  // Hard coding for header and footer and bottom margin.
 
@@ -321,10 +319,7 @@ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
               //console.log(UrlExists(metadataurl));
 
 
-              	//if(UrlExists(metadataurl)){
-               //d3.xml(metadataurl, "application/xml", function(xml) {
-
-				//				  d3.json(url, function(error, json) {
+              
                d3.json(url,function(json){	
                   
 									
