@@ -125,6 +125,75 @@
         </div>
 
         <div id="subsetActor" class="canvas">
+			<div id="actorSelectionDiv" style="width:700px;">
+				<!--<div id="sourceDiv" class="form-group" style="display:inline-block; width:50%; float:left;">
+					<label id="sourceActorsLab" style="text-align:center; width:100%;">Source Actor</label>
+					<div id="sourceSelectionDiv">
+						<div id="sourceOrgDiv" style="display:inline-block; width:50%; float:left;">
+							<label id="sourceOrgLab" style="width:100%; margin:1% 5%;">Organization</label>
+							<label style="display:block; margin:1% 5%;"><input name="sourceOrgCheck" type="checkbox" value="org1">org1</label>
+							<label style="display:block; margin:1% 5%;"><input name="sourceOrgCheck" type="checkbox" value="org2">org2</label>
+						</div>
+
+						<div id="sourceCountryDiv" style="display:inline-block; width:50%; float:left;">
+							<label id="sourceCountryDiv" style="width:100%; margin:1% 5%;">Country</label>
+							<label style="display:block; margin:1% 5%;"><input name="sourceCountryCheck" type="checkbox" value="country1">country1</label>
+							<label style="display:block; margin:1% 5%;"><input name="sourceCountryCheck" type="checkbox" value="country2">country2</label>
+						</div>
+					</div>
+				</div>
+			
+				<div id="targetDiv" class="form-group>" style="display:inline-block; width:50%; float:left;">
+					<label id="targetActorLab" style="text-align:center; width:100%;">Target Actor</label>
+					<div id="targSelectionDiv">
+						<div id="targOrgDiv" style="display:inline-block; width:50%; float:left;">
+							<label id="targOrgLab" style="width:100%;">Organization</label>
+							<label style="display:block;"><input name="targOrgCheck" type="checkbox" value="org1">org1</label>
+							<label style="display:block;"><input name="targOrgCheck" type="checkbox" value="org2">org2</label>
+						</div>
+
+						<div id="targCountryDiv" style="display:inline-block; width:50%; float:left;">
+							<label id="targCountryDiv" style="width:100%;">Country</label>
+							<label style="display:block;"><input name="targCountryCheck" type="checkbox" value="country1">country1</label>
+							<label style="display:block;"><input name="targCountryCheck" type="checkbox" value="country2">country2</label>
+						</div>
+					</div>
+				</div>-->
+
+				<div id="sourceDiv" style="width:50%; float:left; border: 1px solid black;">
+					<h3 style="text-align:center; width:100%;">Source Actor</h3>
+					<div id="allSources" style="height:200px; width:50%; float:left; border: 1px solid blue;">
+						<input id="searchSources" class="form-control" placeholder="Search source actors" type="text" style="margin:5px; height:30px; width:100%;">
+						<div id="searchListSources" style="height:160px; overflow-y:scroll;">
+							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src1">src1</label>
+							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src2">src2</label>
+							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src3">src3</label>
+							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src4">src4</label>
+							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src5">src5</label>
+							<!--checks will be added dynamically in JS once at load-->
+						</div>
+					</div>
+					
+					<div id="filterSources" style="width:45%; float:right; height:200px; overflow-y:scroll; border: 1px solid red;">
+						<h4 id="entitySources" style="margin-bottom:0px;"><b>Entity</b></h4>
+						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceEntityCheck" type="checkbox" value="org1">org1</label>
+						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceEntityCheck" type="checkbox" value="org2">org2</label>
+						
+						<h4 id="roleSources" style="margin-bottom:0px;"><b>Role</b></h4>
+						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceRoleCheck" type="checkbox" value="role1">role1</label>
+						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceRoleCheck" type="checkbox" value="role2">role2</label>
+						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceRoleCheck" type="checkbox" value="role3">role3</label>
+						
+						<h4 id="attributeSources" style="margin-bottom:0px;"><b>Attributes</b></h4>
+						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceAttrCheck" type="checkbox" value="attr1">attr1</label>
+						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceAttrCheck" type="checkbox" value="attr2">attr2</label>
+						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceAttrCheck" type="checkbox" value="attr3">attr3</label>
+					</div>
+				</div>
+
+
+				
+			</div>
         </div>
 
         <div id="legend" class="legendary panel panel-default" style="display:none">

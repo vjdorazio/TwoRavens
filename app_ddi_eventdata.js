@@ -600,8 +600,15 @@ eventlist=new Array(20)
     .text(function(d){return d;})
 	.style("text-align", "center")
     .style('background-color',function(d) {
-           if(d=="Date") {
-            d3date();
+           if(d=="Actor") {
+            document.getElementById("subsetActor").style.display = 'inline';
+
+            document.getElementById("subsetDate").style.display = 'none';
+            document.getElementById("subsetLocation").style.display = 'none';
+            document.getElementById("subsetAction").style.display = 'none';
+            rightpanelMargin();
+			selectionMade("Actor");
+            d3actor();
             return hexToRgba(selVarColor);}
            else {
             return varColor;}
