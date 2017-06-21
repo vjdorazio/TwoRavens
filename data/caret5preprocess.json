@@ -18,7 +18,7 @@
 		"center":{
 			"type":  ["Preprocessing"] , 
 			"name":  ["center"] , 
-			"description":  ["Subtracts the mean of the predictor¡¯s data (again from the data inx) from thepredictor values "] },
+			"description":  ["Subtracts the mean of the predictor's data (again from the data inx) from thepredictor values "] },
 			
 		"scale":{
 			"type":  ["Preprocessing"] , 
