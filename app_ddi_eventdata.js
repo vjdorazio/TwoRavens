@@ -3083,8 +3083,11 @@ function drawMainGraph() {
 	
 	$("#subsetLocationDivL").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
 	
-	$("#subsetLocationDivR").append("<table id='country_table' border='1' align='left'><tr><td>Location:</td></tr><tr><th>List of Selected Countries</th></tr></table>");
-		
+	$("#subsetLocationDivR").append("<table id='country_table' border='1' align='center'><tr><td>Location:</td></tr><tr><th>List of Selected Countries</th></tr><tr><td id='country_list'></td></tr></table>");
+	
+	updateCountryList('country_list');
+	
+	$("#subsetLocationDivR").append("<div align='center'><br/><br/><button>Stage</button></div>");
 		
 	mainGraphLabel();
 	
@@ -3251,23 +3254,23 @@ function fetchJSONObjectForSubGraph(cid) {
 	console.log("fetchJSONObjectForSubGraph for cid : " + cid);
 	
 	if(mapGraphSVG[cid] != null) {
-		
-		var svgToRemove = mapGraphSVG[cid];
-		svgToRemove.remove();
-					
+							
 		$("#tg_rect_"+cid).attr("class", "bar");
 		
 		$("#sub_graph_td_" + cid).removeClass('graph_config');
 		$("#sub_graph_td_" + cid).addClass('graph_close');
-		
-		mapGraphSVG[cid] = null;	
-		
+				
 		handleMainGraphAllNone();
 		
 		setTimeout(function() {
 			$("#sub_graph_td_"+cid).parent().remove();
+			
+			var svgToRemove = mapGraphSVG[cid];
+			svgToRemove.remove();
+			mapGraphSVG[cid] = null;
+			
 		}, 1000);
-		
+				
 		return;
 	}
 	
@@ -3489,6 +3492,27 @@ function subGraphLabel(cid) {
 	
 	var label = $('<label class="hide_label" id="expand_collapse_text_'+cid+'">Collapse</label>');
 	$("#sub_graph_td_div_"+cid).append(label);
+}
+
+function updateCountryList(td_id) {
+	
+	var country_list = ["AAA", "BBB", "CCC", "DDD", "EEE", "FFF", "GGG", "HHH"];
+	
+	$("#"+td_id).empty();
+	$("#"+td_id).append("<table align='center' id='country_list_tab'></table>");
+	
+	var max = Math.floor((Math.random() * 10) + 1);
+	
+	var count = 0;
+	for(var index in country_list) {
+		
+		++count;
+		$("#country_list_tab").append("<tr><td>" +country_list[index] +"</td></tr>");
+		
+		if(count == max) {
+			break;
+		}		
+	}
 }
 
 window.onresize = rightpanelMargin;
