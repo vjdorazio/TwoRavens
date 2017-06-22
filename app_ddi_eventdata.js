@@ -599,20 +599,7 @@ eventlist=new Array(20)
           }) // perhaps ensure this id is unique by adding '_' to the front?
     .text(function(d){return d;})
 	.style("text-align", "center")
-    .style('background-color',function(d) {
-           if(d=="Actor") {
-            document.getElementById("subsetActor").style.display = 'inline';
-
-            document.getElementById("subsetDate").style.display = 'none';
-            document.getElementById("subsetLocation").style.display = 'none';
-            document.getElementById("subsetAction").style.display = 'none';
-            rightpanelMargin();
-			selectionMade("Actor");
-            d3actor();
-            return hexToRgba(selVarColor);}
-           else {
-            return varColor;}
-           })
+    .style('background-color', varColor)
     .attr("data-container", "body")
     .attr("data-toggle", "popover")
     .attr("data-trigger", "hover")
