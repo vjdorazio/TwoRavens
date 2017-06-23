@@ -583,6 +583,7 @@ eventlist=new Array(20)
         .attr("data-toggle", "popover")
         .attr("data-trigger", "hover")
         .attr("data-placement", "right")
+        .attr("data-viewport", "{selector: '#body', padding: '62px'}")
         .attr("data-html", "true")
         .attr("onmouseover", "$(this).popover('toggle');")
         .attr("onmouseout", "$(this).popover('toggle');")
@@ -605,9 +606,6 @@ eventlist=new Array(20)
     .attr("data-trigger", "hover")
     .attr("data-placement", "right")
     .attr("data-html", "true")
-//    .attr("onmouseover", "$(this).popover('toggle');")
-//    .attr("onmouseout", "$(this).popover('toggle');")
- //   .attr("data-original-title", "Summary Statistics")
     .on("click", function varClick(){
         if(d3.select(this).text()=="Date") {
             document.getElementById("subsetDate").style.display = 'inline';
@@ -808,7 +806,6 @@ $(document).on('input', '#searchvar', function() {
 	
 	d3.select("#variableList").selectAll("p").data(valueKey).remove();
 	
-	
 	d3.select("#variableList").selectAll("p")
 		//do something with this..
 		
@@ -837,10 +834,9 @@ $(document).on('input', '#searchvar', function() {
     .attr("onmouseover", "$(this).popover('toggle');")
     .attr("onmouseout", "$(this).popover('toggle');")
     .attr("data-original-title", "Summary Statistics");
-	
-	
+
 	fakeClick();
-	
+
 	$("#tab1").children().popover('hide');
 	populatePopover();
 	
@@ -1635,10 +1631,11 @@ function scaffoldingPush(v) { // adding a variable to the variable list after a 
               })
         .text(v[0])
         .style('background-color', hexToRgba(selVarColor))
-        .attr("data-container", "body")
+        .attr("data-container", "#main")
         .attr("data-toggle", "popover")
         .attr("data-trigger", "hover")
         .attr("data-placement", "right")
+            .attr("data-viewport-selector", "#main")
         .attr("data-html", "true")
         .attr("onmouseover", "$(this).popover('toggle');")
         .attr("onmouseout", "$(this).popover('toggle');")
@@ -2098,64 +2095,43 @@ function populatePopover () {
           });
 }
 
+function popoverRow(label, content){
+    var row = "<tr>";
+    row += "<td><div class='form-group'><label class='col-sm-6 control-label'>" + label + "</label>";
+    row += "<div class='col-sm-6'><p class='form-control-static'>" + content + "</p></div></div></td>";
+    row += "</tr>";
+    return row
+}
+
 function popoverContent(d) {
     
     var rint = d3.format("r");
     
-    var outtext = "";
+    var outtext = "<div class='container' style='margin:0;margin-left:-30px;margin-right:-30px;'><table class='table table-condensed' style='width:275px;margin:0;table-layout: auto;'><tbody>";
 
-    if(d.labl != "") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Label</label><div class='col-sm-6'><p class='form-control-static'><i>" + d.labl + "</i></p></div></div>";
+    if(d.labl != "") { outtext += popoverRow('Label', d.labl) }
+    if (d.mean != "NA") {
+        if (private && d.meanCI){
+            outtext += popoverRow('Mean', (+d.mean).toPrecision(2).toString()  + " (" + (+d.meanCI.lowerBound).toPrecision(2).toString() + " - " + (+d.meanCI.upperBound).toPrecision(2).toString() + ")");
+        } else {
+            outtext += popoverRow('Mean', (+d.mean).toPrecision(4).toString());
+        }
     }
-    
-    if (d.mean != "NA") { 
-      outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Mean</label><div class='col-sm-6'><p class='form-control-static'>"  
-      if (private && d.meanCI) {
-        outtext += (+d.mean).toPrecision(2).toString() + " (" + (+d.meanCI.lowerBound).toPrecision(2).toString() + " - " + (+d.meanCI.upperBound).toPrecision(2).toString() + ")"
-      } else {
-      outtext += (+d.mean).toPrecision(4).toString()
-    }
-      outtext += "</p></div></div>";
-    }
-    
-    if (d.median != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Median</label><div class='col-sm-6'><p class='form-control-static'>" + (+d.median).toPrecision(4).toString() + "</p></div></div>";
-    }
-    
-    if (d.mode != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Most Freq</label><div class='col-sm-6'><p class='form-control-static'>" + d.mode + "</p></div></div>";
-    }
-    
-    if (d.freqmode != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Occurrences</label><div class='col-sm-6'><p class='form-control-static'>" + rint(d.freqmode) + "</p></div></div>";
-    }
-    
-    if (d.mid != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Median Freq</label><div class='col-sm-6'><p class='form-control-static'>" + d.mid + "</p></div></div>";
-    }
-    
-    if (d.freqmid != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Occurrences</label><div class='col-sm-6'><p class='form-control-static'>" + rint(d.freqmid) + "</p></div></div>";
-    }
-    if (d.fewest != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Least Freq</label><div class='col-sm-6'><p class='form-control-static'>" + d.fewest + "</p></div></div>";
-    }
-    
-    if (d.freqfewest != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Occurrences</label><div class='col-sm-6'><p class='form-control-static'>" + rint(d.freqfewest) + "</p></div></div>";
-    }
-    
-    if (d.sd != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Stand Dev</label><div class='col-sm-6'><p class='form-control-static'>" + (+d.sd).toPrecision(4).toString() + "</p></div></div>";
-    }
-    
-    if (d.max != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Maximum</label><div class='col-sm-6'><p class='form-control-static'>" + (+d.max).toPrecision(4).toString() + "</p></div></div>";
-    }
-    
-    if (d.min != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Minimum</label><div class='col-sm-6'><p class='form-control-static'>" + (+d.min).toPrecision(4).toString() + "</p></div></div>";
-    }
-    if (d.invalid != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Invalid</label><div class='col-sm-6'><p class='form-control-static'>" + rint(d.invalid) + "</p></div></div>";
-    }
-    if (d.valid != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Valid</label><div class='col-sm-6'><p class='form-control-static'>" + rint(d.valid) + "</p></div></div>" ;
-    }
-    
-    if (d.uniques != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Uniques</label><div class='col-sm-6'><p class='form-control-static'>" + rint(d.uniques) + "</p></div></div>";
-    }
-    if (d.herfindahl != "NA") { outtext = outtext + "<div class='form-group'><label class='col-sm-4 control-label'>Herfindahl</label><div class='col-sm-6'><p class='form-control-static'>" + (+d.herfindahl).toPrecision(4).toString() + "</p></div></div>";
-    }
-    
-    return outtext;
+    if (d.median != "NA") {outtext += popoverRow('Median', (+d.median).toPrecision(4).toString()) }
+    if (d.mode != "NA") {outtext += popoverRow('Most Freq', d.mode) }
+    if (d.freqmode != "NA") { outtext += popoverRow('Occurrences', rint(d.freqmode)) }
+    if (d.mid != "NA") { outtext += popoverRow('Median Freq', d.mid) }
+    if (d.freqmid != "NA") { outtext += popoverRow('Occ. Mid', rint(d.freqmid)) }
+    if (d.fewest != "NA") { outtext += popoverRow('Least Freq', d.fewest) }
+    if (d.freqfewest != "NA") { outtext += popoverRow('Occ. Fewest', rint(d.freqfewest)) }
+    if (d.sd != "NA") { outtext += popoverRow('Stand Dev', (+d.sd).toPrecision(4).toString()) }
+    if (d.max != "NA") { outtext += popoverRow('Maximum', (+d.max).toPrecision(4).toString()) }
+    if (d.min != "NA") { outtext += popoverRow('Minimum', (+d.min).toPrecision(4).toString())}
+    if (d.invalid != "NA") { outtext += popoverRow('Invalid', rint(d.invalid)) }
+    if (d.valid != "NA") { outtext  += popoverRow('Valid', rint(d.valid)) }
+    if (d.uniques != "NA") { outtext += popoverRow('Uniques', rint(d.uniques)) }
+    if (d.herfindahl != "NA") { outtext += popoverRow('Herfindahl', (+d.herfindahl).toPrecision(4).toString()) }
+    return outtext + "</tbody></table></div>";
 }
 
 function popupX(d) {
@@ -2169,22 +2145,22 @@ function popupX(d) {
     .style("top", tempY + "px")
     .select("#tooltiptext")
     .html("<div class='form-group'><label class='col-sm-4 control-label'>Mean</label><div class='col-sm-6'><p class='form-control-static'>" + tsf(d.mean) + "</p></div></div>" +
-          
+
           "<div class='form-group'><label class='col-sm-4 control-label'>Median</label><div class='col-sm-6'><p class='form-control-static'>" + tsf(d.median) + "</p></div></div>" +
-          
+
           "<div class='form-group'><label class='col-sm-4 control-label'>Mode</label><div class='col-sm-6'><p class='form-control-static'>" + d.mode + "</p></div></div>" +
-                  
+
           "<div class='form-group'><label class='col-sm-4 control-label'>Stand Dev</label><div class='col-sm-6'><p class='form-control-static'>" + tsf(d.sd) + "</p></div></div>" +
-  
+
           "<div class='form-group'><label class='col-sm-4 control-label'>Maximum</label><div class='col-sm-6'><p class='form-control-static'>" + tsf(d.max) + "</p></div></div>" +
-          
+
           "<div class='form-group'><label class='col-sm-4 control-label'>Minimum</label><div class='col-sm-6'><p class='form-control-static'>" + tsf(d.min) + "</p></div></div>" +
-          
+
           "<div class='form-group'><label class='col-sm-4 control-label'>Valid</label><div class='col-sm-6'><p class='form-control-static'>" + rint(d.valid) + "</p></div></div>" +
 
-          "<div class='form-group'><label class='col-sm-4 control-label'>Invalid</label><div class='col-sm-6'><p class='form-control-static'>" + rint(d.invalid) + "</p></div></div>" 
+          "<div class='form-group'><label class='col-sm-4 control-label'>Invalid</label><div class='col-sm-6'><p class='form-control-static'>" + rint(d.invalid) + "</p></div></div>"
           );
-    
+
     /*.html("Median: " + d.median + "<br>Mode: " + d.mode + "<br>Maximum: " + d.max + "<br>Minimum: " + d.min + "<br>Mean: " + d.mean + "<br>Invalid: " + d.invalid + "<br>Valid: " + d.valid + "<br>Stand Dev: " + d.sd);*/
     
     //d3.select("#tooltip")
@@ -3025,6 +3001,7 @@ function reWriteLog() {
 
 // acts as if the user clicked in whitespace. useful when restart() is outside of scope
 function fakeClick() {
+    myspace = spaces.length;
     var myws = "#whitespace".concat(myspace);
     // d3 and programmatic events don't mesh well, here's a SO workaround that looks good but uses jquery...
     jQuery.fn.d3Click = function () {

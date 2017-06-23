@@ -137,14 +137,29 @@ text.id {
 #main.svg-marg-right svg {margin-right:0px;} */
 
 div.popover.variables {
-    max-width:none;
-    width:300px;
+    max-width:275px;
+    width:275px;
+}
+div.popover {
+    z-index:1050;
 }
 div.popover.variables div.popover-content.form-horizontal {
     padding:0;
 }
 div.popover.variables div.popover-content.form-horizontal .form-group {
     margin-bottom:0;
+}
+
+/* Format popover table in variable selector */
+table tr td{
+    padding:0px !important;
+}
+.table > tbody > tr:first-child > td {
+    border: none;
+}
+
+#variableList {
+    z-index:1000;
 }
 
 #leftpanel {
@@ -997,9 +1012,9 @@ display: inline;}
 }
 
 .graph_container {
-	width:auto; 
+	width:auto;
 	height:500px;
-	overflow-x: scroll; 
+	overflow-x: scroll;
 	overflow-y: scroll;
 }
 
@@ -1039,7 +1054,7 @@ display: inline;}
 .gi-5x{font-size: 5em;}
 
 .glyphicon_border {
-    border:1px solid black;	
+    border:1px solid black;
 }
 
 .location_right {
