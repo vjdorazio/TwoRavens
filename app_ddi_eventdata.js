@@ -104,6 +104,7 @@ var d3Color = '#1f77b4';  // d3's default blue
 var grayColor = '#c0c0c0';
 
 var lefttab = "tab1"; //global for current tab in left panel
+var subsetSelection = "";
 var righttab = "btnModels"; // global for current tab in right panel
 
 var zparams = { zdata:[], zedges:[], ztime:[], znom:[], zcross:[], zmodel:"", zvars:[], zdv:[], zdataurl:"", zsubset:[], zsetx:[], zmodelcount:0, zplot:[], zsessionid:"", zdatacite:"", zmetadataurl:"", zusername:""};
@@ -613,6 +614,7 @@ eventlist=new Array(20)
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
+
             rightpanelMargin();
 			selectionMade("Date");
             d3date();
@@ -650,6 +652,8 @@ eventlist=new Array(20)
         });
 	
     function selectionMade(n) {
+        subsetSelection = n;
+
     	d3.select("#tab2").selectAll("p").style('background-color',function(d) {
     		if(d==n)
     			return hexToRgba(selVarColor);
@@ -1631,11 +1635,10 @@ function scaffoldingPush(v) { // adding a variable to the variable list after a 
               })
         .text(v[0])
         .style('background-color', hexToRgba(selVarColor))
-        .attr("data-container", "#main")
+        .attr("data-container", "main")
         .attr("data-toggle", "popover")
         .attr("data-trigger", "hover")
         .attr("data-placement", "right")
-            .attr("data-viewport-selector", "#main")
         .attr("data-html", "true")
         .attr("onmouseover", "$(this).popover('toggle');")
         .attr("onmouseout", "$(this).popover('toggle');")
@@ -2107,7 +2110,7 @@ function popoverContent(d) {
     
     var rint = d3.format("r");
     
-    var outtext = "<div class='container' style='margin:0;margin-left:-30px;margin-right:-30px;'><table class='table table-condensed' style='width:275px;margin:0;table-layout: auto;'><tbody>";
+    var outtext = "<div style='margin:0;'><table class='table table-condensed' style='width:275px;margin:0;table-layout: auto;'><tbody>";
 
     if(d.labl != "") { outtext += popoverRow('Label', d.labl) }
     if (d.mean != "NA") {
@@ -3484,6 +3487,21 @@ function updateCountryList(td_id) {
 			break;
 		}		
 	}
+}
+
+function addGroup(parent){
+    parent.innerHTML += "<div class='container' style='background:rgba(100%,50%,0%,0.1);margin-top:3px;padding-top:3px;width:100%;padding-right:0'>" +
+        "<button type='button' class='btn btn-primary btn-xs' onclick='addRule(this.parentElement)'>Add Rule</button> " +
+        "<button type='button' class='btn btn-primary btn-xs' onclick='addGroup(this.parentElement)'>Add Group</button>" +
+        "<button type='button' class='btn btn-primary btn-xs' style='background:none;border:none;box-shadow:none;float:right' onclick='this.parentElement.remove()'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button>" +
+        "</div>"
+}
+
+function addRule(parent){
+    if (subsetSelection !== "") {
+        parent.innerHTML += "<div><span class='label label-default'>" + subsetSelection + " Subset</span> " +
+            "<button type='button' class='btn btn-primary btn-xs' style='background:none;border:none;box-shadow:none;float:right' onclick='this.parentElement.remove()'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button></div>"
+    }
 }
 
 window.onresize = rightpanelMargin;

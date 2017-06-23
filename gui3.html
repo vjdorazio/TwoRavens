@@ -98,6 +98,13 @@
         <div class="panel-heading text-center" id="rightpaneltitle">
             <h3 class="panel-title">Query Listing</h3>
         </div>
+
+        <div id="queryTree" class="container" style="width:245px;padding-right:0;margin-top:3px;padding-top:3px;">
+            <div style='width:calc(100%);margin-left:-13px;'>
+                <button type='button' class='btn btn-primary btn-xs' onclick='addRule(this.parentElement)'>Add Rule</button>
+                <button type='button' class='btn btn-primary btn-xs' onclick='addGroup(this.parentElement)'>Add Group</button>
+            </div>
+        </div>
     </div>
 
     <div id="ticker" class="ticker">
@@ -255,7 +262,7 @@
     </div>
 
 <script>
-     closeRightPanel();
+//     closeRightPanel();
 // Open/Close Panels
   $('#leftpanel span').click(function(){
       closeLeftPanel();
@@ -350,15 +357,15 @@
   }
   else{username="rohit";}
 
-//  console.log("fileid: "+fileid);
-//  console.log("hostname: "+hostname);
-//  console.log("apikey: "+apikey);
-//  console.log("ddiurl: "+ddiurl);
-//  console.log("dataurl: "+dataurl);
-//  console.log("Username:"+username);
+     //  console.log("fileid: "+fileid);
+     //  console.log("hostname: "+hostname);
+     //  console.log("apikey: "+apikey);
+     //  console.log("ddiurl: "+ddiurl);
+     //  console.log("dataurl: "+dataurl);
+     //  console.log("Username:"+username);
 </script>
-<script src="app_ddi_eventdata.js"></script>
-<script src="app_ddi_eventdata_date.js"></script>
+    <script src="app_ddi_eventdata.js"></script>
+    <script src="app_ddi_eventdata_date.js"></script>
 
   </body>
 </html>
