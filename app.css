@@ -1045,6 +1045,13 @@ display: inline;}
 .location_right {
 	width:auto;
 	position:absolute;
-	top:30%;
+	top:10%;
 	left:50%;
+}
+
+
+.strike_through:hover {
+	text-decoration: line-through;
+	background-color: steelblue;
+	color: white;
 }

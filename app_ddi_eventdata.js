@@ -3069,13 +3069,29 @@ function d3actor() {
  *
  **/
  var mapGraphSVG = new Object();
-  var mapIdCname = new Object();
+ var mapIdCname = new Object();
+ var mapMainGraphIdWithSubGraphCnameList = new Object();
+ var mapSubGraphCnameWithMainGraphId = new Object();
+ var mapListCountriesSelected = new Object();
+ 
+ function resetLocationVariables() {
+	 
+	mapGraphSVG = new Object();
+	mapIdCname = new Object();
+	mapMainGraphIdWithSubGraphCnameList = new Object();
+	mapSubGraphCnameWithMainGraphId = new Object();
+	mapListCountriesSelected = new Object();
+ }
+ 
  
 /**
  * Draw the main graph
  *
  **/
 function drawMainGraph() {
+	
+	resetLocationVariables();
+	
 	$("#subsetLocation").append('<div class="container"><div id="subsetLocation_panel" class="row"></div></div>');
 
 	$("#subsetLocation_panel").append("<div class='col-xs-4' id='subsetLocationDivL'></div>");
@@ -3083,10 +3099,10 @@ function drawMainGraph() {
 	
 	$("#subsetLocationDivL").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
 	
-	$("#subsetLocationDivR").append("<table id='country_table' border='1' align='center'><tr><td>Location:</td></tr><tr><th>List of Selected Countries</th></tr><tr><td id='country_list'></td></tr></table>");
+	$("#subsetLocationDivR").append('<div align="center"><table id="country_table" border="1" align="center"><tr><td>Location: <label style="cursor:pointer"><span class="glyphicon glyphicon-repeat glyphicon_border" onclick="javascript:removeFromCountryList(\'reset_all\')"></span></label></td></tr><tr><th>List of Selected Countries</th></tr><tr><td id="country_list"></td></tr></table></div>');
 	
-	updateCountryList('country_list');
-	
+	$("#country_list").append("<div style='height:300px; overflow-y: scroll;'><table align='center' id='country_list_tab'></table></div>");
+		
 	$("#subsetLocationDivR").append("<div align='center'><br/><br/><button>Stage</button></div>");
 		
 	mainGraphLabel();
@@ -3122,14 +3138,15 @@ function render(color, blnIsSubgraph, cid){
 		
 		dataFile = "data/loc_sub_"+cid+".csv";
 		svg = d3.select("#sub_graph_td_svg_"+cid);
+		
+		mapMainGraphIdWithSubGraphCnameList[cid] = [];
+		
 	}
 		
 	var margin = {top: 20, right: 20, bottom: 30, left: 80},
     width = +svg.attr("width") - margin.left - margin.right,
     height = +svg.attr("height") - margin.top - margin.bottom;
-  
-	var tooltip = d3.select("body").append("div").attr("class", "toolTip");
-  
+	  
 	var x = d3.scaleLinear().range([0, width]);
 	var y = d3.scaleBand().range([height, 0]);
 
@@ -3142,7 +3159,8 @@ function render(color, blnIsSubgraph, cid){
 	}, function(error, data) {
 		if (error) throw error;
   
-		data.sort(function(a, b) { return b.freq - a.freq; });
+		//data.sort(function(a, b) { return b.freq - a.freq; });
+		data.sort(function(a, b) { return (a.cname > b.cname ? -1: (a.cname < b.cname ? 1 : 0 ) ); });
   
 		x.domain([0, d3.max(data, function(d) { return d.freq; })]);
 		y.domain(data.map(function(d) { return d.cname; })).padding(0.1);
@@ -3194,8 +3212,13 @@ function render(color, blnIsSubgraph, cid){
 			.attr("class", "bar")
 			.attr("x", 0)
 			.attr("height", y.bandwidth())
-			.attr("y", function(d) { return y(d.cname); })
-			.attr("width", function(d) { return x(d.freq); });
+			.attr("y", function(d) { 
+			mapMainGraphIdWithSubGraphCnameList[cid].push(d.cname); 
+			mapSubGraphCnameWithMainGraphId[d.cname] = cid;
+			if(mapListCountriesSelected[d.cname] == null) {mapListCountriesSelected[d.cname] = true;}
+			return y(d.cname); })
+			.attr("width", function(d) { return x(d.freq); })
+			.attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; });
 			
 			g.selectAll(".bar_label")
 			.data(data)
@@ -3220,6 +3243,8 @@ function render(color, blnIsSubgraph, cid){
             .attr("transform", "translate("+ (width/2) +","+(height+30)+")") 
 			.attr("class", "graph_axis_label")
             .text("Frequency");
+			
+		updateCountryList();
 
 	});
 }
@@ -3254,7 +3279,9 @@ function fetchJSONObjectForSubGraph(cid) {
 	console.log("fetchJSONObjectForSubGraph for cid : " + cid);
 	
 	if(mapGraphSVG[cid] != null) {
-							
+		
+		var listCname = mapMainGraphIdWithSubGraphCnameList[cid];
+				
 		$("#tg_rect_"+cid).attr("class", "bar");
 		
 		$("#sub_graph_td_" + cid).removeClass('graph_config');
@@ -3285,7 +3312,7 @@ function fetchJSONObjectForSubGraph(cid) {
 	   .attr("id", "sub_graph_td_svg_"+cid);
 		
 	mapGraphSVG[cid] = svg; 
-	render("steelblue", true, cid);         
+	render("steelblue", true, cid);  
 }
 
 /**
@@ -3447,6 +3474,20 @@ function maingraphYLabelClicked(cid) {
 	fetchJSONObjectForSubGraph(cid);
 }
 
+function subgraphYLabelClicked(cname) {
+	
+	var bool = mapListCountriesSelected[cname];
+	
+	if(bool == true) {
+		mapListCountriesSelected[cname] = false;
+	}
+	else {
+		mapListCountriesSelected[cname] = true;
+	}
+	
+	updateCountryList();
+}
+
 /** 
  * mainGraphLabel - to put the header Labels in the main graph
  *
@@ -3494,25 +3535,36 @@ function subGraphLabel(cid) {
 	$("#sub_graph_td_div_"+cid).append(label);
 }
 
-function updateCountryList(td_id) {
+function updateCountryList() {
 	
-	var country_list = ["AAA", "BBB", "CCC", "DDD", "EEE", "FFF", "GGG", "HHH"];
-	
+	var td_id = 'country_list_tab';
 	$("#"+td_id).empty();
-	$("#"+td_id).append("<table align='center' id='country_list_tab'></table>");
-	
-	var max = Math.floor((Math.random() * 10) + 1);
-	
-	var count = 0;
-	for(var index in country_list) {
 		
-		++count;
-		$("#country_list_tab").append("<tr><td>" +country_list[index] +"</td></tr>");
+	for(var country in mapListCountriesSelected) {
 		
-		if(count == max) {
-			break;
-		}		
+		var bool = mapListCountriesSelected[country];
+		
+		if(bool == true) {
+			$("#country_list_tab").append('<tr><td><label class="strike_through" style="cursor:pointer" onclick="javascript:removeFromCountryList(\''+country+'\');">' + country +'</label></td></tr>');	
+		}
 	}
+}
+
+function removeFromCountryList(cname) {
+
+	if(cname == 'reset_all') {
+		
+		mapListCountriesSelected = new Object();
+	}
+	else {
+		
+		mapListCountriesSelected[cname] = false;
+		
+		var mainGraphId = mapSubGraphCnameWithMainGraphId[cname];
+		console.log("mainGraphId = " + mainGraphId + ", sub-graph-Cname = " + cname);
+	}
+	updateCountryList();	
+
 }
 
 window.onresize = rightpanelMargin;
