@@ -2524,7 +2524,7 @@ function explore(btn) {
         allResults.push(json);
       var  json_explore=json;
     //     console.log("the allResults is : " +allResults);
-   //     console.log("json in: ", json);
+        console.log("json in: ", json);
 
         
        var myparent = document.getElementById("rightContentArea");
