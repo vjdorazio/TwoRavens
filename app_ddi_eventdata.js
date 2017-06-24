@@ -3490,7 +3490,7 @@ function updateCountryList(td_id) {
 }
 
 function addGroup(parent){
-    var container = "<div class='container' data-elements='0' style='text-align:left;background:rgba(90%,50%,20%,0.1);margin-top:3px;padding-top:3px;width:100%;padding-right:0'>"
+    var container = "<div id='group' class='container' data-elements='0' style='text-align:left;background:rgba(90%,50%,20%,0.1);margin-top:3px;padding-top:3px;width:100%;padding-right:0'>"
 
     var logToggle = "<button id='logToggle' type='button' class='btn btn-primary btn-xs active' onclick=changeLogical(this) data-toggle='button' aria-pressed='true' style='width:35px;";
     if (parent.getAttribute('data-elements') === '0'){
@@ -3517,7 +3517,7 @@ function addRule(parent){
     if (subsetSelection !== "") {
 
         // Hide boolean logic toggle if first element
-        var logToggle = "<div style='text-align:left;margin-top:3px;padding-left:15px'><button id='logToggle' type='button' class='btn btn-primary btn-xs active' onclick=changeLogical(this) data-toggle='button' aria-pressed='true' style='width:35px;";
+        var logToggle = "<div id='rule' data-subset='' style='text-align:left;margin-top:3px;padding-left:15px'><button id='logToggle' type='button' class='btn btn-primary btn-xs active' onclick=changeLogical(this) data-toggle='button' aria-pressed='true' style='width:35px;";
         if (parent.getAttribute('data-elements') === '0'){
             logToggle += 'visibility:hidden;';
         }
@@ -3545,6 +3545,30 @@ function changeLogical(button) {
     } else {
         button.innerHTML = 'and';
     }
+}
+
+// Recursively walk the query listing divs to construct a dictionary
+function buildQuery(node) {
+    var children = node.childNodes;
+    var query = [];
+
+    for (var i = 0; i < children.length; i++){
+        if (children[i].id === 'rule'){
+            query.push({
+                type: 'rule',
+                boolState: $(children[i].querySelector("#boolToggle")).hasClass('active'),
+                logState: $(children[i].querySelector("#logToggle")).hasClass('active'),
+                subsetData: children[i].getAttribute('data-subset')
+            });
+        }
+        if (children[i].id === 'group'){
+            query.push({
+                type: 'group',
+                data: buildQuery(children[i])
+            });
+        }
+    }
+    return query;
 }
 
 window.onresize = rightpanelMargin;

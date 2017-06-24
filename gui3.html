@@ -102,13 +102,14 @@
         </div>
 
         <div id="queryTree" class="container" style="width:245px;padding-right:0;margin-top:3px;padding-top:3px;">
-            <div data-elements='0' style='width:calc(100% + 2px);margin-left:-15px;'>
+            <div id="rootTree" data-elements='0' style='width:calc(100% + 2px);margin-left:-15px;'>
                 <div id="buttonTray" style="text-align: center;margin-bottom:10px">
                     <button type='button' class='btn btn-primary btn-xs' onclick='addRule(this.parentElement.parentElement)' style="margin-left:5px">Add Rule</button>
                     <button type='button' class='btn btn-primary btn-xs' onclick='addGroup(this.parentElement.parentElement)'>Add Group</button>
                 </div>
             </div>
         </div>
+        <button id="Submit Query" class="btn btn-default ladda-button" data-spinner-color="#000000" onclick="buildQuery(document.getElementById('rootTree'))" type="button" style="left:calc(50% - 21px);position:absolute;bottom:10px">Submit</button>
     </div>
 
     <div id="ticker" class="ticker">
@@ -123,7 +124,7 @@
             <svg id="dateSVG" width="500" height="500"></svg>
 
             <div id="dateInterval" class="form-group" style="display: inline-block;vertical-align:top;width:20%;margin:20px">
-                <button id="setDatefromSlider" type="button" class="btn" onclick="setDatefromSlider()" style="margin-top:10px;">Set Date from Slider</button>
+                <button id="setDatefromSlider" type="button" class="btn" onclick="setDatefromSlider()" style="margin-top:10px;text-align:center;">Bring Date from Slider</button>
                 <label id="dateFromLab" for="fromdate" style="text-align:left;width:100%;margin-top:10px;" >From:</label>
                 <input id="fromdate" class="form-control" type="text">
                 <label id="dateToLab" for="todate" style="text-align:left;width:100%;margin-top:10px;">To:</label>
