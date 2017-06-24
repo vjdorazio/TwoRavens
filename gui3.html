@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>TwoRavens</title>
-        
+
         <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
         <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
         
@@ -17,9 +17,11 @@
         
         <script type="text/javascript" src="jquery/jquery.min.js"></script>
           <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
-        <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
-          <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        
+
+      <!--NOTE: JQuery-ui must be loaded before bootstrap-->
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+      <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+
         <script type="text/javascript" src="d3.v3.min.js"></script>
         <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
         <!-- <script type="text/javascript" src="plots.js"></script> -->
@@ -100,9 +102,11 @@
         </div>
 
         <div id="queryTree" class="container" style="width:245px;padding-right:0;margin-top:3px;padding-top:3px;">
-            <div style='width:calc(100%);margin-left:-13px;'>
-                <button type='button' class='btn btn-primary btn-xs' onclick='addRule(this.parentElement)'>Add Rule</button>
-                <button type='button' class='btn btn-primary btn-xs' onclick='addGroup(this.parentElement)'>Add Group</button>
+            <div data-elements='0' style='width:calc(100% + 2px);margin-left:-15px;'>
+                <div id="buttonTray" style="text-align: center;margin-bottom:10px">
+                    <button type='button' class='btn btn-primary btn-xs' onclick='addRule(this.parentElement.parentElement)' style="margin-left:5px">Add Rule</button>
+                    <button type='button' class='btn btn-primary btn-xs' onclick='addGroup(this.parentElement.parentElement)'>Add Group</button>
+                </div>
             </div>
         </div>
     </div>

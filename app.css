@@ -218,6 +218,18 @@ div.sidepanel div.panelbar span {
     color: #ADADAD;
     background: #eee;
 }
+
+#boolToggle.btn.active, #boolToggle.btn:active {
+    background-color: transparent;
+    border-color: slategray;
+    color:lightgray;
+}
+#logToggle.btn.active, #logToggle.btn:active {
+    background-color: #428bca;
+    border-color: #357ebd;
+}
+
+
 #main {
     margin-left:270px;
     width:calc(100% - 270px);

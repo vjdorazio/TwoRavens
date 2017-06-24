@@ -3490,17 +3490,60 @@ function updateCountryList(td_id) {
 }
 
 function addGroup(parent){
-    parent.innerHTML += "<div class='container' style='background:rgba(100%,50%,0%,0.1);margin-top:3px;padding-top:3px;width:100%;padding-right:0'>" +
-        "<button type='button' class='btn btn-primary btn-xs' onclick='addRule(this.parentElement)'>Add Rule</button> " +
-        "<button type='button' class='btn btn-primary btn-xs' onclick='addGroup(this.parentElement)'>Add Group</button>" +
-        "<button type='button' class='btn btn-primary btn-xs' style='background:none;border:none;box-shadow:none;float:right' onclick='this.parentElement.remove()'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button>" +
-        "</div>"
+    var container = "<div class='container' data-elements='0' style='text-align:left;background:rgba(90%,50%,20%,0.1);margin-top:3px;padding-top:3px;width:100%;padding-right:0'>"
+
+    var logToggle = "<button id='logToggle' type='button' class='btn btn-primary btn-xs active' onclick=changeLogical(this) data-toggle='button' aria-pressed='true' style='width:35px;";
+    if (parent.getAttribute('data-elements') === '0'){
+        logToggle += 'visibility:hidden;';
+    }
+    parent.setAttribute('data-elements', String(parseInt(parent.getAttribute('data-elements')) + 1));
+    logToggle += "'>and</button> ";
+
+    var boolToggle =  "<button id='boolToggle' type='button' class='btn btn-primary btn-xs active' data-toggle='button' aria-pressed='true'>not</button> ";
+    var cancelButton = "<button type='button' class='btn btn-primary btn-xs' style='background:none !important;border:none;box-shadow:none;float:right' onclick='removeRule(this.parentElement)'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button>";
+
+    // If nested groups are desired, replace addRule with addDropdown. Listeners for the dropdown options are not included.
+    // var addDropdown =  '<div class="dropdown" style="display:inline;float:right"><button class="btn btn-primary dropdown-toggle btn-xs" type="button" data-toggle="dropdown">Add <span class="caret"></span></button>';
+    // addDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" style="float:right;margin:0;padding:0;width:45px;min-width:45px"><li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1">Rule</a></li><li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2">Group</a></li></ul></div>';
+    // var addGroup = "<button type='button' class='btn btn-primary btn-xs' onclick='addGroup(this.parentElement)' style='float:right'>Add Group</button>";
+
+    var addRule = "<button type='button' class='btn btn-primary btn-xs' onclick='addRule(this.parentElement)' style='float:right'>Add Rule</button></div>";
+
+    parent.innerHTML += container + logToggle + boolToggle + cancelButton + addRule;
 }
 
 function addRule(parent){
+
     if (subsetSelection !== "") {
-        parent.innerHTML += "<div><span class='label label-default'>" + subsetSelection + " Subset</span> " +
-            "<button type='button' class='btn btn-primary btn-xs' style='background:none;border:none;box-shadow:none;float:right' onclick='this.parentElement.remove()'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button></div>"
+
+        // Hide boolean logic toggle if first element
+        var logToggle = "<div style='text-align:left;margin-top:3px;padding-left:15px'><button id='logToggle' type='button' class='btn btn-primary btn-xs active' onclick=changeLogical(this) data-toggle='button' aria-pressed='true' style='width:35px;";
+        if (parent.getAttribute('data-elements') === '0'){
+            logToggle += 'visibility:hidden;';
+        }
+        parent.setAttribute('data-elements', String(parseInt(parent.getAttribute('data-elements')) + 1));
+        logToggle += "'>and</button> ";
+
+        // Add negation toggle, subset and cancel
+        var boolToggle = "<button id='boolToggle' type='button' class='btn btn-primary btn-xs active' data-toggle='button' aria-pressed='true'>not</button> ";
+        var subsetIcon = "<span class='label label-default'>" + subsetSelection + " Subset</span> ";
+        var cancelButton = "<button type='button' class='btn btn-primary btn-xs' style='background:none;border:none;box-shadow:none;float:right' onclick='removeRule(this.parentElement)'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button></div>";
+
+        parent.innerHTML += logToggle + boolToggle + subsetIcon + cancelButton
+    }
+}
+
+function removeRule(element){
+    // Attempt to keep the first boolean disabled. Still doesn't cover the case where the first boolean is deleted.
+    element.parentElement.setAttribute('data-elements', String(parseInt(element.parentElement.getAttribute('data-elements')) - 1));
+    element.remove()
+}
+
+function changeLogical(button) {
+    if (button.innerHTML == 'and'){
+        button.innerHTML = 'or ';
+    } else {
+        button.innerHTML = 'and';
     }
 }
 
