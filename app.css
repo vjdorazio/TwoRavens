@@ -1013,6 +1013,11 @@ display: inline;}
 	cursor: pointer;
 }
 
+.bar_half_open {
+	fill: rgb(0,128,0);
+	cursor: pointer;
+}
+
 .bar:hover {
 	fill: brown;
 	cursor: pointer;

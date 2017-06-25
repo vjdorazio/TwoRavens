@@ -3071,7 +3071,7 @@ function d3actor() {
  var mapGraphSVG = new Object();
  var mapIdCname = new Object();
  var mapMainGraphIdWithSubGraphCnameList = new Object();
- var mapSubGraphCnameWithMainGraphId = new Object();
+ var mapSubGraphIdCname = new Object();
  var mapListCountriesSelected = new Object();
  
  function resetLocationVariables() {
@@ -3079,7 +3079,7 @@ function d3actor() {
 	mapGraphSVG = new Object();
 	mapIdCname = new Object();
 	mapMainGraphIdWithSubGraphCnameList = new Object();
-	mapSubGraphCnameWithMainGraphId = new Object();
+	mapSubGraphIdCname = new Object();
 	mapListCountriesSelected = new Object();
  }
  
@@ -3214,11 +3214,12 @@ function render(color, blnIsSubgraph, cid){
 			.attr("height", y.bandwidth())
 			.attr("y", function(d) { 
 			mapMainGraphIdWithSubGraphCnameList[cid].push(d.cname); 
-			mapSubGraphCnameWithMainGraphId[d.cname] = cid;
+			mapSubGraphIdCname[d.cname] = cid + "_" + d.id;
 			if(mapListCountriesSelected[d.cname] == null) {mapListCountriesSelected[d.cname] = true;}
 			return y(d.cname); })
 			.attr("width", function(d) { return x(d.freq); })
-			.attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; });
+			.attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; })
+			.attr("id", function(d) { return "tg_rect_" + cid + "_" + d.id; });
 			
 			g.selectAll(".bar_label")
 			.data(data)
@@ -3257,7 +3258,11 @@ function handleMainGraphAllNone() {
 	
 	var noneExpand = true;
 	for(var svg in mapGraphSVG) {
-			
+		
+		if(svg.indexOf("_removed") > -1) {
+				continue;
+		}
+		
 		if(svg != null) {
 			noneExpand = false;
 		}		
@@ -3290,14 +3295,31 @@ function fetchJSONObjectForSubGraph(cid) {
 		handleMainGraphAllNone();
 		
 		setTimeout(function() {
-			$("#sub_graph_td_"+cid).parent().remove();
+			
+			$("#sub_graph_td_" + cid).removeClass('graph_config');
+			$("#sub_graph_td_" + cid).addClass('graph_close');
+			$("#tg_rect_"+cid).attr("class", "bar");
+			$("#sub_graph_td_"+cid).parent().hide();			
 			
 			var svgToRemove = mapGraphSVG[cid];
-			svgToRemove.remove();
+			mapGraphSVG[cid + "_removed"] = svgToRemove;
 			mapGraphSVG[cid] = null;
 			
 		}, 1000);
 				
+		return;
+	}
+	
+	if(mapGraphSVG[cid + "_removed"] != null) {
+		
+		mapGraphSVG[cid] = mapGraphSVG[cid + "_removed"];
+		mapGraphSVG[cid + "_removed"] = null;
+		
+		$("#sub_graph_td_"+cid).parent().show();
+		$("#sub_graph_td_" + cid).removeClass('graph_close');
+		$("#sub_graph_td_" + cid).addClass('graph_config');
+		$("#tg_rect_"+cid).attr("class", "bar_open");
+		
 		return;
 	}
 	
@@ -3338,12 +3360,28 @@ function maingraphAction(action) {
 		$("#All_None").text("None");
 		
 		maingraphHeaderUnClickAll();
-		removeAllSubGraphSVG();
+		//removeAllSubGraphSVG();
 		for(var cid in mapGraphSVG) {
 			
-			if(cid != null && mapGraphSVG[cid] == null) {
-				console.log(cid);
+			if(cid.indexOf("_removed") > -1) {
+				continue;
+			}
+			
+			if(mapGraphSVG[cid] == null) {
+				console.log("SVG CREATE = " + cid);
 				fetchJSONObjectForSubGraph(cid);
+			}
+			else if(mapGraphSVG[cid + "_removed"] == null) {
+				
+				console.log("SVG SHOW = " + cid);
+				$("#sub_graph_td_"+cid).parent().show();
+				$("#sub_graph_td_" + cid).removeClass('graph_close');
+				$("#sub_graph_td_" + cid).addClass('graph_config');
+				$("#tg_rect_"+cid).attr("class", "bar_open");
+			}
+			else if(mapGraphSVG[cid] != null) {
+				
+				console.log("SVG NO_ACTION = " + cid);
 			}
 		}
 
@@ -3421,16 +3459,25 @@ function subgraphAction(textId) {
 function removeAllSubGraphSVG(){
 	
 	for(var cid in mapGraphSVG) {
+		
+		if(cid.indexOf("_removed") > -1) {
+				continue;
+		}
 			
 		if(cid != null && mapGraphSVG[cid] != null) {
-			console.log(cid);
+			
 			var svgToRemove = mapGraphSVG[cid];
-			svgToRemove.remove();
-			$("#sub_graph_td_"+cid).parent().remove();
+			mapGraphSVG[cid + "_removed"] = svgToRemove;
+			mapGraphSVG[cid] = null;
+			
+			$("#sub_graph_td_" + cid).removeClass('graph_config');
+			$("#sub_graph_td_" + cid).addClass('graph_close');
+			$("#tg_rect_"+cid).attr("class", "bar");
+			$("#sub_graph_td_"+cid).parent().hide();
+			
 					
 			$("#tg_rect_"+cid).attr("class", "bar");
 			
-			mapGraphSVG[cid] = null;
 		}
 	}
 }
@@ -3446,6 +3493,10 @@ function maingraphHeaderUnClickAll(){
 	$("#All_None").text("None");	
 		
 	for(var cid in mapGraphSVG) {
+		
+		if(cid.indexOf("_removed") > -1) {
+				continue;
+		}
 			
 		if(mapGraphSVG[cid] != null) {
 			
@@ -3477,7 +3528,7 @@ function maingraphYLabelClicked(cid) {
 function subgraphYLabelClicked(cname) {
 	
 	var bool = mapListCountriesSelected[cname];
-	
+		
 	if(bool == true) {
 		mapListCountriesSelected[cname] = false;
 	}
@@ -3539,14 +3590,48 @@ function updateCountryList() {
 	
 	var td_id = 'country_list_tab';
 	$("#"+td_id).empty();
+	
+	var mapLocalMainGraphIdWithSubGraphCnameList = new Object();
 		
 	for(var country in mapListCountriesSelected) {
 		
 		var bool = mapListCountriesSelected[country];
+		var main_subGraphId = mapSubGraphIdCname[country];
+		
+		var arrIds = main_subGraphId.split("_");
+		var mainGraphId = arrIds[0];
+		
+		if(mapLocalMainGraphIdWithSubGraphCnameList[mainGraphId] == null) {
+			mapLocalMainGraphIdWithSubGraphCnameList[mainGraphId] = [];
+		}
 		
 		if(bool == true) {
 			$("#country_list_tab").append('<tr><td><label class="strike_through" style="cursor:pointer" onclick="javascript:removeFromCountryList(\''+country+'\');">' + country +'</label></td></tr>');	
+			$("#tg_rect_"+ main_subGraphId).attr("class", "bar_open");
+			mapLocalMainGraphIdWithSubGraphCnameList[mainGraphId].push(country);
+			
 		}
+		else {
+			
+			$("#tg_rect_"+ main_subGraphId).attr("class", "bar");
+		}
+	}
+	
+	for(var mainGraphCid in mapMainGraphIdWithSubGraphCnameList) {
+		
+		var originalLength = mapMainGraphIdWithSubGraphCnameList[mainGraphCid].length;
+		var localLength = (mapLocalMainGraphIdWithSubGraphCnameList[mainGraphCid] == null? 0 : mapLocalMainGraphIdWithSubGraphCnameList[mainGraphCid].length);
+		
+		if(localLength == 0) {
+			$("#tg_rect_"+ mainGraphCid).attr("class", "bar");
+		}
+		else if(localLength == originalLength) {
+			$("#tg_rect_"+ mainGraphCid).attr("class", "bar_open");
+		}
+		else if(localLength < originalLength) {
+			$("#tg_rect_"+ mainGraphCid).attr("class", "bar_half_open");
+		}
+		
 	}
 }
 
@@ -3554,14 +3639,14 @@ function removeFromCountryList(cname) {
 
 	if(cname == 'reset_all') {
 		
-		mapListCountriesSelected = new Object();
+		for(var country in mapListCountriesSelected) {
+			mapListCountriesSelected[country] = false;
+		}
+		
 	}
 	else {
 		
 		mapListCountriesSelected[cname] = false;
-		
-		var mainGraphId = mapSubGraphCnameWithMainGraphId[cname];
-		console.log("mainGraphId = " + mainGraphId + ", sub-graph-Cname = " + cname);
 	}
 	updateCountryList();	
 
