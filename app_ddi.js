@@ -2577,6 +2577,10 @@ function explore(btn) {
         // programmatic click on Results button
         $("#btnBivariate").trigger("click");
 var count=0;
+var count1=-1;
+        for(var i in json_explore.images) {
+            count1++;
+        }
         for(var i in json_explore.images) {
             // console.log("this is data : " + i)
             var value = i;
@@ -2588,6 +2592,7 @@ var count=0;
         modelCount = modelCount+1;
         var model = "Model".concat(modelCount);
         var model_name=value;
+        console.log(" and our value is  : "+ count1);
        function modCol() {
             d3.select("#modelView")
             .selectAll("p")
@@ -2595,7 +2600,7 @@ var count=0;
         }
 
         
-        modCol();
+    //    modCol();
         function model_selection(model_selection_name,count_value) {
 
             if(count_value%2==0 && count_value!=0)
@@ -2634,7 +2639,19 @@ var count=0;
                 .append("p", ":first-child")// top stack for results
                 .attr("id", model)
                 .text(model_selection_name)
-                .style('background-color',"#FFD54F")
+                .style('background-color',function () {
+                    var color1="#FFD54F";
+//console.log(" the count values are : "+ count + " and "+ count1);
+                    if(count==count1)
+                    {
+                        //console.log("Color has changed epppiii");
+                        return selVarColor;
+                    }
+                    else {
+                       // console.log("Color has changed as epppiii");
+                        return color1;
+                    }
+                })
                 .style("display","inline-block")
                 .style("white-space","pre")
                 .style("margin-top",0)
@@ -2965,7 +2982,7 @@ table_data[n]=[];
     }
 
     for(var p=0; p<rownames.length;p++)
-    { console.log(" row data : "+ p);
+    {// console.log(" row data : "+ p);
         for(var l=0;l<colnames.length;l++)
         {
            // console.log("col data : ");
@@ -2980,7 +2997,7 @@ table_data[n]=[];
     // for the statistics]
    // console.log("The data for the statistical"+ json.statistical)
     for(var key in json.statistical) {
-      console.log(key);
+   //   console.log(key);
         if (key == model_name1 || key== model_name2) {
             for (var a in json.statistical[key].cork) {
             //    console.log("cork: ");
@@ -3062,25 +3079,34 @@ console.log("colnames found");
 
 d3.select("#resultsView_tabular").html("");
     function d3table1(data) {
+        var width = 120,   // width of svg
+            height = 160,  // height of svg
+            padding = 22; // space around the chart, not including labels
+
+
         d3.select("#resultsView_tabular")
             .html("")
             .style("background-color", "#fff")
             .append("h5")
             .text("CROSS-TABS ")
-            .style("color", "#424242");
-        var table = d3.select("#resultsView_tabular").append("table").attr("class", "table").style("border-collapse", " collapse"),
+            .style("color", "#424242")
+           ;
+
+        var sv=d3.select("#resultsView_tabular").append("svg").attr("width","100%").attr("height","100%").style("overflow","visible");
+        var fo = sv.append('foreignObject').attr("width","100%").attr("height","100%").style("padding",10).attr("overflow","visible");
+        var table = fo.append("xhtml:table").attr("class", "table").style("border-collapse", " collapse"),
             th = table.append("tr").style("border", 1).text("_").style("color","#fff");
 
         for (var i = 0; i < colnames.length; i++) {
 
-            th.append("td").style("border-bottom", 1).style("span", colnames.length + 1).style("span", 1).style("text-align", "center").style("background-color", selVarColor).append("b").text(colnames[i]);
+            th.append("td").style("border-bottom", 1).style("text-align", "center").style("background-color", selVarColor).append("b").text(colnames[i]);
 
         }
 
 
         for (var k = 0; k < rownames.length; k++) {
             var pos = 0;
-            var tr = table.append("tr").style("margin-left", 20).style("span", 1).style("background-color", "#BDBDBD").style("border", 1).style("text-align", "center").text(rownames[k]);
+            var tr = table.append("tr").style("margin-left", 20).style("background-color", "#BDBDBD").style("border", 1).style("text-align", "center").text(rownames[k]);
 for(var m=0; m<colnames.length; m++)
 {
     for(var z=0; z<data.length; z++)
@@ -3093,6 +3119,16 @@ for(var m=0; m<colnames.length; m++)
 
 }
         }
+        sv.append("text")
+            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+            .attr("transform", "translate("+ (padding/2) +","+(height/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+            .text(get_data[0]);
+
+        sv.append("text")
+            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+            .attr("transform", "translate("+ (width) +","+(padding/2)+")")  // centre below axis
+            .text(get_data[1]);
+
     }
     d3table1(table_obj);
 
