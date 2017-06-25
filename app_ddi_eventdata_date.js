@@ -1,3 +1,4 @@
+// Date tab of subsetting screen
 
 $("#dateSVG").empty();
 // Default calendar ranges

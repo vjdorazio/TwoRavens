@@ -1390,7 +1390,7 @@ function preQuery() {
     var qr={};
     var qry="prequery";
 
-    qr["type"]=qry;    
+    qr["type"]=qry;
   //  out.push({type:qry});
 
     var jsonout = JSON.stringify(qr);
@@ -1422,20 +1422,20 @@ function preQuery() {
 
 function callquery(btn){
 
-    //var btn="nobutton";
-    //var base = rappURL+"zeligapp?solaJSON="
-//console.log("fromdate:"+fromdate);
-//console.log("todate:"+todate);
+    // var btn="nobutton";
+    // var base = rappURL+"zeligapp?solaJSON="
+    // console.log("fromdate:"+fromdate);
+    // console.log("todate:"+todate);
 
     // testfromdate=fromdate.toISOString().slice(0,10);
-     //testtodate=todate.toISOString().slice(0,10);
-     //var res = rightNow.toISOString().slice(0,10);
-     
-     // console.log("from date:",testfromdate," to date",testtodate);
+    // testtodate=todate.toISOString().slice(0,10);
+    // var res = rightNow.toISOString().slice(0,10);
+
+    // console.log("from date:",testfromdate," to date",testtodate);
     // console.log("Query called,country list:",selectedcountry);
-     //outtypes.push({varnamesTypes:allNodes[j].name, nature:allNodes[j].nature, numchar:allNodes[j].numchar, binary:allNodes[j].binary, interval:allNodes[j].interval,time:allNodes[j].time});
-   // console.log("Source Code:"+sourcecode);
-   // console.log("target Code"+targetcode);
+    // outtypes.push({varnamesTypes:allNodes[j].name, nature:allNodes[j].nature, numchar:allNodes[j].numchar, binary:allNodes[j].binary, interval:allNodes[j].interval,time:allNodes[j].time});
+    // console.log("Source Code:"+sourcecode);
+    // console.log("target Code"+targetcode);
 
     var out=[]; 
     var qry;
