@@ -132,6 +132,7 @@ explore.app <- function(env){
           imageVector<<-list()
           statistical<<-list()
           tabular<<-list()
+          plotdata<<-list()
           plotcount<-0
           
           
@@ -193,6 +194,15 @@ explore.app <- function(env){
                 if(j==1){
                   spTEST <- "plot(usedata[,1],usedata[,2])"
                   plotv<-"a"
+                  if(nrow(usedata)>1000) {
+                      plotd <- usedata[sample(1:nrow(usedata), 1000,replace=FALSE),]
+                  }
+                  plotd.x <- plotd[,1]
+                  plotd.y <- plotd[,2]
+                  myxlab <- colnames(plotd)[1]
+                  myylab <- colnames(plotd)[2]
+                  rm(plotd)
+                  plotInfo <- list(myxlab=myxlab, myylab=myylab, xdata=plotd.x, ydata=plotd.y)
                 } else{
                     spTEST <- "plot(usedata[,2],usedata[,1])"
                     plotv<-"b"
@@ -222,13 +232,14 @@ explore.app <- function(env){
             images<-imageVector ## zplots() returns imageVector, just for consistency
             tabular[[i]]<<-tabInfo
             statistical[[i]] <<-statInfo
+            plotdata[[i]] <<-plotInfo
           }
           
           if(length(images)>0){
               #  names(images)<-paste("output",1:length(images),sep="")
               names(images) <- apply(myedges,1,function(x) c(paste(x[1],x[2],sep="-"),paste(x[2],x[1],sep="-")))
               names(tabular) <- names(statistical) <- apply(myedges,1,function(x) paste(x[1],x[2],sep="-"))
-              result<-list(images=images, call=almostCall, tabular=tabular, statistical=statistical)
+              result<-list(images=images, call=almostCall, tabular=tabular, statistical=statistical, plotdata=plotdata)
           }else{
               warning<-TRUE
               result<-list(warning="There are no graphs to show.")
