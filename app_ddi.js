@@ -3021,7 +3021,8 @@ function tabRight(tabid) {
     document.getElementById('preprocess').style.display = 'none';
     document.getElementById('setx').style.display = 'none';
     document.getElementById('results').style.display = 'none';
-	
+
+    document.getElementById('pre_selection').style.display = 'none';
     
     if(tabid=="btnModels") {
       document.getElementById('btnSetx').setAttribute("class", "btn btn-default");
@@ -3055,9 +3056,13 @@ function tabRight(tabid) {
      document.getElementById('btnML').setAttribute("class", "btn btn-default");
      document.getElementById('btnPP').setAttribute("class", "btn active");
      document.getElementById('preprocess').style.display = 'block';
-    
-   d3.select("#rightpanel")
-       .attr("class", "sidepanel container clearfix");
+        document.getElementById('pre_selection').style.display = 'block';
+
+        if(estimated===false) {
+            d3.select("#rightpanel")
+                .attr("class", "sidepanel container clearfix expandpanel");
+        }
+        else if(righttab=="btnPP" | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix ") {toggleR()};
   }
 
 	
