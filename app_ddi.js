@@ -173,7 +173,7 @@ var selInteract = false;
 var modelCount = 0;
 var callHistory = []; // unique to the space. saves transform and subset calls.
 var citetoggle = false;
-
+var connect_nodes=[];
 
 // transformation toolbar options
 var transformList = ["log(d)", "exp(d)", "d^2", "sqrt(d)", "interact(d,e)"];
@@ -318,22 +318,95 @@ function disconnectAll()
     console.log("DisConnect function called");
 
 
-
+/*
 // removing the existing paths
 d3.selectAll('path').style('marker-start', 0)
     .style('marker-end', 0)
     .style('stroke-width',0);
-    links=[];//to empty the links
+   links=[];//to empty the links
+*/
 
+//setting all the links to invisible
+    path = path.data(links);
+
+    // update existing links
+    // VJD: dashed links between pebbles are "selected". this is disabled for now
+    path.classed('selected', function(d) { return;})//return d === selected_link; })
+        .style('marker-start', 0)
+        .style('marker-end',0)
+        .style('stroke-width',0)  ;
+
+
+    // add new links
+    path.enter().append('svg:path')
+        .attr('class', 'link')
+        .style('stroke-width',0)
+        .classed('selected', function(d) { return;})//return d === selected_link; })
+        .style('marker-start', 0)
+        .style('marker-end', 0)
+        .on('mousedown', function(d) { // do we ever need to select a link? make it delete..
+            var obj1 = JSON.stringify(d);
+            for(var j =0; j < links.length; j++) {
+                if(obj1 === JSON.stringify(links[j])) {
+                    links.splice(j,1);
+                }
+            }
+        })
+
+        .on('mouseover', function(d) {
+            //     if(!mousedown_node || d === mousedown_node) return;
+            d3.select(this)
+                .style('stroke', 'red')
+                .style("cursor", "not-allowed")
+                // Un-sets the "explicit" fill (might need to be null instead of '')
+                .classed("active", true );
+
+            /*  div.transition()
+             .duration(200)
+             .style("opacity", .9);
+             div	.html("<span style='background-color: #d9534f ; padding:2px ; font-style: oblique' >Delete this link</span>")
+             .style("left", (d3.event.pageX) + "px")
+             .style("top", (d3.event.pageY - 28) + "px");
+             //d3.select('#start-circle').style('fill','red');
+             */
+
+
+            // console.log("color is red")
+
+
+        })
+
+        .on('mouseout', function(d) {
+            //    if(!mousedown_node || d === mousedown_node) return;
+            // unenlarge target node
+            //tooltip.style("visibility", "hidden");
+            //    d3.select(this).attr('transform', '');
+            d3.select(this)
+                .style('stroke', '#000')
+                .style("cursor", "pointer")
+                // Un-sets the "explicit" fill (might need to be null instead of '')
+                .classed("active", false );
+            //  div.transition()
+            //    .duration(500)
+            //  .style("opacity", 0);
+            // console.log("color was red")
+
+
+        });
+    //removing all the links
+    links=[];
 
 
 }
 //KRIPANSHU BHARGAVA : connect all the nodes
 function connectAll() {
     console.log("Connect All function called");
-    for (var i = 0; i < nodes.length; i++) {
-       // console.log("All nodes: " + nodes[i].name);
+
+ connect_nodes=nodes.slice();
+    for (var i = 0; i < connect_nodes.length; i++) {
+        console.log("All connect nodes: " + connect_nodes[i].name);
     }
+
 
     var string_check=[];
 
@@ -1010,6 +1083,57 @@ var force;
       //  addlistener(nodes);
         //restart();
     }
+
+
+    /*
+    else if(v=="connect")
+    {
+
+        var string_check=[];
+
+//function to check the duplicate node
+        function  nodesCheck(value1,value2)
+        {
+            var pair1=value1+value2;
+            var pair2=value2+value1;
+            var count=0;
+            console.log("pair1 : "+ pair1);
+            console.log("pair2 : "+ pair2);
+            for(var k=0; k<string_check.length;k++)
+            {
+                if(string_check[k]==pair1){count++;}
+                if(string_check[k]==pair2){count++;}
+            }
+            if(count==2 ){return false;}
+            else {return true;}
+        }
+        links=[];
+
+        // loops to add the all possible nodes to the links array
+        for(var i=0;i<connect_nodes.length;i++)
+        {
+            for(var j=connect_nodes.length-1;j>0;j--)
+            {
+                string_check.push(i.toString()+j.toString());
+
+                var val1=i.toString();
+                var val2=j.toString();
+
+                if(nodesCheck(val1,val2) && i!=j)
+                {
+                    console.log("PAssed value : "+i.toString()+j.toString());
+                    links.push({source: connect_nodes[i], target: connect_nodes[j], left: false, right: true});
+                }
+
+
+            }
+        }
+
+    }
+    else if(v=="disconnect")
+    {}
+
+    */
     else {
         if(allNodes.length > 2) {
             nodes = [allNodes[0], allNodes[1], allNodes[2]];
@@ -2887,8 +3011,11 @@ var model_name2=get_data[1]+"-"+get_data[0];
 
 
     // image added to the div
-    for (var i in json.images) {
-
+    for (var i in json.plotdata) {
+for(var j in json.plotdata[i]) {
+    console.log(" the myxlab is : " + j);
+}
+/*
 if(i==model_name_set) {
     var zfig = document.createElement("img");
     zfig.setAttribute("src", json.images[i]);
@@ -2900,8 +3027,8 @@ if(i==model_name_set) {
     document.getElementById("resultsView").appendChild(zfig);
 
     d3.select("#resultsView").style("box-shadow","1px 1px 3px grey").style("background-color","#F5F5F5");
+*/
 
-}
     }
 
     var table_obj=[];
