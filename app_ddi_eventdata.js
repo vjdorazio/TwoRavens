@@ -3068,7 +3068,163 @@ function d3loc() {
 function d3action() {
 }
 
+
+
 function d3actor() {
+	var sourceFilterChecked = [];
+	var targetFilterChecked = [];
+	
+	window.onload = function(){
+		//load all sources
+		$.get('data/sourceFull.csv', function(data) {
+			var lines = data.split("\n");
+
+			var sourceList = document.getElementById('searchListSources');
+			for (x = 0; x < lines.length - 1; x++) {
+				var seperator = document.createElement("div");
+				seperator.style = "display:block; visibility:hidden;";
+				seperator.style.height = "0px";
+				
+				var chkbox = document.createElement("input");
+				chkbox.type = "checkbox";
+				chkbox.name = "sourceSearchCheck"+x;
+				chkbox.id = "sourceSearchCheck"+x;
+				chkbox.value = lines[x].replace(/["]+/g, '');
+				chkbox.style="vertical-align:text-bottom; margin:1% 5%; display:inline;";
+
+				var lbl = document.createElement("label");
+				lbl.style="display:inline; top:-1px;";
+				lbl.htmlFor = "sourceSearchCheck"+x;
+				lbl.className = "sourceSearchLbl";
+				lbl.innerHTML = lines[x].replace(/["]+/g, '');
+				
+				sourceList.appendChild(chkbox);
+				sourceList.appendChild(lbl);
+				sourceList.appendChild(seperator);
+			}
+		});
+
+		//load all source entities
+		
+		//load source roles
+		$.get('/data/sourceRole.csv', function(data) {
+			var lines = data.split("\n");
+
+			var sourceList = document.getElementById('roleSourcesList');
+			for (x = 0; x < lines.length - 1; x++) {
+				var seperator = document.createElement("div");
+				seperator.style = "display:block; visibility:hidden;";
+				seperator.style.height = "0px";
+				
+				var chkbox = document.createElement("input");
+				chkbox.type = "checkbox";
+				chkbox.name = "sourceRoleCheck"+x;
+				chkbox.id = "sourceRoleCheck"+x;
+				chkbox.value = lines[x].replace(/["]+/g, '');
+				chkbox.style="vertical-align:text-bottom; margin:1% 5%; display:inline;";
+				chkbox.onchange = function(){sourceFilterChanged(this);};
+
+				var lbl = document.createElement("label");
+				lbl.style="display:inline; top:-1px;";
+				lbl.htmlFor = "sourceRoleCheck"+x;
+				lbl.className = "sourceRoleLbl"+x;
+				lbl.innerHTML = lines[x].replace(/["]+/g, '');
+				
+				sourceList.appendChild(chkbox);
+				sourceList.appendChild(lbl);
+				sourceList.appendChild(seperator);
+			}
+		});
+
+		//load source attributes
+		$.get('/data/sourceAttr.csv', function(data) {
+			var lines = data.split("\n");
+
+			var sourceList = document.getElementById('attributeSourcesList');
+			for (x = 0; x < lines.length - 1; x++) {
+				var seperator = document.createElement("div");
+				seperator.style = "display:block; visibility:hidden;";
+				seperator.style.height = "0px";
+				
+				var chkbox = document.createElement("input");
+				chkbox.type = "checkbox";
+				chkbox.name = "sourceAttrCheck"+x;
+				chkbox.id = "sourceAttrCheck"+x;
+				chkbox.value = lines[x].replace(/["]+/g, '');
+				chkbox.style="vertical-align:text-bottom; margin:1% 5%; display:inline;";
+				chkbox.onchange = function(){sourceFilterChanged(this);};
+
+				var lbl = document.createElement("label");
+				lbl.style="display:inline; top:-1px;";
+				lbl.htmlFor = "sourceAttrCheck"+x;
+				lbl.className = "sourceAttrLbl"+x;
+				lbl.innerHTML = lines[x].replace(/["]+/g, '');
+				
+				sourceList.appendChild(chkbox);
+				sourceList.appendChild(lbl);
+				sourceList.appendChild(seperator);
+			}
+		});
+	}
+
+	function sourceFilterChanged(element) {
+		element.checked = !!(element.checked);
+		if (element.checked) {
+			sourceFilterChecked.push(element.value);
+			searchSource();
+		}
+		else {
+			index = sourceFilterChecked.indexOf(element.value);
+			if (index > -1 ) {
+				sourceFilterChecked.splice(index, 1);
+			}
+		}
+	}
+
+	$("#searchSources").on("keyup", function() {
+		var searchText = $(this).val().toUpperCase();
+		//alert('text entered');
+		console.log("searching for: " + searchText);
+		searchSource(searchText);
+	});
+
+	function searchSource(searchText = "") {
+		var sourceList = document.getElementsByClassName("sourceSearchLbl");
+		console.log("sourcelist = " + sourceList);
+
+		//search among entire source list
+		for (x = 0; x < sourceList.length; x ++) {
+			var matchSourceFilter = true;
+			//search for searchText
+			if (searchText != "" && sourceList[x].innerHTML.indexOf(searchText) == -1) {
+				//found so mark
+				console.log("searchText=|" + searchText + "| and not found");
+				matchSourceFilter = false;
+			}
+			
+			//search among all selected filters
+			for (y = 0; y < sourceFilterChecked.length && matchSourceFilter; y++) {
+				console.log("y= " + y);
+				if (sourceList[x].innerHTML.indexOf(sourceFilterChecked[y]) == -1) {
+					matchSourceFilter = false;
+					break;
+				}
+			}
+			//what about empty item???????
+
+			//search text among these
+			if (matchSourceFilter) {
+				//found so show in list
+				sourceList[x].style.display = "inline";
+				document.getElementById(sourceList[x].htmlFor).style.display = "inline";
+			}
+			else {
+				//not found so hide
+				sourceList[x].style.display = "none";
+				document.getElementById(sourceList[x].htmlFor).style.display = "none";
+			}
+		}
+	}
 }
 
 /**
