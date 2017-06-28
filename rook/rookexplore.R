@@ -135,6 +135,19 @@ explore.app <- function(env){
           plotdata<<-list()
           plotcount<-0
           
+          ## plot data
+          plotd <- mydata[,vars]
+          if(nrow(plotd)>1000) {
+              plotd <- plotd[sample(1:nrow(plotd), 1000,replace=FALSE),]
+          }
+          for(j in 1:ncol(plotd)) {
+              plotd.coords <- plotd[,j]
+              mylab <- colnames(plotd)[j]
+              plotdata[[mylab]] <- list(varname=mylab, data=plotd.coords)
+          }
+          rm(plotd)
+          ## end plot data
+          
           
           for(i in 1:nrow(myedges)) {
               
@@ -194,15 +207,18 @@ explore.app <- function(env){
                 if(j==1){
                   spTEST <- "plot(usedata[,1],usedata[,2])"
                   plotv<-"a"
-                  if(nrow(usedata)>1000) {
-                      plotd <- usedata[sample(1:nrow(usedata), 1000,replace=FALSE),]
-                  }
-                  plotd.x <- plotd[,1]
-                  plotd.y <- plotd[,2]
-                  myxlab <- colnames(plotd)[1]
-                  myylab <- colnames(plotd)[2]
-                  rm(plotd)
-                  plotInfo <- list(myxlab=myxlab, myylab=myylab, xdata=plotd.x, ydata=plotd.y)
+                  
+                  # if(nrow(usedata)>1000) {
+                  #    plotd <- usedata[sample(1:nrow(usedata), 1000,replace=FALSE),]
+                  #} else {
+                  #    plotd <- usedata
+                  #}
+                  #plotd.x <- plotd[,1]
+                  #plotd.y <- plotd[,2]
+                  #myxlab <- colnames(plotd)[1]
+                  #myylab <- colnames(plotd)[2]
+                  #rm(plotd)
+                  #plotInfo <- list(myxlab=myxlab, myylab=myylab, xdata=plotd.x, ydata=plotd.y)
                 } else{
                     spTEST <- "plot(usedata[,2],usedata[,1])"
                     plotv<-"b"
@@ -232,7 +248,7 @@ explore.app <- function(env){
             images<-imageVector ## zplots() returns imageVector, just for consistency
             tabular[[i]]<<-tabInfo
             statistical[[i]] <<-statInfo
-            plotdata[[i]] <<-plotInfo
+            #plotdata[[i]] <<-plotInfo
           }
           
           if(length(images)>0){
