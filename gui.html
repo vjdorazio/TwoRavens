@@ -219,7 +219,7 @@
                         <div id="models" style="display:block;padding:6px 12px;text-align:center;"></div>
                         <div id="ml_model", style="display:block;padding:6px 12px;text-align:center;"></div>
                         <div id="preprocess", style="display:block;padding:6px 12px;text-align:center;overflow: auto;">
-                           <div id="pre_selection" style="float:left; display: none;  width: 30%; height: 100%; background-color: #8a6d3b;">Please enter the selected data name in this panel</div>
+                           <div id="pre_selection" style="float:left; display: none;  width: 30%; height: 100%; background-color: #8a6d3b;" onclick="pre_value()" >Please enter the selected data name in this panel</div>
                         <div id="preprocess-1", style="display:none;text-align:center;width: 70%; height: 100%;  float: left; ">
                     </div>
                 </div>
@@ -345,6 +345,15 @@
   console.log("Username:"+username);
 </script>
 <script src="app_ddi.js"></script>
+
+<script type="text/javascript">
+function pre_value(){
+    var x=document.getElementById("pre_selection").value.toString();
+    var c=x.split(",");
+    //document.getElementById("x").value=c[0];
+}
+</script>
+
 
   </body>
 </html>
