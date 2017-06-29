@@ -164,29 +164,22 @@
 					<h3 style="text-align:center; width:100%;">Source Actor</h3>
 					<div id="allSources" style="height:500px; width:60%; float:left; border: 1px solid blue;">
 						<input id="searchSources" class="form-control" placeholder="Search source actors" type="text" style="margin:5px; height:30px; width:100%;">
-						<div id="searchListSources" style="height:460px; overflow-x:scroll; overflow-y:scroll;">
-							<!--<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src1">src1</label>
-							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src2">src2</label>
-							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src3">src3</label>
-							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src4">src4</label>
-							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src5">src5</label>
-
-							<input style="vertical-align:text-bottom; margin:1% 0% 1% 5%; display:inline;" name="sourceSearchCheck" id="testCheck1" type="checkbox" value="src6"/>
-							<label for="testCheck1" style="display:inline;">src6</label>
-
-							<div style="display:block; visibility:hidden; height:0px;"></div>
-							
-							<input style="vertical-align:text-bottom; margin:1% 0% 1% 5%; display:inline;" name="sourceSearchCheck" id="testCheck2" type="checkbox" value="src7"/>
-							<label for="testCheck2" style="display:inline;">src7</label>
-							<!--checks will be added dynamically in JS once at load-->
-							
+						<div id="searchListSources" style="height:460px; overflow-x:scroll; overflow-y:scroll; white-space:nowrap;">
+							<!--checks will be added dynamically in JS once at load-->							
 						</div>
 					</div>
+
+					<button id="clearAllSources" type="button" style="margin:5px; height:30px;" title="Clears search text and filters">Clear All Filters</button>
 					
-					<div id="filterSources" style="width:39%; float:right; height:500px; overflow-x:scroll; overflow-y:scroll; border: 1px solid red;">
+					<div id="filterSources" style="width:39%; float:right; height:460px; overflow-x:scroll; overflow-y:scroll; border: 1px solid red; white-space:nowrap;">
 						<h4 id="entitySources" style="margin-bottom:0px;"><b>Entity</b></h4>
+						
 						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceEntityCheck" type="checkbox" value="organizations">Organizations</label>
+						<div id="orgSourcesList">
+						</div>
 						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceEntityCheck" type="checkbox" value="countries">Countries</label>
+						<div id="countrySourcesList">
+						</div>
 						
 						<h4 id="roleSources" style="margin-bottom:0px;"><b>Role</b></h4>
 						<div id="roleSourcesList">
@@ -196,6 +189,8 @@
 						<div id="attributeSourcesList">
 						</div>
 					</div>
+
+					<button id="submitSources" type="button">Submit Sources</button>
 				</div>
 
 				<div id="targetDiv" style="width:345px; float:right; border: 1px solid black;">
