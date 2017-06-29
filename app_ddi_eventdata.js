@@ -3052,9 +3052,7 @@ function d3date() {
 }
 
 function d3loc() {
-	
-	$("#subsetLocation").empty();
-	
+		
 	drawMainGraph();
 }
 
@@ -3088,10 +3086,12 @@ function d3actor() {
  * Draw the main graph
  *
  **/
-function drawMainGraph() {
+function drawMainGraph() {	
 	
-	resetLocationVariables();
-	
+	if(mapGraphSVG["main_graph"] != null) {
+		return;
+	}
+		
 	$("#subsetLocation").append('<div class="container"><div id="subsetLocation_panel" class="row"></div></div>');
 
 	$("#subsetLocation_panel").append("<div class='col-xs-4' id='subsetLocationDivL'></div>");
@@ -3112,6 +3112,22 @@ function drawMainGraph() {
         .attr("height", 350)
 		.attr("id", "main_graph_svg");
 				
+	mapGraphSVG["main_graph"] = svg;
+	
+	svg.append("defs").append("pattern")
+		.attr("id", "pattern1")
+		.attr("x", "10")
+		.attr("y", "10")
+		.attr("width", "20")
+		.attr("height", "20")
+		.attr("patternUnits", "userSpaceOnUse")
+		.append("line")
+		.attr("x1","0")
+		.attr("y1","0")
+		.attr("x2","100")
+		.attr("y2","100")
+		.attr("style", "stroke:brown;stroke-width:5;"); 
+		
 	render("steelblue", false, 0); 
 }
 	
@@ -3215,7 +3231,7 @@ function render(color, blnIsSubgraph, cid){
 			.attr("y", function(d) { 
 			mapMainGraphIdWithSubGraphCnameList[cid].push(d.cname); 
 			mapSubGraphIdCname[d.cname] = cid + "_" + d.id;
-			if(mapListCountriesSelected[d.cname] == null) {mapListCountriesSelected[d.cname] = true;}
+			if(mapListCountriesSelected[d.cname] == null) {mapListCountriesSelected[d.cname] = false;}
 			return y(d.cname); })
 			.attr("width", function(d) { return x(d.freq); })
 			.attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; })
@@ -3245,33 +3261,7 @@ function render(color, blnIsSubgraph, cid){
 			.attr("class", "graph_axis_label")
             .text("Frequency");
 			
-		updateCountryList();
-
 	});
-}
-
-/**
- * handleMainGraphAllNone - to handle Expand All/ Collapse All
- *
-**/
-function handleMainGraphAllNone() {
-	
-	var noneExpand = true;
-	for(var svg in mapGraphSVG) {
-		
-		if(svg.indexOf("_removed") > -1) {
-				continue;
-		}
-		
-		if(svg != null) {
-			noneExpand = false;
-		}		
-	}
-	
-	if(noneExpand == false) {
-		$("#All_None").text("All");
-	}
-		
 }
 
 /**
@@ -3285,28 +3275,8 @@ function fetchJSONObjectForSubGraph(cid) {
 	
 	if(mapGraphSVG[cid] != null) {
 		
-		var listCname = mapMainGraphIdWithSubGraphCnameList[cid];
-				
-		$("#tg_rect_"+cid).attr("class", "bar");
-		
-		$("#sub_graph_td_" + cid).removeClass('graph_config');
-		$("#sub_graph_td_" + cid).addClass('graph_close');
-				
-		handleMainGraphAllNone();
-		
-		setTimeout(function() {
-			
-			$("#sub_graph_td_" + cid).removeClass('graph_config');
-			$("#sub_graph_td_" + cid).addClass('graph_close');
-			$("#tg_rect_"+cid).attr("class", "bar");
-			$("#sub_graph_td_"+cid).parent().hide();			
-			
-			var svgToRemove = mapGraphSVG[cid];
-			mapGraphSVG[cid + "_removed"] = svgToRemove;
-			mapGraphSVG[cid] = null;
-			
-		}, 1000);
-				
+		subgraphAction('expand_collapse_text_'+cid);
+							
 		return;
 	}
 	
@@ -3318,13 +3288,10 @@ function fetchJSONObjectForSubGraph(cid) {
 		$("#sub_graph_td_"+cid).parent().show();
 		$("#sub_graph_td_" + cid).removeClass('graph_close');
 		$("#sub_graph_td_" + cid).addClass('graph_config');
-		$("#tg_rect_"+cid).attr("class", "bar_open");
 		
 		return;
 	}
-	
-	$("#tg_rect_"+cid).attr("class", "bar_open");
-		
+			
 	$("#svg_graph_table").append('<tr id="sub_graph_tr_'+cid +'"><td id="sub_graph_td_'+cid +'" class="graph_config"></td></tr>');
 	subGraphLabel(cid);
 	
@@ -3347,20 +3314,9 @@ function maingraphAction(action) {
 		
 		action = $('#Expand_Collapse_Main_Text').text();
 	}
-	else if(action == 'All_None') {
-		action = $('#All_None').text();
-	}
-	else {
 		
-		return;
-	}
+	if(action == 'All') {	
 		
-	if(action == 'All') {
-
-		$("#All_None").text("None");
-		
-		maingraphHeaderUnClickAll();
-		//removeAllSubGraphSVG();
 		for(var cid in mapGraphSVG) {
 			
 			if(cid.indexOf("_removed") > -1) {
@@ -3377,23 +3333,17 @@ function maingraphAction(action) {
 				$("#sub_graph_td_"+cid).parent().show();
 				$("#sub_graph_td_" + cid).removeClass('graph_close');
 				$("#sub_graph_td_" + cid).addClass('graph_config');
-				$("#tg_rect_"+cid).attr("class", "bar_open");
 			}
 			else if(mapGraphSVG[cid] != null) {
 				
 				console.log("SVG NO_ACTION = " + cid);
 			}
 		}
-
-		$("#All_None").text("None");
 		
 	}		
 	else if(action == 'None') {
 	
-		maingraphHeaderUnClickAll();
 		removeAllSubGraphSVG();
-		
-		$("#All_None").text("All");
 	}
 	else if(action == 'Collapse') {
 		
@@ -3425,29 +3375,58 @@ function maingraphAction(action) {
  **/  
 function subgraphAction(textId) {
 	  
-	var cid = textId.substring(21);
-	var action = $("#" + textId).text();
+	
+	if(textId.indexOf("expand_collapse_text_") != -1) {
+	
+		var action = $("#" + textId).text();
 
-	if(action == 'Collapse') {
+		if(action == 'Collapse') {
 		
-		$("#"+textId).text("Expand");
+			var cid = textId.substring(21);
 		
-		$("#Exp_Col_Icon_"+cid).removeClass("glyphicon-resize-small");
-		$("#Exp_Col_Icon_"+cid).addClass("glyphicon-resize-full");
+			$("#"+textId).text("Expand");
 		
-		$("#sub_graph_td_" + cid).removeClass('graph_config');
-		$("#sub_graph_td_" + cid).addClass('graph_collapse');
+			$("#Exp_Col_Icon_"+cid).removeClass("glyphicon-resize-small");
+			$("#Exp_Col_Icon_"+cid).addClass("glyphicon-resize-full");
+		
+			$("#sub_graph_td_" + cid).removeClass('graph_config');
+			$("#sub_graph_td_" + cid).addClass('graph_collapse');
 			
+		}
+		else if(action == 'Expand') {
+		
+			var cid = textId.substring(21);
+		
+			$("#"+textId).text("Collapse");
+		
+			$("#Exp_Col_Icon_"+cid).removeClass("glyphicon-resize-full");
+			$("#Exp_Col_Icon_"+cid).addClass("glyphicon-resize-small");
+		
+			$("#sub_graph_td_" + cid).removeClass('graph_collapse');
+			$("#sub_graph_td_" + cid).addClass('graph_config');
+		}
 	}
-	else if(action == 'Expand') {
+	else {
 		
-		$("#"+textId).text("Collapse");
+		var actionData = textId.split("_");
+		var action = actionData[0];
+		var cid = actionData[1];
 		
-		$("#Exp_Col_Icon_"+cid).removeClass("glyphicon-resize-full");
-		$("#Exp_Col_Icon_"+cid).addClass("glyphicon-resize-small");
+		var listCname = mapMainGraphIdWithSubGraphCnameList[cid];
+		var bool = true;
+		if(action == 'All') {
+			bool = true;
+		}
+		else if(action == 'None') {
+			bool = false;
+		}
 		
-		$("#sub_graph_td_" + cid).removeClass('graph_collapse');
-		$("#sub_graph_td_" + cid).addClass('graph_config');
+		for(var index in listCname) {
+			var cname = listCname[index];
+			mapListCountriesSelected[cname] = bool;
+		}
+		
+		updateCountryList();
 	}
 }
  
@@ -3472,46 +3451,11 @@ function removeAllSubGraphSVG(){
 			
 			$("#sub_graph_td_" + cid).removeClass('graph_config');
 			$("#sub_graph_td_" + cid).addClass('graph_close');
-			$("#tg_rect_"+cid).attr("class", "bar");
-			$("#sub_graph_td_"+cid).parent().hide();
-			
-					
-			$("#tg_rect_"+cid).attr("class", "bar");
-			
+			$("#sub_graph_td_"+cid).parent().hide();			
 		}
 	}
 }
 
-
-/**
- * maingraphHeaderUnClickAll - when any of the header is clicked 
- * in the main graph, take these actions
- *
- **/
-function maingraphHeaderUnClickAll(){
-
-	$("#All_None").text("None");	
-		
-	for(var cid in mapGraphSVG) {
-		
-		if(cid.indexOf("_removed") > -1) {
-				continue;
-		}
-			
-		if(mapGraphSVG[cid] != null) {
-			
-			if($("#tg_rect_"+cid).hasClass("bar_open") != true) {
-									
-				$("#tg_rect_"+cid).attr("class", "bar_open");
-			}
-		}
-		else {
-			
-			$("#tg_rect_"+cid).attr("class", "bar");
-		}
-	}
-		
-}
 
 /**
  * maingraphYLabelClicked - when any of the Y Axis label is clicked 
@@ -3519,9 +3463,7 @@ function maingraphHeaderUnClickAll(){
  *
  **/
 function maingraphYLabelClicked(cid) {
-	
-	maingraphHeaderUnClickAll();
-			
+				
 	fetchJSONObjectForSubGraph(cid);
 }
 
@@ -3551,8 +3493,13 @@ function mainGraphLabel() {
 	$("#main_graph_td_div").append(label);
 	$("#main_graph_td_div").append("&nbsp; &nbsp; &nbsp;");
 		
-	var label1 = $('<label><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" id="All_None" onclick = "javascript:maingraphAction(\'All_None\')">All</label></span></label>');
-	$("#main_graph_td_div").append(label1);	
+	// var label1 = $('<label><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" id="All_None" onclick = "javascript:maingraphAction(\'All_None\')">All</label></span></label>');
+	
+	var label11 = $('<label title="Expand All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" id="Main_All" onclick = "javascript:maingraphAction(\'All\')">All</label></span></label>');
+	var label12 = $('<label title="Collapse All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" id="Main_None" onclick = "javascript:maingraphAction(\'None\')">None</label></span></label>');
+	$("#main_graph_td_div").append(label11);	
+	$("#main_graph_td_div").append("&nbsp; &nbsp; &nbsp;");
+	$("#main_graph_td_div").append(label12);	
 	$("#main_graph_td_div").append("&nbsp; &nbsp; &nbsp;");
 	
 	var label2 = $('<label align="right" id="Expand_Collapse_Main_Text" class="hide_label">Collapse</label>');
@@ -3575,12 +3522,20 @@ function subGraphLabel(cid) {
 	$("#sub_graph_td_div_"+cid).append(label1);
 	$("#sub_graph_td_div_"+cid).append("&nbsp;&nbsp;&nbsp;");
 	
+	var label11 = $('<label title="Select All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" onclick = "javascript:subgraphAction(\'All_'+cid+'\')">All</label></span></label>');
+	var label12 = $('<label title="Remove All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" onclick = "javascript:subgraphAction(\'None_'+cid+'\')">None</label></span></label>');
+	$("#sub_graph_td_div_"+cid).append(label11);	
+	$("#sub_graph_td_div_"+cid).append("&nbsp; &nbsp; &nbsp;");
+	$("#sub_graph_td_div_"+cid).append(label12);	
+	$("#sub_graph_td_div_"+cid).append("&nbsp; &nbsp; &nbsp;");
+	
+	
 	var label2 = $('<label style="cursor:pointer"><span class="glyphicon glyphicon-resize-small gi-2x glyphicon_border" id="Exp_Col_Icon_'+cid+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cid+'\')"></span></label>');
 	$("#sub_graph_td_div_"+cid).append(label2);	
-	$("#sub_graph_td_div_"+cid).append("&nbsp;&nbsp;&nbsp;");
+	//$("#sub_graph_td_div_"+cid).append("&nbsp;&nbsp;&nbsp;");
 			
-	var label3 = $('<label style="cursor:pointer"><span class="glyphicon glyphicon-remove gi-2x glyphicon_border" onclick="javascript:maingraphYLabelClicked(\''+cid+'\')"></span></label>');
-	$("#sub_graph_td_div_"+cid).append(label3);	
+	//var label3 = $('<label style="cursor:pointer"><span class="glyphicon glyphicon-remove gi-2x glyphicon_border" onclick="javascript:maingraphYLabelClicked(\''+cid+'\')"></span></label>');
+	//$("#sub_graph_td_div_"+cid).append(label3);	
 	
 	var label = $('<label class="hide_label" id="expand_collapse_text_'+cid+'">Collapse</label>');
 	$("#sub_graph_td_div_"+cid).append(label);
@@ -3607,7 +3562,7 @@ function updateCountryList() {
 		
 		if(bool == true) {
 			$("#country_list_tab").append('<tr><td><label class="strike_through" style="cursor:pointer" onclick="javascript:removeFromCountryList(\''+country+'\');">' + country +'</label></td></tr>');	
-			$("#tg_rect_"+ main_subGraphId).attr("class", "bar_open");
+			$("#tg_rect_"+ main_subGraphId).attr("class", "bar_all_selected");
 			mapLocalMainGraphIdWithSubGraphCnameList[mainGraphId].push(country);
 			
 		}
@@ -3625,11 +3580,13 @@ function updateCountryList() {
 		if(localLength == 0) {
 			$("#tg_rect_"+ mainGraphCid).attr("class", "bar");
 		}
-		else if(localLength == originalLength) {
-			$("#tg_rect_"+ mainGraphCid).attr("class", "bar_open");
-		}
 		else if(localLength < originalLength) {
-			$("#tg_rect_"+ mainGraphCid).attr("class", "bar_half_open");
+			$("#tg_rect_"+ mainGraphCid).attr("class", "bar_some_selected");
+		}
+		else if(localLength == originalLength) {
+			$("#tg_rect_"+ mainGraphCid).attr("class", "bar_all_selected");
+			
+			$("#tg_rect_"+ mainGraphCid).appen('');
 		}
 		
 	}
