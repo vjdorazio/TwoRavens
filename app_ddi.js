@@ -3014,6 +3014,13 @@ function tabLeft(tab) {
 }
 
 
+function selectVar() {
+  var selectVariavle = document.getElementById("select_input").value.toString();
+  var varArray = selectVariavle.split(",");
+
+  return varArray;
+}
+
 function tabRight(tabid) {
 
     document.getElementById('models').style.display = 'none';
@@ -3055,7 +3062,7 @@ function tabRight(tabid) {
      document.getElementById('btnModels').setAttribute("class", "btn btn-default");
      document.getElementById('btnML').setAttribute("class", "btn btn-default");
      document.getElementById('btnPP').setAttribute("class", "btn active");
-     document.getElementById('preprocess-1').style.display = 'block';
+     document.getElementById('preprocess').style.display = 'block';
         document.getElementById('pre_selection').style.display = 'block';
 
         if(estimated===false) {
