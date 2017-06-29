@@ -3103,7 +3103,7 @@ function drawMainGraph() {
 	
 	$("#country_list").append("<div style='height:300px; overflow-y: scroll;'><table align='center' id='country_list_tab'></table></div>");
 		
-	$("#subsetLocationDivR").append("<div align='center'><br/><br/><button>Stage</button></div>");
+	$("#subsetLocationDivR").append('<div align="center"><br/><br/><button onclick="javascript:locationStage();">Stage</button></div>');
 		
 	mainGraphLabel();
 	
@@ -3114,20 +3114,6 @@ function drawMainGraph() {
 				
 	mapGraphSVG["main_graph"] = svg;
 	
-	svg.append("defs").append("pattern")
-		.attr("id", "pattern1")
-		.attr("x", "10")
-		.attr("y", "10")
-		.attr("width", "20")
-		.attr("height", "20")
-		.attr("patternUnits", "userSpaceOnUse")
-		.append("line")
-		.attr("x1","0")
-		.attr("y1","0")
-		.attr("x2","100")
-		.attr("y2","100")
-		.attr("style", "stroke:brown;stroke-width:5;"); 
-		
 	render("steelblue", false, 0); 
 }
 	
@@ -3165,6 +3151,23 @@ function render(color, blnIsSubgraph, cid){
 	  
 	var x = d3.scaleLinear().range([0, width]);
 	var y = d3.scaleBand().range([height, 0]);
+	
+	if(blnIsSubgraph == false) {
+		
+		svg.append("defs").append("pattern")
+			.attr("id", "pattern1")
+			.attr("x", "10")
+			.attr("y", "10")
+			.attr("width", y.bandwidth()/20)
+			.attr("height", y.bandwidth()/20)
+			.attr("patternUnits", "userSpaceOnUse")
+			.append("line")
+			.attr("x1","0")
+			.attr("y1","0")
+			.attr("x2", y.bandwidth()/20)
+			.attr("y2", y.bandwidth()/20)
+			.attr("style", "stroke:brown;stroke-width:5;"); 
+	}
 
 	var g = svg.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -3192,7 +3195,7 @@ function render(color, blnIsSubgraph, cid){
 
 	
 		if(blnIsSubgraph == false) {
-		
+			
 			g.selectAll(".bar")
 			.data(data)
 			.enter()
@@ -3607,6 +3610,22 @@ function removeFromCountryList(cname) {
 	}
 	updateCountryList();	
 
+}
+
+function locationStage() {
+	
+	var listToText = "Location = [ ";
+	
+	for(var country in mapListCountriesSelected) {
+		var bool = mapListCountriesSelected[country];
+		if(bool) {
+			listToText += "\"" + country + "\" ; ";
+		}
+	}
+	
+	listToText += "]";
+	
+	alert(listToText);
 }
 
 window.onresize = rightpanelMargin;
