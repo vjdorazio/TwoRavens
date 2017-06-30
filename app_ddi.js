@@ -869,6 +869,19 @@ $(document).on('input', '#searchvar', function() {
 	updatedata(vkey,flag);
 
 });
+  
+  //get the current select var's name
+  function pre_varlist(){
+    console.log("pre_varList called ");
+    var selectVar = [];
+    for(var i=0; i<nodes.length;i++){
+      console.log(" pre process nodes : " + nodes[i].name);
+      selectVar[i] = nodes[i].name;
+    }
+
+    return selectVar;
+  }
+
 
 	function updatedata(value,flag)
 	{
@@ -1238,6 +1251,7 @@ var force;
         })
         //  d3.select("#Display_content")
         .on("click", function(){
+            //pre_varlist();
             var myColor = d3.select(this).style('background-color');
             d3.select("#preprocess").selectAll("p")
             .style('background-color',varColor);
@@ -3014,12 +3028,12 @@ function tabLeft(tab) {
 }
 
 
-function selectVar() {
-  var selectVariavle = document.getElementById("select_input").value.toString();
-  var varArray = selectVariavle.split(",");
+// function selectVar() {
+//   var selectVariavle = document.getElementById("select_input").value.toString();
+//   var varArray = selectVariavle.split(",");
 
-  return varArray;
-}
+//   return varArray;
+// }
 
 function tabRight(tabid) {
 
@@ -3057,19 +3071,22 @@ function tabRight(tabid) {
 
 
   else if(tabid=="btnPP"){
+     //console.log("btnPP clicked");
      document.getElementById('btnSetx').setAttribute("class", "btn btn-default");
      document.getElementById('btnResults').setAttribute("class", "btn btn-default");
      document.getElementById('btnModels').setAttribute("class", "btn btn-default");
      document.getElementById('btnML').setAttribute("class", "btn btn-default");
      document.getElementById('btnPP').setAttribute("class", "btn active");
      document.getElementById('preprocess').style.display = 'block';
-        document.getElementById('pre_selection').style.display = 'block';
+     document.getElementById('pre_selection').style.display = 'block';
 
         if(estimated===false) {
             d3.select("#rightpanel")
                 .attr("class", "sidepanel container clearfix expandpanel");
         }
         else if(righttab=="btnPP" | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix ") {toggleR()};
+
+        //pre_varlist();
   }
 
 	
