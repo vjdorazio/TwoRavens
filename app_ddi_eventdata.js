@@ -3072,39 +3072,38 @@ function d3action() {
 
 function d3actor() {
 	var sourceFilterChecked = [];
+	var sourceEntityChecked = [];
 	var targetFilterChecked = [];
+	var targetEntityChecked = [];
 
 	var fullSourceList = [];
 	var fullTargetList= [];
-
+	
 	var orgs = ["IGO", "IMG", "MNC", "NGO"]		//hard coded organizations to remove from entities list; hopefully temporary
+
+	var sourceOrgLength = orgs.length, sourceCountryLength;
+	var sourceOrgSelect = 0, sourceCountrySelect = 0;
 	
 	window.onload = function(){
 		//load all sources
 		$.get('data/sourceFull.csv', function(data) {
 			var lines = data.split("\n");
 
-			//~ fullSourceList = lines;
-			//~ fullSourceList.length = fullSourceList.length - 1;
-			//~ console.log(fullSourceList);
-
 			var sourceList = document.getElementById('searchListSources');
 			for (x = 0; x < lines.length - 1; x++) {
 				var seperator = document.createElement("div");
-				seperator.style = "display:block; visibility:hidden;";
-				seperator.style.height = "0px";
+				seperator.className = "sourceSeperator";
 				
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
 				chkbox.name = "sourceSearchCheck";
 				chkbox.id = "sourceSearchCheck"+x;
 				chkbox.value = lines[x].replace(/["]+/g, '');
-				chkbox.style="vertical-align:text-bottom; margin:1px 5px 0px 5px; display:inline-block;";
+				chkbox.className = "actorChk";
 
 				var lbl = document.createElement("label");
-				lbl.style="display:inline-block; margin-right:10px;";
 				lbl.htmlFor = "sourceSearchCheck"+x;
-				lbl.className = "sourceSearchLbl";
+				lbl.className = "actorChkLbl";
 				lbl.id = "sourceSearchLbl"+x;
 				lbl.innerHTML = lines[x].replace(/["]+/g, '');
 				
@@ -3123,25 +3122,24 @@ function d3actor() {
 			lines = lines.filter(function(val) {
 				return !(orgs.indexOf(val) > -1);
 			});
+			sourceCountryLength = lines.length;
 
 			var orgList = document.getElementById("orgSourcesList");
-			for (x = 0; x < orgs.length - 1; x ++) {
+			for (x = 0; x < orgs.length; x ++) {
 				var seperator = document.createElement("div");
-				seperator.style = "display:block; visibility:hidden;";
-				seperator.style.height = "0px";
+				seperator.className = "sourceSeperator";
 
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
 				chkbox.name = "sourceOrgCheck";
 				chkbox.id = "sourceOrgCheck"+x;
 				chkbox.value = orgs[x].replace(/["]+/g, '');
-				chkbox.style="vertical-align:text-bottom; margin:1px 5px 0px 5px; display:inline-block;";
+				chkbox.className = "actorChk";
 				chkbox.onchange = function(){sourceFilterChanged(this);};
 
 				var lbl = document.createElement("label");
-				lbl.style="display:inline-block; margin-right:10px;";
 				lbl.htmlFor = "sourceOrgCheck"+x;
-				lbl.className = "sourceOrgLbl";
+				lbl.className = "actorChkLbl";
 				lbl.id = "sourceOrgLbl"+x;
 				lbl.innerHTML = orgs[x].replace(/["]+/g, '');
 				
@@ -3153,21 +3151,19 @@ function d3actor() {
 			var countryList = document.getElementById("countrySourcesList");
 			for (x = 0; x < lines.length - 1; x ++) {
 				var seperator = document.createElement("div");
-				seperator.style = "display:block; visibility:hidden;";
-				seperator.style.height = "0px";
+				seperator.className = "sourceSeperator";
 
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
 				chkbox.name = "sourceCountryCheck";
 				chkbox.id = "sourceCountryCheck"+x;
 				chkbox.value = lines[x].replace(/["]+/g, '');
-				chkbox.style="vertical-align:text-bottom; margin:1px 5px 0px 5px; display:inline-block;";
+				chkbox.className = "actorChk";
 				chkbox.onchange = function(){sourceFilterChanged(this);};
 
 				var lbl = document.createElement("label");
-				lbl.style="display:inline-block; margin-right:10px;";
 				lbl.htmlFor = "sourceCountryCheck"+x;
-				lbl.className = "sourceCountryLbl";
+				lbl.className = "actorChkLbl";
 				lbl.id = "sourceCountryLbl"+x;
 				lbl.innerHTML = lines[x].replace(/["]+/g, '');
 				
@@ -3184,21 +3180,19 @@ function d3actor() {
 			var sourceList = document.getElementById('roleSourcesList');
 			for (x = 0; x < lines.length - 1; x++) {
 				var seperator = document.createElement("div");
-				seperator.style = "display:block; visibility:hidden;";
-				seperator.style.height = "0px";
+				seperator.className = "sourceSeperator";
 				
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
 				chkbox.name = "sourceRoleCheck";
 				chkbox.id = "sourceRoleCheck"+x;
 				chkbox.value = lines[x].replace(/["]+/g, '');
-				chkbox.style="vertical-align:text-bottom; margin:1px 5px 0px 5px; display:inline-block;";
+				chkbox.className = "actorChk";
 				chkbox.onchange = function(){sourceFilterChanged(this);};
 
 				var lbl = document.createElement("label");
-				lbl.style="display:inline-block; margin-right:10px;";
 				lbl.htmlFor = "sourceRoleCheck"+x;
-				lbl.className = "sourceRoleLbl";
+				lbl.className = "actorChkLbl";
 				lbl.id = "sourceRoleLbl"+x;
 				lbl.innerHTML = lines[x].replace(/["]+/g, '');
 				
@@ -3215,21 +3209,19 @@ function d3actor() {
 			var sourceList = document.getElementById('attributeSourcesList');
 			for (x = 0; x < lines.length - 1; x++) {
 				var seperator = document.createElement("div");
-				seperator.style = "display:block; visibility:hidden;";
-				seperator.style.height = "0px";
+				seperator.className = "sourceSeperator";
 				
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
 				chkbox.name = "sourceAttrCheck";
 				chkbox.id = "sourceAttrCheck"+x;
 				chkbox.value = lines[x].replace(/["]+/g, '');
-				chkbox.style="vertical-align:text-bottom; margin:1px 5px 0px 5px; display:inline-block;";
+				chkbox.className = "actorChk";
 				chkbox.onchange = function(){sourceFilterChanged(this);};
 
 				var lbl = document.createElement("label");
-				lbl.style="display:inline-block; margin-right:10px;";
 				lbl.htmlFor = "sourceAttrCheck"+x;
-				lbl.className = "sourceAttrLbl";
+				lbl.className = "actorChkLbl";
 				lbl.id = "sourceAttrLbl"+x;
 				lbl.innerHTML = lines[x].replace(/["]+/g, '');
 				
@@ -3243,24 +3235,83 @@ function d3actor() {
 	//when checkbox checked, add or remove filter
 	function sourceFilterChanged(element) {
 		element.checked = !!(element.checked);
-		console.log("check state: " + element.checked);
+		var ending = getSourceEnding(element);
 		if (element.checked) {
-			sourceFilterChecked.push(element.value + getSourceEnding());
-			
-			console.log(sourceFilterChecked[sourceFilterChecked.length - 1]);
-			console.log("clicked on check, now calling");
+			if (ending == "orga" || ending == "coun") {
+				sourceEntityChecked.push(element.value + ending);
+				switch(ending) {
+					case "orga":
+						sourceOrgSelect++;
+						if (sourceOrgSelect == sourceOrgLength) {
+							$("#sourceOrgAllCheck").prop("checked", true);
+							$("#sourceOrgAllCheck").prop("indeterminate", false);
+						}
+						else {
+							$("#sourceOrgAllCheck").prop("checked", false);
+							$("#sourceOrgAllCheck").prop("indeterminate", true);
+						}
+						break;
+					case "coun":
+						sourceCountrySelect++;
+						if (sourceCountrySelect == sourceCountryLength) {
+							$("#sourceCountryAllCheck").prop("checked", true);
+							$("#sourceCountryAllCheck").prop("indeterminate", false);
+						}
+						else {
+							$("#sourceCountryAllCheck").prop("check", false);
+							$("#sourceCountryAllCheck").prop("indeterminate", true);
+						}
+						break;
+					}
+			}
+			else {
+				sourceFilterChecked.push(element.value + ending);
+			}
 			searchSource();
 		}
 		else {
-			index = sourceFilterChecked.indexOf(element.value + getSourceEnding());
-			if (index > -1 ) {
-				sourceFilterChecked.splice(index, 1);
-				console.log("removed search element, now calling");
-				searchSource();
+			if (ending == "orga" || ending == "coun"){
+				var index = sourceEntityChecked.indexOf(element.value + ending);
+				if (index > -1 ) {
+					sourceEntityChecked.splice(index, 1);
+					switch(ending) {
+					case "orga":
+						sourceOrgSelect--;
+						if (sourceOrgSelect == 0) {
+							$("#sourceOrgAllCheck").prop("checked", false);
+							$("#sourceOrgAllCheck").prop("indeterminate", false);
+						}
+						else {
+							$("#sourceOrgAllCheck").prop("checked", false);
+							$("#sourceOrgAllCheck").prop("indeterminate", true);
+						}
+						break;
+					case "coun":
+						sourceCountrySelect--;
+						if (sourceCountrySelect == 0) {
+							$("#sourceCountryAllCheck").prop("checked", false);
+							$("#sourceCountryAllCheck").prop("indeterminate", false);
+						}
+						else {
+							$("#sourceCountryAllCheck").prop("check", false);
+							$("#sourceCountryAllCheck").prop("indeterminate", true);
+						}
+						break;
+					}
+				}
 			}
+			else {
+				var index = sourceFilterChecked.indexOf(element.value + ending);
+				if (index > -1) {
+					sourceFilterChecked.splice(index, 1);
+				}
+			}
+			searchSource();
 		}
+	}
 
-		function getSourceEnding() {
+	//returns a string of the type of filter; element is a checkbox
+	function getSourceEnding(element) {
 			switch (element.name) {
 				case "sourceOrgCheck":
 					return "orga";
@@ -3272,103 +3323,168 @@ function d3actor() {
 					return "attr";
 			}
 		}
-	}
 
 	//clears search and filter selections
 	$("#clearAllSources").on("click", function() {
 		document.getElementById("searchSources").value = "";
 		$("#filterSources :checkbox").prop("checked", false);
 		sourceFilterChecked.length = 0;	//clear filter array
+		sourceEntityChecked.length = 0;
+		sourceOrgSelect = 0;
+		sourceCountrySelect = 0;
 		searchSource();
 	});
 
+	//expands divs with filters
+	$(".filterExpand").click(function() {
+		if (this.value == "expand") {
+			this.value = "collapse";
+			$(this).css("background-image", "url(collapse.png)");
+			$(this).next().next("div.filterContainer").show("fast");
+		}
+		else {
+			this.value = "expand";
+			$(this).css("background-image", "url(expand.png)");
+			$(this).next().next("div.filterContainer").hide("fast");
+		}
+	});
+	
+	//clear search box when reloading page
 	$("#searchSources").ready(function() {
 		$("#searchSources").val("");
 	});
 
+	//when typing in search box
 	$("#searchSources").on("keyup", function() {
-		//var searchText = $(this).val().toUpperCase();
-		//alert('text entered');
-		//console.log("searching for: " + searchText);
 		searchSource();
 	});
 
+	//on load of page, keep unchecked
+	$("#sourceOrgAllCheck").ready(function() {
+		$("#sourceOrgAllCheck").prop("checked", false);
+	});
+
+	//on load of page, keep unchecked
+	$("#sourceCountryAllCheck").ready(function() {
+		$("#sourceCountryAllCheck").prop("checked", false);
+	});
+
+	//select all checks for org if select all org
+	$("#sourceOrgAllCheck").click(function() {
+		$(this).prop("indeterminate", false);
+		if (this.checked) {
+			$("#orgSourcesList input:checkbox:not(:checked)").each(function() {
+				sourceEntityChecked.push(this.value + "orga");
+				$(this).prop("checked", true);
+			});
+			sourceOrgSelect = sourceOrgLength;
+		}
+		else {
+			$("#orgSourcesList input:checkbox:checked").each(function() {
+				sourceEntityChecked.splice(sourceEntityChecked.indexOf(this.value + "orga"), 1);
+				$(this).prop("checked", false);
+			});
+			sourceOrgSelect = 0;
+		}
+		searchSource();
+	});
+
+	//select all checked for country if select all country
+	$("#sourceCountryAllCheck").click(function() {
+		$(this).prop("indeterminate", false);
+		if (this.checked) {
+			$("#countrySourcesList input:checkbox:not(:checked)").each(function() {
+				sourceEntityChecked.push(this.value + "coun");
+				$(this).prop("checked", true);
+				sourceCountrySelect = sourceCountryLength;
+			});
+		}
+		else {
+			$("#countrySourcesList input:checkbox:checked").each(function() {
+				sourceEntityChecked.splice(sourceEntityChecked.indexOf(this.value + "coun"), 1);
+				$(this).prop("checked", false);
+				sourceCountrySelect = 0;
+			});
+		}
+		searchSource();
+	});
+		
+
+	//searches for the specified text and filters (maybe implement escape characters for text search?)
 	function searchSource() {
-		//var sourceList = document.getElementsByClassName("sourceSearchLbl");
 		var searchText = $("#searchSources").val().toUpperCase();
 
-		////search among entire source list
-		//for (x = 0; x < sourceList.length; x ++) {
-			//var matchSourceFilter = true;
-			////search for searchText
-			//if (searchText != "" && sourceList[x].innerHTML.indexOf(searchText) == -1) {
-				////not found so mark
-				//matchSourceFilter = false;
-			//}
-			
-			////search among all selected filters
-			//for (y = 0; matchSourceFilter && y < sourceFilterChecked.length; y++) {
-				//if (sourceList[x].innerHTML.indexOf(sourceFilterChecked[y]) == -1) {
-					//matchSourceFilter = false;
-					//break;
-				//}
-			//}
-			////what about empty item???????
-
-			////search text among these
-			//if (matchSourceFilter) {
-				////found so show in list
-				//sourceList[x].style.display = "inline";
-				//document.getElementById(sourceList[x].htmlFor).style.display = "inline";
-			//}
-			//else {
-				////not found so hide
-				//sourceList[x].style.display = "none";
-				//document.getElementById(sourceList[x].htmlFor).style.display = "none";
-			//}
-		//}
-
-		console.log("searching for: " + searchText + "|||" + sourceFilterChecked);
-
-		for (i = 0; i < fullSourceList.length; i++) {
-			var matchSourceFilter = true;
-			if (searchText != "" && fullSourceList[i].indexOf(searchText) == -1) {
-				matchSourceFilter = false;
-			}
-			//console.log("found: " + matchSourceFilter + "|||" + searchText);
-			for (x = 0; matchSourceFilter && x < sourceFilterChecked.length; x++) {
-				//console.log(sourceFilterChecked[x].substring(sourceFilterChecked[x].length - 4));
-				switch (sourceFilterChecked[x].substring(sourceFilterChecked[x].length - 4)) {
-					case "orga":
-					case "coun":
-						//console.log(sourceFilterChecked[x].substring(0, 3) + "|||||" + fullSourceList[i].substring(0, 3));
-						if (sourceFilterChecked[x].substring(0, 3) != fullSourceList[i].substring(0, 3)) {
-							//$("#sourceSearchCheck"+i).css("display", "none");
-							//$("#sourceSearchLbl" + i).css("display", "none");
-							matchSourceFilter = false;
-						}
-						break;
-					case "role":
-					case "attr":
-						var index = fullSourceList[i].indexOf(sourceFilterChecked[x].substring(0, 3));
-						//console.log("searching for: " + sourceFilterChecked[x] + "|||" + index);
-						if (index < 0 || index%3 != 0) {
-							//$("#sourceSearchCheck"+i).css("display", "none");
-							//$("#sourceSearchLbl" + i).css("display", "none");
-							matchSourceFilter = false;
-						}
-						break;
+		for (x = 0; x < fullSourceList.length; x++) {
+			var matched = false;
+			//search for entity
+			for (i = 0; i < sourceEntityChecked.length; i++) {
+				if (sourceEntityChecked[i].substring(0, 3) == fullSourceList[x].substring(0, 3)) {
+					matched = true;
+					break;
 				}
 			}
-			if (matchSourceFilter) {
-				$("#sourceSearchCheck"+i).css("display", "inline-block");
-				$("#sourceSearchLbl" + i).css("display", "inline-block");
+			if (!matched && sourceEntityChecked.length > 0) {
+				$("#sourceSearchCheck"+x).css("display", "none");
+				$("#sourceSearchLbl" + x).css("display", "none");
 			}
 			else {
-				$("#sourceSearchCheck"+i).css("display", "none");
-				$("#sourceSearchLbl" + i).css("display", "none");
+				var matchSourceFilter = true;
+				//search for text
+				if (searchText != "" && fullSourceList[x].indexOf(searchText) == -1) {
+					matchSourceFilter = false;
+				}
+
+				//search for other filters
+				for (i = 0; matchSourceFilter && i < sourceFilterChecked.length; i++) {
+					var index = fullSourceList[x].indexOf(sourceFilterChecked[i].substring(0, 3));
+					if (index < 0 || index%3 != 0) {
+						matchSourceFilter = false;
+					}
+				}
+				if (matchSourceFilter) {
+					$("#sourceSearchCheck"+x).css("display", "inline-block");
+					$("#sourceSearchLbl" + x).css("display", "inline-block");
+				}
+				else {
+					$("#sourceSearchCheck"+x).css("display", "none");
+					$("#sourceSearchLbl" + x).css("display", "none");
+				}
 			}
 		}
+
+		//~ for (i = 0; i < fullSourceList.length; i++) {
+			//~ var matchSourceFilter = true;
+			//~ if (searchText != "" && fullSourceList[i].indexOf(searchText) == -1) {
+				//~ matchSourceFilter = false;
+			//~ }
+
+			//~ for (x = 0; matchSourceFilter && x < sourceFilterChecked.length; x++) {
+				//~ switch (sourceFilterChecked[x].substring(sourceFilterChecked[x].length - 4)) {
+					//~ case "orga":
+					//~ case "coun":
+						//~ //console.log(sourceFilterChecked[x] + "|||" + fullSourceList[x]);
+						//~ if (sourceFilterChecked[x].substring(0, 3) != fullSourceList[i].substring(0, 3)) {
+							//~ matchSourceFilter = false;
+						//~ }
+						//~ break;
+					//~ case "role":
+					//~ case "attr":
+						//~ var index = fullSourceList[i].indexOf(sourceFilterChecked[x].substring(0, 3));
+						//~ if (index < 0 || index%3 != 0) {
+							//~ matchSourceFilter = false;
+						//~ }
+						//~ break;
+				//~ }
+			//~ }
+			//~ if (matchSourceFilter) {
+				//~ $("#sourceSearchCheck"+i).css("display", "inline-block");
+				//~ $("#sourceSearchLbl" + i).css("display", "inline-block");
+			//~ }
+			//~ else {
+				//~ $("#sourceSearchCheck"+i).css("display", "none");
+				//~ $("#sourceSearchLbl" + i).css("display", "none");
+			//~ }
+		//~ }
 			
 	}
 }

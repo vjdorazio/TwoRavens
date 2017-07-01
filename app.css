@@ -1048,3 +1048,33 @@ display: inline;}
 	top:30%;
 	left:50%;
 }
+
+.actorSeperator {
+	height: 0px;
+	display: block;
+	visibility: hidden;
+}
+
+.filterExpand {
+	display: inline-block;
+	padding: 0px;
+	height: 20px;
+	width: 20px;
+	vertical-align: middle;
+
+	background-image: url(collapse.png);
+	background-repeat: no-repeat;
+	background-position: 0px 0px;
+	border: none;
+}
+
+.actorChk {
+	display: inline-block;
+	vertical-align: text-bottom;
+	margin: 1px 5px 0px 5px !important;
+}
+
+.actorChkLbl {
+	display: inline-block;
+	margin-right: 10px;
+}
