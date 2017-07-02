@@ -3230,6 +3230,8 @@ function d3actor() {
 				sourceList.appendChild(seperator);
 			}
 		});
+
+		$("#sourceTabBtn").trigger("click");
 	}
 
 	//when checkbox checked, add or remove filter

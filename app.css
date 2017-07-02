@@ -1049,6 +1049,63 @@ display: inline;}
 	left:50%;
 }
 
+#sourceTabBtn {
+	width: 50%;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	margin-left: 0;
+
+}
+
+#targetTabBtn {
+	width: 50%;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	margin-left: -1px;
+}
+
+/* style the buttons inside the tab */
+div.actorTab button {
+    position: relative;
+	float: left;
+}
+
+/* create an active/current tablink class */
+div.actorTab button.active {
+    background-image: none;
+	outline: 0;
+	-webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+	box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+}
+
+/* style the tab content */
+.actorTabContent {
+    display: none;
+   -webkit-animation: fadeEffect 0.5s;
+    animation: fadeEffect 0.5s;
+}
+
+/* fade in tabs */
+@-webkit-keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+#actorSelectionDiv {
+	border: 1px solid #ADADAD;
+	top: 72px;
+	left: 10px;
+	height: calc(100% - 20px);
+	background: #F9F9F9;
+	margin-top: 10px;
+	margin-bottom: 4px;
+}
+
 .actorSeperator {
 	height: 0px;
 	display: block;
