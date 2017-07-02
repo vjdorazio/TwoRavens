@@ -219,11 +219,20 @@
                         <div id="models" style="display:block;padding:6px 12px;text-align:center;"></div>
                         <div id="ml_model", style="display:block;padding:6px 12px;text-align:center;"></div>
                        <div id="preprocess1", style="display:block;padding:6px 12px;text-align:center;overflow: auto;">
-                           <div id="pre_selection" style="float:left; display: none;  width: 30%; height: 100%; background-color: #f2f1ed;">Select the relative variables
-                            <!--<input type = "text" id = "select_input" size = "20" placeholder="Using comma to divide var" /><br />
-                            <input type = "submit" value = "Submit" onclick="selectVar()"/><br />-->
-                            <script>document.write(pre_varlist());</script>
+                           <div id="pre_selection" style="float:left; display: none;  width: 30%; height: 100%; background-color: #f2f1ed;">Select the relative variables. 
+                            <!--<input type = "text" id = "select_input" size = "20" placeholder="Using comma to divide var" /><br />-->
+                              <form action="" method="get"> 
+                                <button onclick = "pre_varlist()"> Select </button>
+                                <div id="content"></div>
+                              </form>
                            </div>
+
+                           // <script>
+                           //    document.getElementById("pre_selection").innerHTML="Hello World!";
+                           //    //document.write("Hello World!");
+                           //    var selectArray = pre_varlist(); 
+                           //    document.write(selectArray[0];
+                           // </script>
                           
 
                         <div id="preprocess", style="display:none;text-align:center;width: 70%; height: 100%;  float: left; ">

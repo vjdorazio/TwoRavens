@@ -873,13 +873,19 @@ $(document).on('input', '#searchvar', function() {
   //get the current select var's name
   function pre_varlist(){
     console.log("pre_varList called ");
-    var selectVar = [];
+    var selectVar = new Array()
     for(var i=0; i<nodes.length;i++){
-      console.log(" pre process nodes : " + nodes[i].name);
-      selectVar[i] = nodes[i].name;
+      //selectVar[i] = nodes[i].name;
+      //console.log(" pre process nodes : " + selectVar[i]);
+
+      selectVar.push(nodes[i].name);
+      var div = document.getElementById("pre_selection");
+      //var html = .children[0].innerHTML += "<li>"+selectVar[selectVar.length-1]+"</li>";
+      //div.innerHTML+= "<li>"+selectVar[selectVar.length-1]+"</li>";
+      div.innerHTML+= '<label><input name="variable" type="checkbox" value="'+selectVar[selectVar.length-1]+'"/>'+selectVar[selectVar.length-1]+'</label><br /> ';
     }
 
-    return selectVar;
+    //return selectVar;
   }
 
 
@@ -3086,7 +3092,7 @@ function tabRight(tabid) {
         }
         else if(righttab=="btnPP" | d3.select("#rightpanel").attr("class")=="sidepanel container clearfix ") {toggleR()};
 
-        //pre_varlist();
+        pre_varlist();
   }
 
 	
