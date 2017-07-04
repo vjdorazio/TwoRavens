@@ -882,10 +882,23 @@ $(document).on('input', '#searchvar', function() {
       var div = document.getElementById("pre_selection");
       //var html = .children[0].innerHTML += "<li>"+selectVar[selectVar.length-1]+"</li>";
       //div.innerHTML+= "<li>"+selectVar[selectVar.length-1]+"</li>";
-      div.innerHTML+= '<label><input name="variable" type="checkbox" value="'+selectVar[selectVar.length-1]+'"/>'+selectVar[selectVar.length-1]+'</label><br /> ';
+      //div.innerHTML+= '<label><input name="variable" type="checkbox" value="'+selectVar[selectVar.length-1]+'"/>'+selectVar[selectVar.length-1]+'</label><br /> ';
+      div.innerHTML+= '<label><input name="variable" type="checkbox" value="'+i+'"/>'+selectVar[selectVar.length-1]+'</label><br /> ';
     }
 
     //return selectVar;
+  }
+
+
+  //get the currect decision var's name
+  function decisionVar(){
+    var variableList = document.getElementById("selectList").variable;
+    for(var i=0;i<variableList.length;i++){
+        if(variableList[i].checked){
+            //userid = radionum[i].value
+        }
+    }
+
   }
 
 
