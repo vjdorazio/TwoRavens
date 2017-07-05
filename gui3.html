@@ -386,27 +386,38 @@
 				console.log("switching to source");
 				document.getElementById("targetDiv").style.display = "none";
 				$("#targetTabBtn").removeClass("active").addClass("btn-default");
+				$("#sourceTabBtn").removeClass("btn-default").addClass("active");
 				break;
 			default:
 				console.log("switching to target");
 				document.getElementById("sourceDiv").style.display = "none";
 				$("#sourceTabBtn").removeClass("active").addClass("btn-default");
+				$("#targetTabBtn").removeClass("btn-default").addClass("active");
 				break;
 		}
-		//~ var actorTabContent, actorTabLink;
-		//~ actorTabContent = document.getElementsByClassName("actorTabContent");
-		//~ for (i = 0; i < actorTabContent.length; i++) {
-			//~ actorTabContent[i].style.display = "none";
-		//~ }
-		
-		//~ actorTabLink = document.getElementsByClassName("actorTabLink");
-		//~ for (i = 0; i < actorTabLink.length; i++) {
-			//~ actorTabLink[i].className = actorTabLink[i].className.replace(" active", "");
-		//~ }
 
 		document.getElementById(tab).style.display = "inline-block";
-		document.getElementById(origin).className += " active";
 	}
+
+	//expands divs with filters
+	$(".filterExpand").click(function() {
+		if (this.value == "expand") {
+			this.value = "collapse";
+			$(this).css("background-image", "url(collapse.png)");
+			$(this).next().next("div.filterContainer").show("fast");
+		}
+		else {
+			this.value = "expand";
+			$(this).css("background-image", "url(expand.png)");
+			$(this).next().next("div.filterContainer").hide("fast");
+		}
+	});
+
+	//popover
+	//~ $(function() {
+		//~ $("[data-toggle = 'popover']").popover({
+			//~ placement: "right", trigger: "hover"});
+	//~ });
 
 </script>
 <script src="app_ddi_eventdata.js"></script>

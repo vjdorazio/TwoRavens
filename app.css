@@ -1068,6 +1068,8 @@ display: inline;}
 div.actorTab button {
     position: relative;
 	float: left;
+	border: none !important;
+	outline: none !important;
 }
 
 /* create an active/current tablink class */

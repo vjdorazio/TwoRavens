@@ -3106,14 +3106,26 @@ function d3actor() {
 				lbl.className = "actorChkLbl";
 				lbl.id = "sourceSearchLbl"+x;
 				lbl.innerHTML = lines[x].replace(/["]+/g, '');
+
+				lbl.setAttribute("data-container", "body");
+				lbl.setAttribute("data-toggle", "popover");
+				lbl.setAttribute("data-placement", "right");
+				lbl.setAttribute("data-trigger", "hover");
+				lbl.setAttribute("data-content", "test lbl");
+
+				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
+				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
 				
 				sourceList.appendChild(chkbox);
 				sourceList.appendChild(lbl);
 				sourceList.appendChild(seperator);
 
 				fullSourceList.push(lines[x].replace(/["]+/g, ''));
+		//~ $('[data-toggle="popover"]').popover();
+		//~ $(".actorChkLbl").popover();
 			}
 		});
+
 
 		//load all source entities
 		$.get('/data/sourceEntity.csv', function(data) {
@@ -3142,6 +3154,15 @@ function d3actor() {
 				lbl.className = "actorChkLbl";
 				lbl.id = "sourceOrgLbl"+x;
 				lbl.innerHTML = orgs[x].replace(/["]+/g, '');
+
+				lbl.setAttribute("data-container", "body");
+				lbl.setAttribute("data-toggle", "popover");
+				lbl.setAttribute("data-placement", "right");
+				lbl.setAttribute("data-trigger", "hover");
+				lbl.setAttribute("data-content", "test lbl");
+
+				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
+				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
 				
 				orgList.appendChild(chkbox);
 				orgList.appendChild(lbl);
@@ -3166,6 +3187,15 @@ function d3actor() {
 				lbl.className = "actorChkLbl";
 				lbl.id = "sourceCountryLbl"+x;
 				lbl.innerHTML = lines[x].replace(/["]+/g, '');
+
+				lbl.setAttribute("data-container", "body");
+				lbl.setAttribute("data-toggle", "popover");
+				lbl.setAttribute("data-placement", "right");
+				lbl.setAttribute("data-trigger", "hover");
+				lbl.setAttribute("data-content", "test lbl");
+
+				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
+				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
 				
 				countryList.appendChild(chkbox);
 				countryList.appendChild(lbl);
@@ -3195,6 +3225,15 @@ function d3actor() {
 				lbl.className = "actorChkLbl";
 				lbl.id = "sourceRoleLbl"+x;
 				lbl.innerHTML = lines[x].replace(/["]+/g, '');
+
+				lbl.setAttribute("data-container", "body");
+				lbl.setAttribute("data-toggle", "popover");
+				lbl.setAttribute("data-placement", "right");
+				lbl.setAttribute("data-trigger", "hover");
+				lbl.setAttribute("data-content", "test lbl");
+
+				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
+				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
 				
 				sourceList.appendChild(chkbox);
 				sourceList.appendChild(lbl);
@@ -3224,6 +3263,15 @@ function d3actor() {
 				lbl.className = "actorChkLbl";
 				lbl.id = "sourceAttrLbl"+x;
 				lbl.innerHTML = lines[x].replace(/["]+/g, '');
+
+				lbl.setAttribute("data-container", "body");
+				lbl.setAttribute("data-toggle", "popover");
+				lbl.setAttribute("data-placement", "right");
+				lbl.setAttribute("data-trigger", "hover");
+				lbl.setAttribute("data-content", "test lbl");
+
+				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
+				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
 				
 				sourceList.appendChild(chkbox);
 				sourceList.appendChild(lbl);
@@ -3231,6 +3279,8 @@ function d3actor() {
 			}
 		});
 
+		//~ $(".actorChkLbl").popover();
+		//~ console.log("popover triggered");
 		$("#sourceTabBtn").trigger("click");
 	}
 
@@ -3336,20 +3386,6 @@ function d3actor() {
 		sourceCountrySelect = 0;
 		searchSource();
 	});
-
-	//expands divs with filters
-	$(".filterExpand").click(function() {
-		if (this.value == "expand") {
-			this.value = "collapse";
-			$(this).css("background-image", "url(collapse.png)");
-			$(this).next().next("div.filterContainer").show("fast");
-		}
-		else {
-			this.value = "expand";
-			$(this).css("background-image", "url(expand.png)");
-			$(this).next().next("div.filterContainer").hide("fast");
-		}
-	});
 	
 	//clear search box when reloading page
 	$("#searchSources").ready(function() {
@@ -3410,7 +3446,6 @@ function d3actor() {
 		}
 		searchSource();
 	});
-		
 
 	//searches for the specified text and filters (maybe implement escape characters for text search?)
 	function searchSource() {
@@ -3452,42 +3487,7 @@ function d3actor() {
 					$("#sourceSearchLbl" + x).css("display", "none");
 				}
 			}
-		}
-
-		//~ for (i = 0; i < fullSourceList.length; i++) {
-			//~ var matchSourceFilter = true;
-			//~ if (searchText != "" && fullSourceList[i].indexOf(searchText) == -1) {
-				//~ matchSourceFilter = false;
-			//~ }
-
-			//~ for (x = 0; matchSourceFilter && x < sourceFilterChecked.length; x++) {
-				//~ switch (sourceFilterChecked[x].substring(sourceFilterChecked[x].length - 4)) {
-					//~ case "orga":
-					//~ case "coun":
-						//~ //console.log(sourceFilterChecked[x] + "|||" + fullSourceList[x]);
-						//~ if (sourceFilterChecked[x].substring(0, 3) != fullSourceList[i].substring(0, 3)) {
-							//~ matchSourceFilter = false;
-						//~ }
-						//~ break;
-					//~ case "role":
-					//~ case "attr":
-						//~ var index = fullSourceList[i].indexOf(sourceFilterChecked[x].substring(0, 3));
-						//~ if (index < 0 || index%3 != 0) {
-							//~ matchSourceFilter = false;
-						//~ }
-						//~ break;
-				//~ }
-			//~ }
-			//~ if (matchSourceFilter) {
-				//~ $("#sourceSearchCheck"+i).css("display", "inline-block");
-				//~ $("#sourceSearchLbl" + i).css("display", "inline-block");
-			//~ }
-			//~ else {
-				//~ $("#sourceSearchCheck"+i).css("display", "none");
-				//~ $("#sourceSearchLbl" + i).css("display", "none");
-			//~ }
-		//~ }
-			
+		}			
 	}
 }
 
