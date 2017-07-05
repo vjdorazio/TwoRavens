@@ -3086,12 +3086,13 @@ function d3actor() {
  * Draw the main graph
  *
  **/
+ 
 function drawMainGraph() {	
 	
 	if(mapGraphSVG["main_graph"] != null) {
 		return;
 	}
-		
+	
 	$("#subsetLocation").append('<div class="container"><div id="subsetLocation_panel" class="row"></div></div>');
 
 	$("#subsetLocation_panel").append("<div class='col-xs-4' id='subsetLocationDivL'></div>");
@@ -3114,7 +3115,7 @@ function drawMainGraph() {
 				
 	mapGraphSVG["main_graph"] = svg;
 	
-	render("steelblue", false, 0); 
+	render(false, 0); 
 }
 	
 	
@@ -3123,36 +3124,24 @@ function drawMainGraph() {
  * with the links to create the sub-graph based on the data
  *
 **/
-function render(color, blnIsSubgraph, cid){
+var map_location_region_data = new Object();
+
+function render(blnIsSubgraph, cid){
 		
-	var dataFile = "";
 	var svg;
-	if(blnIsSubgraph == false) {
+	var maxDomainX = -1;
+	
+	if(!blnIsSubgraph) {
 	
 		console.log("Rendering Main Graph...");
 		
-		dataFile = "data/loc_main.csv";
 		svg = d3.select("#main_graph_svg");
-	}
-	else {
-		
-		console.log("Rendering Sub Graph... id = " + cid);
-		
-		dataFile = "data/loc_sub_"+cid+".csv";
-		svg = d3.select("#sub_graph_td_svg_"+cid);
-		
-		mapMainGraphIdWithSubGraphCnameList[cid] = [];
-		
-	}
-		
-	var margin = {top: 20, right: 20, bottom: 30, left: 80},
-    width = +svg.attr("width") - margin.left - margin.right,
-    height = +svg.attr("height") - margin.top - margin.bottom;
+		var margin = {top: 20, right: 20, bottom: 30, left: 135},
+		width = +svg.attr("width") - margin.left - margin.right,
+		height = +svg.attr("height") - margin.top - margin.bottom;
 	  
-	var x = d3.scaleLinear().range([0, width]);
-	var y = d3.scaleBand().range([height, 0]);
-	
-	if(blnIsSubgraph == false) {
+		var x = d3.scaleLinear().range([0, width]);
+		var y = d3.scaleBand().range([height, 0]);
 		
 		svg.append("defs").append("pattern")
 			.attr("id", "pattern1")
@@ -3167,104 +3156,114 @@ function render(color, blnIsSubgraph, cid){
 			.attr("x2", y.bandwidth()/20)
 			.attr("y2", y.bandwidth()/20)
 			.attr("style", "stroke:brown;stroke-width:5;"); 
-	}
+		
+		d3.tsv("data/locationplot.tsv", function(data) {
+		
+			var map_location_lookup = getMapLocationLookup();
+			
+			data.forEach(function(d) { 
+			
+				if(map_location_lookup.has(d.fullcname)) {
+				
+					var region = map_location_lookup.get(d.fullcname);
+				
+					if(map_location_region_data[region] == null) {
+						map_location_region_data[region] = [];
+					}
+				
+					map_location_region_data[region].push(d);
+				}
+				else {
+					
+					if(map_location_region_data["Other"] == null) {
+						map_location_region_data["Other"] = [];
+					}
+				
+					map_location_region_data["Other"].push(d);
+				}
+			});
+			
+			var arr_location_region_data = [];
+			var rid = 0;
+			for(var key in map_location_region_data) { 
+		
+				console.log(key);
+				var freq = map_location_region_data[key].length;
+				if(freq > maxDomainX) {
+					maxDomainX = freq;
+				}
+				
+				var rdata = new Object();
+				rdata.rid = "rid_" + (rid++);
+				rdata.rname = key;
+				rdata.freq = freq;
+				arr_location_region_data.push(rdata);
+			}
+			
+			
+			x.domain([0, maxDomainX]);
+			y.domain(arr_location_region_data.map(function(d) {return d.rname;})).padding(0.1);
+			
+			var g = svg.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
 
-	var g = svg.append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-		  
-	d3.csv(dataFile, function(d) {
-		d.freq = +d.freq;
-		return d;
-	}, function(error, data) {
-		if (error) throw error;
-  
-		//data.sort(function(a, b) { return b.freq - a.freq; });
-		data.sort(function(a, b) { return (a.cname > b.cname ? -1: (a.cname < b.cname ? 1 : 0 ) ); });
-  
-		x.domain([0, d3.max(data, function(d) { return d.freq; })]);
-		y.domain(data.map(function(d) { return d.cname; })).padding(0.1);
-
-		g.append("g")
+			g.append("g")
 			.attr("class", "x axis")
 			.attr("transform", "translate(0," + height + ")")
 			.call(d3.axisBottom(x).ticks(5).tickFormat(function(d) { return parseInt(d); }).tickSizeInner([-height]));
 
-		g.append("g")
+			g.append("g")
 			.attr("class", "y axis")
 			.call(d3.axisLeft(y));
-
-	
-		if(blnIsSubgraph == false) {
-			
+						
+				
 			g.selectAll(".bar")
-			.data(data)
-			.enter()
-			.append("rect")
-			.attr("class", "bar")
-			.attr("x", 0)
-			.attr("height", y.bandwidth())
-			.attr("y", function(d) { return y(d.cname); })
-			.attr("width", function(d) { return x(d.freq); })
-			.attr("onclick",  function (d) { mapGraphSVG[d.id] = null; mapIdCname[d.id] = d.cname; return "javascript:maingraphYLabelClicked('"+d.id+"')"; })
-			.attr("id", function(d) { return "tg_rect_" + d.id; });
+				.data(map_location_region_data)
+				.enter()
+				.append("rect")
+				.attr("class", "bar")
+				.attr("x", 0)
+				.attr("height", y.bandwidth())
+				.attr("y", function(d) { return y(d.rname); })
+				.attr("width", function(d) { return x(d.freq); })
+				.attr("onclick",  function (d) { mapGraphSVG[d.rid] = null; mapIdCname[d.rid] = d.rname; return "javascript:maingraphYLabelClicked('"+d.rid+"')"; })
+				.attr("id", function(d) { return "tg_rect_" + d.rid; });
 			
 			g.selectAll(".bar_label")
-			.data(data)
-			.enter()
-			.append("text")
-            .attr("class", "bar_label")        
-			.attr("x", function (d) { return x(d.freq) + 5;})
-            .attr("y", function (d) { return y(d.cname) + y.bandwidth() / 2 + 4;})
-            .text(function (d) { return "" + d.freq;});
+				.data(arr_location_region_data)
+				.enter()
+				.append("text")
+				.attr("class", "bar_label")        
+				.attr("x", function (d) { return x(d.freq) + 5;})
+				.attr("y", function (d) { return y(d.rname) + y.bandwidth() / 2 + 4;})
+				.text(function (d) { return "" + d.freq;});
 						
 			g.append("text")
-            .attr("text-anchor", "middle") 
-            .attr("transform", "translate("+ (-50) +","+(height/2)+")rotate(-90)") 
-			.attr("class", "graph_axis_label")
-            .text("Region");
-		}
-		else {
+				.attr("text-anchor", "middle") 
+				.attr("transform", "translate("+ (-115) +","+(height/2)+")rotate(-90)") 
+				.attr("class", "graph_axis_label")
+				.text("Region");
 			
-			g.selectAll(".bar")
-			.data(data)
-			.enter().append("rect")
-			.attr("class", "bar")
-			.attr("x", 0)
-			.attr("height", y.bandwidth())
-			.attr("y", function(d) { 
-			mapMainGraphIdWithSubGraphCnameList[cid].push(d.cname); 
-			mapSubGraphIdCname[d.cname] = cid + "_" + d.id;
-			if(mapListCountriesSelected[d.cname] == null) {mapListCountriesSelected[d.cname] = false;}
-			return y(d.cname); })
-			.attr("width", function(d) { return x(d.freq); })
-			.attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; })
-			.attr("id", function(d) { return "tg_rect_" + cid + "_" + d.id; });
 			
-			g.selectAll(".bar_label")
-			.data(data)
-			.enter()
-			.append("text")
-            .attr("class", "bar_label")        
-			.attr("x", function (d) { return x(d.freq) + 5;})
-            .attr("y", function (d) { return y(d.cname) + y.bandwidth() / 2 + 4;})
-            .text(function (d) { return "" + d.freq;});
 			
 			g.append("text")
-            .attr("text-anchor", "middle") 
-            .attr("transform", "translate("+ (-50) +","+(height/2)+")rotate(-90)") 
-			.attr("class", "graph_axis_label")
-            .text("Sub-Region of " + mapIdCname[cid]);
-		}
-		
-				
-
-        g.append("text")
             .attr("text-anchor", "middle") 
             .attr("transform", "translate("+ (width/2) +","+(height+30)+")") 
 			.attr("class", "graph_axis_label")
             .text("Frequency");
-			
-	});
+		
+		
+		});
+	}
+	else {
+		
+		console.log("Rendering Sub Graph... id = " + cid);
+		svg = d3.select("#sub_graph_td_svg_"+cid);
+		
+		mapMainGraphIdWithSubGraphCnameList[cid] = [];
+		
+	}
+
 }
 
 /**
@@ -3644,4 +3643,283 @@ function rightpanelMargin() {
     } else {
         document.getElementById("rightpanel").style.height = "calc(100% - 122px)";
     }
+}
+
+function initMapLocationRegionData() {
+	
+	var map_location_region_data = new Map();
+	map_location_region_data.set("Eastern Africa", []);
+	map_location_region_data.set("Central Africa", []);
+	map_location_region_data.set("Northern Africa", []);
+	map_location_region_data.set("Southern Africa", []);
+	map_location_region_data.set("Western Africa", []);
+	
+	map_location_region_data.set("Caribbean", []);
+	map_location_region_data.set("Central America", []);
+	map_location_region_data.set("South America", []);
+	map_location_region_data.set("Northern America", []);
+	
+	map_location_region_data.set("Central Asia", []);
+	map_location_region_data.set("Eastern Asia", []);
+	map_location_region_data.set("Southern Asia", []);
+	map_location_region_data.set("Southeastern Asia", []);
+	map_location_region_data.set("Western Asia", []);
+	
+	map_location_region_data.set("Eastern Europe", []);
+	map_location_region_data.set("Northern Europe", []);
+	map_location_region_data.set("Southern Europe", []);
+	map_location_region_data.set("Western Europe", []);
+	
+	map_location_region_data.set("Other", []);
+	
+	return map_location_region_data;
+}
+
+function getMapLocationLookup() {
+	
+	var map_location_lookup = new Map();
+	map_location_lookup.set("Burundi", "Eastern Africa");
+	map_location_lookup.set("Comoros", "Eastern Africa");
+	map_location_lookup.set("Djibouti", "Eastern Africa");
+	map_location_lookup.set("Eritrea", "Eastern Africa");
+	map_location_lookup.set("Ethiopia", "Eastern Africa");
+	map_location_lookup.set("Kenya", "Eastern Africa");
+	map_location_lookup.set("Madagascar", "Eastern Africa");
+	map_location_lookup.set("Malawi", "Eastern Africa");
+	map_location_lookup.set("Mauritius", "Eastern Africa");
+	map_location_lookup.set("Mayotte", "Eastern Africa");
+	map_location_lookup.set("Mozambique", "Eastern Africa");
+	map_location_lookup.set("Reunion", "Eastern Africa");
+	map_location_lookup.set("Rwanda", "Eastern Africa");
+	map_location_lookup.set("Seychelles", "Eastern Africa");
+	map_location_lookup.set("Somalia", "Eastern Africa");
+	map_location_lookup.set("South Sudan", "Eastern Africa");
+	map_location_lookup.set("Tanzania", "Eastern Africa");
+	map_location_lookup.set("Uganda", "Eastern Africa");
+	map_location_lookup.set("Zambia", "Eastern Africa");
+	map_location_lookup.set("Zimbabwe", "Eastern Africa");
+	
+	map_location_lookup.set("Angola", "Central Africa");
+	map_location_lookup.set("Cameroon", "Central Africa");
+	map_location_lookup.set("Central African Republic", "Central Africa");
+	map_location_lookup.set("Chad", "Central Africa");
+	map_location_lookup.set("Democratic Republic of the Congo", "Central Africa");
+	map_location_lookup.set("Equatorial Guinea", "Central Africa");
+	map_location_lookup.set("Gabon", "Central Africa");
+	map_location_lookup.set("Republic of the Congo", "Central Africa");
+	map_location_lookup.set("Sao Tome and Principe", "Central Africa");
+	
+	map_location_lookup.set("Algeria", "Northern Africa");
+	map_location_lookup.set("Egypt", "Northern Africa");
+	map_location_lookup.set("Libya", "Northern Africa");
+	map_location_lookup.set("Morocco", "Northern Africa");
+	map_location_lookup.set("Sudan", "Northern Africa");
+	map_location_lookup.set("Tunisia", "Northern Africa");
+	map_location_lookup.set("Western Sahara", "Northern Africa");
+			
+	map_location_lookup.set("Botswana", "Southern Africa");
+	map_location_lookup.set("Botswana", "Southern Africa");
+	map_location_lookup.set("Namibia", "Southern Africa");
+	map_location_lookup.set("South Africa", "Southern Africa");
+	map_location_lookup.set("Swaziland", "Southern Africa");
+	
+	map_location_lookup.set("Benin", "Western Africa");
+	map_location_lookup.set("Burkina Faso", "Western Africa");
+	map_location_lookup.set("Cabo Verde", "Western Africa");
+	map_location_lookup.set("Cote d'Ivoire", "Western Africa");
+	map_location_lookup.set("Gambia", "Western Africa");
+	map_location_lookup.set("Ghana", "Western Africa");
+	map_location_lookup.set("Guinea", "Western Africa");
+	map_location_lookup.set("Guinea-Bissau", "Western Africa");
+	map_location_lookup.set("Liberia", "Western Africa");
+	map_location_lookup.set("Mali", "Western Africa");
+	map_location_lookup.set("Mauritania", "Western Africa");
+	map_location_lookup.set("Niger", "Western Africa");
+	map_location_lookup.set("Nigeria", "Western Africa");
+	map_location_lookup.set("Saint Helena", "Western Africa");
+	map_location_lookup.set("Saint Helena, Ascension and Tristan da Cunha", "Western Africa");
+	map_location_lookup.set("Senegal", "Western Africa");
+	map_location_lookup.set("Sierra Leone", "Western Africa");
+	map_location_lookup.set("Togo", "Western Africa");
+	
+	
+	map_location_lookup.set("Anguilla", "Caribbean");
+	map_location_lookup.set("Antigua and Barbuda", "Caribbean");
+	map_location_lookup.set("Aruba", "Caribbean");
+	map_location_lookup.set("Bahamas", "Caribbean");
+	map_location_lookup.set("Barbados", "Caribbean");
+	map_location_lookup.set("Bonaire, Sint Eustatius and Saba", "Caribbean");
+	map_location_lookup.set("British Virgin Islands", "Caribbean");
+	map_location_lookup.set("Cayman Islands", "Caribbean");
+	map_location_lookup.set("Cuba", "Caribbean");
+	map_location_lookup.set("Curaçao", "Caribbean");
+	map_location_lookup.set("Dominica", "Caribbean");
+	map_location_lookup.set("Dominican Republic", "Caribbean");
+	map_location_lookup.set("Grenada", "Caribbean");
+	map_location_lookup.set("Guadeloupe", "Caribbean");
+	map_location_lookup.set("Haiti", "Caribbean");
+	map_location_lookup.set("Jamaica", "Caribbean");
+	map_location_lookup.set("Martinique", "Caribbean");
+	map_location_lookup.set("Montserrat", "Caribbean");
+	map_location_lookup.set("Navassa Island", "Caribbean");
+	map_location_lookup.set("Puerto Rico", "Caribbean");
+	map_location_lookup.set("Saint-Barthelemy", "Caribbean");
+	map_location_lookup.set("Saint Kitts and Nevis", "Caribbean");
+	map_location_lookup.set("Saint Lucia", "Caribbean");
+	map_location_lookup.set("Saint Martin", "Caribbean");
+	map_location_lookup.set("Saint Vincent and the Grenadines", "Caribbean");
+	map_location_lookup.set("Sint Maarten", "Caribbean");
+	map_location_lookup.set("Trinidad and Tobago", "Caribbean");
+	map_location_lookup.set("Turks and Caicos Islands", "Caribbean");
+	map_location_lookup.set("United States Virgin Islands", "Caribbean");
+	
+	map_location_lookup.set("Belize", "Central America");
+	map_location_lookup.set("Costa Rica", "Central America");
+	map_location_lookup.set("Clipperton Island", "Central America");
+	map_location_lookup.set("El Salvador", "Central America");
+	map_location_lookup.set("Guatemala", "Central America");
+	map_location_lookup.set("Honduras", "Central America");
+	map_location_lookup.set("Mexico", "Central America");
+	map_location_lookup.set("Nicaragua", "Central America");
+	map_location_lookup.set("Panama", "Central America");
+	
+	
+	map_location_lookup.set("Argentina", "South America");
+	map_location_lookup.set("Bolivia", "South America");
+	map_location_lookup.set("Bouvet Island", "South America");
+	map_location_lookup.set("Brazil", "South America");
+	map_location_lookup.set("Chile", "South America");
+	map_location_lookup.set("Colombia", "South America");
+	map_location_lookup.set("Ecuador", "South America");
+	map_location_lookup.set("Falkland Islands", "South America");
+	map_location_lookup.set("French Guiana", "South America");
+	map_location_lookup.set("Guyana", "South America");
+	map_location_lookup.set("Paraguay", "South America");
+	map_location_lookup.set("Peru", "South America");
+	map_location_lookup.set("South Georgia and the South Sandwich Islands", "South America");
+	map_location_lookup.set("Suriname", "South America");
+	map_location_lookup.set("Uruguay", "South America");
+	map_location_lookup.set("Venezuela", "South America");
+	
+	map_location_lookup.set("Bermuda", "Northern America");
+	map_location_lookup.set("Canada", "Northern America");
+	map_location_lookup.set("Greenland", "Northern America");
+	map_location_lookup.set("Saint Pierre and Miquelon", "Northern America");
+	map_location_lookup.set("United States of America", "Northern America");
+	
+	map_location_lookup.set("Kazakhstan", "Central Asia");
+	map_location_lookup.set("Kyrgyzstan", "Central Asia");
+	map_location_lookup.set("Tajikistan", "Central Asia");
+	map_location_lookup.set("Turkmenistan", "Central Asia");
+	map_location_lookup.set("Uzbekistan", "Central Asia");
+	
+	map_location_lookup.set("China", "Eastern Asia");
+	map_location_lookup.set("Hong Kong", "Eastern Asia");
+	map_location_lookup.set("Japan", "Eastern Asia");
+	map_location_lookup.set("Macau", "Eastern Asia");
+	map_location_lookup.set("Mongolia", "Eastern Asia");
+	map_location_lookup.set("North Korea", "Eastern Asia");
+	map_location_lookup.set("South Korea", "Eastern Asia");
+	
+	map_location_lookup.set("Afghanistan", "Southern Asia");
+	map_location_lookup.set("Bangladesh", "Southern Asia");
+	map_location_lookup.set("Bhutan", "Southern Asia");
+	map_location_lookup.set("India", "Southern Asia");
+	map_location_lookup.set("Iran", "Southern Asia");
+	map_location_lookup.set("Maldives", "Southern Asia");
+	map_location_lookup.set("Nepal", "Southern Asia");
+	map_location_lookup.set("Pakistan", "Southern Asia");
+	map_location_lookup.set("Sri Lanka", "Southern Asia");
+		
+	map_location_lookup.set("Brunei Darussalam", "Southeastern Asia");
+	map_location_lookup.set("Cambodia", "Southeastern Asia");
+	map_location_lookup.set("Indonesia", "Southeastern Asia");
+	map_location_lookup.set("Laos", "Southeastern Asia");
+	map_location_lookup.set("Malaysia", "Southeastern Asia");
+	map_location_lookup.set("Myanmar", "Southeastern Asia");
+	map_location_lookup.set("Philippines", "Southeastern Asia");
+	map_location_lookup.set("Singapore", "Southeastern Asia");
+	map_location_lookup.set("Thailand", "Southeastern Asia");
+	map_location_lookup.set("Timor-Leste", "Southeastern Asia");
+	map_location_lookup.set("Viet Nam", "Southeastern Asia");
+	
+	map_location_lookup.set("Armenia", "Western Asia");
+	map_location_lookup.set("Azerbaijan", "Western Asia");
+	map_location_lookup.set("Bahrain", "Western Asia");
+	map_location_lookup.set("Cyprus", "Western Asia");
+	map_location_lookup.set("Georgia", "Western Asia");
+	map_location_lookup.set("Iraq", "Western Asia");
+	map_location_lookup.set("Israel", "Western Asia");
+	map_location_lookup.set("Jordan", "Western Asia");
+	map_location_lookup.set("Kuwait", "Western Asia");
+	map_location_lookup.set("Lebanon", "Western Asia");
+	map_location_lookup.set("Oman", "Western Asia");
+	map_location_lookup.set("Qatar", "Western Asia");
+	map_location_lookup.set("Saudi Arabia", "Western Asia");
+	map_location_lookup.set("State of Palestine", "Western Asia");
+	map_location_lookup.set("Syria", "Western Asia");
+	map_location_lookup.set("Turkey", "Western Asia");
+	map_location_lookup.set("United Arab Emirates", "Western Asia");
+	map_location_lookup.set("Yemen", "Western Asia");
+	
+	map_location_lookup.set("Belarus", "Eastern Europe");
+	map_location_lookup.set("Bulgaria", "Eastern Europe");
+	map_location_lookup.set("Czech Republic", "Eastern Europe");
+	map_location_lookup.set("Hungary", "Eastern Europe");
+	map_location_lookup.set("Poland", "Eastern Europe");
+	map_location_lookup.set("Republic of Moldova", "Eastern Europe");
+	map_location_lookup.set("Romania", "Eastern Europe");
+	map_location_lookup.set("Russian Federation", "Eastern Europe");
+	map_location_lookup.set("Slovakia", "Eastern Europe");
+	map_location_lookup.set("Ukraine", "Eastern Europe");
+	
+	map_location_lookup.set("Aland Islands", "Northern Europe");
+	map_location_lookup.set("Denmark", "Northern Europe");
+	map_location_lookup.set("Estonia", "Northern Europe");
+	map_location_lookup.set("Faroe Islands", "Northern Europe");
+	map_location_lookup.set("Finland", "Northern Europe");
+	map_location_lookup.set("Guernsey", "Northern Europe");
+	map_location_lookup.set("Iceland", "Northern Europe");
+	map_location_lookup.set("Republic of Ireland", "Northern Europe");
+	map_location_lookup.set("Ireland", "Northern Europe");
+	map_location_lookup.set("Isle of Man", "Northern Europe");
+	map_location_lookup.set("Jersey", "Northern Europe");
+	map_location_lookup.set("Latvia", "Northern Europe");
+	map_location_lookup.set("Lithuania", "Northern Europe");
+	map_location_lookup.set("Norway", "Northern Europe");
+	map_location_lookup.set("Sark", "Northern Europe");
+	map_location_lookup.set("Svalbard and Jan Mayen", "Northern Europe");
+	map_location_lookup.set("Svalbard and Jan Mayen Islands", "Northern Europe");
+	map_location_lookup.set("Sweden", "Northern Europe");
+	map_location_lookup.set("United Kingdom", "Northern Europe");
+	
+	map_location_lookup.set("Albania", "Southern Europe");
+	map_location_lookup.set("Andorra", "Southern Europe");
+	map_location_lookup.set("Bosnia and Herzegovina", "Southern Europe");
+	map_location_lookup.set("Croatia", "Southern Europe");
+	map_location_lookup.set("Gibraltar", "Southern Europe");
+	map_location_lookup.set("Greece", "Southern Europe");
+	map_location_lookup.set("Italy", "Southern Europe");
+	map_location_lookup.set("Republic of Macedonia", "Southern Europe");
+	map_location_lookup.set("Macedonia", "Southern Europe");
+	map_location_lookup.set("Malta", "Southern Europe");
+	map_location_lookup.set("Montenegro", "Southern Europe");
+	map_location_lookup.set("Portugal", "Southern Europe");
+	map_location_lookup.set("San Marino", "Southern Europe");
+	map_location_lookup.set("Serbia", "Southern Europe");
+	map_location_lookup.set("Slovenia", "Southern Europe");
+	map_location_lookup.set("Spain", "Southern Europe");
+	map_location_lookup.set("Vatican City", "Southern Europe");
+		
+	map_location_lookup.set("Austria", "Western Europe");
+	map_location_lookup.set("Belgium", "Western Europe");
+	map_location_lookup.set("France", "Western Europe");
+	map_location_lookup.set("Germany", "Western Europe");
+	map_location_lookup.set("Liechtenstein", "Western Europe");
+	map_location_lookup.set("Luxembourg", "Western Europe");
+	map_location_lookup.set("Monaco", "Western Europe");
+	map_location_lookup.set("Netherlands", "Western Europe");
+	map_location_lookup.set("Switzerland", "Western Europe");
+	
+	return map_location_lookup;
 }
