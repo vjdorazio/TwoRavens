@@ -293,6 +293,7 @@ var preprocess = {};
 var mods = new Object;
 var mods_ml = new Object;
 var mods_pp = new Object;
+var mods_ps = new Object;
 console.log("Value of username: ",username);
 //This function finds whether a key is present in the json file, and sends the key's value if present.
 function findValue(json, key) {
@@ -485,7 +486,10 @@ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
 
                               });
 
+                      d3.json(){
+                        mods_ps[] = pre_varlist()
 
+                      }
 
 						
                       });
@@ -760,6 +764,36 @@ function scaffolding(callback) {
     .attr("data-content", function(d){
          return mods_pp[d];
          });
+
+
+    // d3.select("#pre_selection")
+    // .style('height', 500)
+    // .style('overfill', 'scroll');
+    
+    // var pre_select = Object.keys(mods_pp);
+    
+    // d3.select("#pre_selection").selectAll("p")
+    // .data(pre_select)
+    // .enter()
+    // .append("p")
+    // .attr("id", function(d){
+    //      return "_preprocess_select_".concat(d);
+    //      })
+    // .text(function(d){return d;})
+    // .style('background-color',function(d) {
+    //      return varColor;
+    //       })
+    // .attr("data-container", "body")
+    // .attr("data-toggle", "popover")
+    // .attr("data-trigger", "hover")
+    // .attr("data-placement", "top")
+    // .attr("data-html", "true")
+    // .attr("onmouseover", "$(this).popover('toggle');")
+    // .attr("onmouseout", "$(this).popover('toggle');")
+    // .attr("data-original-title", "Preprocess Description")
+    // .attr("data-content", function(d){
+    //      return mods_pp[d];
+    //      });
 	
 	
     if(typeof callback === "function") {
@@ -879,14 +913,14 @@ $(document).on('input', '#searchvar', function() {
       //console.log(" pre process nodes : " + selectVar[i]);
 
       selectVar.push(nodes[i].name);
-      var div = document.getElementById("pre_selection");
+      //var div = document.getElementById("pre_selection");
       //var html = .children[0].innerHTML += "<li>"+selectVar[selectVar.length-1]+"</li>";
       //div.innerHTML+= "<li>"+selectVar[selectVar.length-1]+"</li>";
       //div.innerHTML+= '<label><input name="variable" type="checkbox" value="'+selectVar[selectVar.length-1]+'"/>'+selectVar[selectVar.length-1]+'</label><br /> ';
-      div.innerHTML+= '<label><input name="variable" type="checkbox" value="'+i+'"/>'+selectVar[selectVar.length-1]+'</label><br /> ';
+      //div.innerHTML+= '<label><input name="variable" type="checkbox" value="'+i+'"/>'+selectVar[selectVar.length-1]+'</label><br /> ';
     }
 
-    //return selectVar;
+    return selectVar;
   }
 
 
