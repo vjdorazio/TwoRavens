@@ -18,6 +18,7 @@
 
         <script type="text/javascript" src="d3.v3.min.js"></script>
         <script type="text/javascript" src="plots.js"></script>
+
   </head>
 
 <!--svg id="accidents">
@@ -210,12 +211,15 @@
 
                        <div id="result_left" style="width: 50%; height: 100%; float:left;background-color: white; display:none; border-right:groove; border-bottom: groove ;overflow:auto; white-space:nowrap; ">
                            <!--div id="resultsView" class="container" style="width:100%; height: 100%; background-color:white; display:none; float:left; overflow:auto; white-space:nowrap; border-right: groove" -->
+                           <h4 style=" margin-left: 20px; display: block;">Scatter Plot</h4>
+                                   <div id="scatterplot" class="container3" style="width: 500px; height: 70%; background-color: white;display: none; overflow:auto;">
+                                   <h4 id="NAcount" style="margin-bottom: 5px;"></h4>
 
-                                   <div id="scatterplot" class="container3" style="width: 49%; height: 400px; background-color: white;display: none; float:left;overflow:auto;">  </div>
+                                   </div>
 
+                           <button id="heatmap_welcome" class="container4" onclick="heatmap()" style=" display: block;  margin:0 auto;">Heatmap</button>
 
-
-                                   <div id="heatchart" class="container4" style="width: 49%; height:400px; background-color: white ;display: none; float:left;overflow:auto;"> </div>
+                                   <div id="heatchart" class="container4" style="width: 500px; height:40%; background-color:white ;display: none; overflow:auto;"> </div>
 
 
 

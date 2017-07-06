@@ -390,6 +390,35 @@ div#scatterplot, div#heatchart {
     margin-top: 20px;
 }
 
+div#scatterplot rect {
+    fill: #EFEBE9;
+    shape-rendering: crispEdges;
+
+}
+
+div#scatterplot .axis path,
+div#scatterplot .axis line {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.1);
+    shape-rendering: crispEdges;
+}
+
+div#scatterplot .axisLine {
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke: rgba(0, 0, 0, 0.5);
+    stroke-width: 2px;
+}
+div#scatterplot .axis
+{
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke: rgba(0, 0, 0, 0.5);
+    stroke-width: 1px;
+
+}
+
+
 
 
 
