@@ -1099,6 +1099,7 @@ div.actorTab button.active {
 }
 
 #actorSelectionDiv {
+	width: 340px;
 	border: 1px solid #ADADAD;
 	top: 72px;
 	left: 10px;
@@ -1106,12 +1107,6 @@ div.actorTab button.active {
 	background: #F9F9F9;
 	margin-top: 10px;
 	margin-bottom: 4px;
-}
-
-.actorSeperator {
-	height: 0px;
-	display: block;
-	visibility: hidden;
 }
 
 .filterExpand {

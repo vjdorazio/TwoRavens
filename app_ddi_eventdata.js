@@ -3083,8 +3083,125 @@ function d3actor() {
 
 	var sourceOrgLength = orgs.length, sourceCountryLength;
 	var sourceOrgSelect = 0, sourceCountrySelect = 0;
+
+	var actorType = ["source"];
+	var actorOrder = ["Full", "Entity", "Role", "Attr"];
 	
 	window.onload = function(){
+		//read dictionary and store for fast retrieval
+
+		for (var m = 0; m < actorType.length; m++) {
+			var orgList;
+			if (m == 0) {
+				orgList = document.getElementById("orgSourcesList");
+			}
+			//else orgList = document.getElementById("orgTargetsList");
+			for (y = 0; y < orgs.length; y ++) {
+				var seperator = document.createElement("div");
+				seperator.className = "seperator";
+
+				var chkbox = document.createElement("input");
+				chkbox.type = "checkbox";
+				chkbox.name = actorType[m] + "OrgCheck";
+				chkbox.id = actorType[m] + "OrgCheck" + y;
+				chkbox.value = orgs[y].replace(/["]+/g, '');
+				chkbox.className = "actorChk";
+				chkbox.onchange = function(){sourceFilterChanged(this);};
+
+				var lbl = document.createElement("label");
+				lbl.htmlFor = actorType[m] + "OrgCheck" + y;
+				lbl.className = "actorChkLbl";
+				lbl.id = actorType[m] + y;
+				lbl.innerHTML = orgs[y].replace(/["]+/g, '');
+
+				lbl.setAttribute("data-container", "body");
+				lbl.setAttribute("data-toggle", "popover");
+				lbl.setAttribute("data-placement", "right");
+				lbl.setAttribute("data-trigger", "hover");
+				lbl.setAttribute("data-content", "test lbl");
+
+				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
+				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
+				
+				orgList.appendChild(chkbox);
+				orgList.appendChild(lbl);
+				orgList.appendChild(seperator);
+			}
+
+			
+			for (var i = 0; i < actorOrder.length; i++) {
+				loadActorData(i,m);
+			}
+
+			function loadActorData(i,m) {
+				$.get('data/' + actorType[m] + actorOrder[i] + '.csv', function(data) {
+					var lines = data.split("\n");
+					var displayList;
+					var chkSwitch = true;		//enables code for filter
+					switch (actorType[m] + actorOrder[i]) {
+						case "sourceFull":
+							displayList = document.getElementById("searchListSources");
+							chkSwitch = false;
+							break;
+						case "sourceEntity":
+							displayList = document.getElementById("countrySourcesList");
+							lines = lines.filter(function(val) {
+								return !(orgs.indexOf(val) > -1);
+							});
+							sourceCountryLength = lines.length;
+							actorOrder[i] = "Country";
+							break;
+						case "sourceRole":
+							displayList = document.getElementById("roleSourcesList");
+							break;
+						case "sourceAttr":
+							displayList = document.getElementById("attributeSourcesList");
+							break;
+					}
+					for (x = 0; x < lines.length - 1; x++) {
+						var seperator = document.createElement("div");
+						seperator.className = "seperator";
+
+						var chkbox = document.createElement("input");
+						chkbox.type = "checkbox";
+						chkbox.name = actorType[m] + actorOrder[i] + "Check";
+						chkbox.id = actorType[m] + actorOrder[i] + "Check" + x;
+						chkbox.value = lines[x].replace(/["]+/g, '');
+						chkbox.className = "actorChk";
+						if (chkSwitch) {
+							chkbox.onchange = function(){sourceFilterChanged(this);};
+						}
+
+						var lbl = document.createElement("label");
+						lbl.htmlFor = actorType[m] + actorOrder[i] + "Check" + x;
+						lbl.className = "actorChkLbl";
+						lbl.id = actorType[m] + actorOrder[i] + "Lbl" + x;
+						lbl.innerHTML = lines[x].replace(/["]+/g, '');
+
+						lbl.setAttribute("data-container", "body");
+						lbl.setAttribute("data-toggle", "popover");
+						lbl.setAttribute("data-placement", "right");
+						lbl.setAttribute("data-trigger", "hover");
+						lbl.setAttribute("data-content", "test lbl");
+
+						lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
+						lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
+						
+						displayList.appendChild(chkbox);
+						displayList.appendChild(lbl);
+						displayList.appendChild(seperator);
+
+						switch (actorType[m] + actorOrder[i]) {
+							case "sourceFull":
+								fullSourceList.push(lines[x].replace(/["]+/g, ''));
+								break;
+						}
+					}
+				});
+			}
+		}
+		//end of test			
+		/*
 		//load all sources
 		$.get('data/sourceFull.csv', function(data) {
 			var lines = data.split("\n");
@@ -3092,19 +3209,19 @@ function d3actor() {
 			var sourceList = document.getElementById('searchListSources');
 			for (x = 0; x < lines.length - 1; x++) {
 				var seperator = document.createElement("div");
-				seperator.className = "sourceSeperator";
+				seperator.className = "seperator";
 				
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
-				chkbox.name = "sourceSearchCheck";
-				chkbox.id = "sourceSearchCheck"+x;
+				chkbox.name = "sourceFullCheck";
+				chkbox.id = "sourceFullCheck"+x;
 				chkbox.value = lines[x].replace(/["]+/g, '');
 				chkbox.className = "actorChk";
 
 				var lbl = document.createElement("label");
-				lbl.htmlFor = "sourceSearchCheck"+x;
+				lbl.htmlFor = "sourceFullCheck"+x;
 				lbl.className = "actorChkLbl";
-				lbl.id = "sourceSearchLbl"+x;
+				lbl.id = "sourceFullLbl"+x;
 				lbl.innerHTML = lines[x].replace(/["]+/g, '');
 
 				lbl.setAttribute("data-container", "body");
@@ -3121,11 +3238,8 @@ function d3actor() {
 				sourceList.appendChild(seperator);
 
 				fullSourceList.push(lines[x].replace(/["]+/g, ''));
-		//~ $('[data-toggle="popover"]').popover();
-		//~ $(".actorChkLbl").popover();
 			}
 		});
-
 
 		//load all source entities
 		$.get('/data/sourceEntity.csv', function(data) {
@@ -3139,7 +3253,7 @@ function d3actor() {
 			var orgList = document.getElementById("orgSourcesList");
 			for (x = 0; x < orgs.length; x ++) {
 				var seperator = document.createElement("div");
-				seperator.className = "sourceSeperator";
+				seperator.className = "seperator";
 
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
@@ -3172,7 +3286,7 @@ function d3actor() {
 			var countryList = document.getElementById("countrySourcesList");
 			for (x = 0; x < lines.length - 1; x ++) {
 				var seperator = document.createElement("div");
-				seperator.className = "sourceSeperator";
+				seperator.className = "seperator";
 
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
@@ -3210,7 +3324,7 @@ function d3actor() {
 			var sourceList = document.getElementById('roleSourcesList');
 			for (x = 0; x < lines.length - 1; x++) {
 				var seperator = document.createElement("div");
-				seperator.className = "sourceSeperator";
+				seperator.className = "seperator";
 				
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
@@ -3248,7 +3362,7 @@ function d3actor() {
 			var sourceList = document.getElementById('attributeSourcesList');
 			for (x = 0; x < lines.length - 1; x++) {
 				var seperator = document.createElement("div");
-				seperator.className = "sourceSeperator";
+				seperator.className = "seperator";
 				
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
@@ -3278,9 +3392,7 @@ function d3actor() {
 				sourceList.appendChild(seperator);
 			}
 		});
-
-		//~ $(".actorChkLbl").popover();
-		//~ console.log("popover triggered");
+		*/
 		$("#sourceTabBtn").trigger("click");
 	}
 
@@ -3383,7 +3495,9 @@ function d3actor() {
 		sourceFilterChecked.length = 0;	//clear filter array
 		sourceEntityChecked.length = 0;
 		sourceOrgSelect = 0;
+		$("#sourceOrgAllCheck").prop("checked", false).prop("indeterminate", false);
 		sourceCountrySelect = 0;
+		$("#sourceCountryAllCheck").prop("checked", false).prop("indeterminate", false);
 		searchSource();
 	});
 	
@@ -3461,8 +3575,8 @@ function d3actor() {
 				}
 			}
 			if (!matched && sourceEntityChecked.length > 0) {
-				$("#sourceSearchCheck"+x).css("display", "none");
-				$("#sourceSearchLbl" + x).css("display", "none");
+				$("#sourceFullCheck"+x).css("display", "none");
+				$("#sourceFullLbl" + x).css("display", "none");
 			}
 			else {
 				var matchSourceFilter = true;
@@ -3479,12 +3593,12 @@ function d3actor() {
 					}
 				}
 				if (matchSourceFilter) {
-					$("#sourceSearchCheck"+x).css("display", "inline-block");
-					$("#sourceSearchLbl" + x).css("display", "inline-block");
+					$("#sourceFullCheck"+x).css("display", "inline-block");
+					$("#sourceFullLbl" + x).css("display", "inline-block");
 				}
 				else {
-					$("#sourceSearchCheck"+x).css("display", "none");
-					$("#sourceSearchLbl" + x).css("display", "none");
+					$("#sourceFullCheck"+x).css("display", "none");
+					$("#sourceFullLbl" + x).css("display", "none");
 				}
 			}
 		}			
