@@ -15,7 +15,6 @@
 // local files if nothing is supplied. 
 // -- L.A.
 
-
 var production=false;
 var private=false;
 
@@ -3070,48 +3069,53 @@ function d3action() {
 
 
 
-function d3actor() {
+function d3actor() {}
 	var sourceFilterChecked = [];
 	var sourceEntityChecked = [];
 	var targetFilterChecked = [];
 	var targetEntityChecked = [];
 
-	var fullSourceList = [];
-	var fullTargetList= [];
+	var sourceFullList = [];
+	var targetFullList= [];
 	
 	var orgs = ["IGO", "IMG", "MNC", "NGO"]		//hard coded organizations to remove from entities list; hopefully temporary
 
 	var sourceOrgLength = orgs.length, sourceCountryLength;
 	var sourceOrgSelect = 0, sourceCountrySelect = 0;
 
-	var actorType = ["source"];
-	var actorOrder = ["Full", "Entity", "Role", "Attr"];
+	var targetOrgLength = orgs.length, targetCountryLength;
+	var targetOrgSelect = 0, targetCountrySelect = 0;
+
+	var actorType = ["source", "target"];
+	var actorOrder = ["sourceFull", "sourceEntity", "sourceRole", "sourceAttr", "targetFull", "targetEntity", "targetRole", "targetAttr"];
 	
 	window.onload = function(){
 		//read dictionary and store for fast retrieval
 
-		for (var m = 0; m < actorType.length; m++) {
+		for (n = 0; n < 2; n++) {
 			var orgList;
-			if (m == 0) {
+			if (n == 0) {
 				orgList = document.getElementById("orgSourcesList");
 			}
-			//else orgList = document.getElementById("orgTargetsList");
+			else {
+				orgList = document.getElementById("orgTargetsList");
+			}
 			for (y = 0; y < orgs.length; y ++) {
 				var seperator = document.createElement("div");
 				seperator.className = "seperator";
 
 				var chkbox = document.createElement("input");
 				chkbox.type = "checkbox";
-				chkbox.name = actorType[m] + "OrgCheck";
-				chkbox.id = actorType[m] + "OrgCheck" + y;
+				chkbox.name = actorType[n] + "OrgCheck";
+				chkbox.id = actorType[n] + "OrgCheck" + y;
 				chkbox.value = orgs[y].replace(/["]+/g, '');
 				chkbox.className = "actorChk";
-				chkbox.onchange = function(){sourceFilterChanged(this);};
+				chkbox.onchange = function(){actorFilterChanged(this);};
 
 				var lbl = document.createElement("label");
-				lbl.htmlFor = actorType[m] + "OrgCheck" + y;
+				lbl.htmlFor = actorType[n] + "OrgCheck" + y;
 				lbl.className = "actorChkLbl";
-				lbl.id = actorType[m] + y;
+				lbl.id = actorType[n] + y;
 				lbl.innerHTML = orgs[y].replace(/["]+/g, '');
 
 				lbl.setAttribute("data-container", "body");
@@ -3127,55 +3131,72 @@ function d3actor() {
 				orgList.appendChild(lbl);
 				orgList.appendChild(seperator);
 			}
+		}
 
-			
-			for (var i = 0; i < actorOrder.length; i++) {
-				loadActorData(i,m);
-			}
-
-			function loadActorData(i,m) {
-				$.get('data/' + actorType[m] + actorOrder[i] + '.csv', function(data) {
-					var lines = data.split("\n");
+		for (var i = 0; i < actorOrder.length; i++) {
+			(function(i) {
+				$.get('data/' + actorOrder[i] + '.csv', function(data) {
+					var lines = data.split('\n');
 					var displayList;
 					var chkSwitch = true;		//enables code for filter
-					switch (actorType[m] + actorOrder[i]) {
-						case "sourceFull":
+					switch (i) {
+						case 0:
 							displayList = document.getElementById("searchListSources");
 							chkSwitch = false;
 							break;
-						case "sourceEntity":
+						case 1:
 							displayList = document.getElementById("countrySourcesList");
 							lines = lines.filter(function(val) {
 								return !(orgs.indexOf(val) > -1);
 							});
 							sourceCountryLength = lines.length;
-							actorOrder[i] = "Country";
+							actorOrder[i] = "sourceCountry";
 							break;
-						case "sourceRole":
+						case 2:
 							displayList = document.getElementById("roleSourcesList");
 							break;
-						case "sourceAttr":
+						case 3:
 							displayList = document.getElementById("attributeSourcesList");
 							break;
+						case 4:
+							displayList = document.getElementById("searchListTargets");
+							chkSwitch = false;
+							break;
+						case 5:
+							displayList = document.getElementById("countryTargetsList");
+							lines = lines.filter(function(val) {
+								return !(orgs.indexOf(val) > -1);
+							});
+							targetCountryLength = lines.length;
+							actorOrder[i] = "targetCountry";
+							break;
+						case 6:
+							displayList = document.getElementById("roleTargetsList");
+							break;
+						case 7:
+							displayList = document.getElementById("attributeTargetsList");
+							break;
+						default: console.log("????" + i);
 					}
+
 					for (x = 0; x < lines.length - 1; x++) {
 						var seperator = document.createElement("div");
 						seperator.className = "seperator";
 
 						var chkbox = document.createElement("input");
 						chkbox.type = "checkbox";
-						chkbox.name = actorType[m] + actorOrder[i] + "Check";
-						chkbox.id = actorType[m] + actorOrder[i] + "Check" + x;
+						chkbox.name = actorOrder[i] + "Check";
+						chkbox.id = actorOrder[i] + "Check" + x;
 						chkbox.value = lines[x].replace(/["]+/g, '');
 						chkbox.className = "actorChk";
 						if (chkSwitch) {
-							chkbox.onchange = function(){sourceFilterChanged(this);};
+							chkbox.onchange = function(){actorFilterChanged(this);};
 						}
 
 						var lbl = document.createElement("label");
-						lbl.htmlFor = actorType[m] + actorOrder[i] + "Check" + x;
+						lbl.htmlFor = actorOrder[i] + "Check" + x;
 						lbl.className = "actorChkLbl";
-						lbl.id = actorType[m] + actorOrder[i] + "Lbl" + x;
+						lbl.id = actorOrder[i] + "Lbl" + x;
 						lbl.innerHTML = lines[x].replace(/["]+/g, '');
 
 						lbl.setAttribute("data-container", "body");
@@ -3186,424 +3207,275 @@ function d3actor() {
 
 						lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
 						lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
-						
+
 						displayList.appendChild(chkbox);
 						displayList.appendChild(lbl);
 						displayList.appendChild(seperator);
 
-						switch (actorType[m] + actorOrder[i]) {
+						switch (actorOrder[i]) {
 							case "sourceFull":
-								fullSourceList.push(lines[x].replace(/["]+/g, ''));
+								sourceFullList.push(lines[x].replace(/["]+/g, ''));
+								break;
+							case "targetFull":
+								targetFullList.push(lines[x].replace(/["]+/g, ''));
 								break;
 						}
 					}
 				});
-			}
+			})(i);
 		}
-		//end of test			
-		/*
-		//load all sources
-		$.get('data/sourceFull.csv', function(data) {
-			var lines = data.split("\n");
-
-			var sourceList = document.getElementById('searchListSources');
-			for (x = 0; x < lines.length - 1; x++) {
-				var seperator = document.createElement("div");
-				seperator.className = "seperator";
-				
-				var chkbox = document.createElement("input");
-				chkbox.type = "checkbox";
-				chkbox.name = "sourceFullCheck";
-				chkbox.id = "sourceFullCheck"+x;
-				chkbox.value = lines[x].replace(/["]+/g, '');
-				chkbox.className = "actorChk";
-
-				var lbl = document.createElement("label");
-				lbl.htmlFor = "sourceFullCheck"+x;
-				lbl.className = "actorChkLbl";
-				lbl.id = "sourceFullLbl"+x;
-				lbl.innerHTML = lines[x].replace(/["]+/g, '');
-
-				lbl.setAttribute("data-container", "body");
-				lbl.setAttribute("data-toggle", "popover");
-				lbl.setAttribute("data-placement", "right");
-				lbl.setAttribute("data-trigger", "hover");
-				lbl.setAttribute("data-content", "test lbl");
-
-				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
-				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
-				
-				sourceList.appendChild(chkbox);
-				sourceList.appendChild(lbl);
-				sourceList.appendChild(seperator);
-
-				fullSourceList.push(lines[x].replace(/["]+/g, ''));
-			}
-		});
-
-		//load all source entities
-		$.get('/data/sourceEntity.csv', function(data) {
-			var lines = data.split("\n");
-
-			lines = lines.filter(function(val) {
-				return !(orgs.indexOf(val) > -1);
-			});
-			sourceCountryLength = lines.length;
-
-			var orgList = document.getElementById("orgSourcesList");
-			for (x = 0; x < orgs.length; x ++) {
-				var seperator = document.createElement("div");
-				seperator.className = "seperator";
-
-				var chkbox = document.createElement("input");
-				chkbox.type = "checkbox";
-				chkbox.name = "sourceOrgCheck";
-				chkbox.id = "sourceOrgCheck"+x;
-				chkbox.value = orgs[x].replace(/["]+/g, '');
-				chkbox.className = "actorChk";
-				chkbox.onchange = function(){sourceFilterChanged(this);};
-
-				var lbl = document.createElement("label");
-				lbl.htmlFor = "sourceOrgCheck"+x;
-				lbl.className = "actorChkLbl";
-				lbl.id = "sourceOrgLbl"+x;
-				lbl.innerHTML = orgs[x].replace(/["]+/g, '');
-
-				lbl.setAttribute("data-container", "body");
-				lbl.setAttribute("data-toggle", "popover");
-				lbl.setAttribute("data-placement", "right");
-				lbl.setAttribute("data-trigger", "hover");
-				lbl.setAttribute("data-content", "test lbl");
-
-				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
-				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
-				
-				orgList.appendChild(chkbox);
-				orgList.appendChild(lbl);
-				orgList.appendChild(seperator);
-			}
-
-			var countryList = document.getElementById("countrySourcesList");
-			for (x = 0; x < lines.length - 1; x ++) {
-				var seperator = document.createElement("div");
-				seperator.className = "seperator";
-
-				var chkbox = document.createElement("input");
-				chkbox.type = "checkbox";
-				chkbox.name = "sourceCountryCheck";
-				chkbox.id = "sourceCountryCheck"+x;
-				chkbox.value = lines[x].replace(/["]+/g, '');
-				chkbox.className = "actorChk";
-				chkbox.onchange = function(){sourceFilterChanged(this);};
-
-				var lbl = document.createElement("label");
-				lbl.htmlFor = "sourceCountryCheck"+x;
-				lbl.className = "actorChkLbl";
-				lbl.id = "sourceCountryLbl"+x;
-				lbl.innerHTML = lines[x].replace(/["]+/g, '');
-
-				lbl.setAttribute("data-container", "body");
-				lbl.setAttribute("data-toggle", "popover");
-				lbl.setAttribute("data-placement", "right");
-				lbl.setAttribute("data-trigger", "hover");
-				lbl.setAttribute("data-content", "test lbl");
-
-				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
-				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
-				
-				countryList.appendChild(chkbox);
-				countryList.appendChild(lbl);
-				countryList.appendChild(seperator);
-			}			
-		});
-		
-		//load source roles
-		$.get('/data/sourceRole.csv', function(data) {
-			var lines = data.split("\n");
-
-			var sourceList = document.getElementById('roleSourcesList');
-			for (x = 0; x < lines.length - 1; x++) {
-				var seperator = document.createElement("div");
-				seperator.className = "seperator";
-				
-				var chkbox = document.createElement("input");
-				chkbox.type = "checkbox";
-				chkbox.name = "sourceRoleCheck";
-				chkbox.id = "sourceRoleCheck"+x;
-				chkbox.value = lines[x].replace(/["]+/g, '');
-				chkbox.className = "actorChk";
-				chkbox.onchange = function(){sourceFilterChanged(this);};
-
-				var lbl = document.createElement("label");
-				lbl.htmlFor = "sourceRoleCheck"+x;
-				lbl.className = "actorChkLbl";
-				lbl.id = "sourceRoleLbl"+x;
-				lbl.innerHTML = lines[x].replace(/["]+/g, '');
-
-				lbl.setAttribute("data-container", "body");
-				lbl.setAttribute("data-toggle", "popover");
-				lbl.setAttribute("data-placement", "right");
-				lbl.setAttribute("data-trigger", "hover");
-				lbl.setAttribute("data-content", "test lbl");
-
-				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
-				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
-				
-				sourceList.appendChild(chkbox);
-				sourceList.appendChild(lbl);
-				sourceList.appendChild(seperator);
-			}
-		});
-
-		//load source attributes
-		$.get('/data/sourceAttr.csv', function(data) {
-			var lines = data.split("\n");
-
-			var sourceList = document.getElementById('attributeSourcesList');
-			for (x = 0; x < lines.length - 1; x++) {
-				var seperator = document.createElement("div");
-				seperator.className = "seperator";
-				
-				var chkbox = document.createElement("input");
-				chkbox.type = "checkbox";
-				chkbox.name = "sourceAttrCheck";
-				chkbox.id = "sourceAttrCheck"+x;
-				chkbox.value = lines[x].replace(/["]+/g, '');
-				chkbox.className = "actorChk";
-				chkbox.onchange = function(){sourceFilterChanged(this);};
-
-				var lbl = document.createElement("label");
-				lbl.htmlFor = "sourceAttrCheck"+x;
-				lbl.className = "actorChkLbl";
-				lbl.id = "sourceAttrLbl"+x;
-				lbl.innerHTML = lines[x].replace(/["]+/g, '');
-
-				lbl.setAttribute("data-container", "body");
-				lbl.setAttribute("data-toggle", "popover");
-				lbl.setAttribute("data-placement", "right");
-				lbl.setAttribute("data-trigger", "hover");
-				lbl.setAttribute("data-content", "test lbl");
-
-				lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
-				lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
-				
-				sourceList.appendChild(chkbox);
-				sourceList.appendChild(lbl);
-				sourceList.appendChild(seperator);
-			}
-		});
-		*/
 		$("#sourceTabBtn").trigger("click");
 	}
 
 	//when checkbox checked, add or remove filter
-	function sourceFilterChanged(element) {
+	function actorFilterChanged(element) {
 		element.checked = !!(element.checked);
-		var ending = getSourceEnding(element);
+		var ending = getActorEnding(element);
+		var currentActorType = element.id.substring(0, 6);
 		if (element.checked) {
 			if (ending == "orga" || ending == "coun") {
-				sourceEntityChecked.push(element.value + ending);
+				window[currentActorType + "EntityChecked"].push(element.value + ending);
 				switch(ending) {
 					case "orga":
-						sourceOrgSelect++;
-						if (sourceOrgSelect == sourceOrgLength) {
-							$("#sourceOrgAllCheck").prop("checked", true);
-							$("#sourceOrgAllCheck").prop("indeterminate", false);
+						window[currentActorType + "OrgSelect"]++;
+						if (window[currentActorType + "OrgSelect"] == window[currentActorType + "OrgLength"]) {
+							$("#" + currentActorType + "OrgAllCheck").prop("checked", true);
+							$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", false);
 						}
 						else {
-							$("#sourceOrgAllCheck").prop("checked", false);
-							$("#sourceOrgAllCheck").prop("indeterminate", true);
+							$("#" + currentActorType + "OrgAllCheck").prop("checked", false);
+							$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", true);
 						}
 						break;
 					case "coun":
-						sourceCountrySelect++;
-						if (sourceCountrySelect == sourceCountryLength) {
-							$("#sourceCountryAllCheck").prop("checked", true);
-							$("#sourceCountryAllCheck").prop("indeterminate", false);
+						window[currentActorType + "CountrySelect"]++;
+						if (window[currentActorType + "CountrySelect"] == window[currentActorType + "CountryLength"]) {
+							$("#" + currentActorType + "CountryAllCheck").prop("checked", true);
+							$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", false);
 						}
 						else {
-							$("#sourceCountryAllCheck").prop("check", false);
-							$("#sourceCountryAllCheck").prop("indeterminate", true);
+							$("#" + currentActorType + "CountryAllCheck").prop("check", false);
+							$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", true);
 						}
 						break;
 					}
 			}
 			else {
-				sourceFilterChecked.push(element.value + ending);
+				window[currentActorType + "FilterChecked"].push(element.value + ending);
 			}
-			searchSource();
 		}
 		else {
 			if (ending == "orga" || ending == "coun"){
-				var index = sourceEntityChecked.indexOf(element.value + ending);
+				var index = window[currentActorType + "EntityChecked"].indexOf(element.value + ending);
 				if (index > -1 ) {
-					sourceEntityChecked.splice(index, 1);
+					window[currentActorType + "EntityChecked"].splice(index, 1);
 					switch(ending) {
 					case "orga":
-						sourceOrgSelect--;
-						if (sourceOrgSelect == 0) {
-							$("#sourceOrgAllCheck").prop("checked", false);
-							$("#sourceOrgAllCheck").prop("indeterminate", false);
+						window[currentActorType + "OrgSelect"]--;
+						if (window[currentActorType + "OrgSelect"] == 0) {
+							$("#" + currentActorType + "OrgAllCheck").prop("checked", false);
+							$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", false);
 						}
 						else {
-							$("#sourceOrgAllCheck").prop("checked", false);
-							$("#sourceOrgAllCheck").prop("indeterminate", true);
+							$("#" + currentActorType + "OrgAllCheck").prop("checked", false);
+							$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", true);
 						}
 						break;
 					case "coun":
-						sourceCountrySelect--;
-						if (sourceCountrySelect == 0) {
-							$("#sourceCountryAllCheck").prop("checked", false);
-							$("#sourceCountryAllCheck").prop("indeterminate", false);
+						window[currentActorType + "CountrySelect"]--;
+						if (window[currentActorType + "CountrySelect"] == 0) {
+							$("#" + currentActorType + "CountryAllCheck").prop("checked", false);
+							$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", false);
 						}
 						else {
-							$("#sourceCountryAllCheck").prop("check", false);
-							$("#sourceCountryAllCheck").prop("indeterminate", true);
+							$("#" + currentActorType + "CountryAllCheck").prop("check", false);
+							$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", true);
 						}
 						break;
 					}
 				}
 			}
 			else {
-				var index = sourceFilterChecked.indexOf(element.value + ending);
+				var index = window[currentActorType + "FilterChecked"].indexOf(element.value + ending);
 				if (index > -1) {
-					sourceFilterChecked.splice(index, 1);
+					window[currentActorType + "FilterChecked"].splice(index, 1);
 				}
 			}
-			searchSource();
 		}
+		actorSearch(currentActorType);
 	}
 
 	//returns a string of the type of filter; element is a checkbox
-	function getSourceEnding(element) {
-			switch (element.name) {
-				case "sourceOrgCheck":
-					return "orga";
-				case "sourceCountryCheck":
-					return "coun";
-				case "sourceRoleCheck":
-					return "role";
-				case "sourceAttrCheck":
-					return "attr";
-			}
+	function getActorEnding(element) {
+		switch (element.name.substring(6)) {
+			case "OrgCheck":
+				return "orga";
+			case "CountryCheck":
+				return "coun";
+			case "RoleCheck":
+				return "role";
+			case "AttrCheck":
+				return "attr";
 		}
+	}
 
 	//clears search and filter selections
-	$("#clearAllSources").on("click", function() {
-		document.getElementById("searchSources").value = "";
-		$("#filterSources :checkbox").prop("checked", false);
-		sourceFilterChecked.length = 0;	//clear filter array
-		sourceEntityChecked.length = 0;
-		sourceOrgSelect = 0;
-		$("#sourceOrgAllCheck").prop("checked", false).prop("indeterminate", false);
-		sourceCountrySelect = 0;
-		$("#sourceCountryAllCheck").prop("checked", false).prop("indeterminate", false);
-		searchSource();
+	$(".clearActorBtn").click(function(event) {
+		var currentActorType = event.target.id.substring(8, 14).toLowerCase();
+		document.getElementById(currentActorType + "Search").value = "";
+		$("#" + currentActorType + "Filter :checkbox").prop("checked", false);
+		window[currentActorType + "FilterChecked"].length = 0;
+		window[currentActorType + "EntityChecked"].length = 0;
+		window[currentActorType + "OrgSelect"] = 0;
+		$("#" + currentActorType + "OrgAllCheck").prop("checked", false).prop("indeterminate", false);
+		window[currentActorType + "CountrySelect"] = 0;
+		$("#" + currentActorType + "CountryAllCheck").prop("checked", false).prop("indeterminate", false);
+		actorSearch(currentActorType);
 	});
 	
 	//clear search box when reloading page
-	$("#searchSources").ready(function() {
-		$("#searchSources").val("");
+	$(".actorSearch").ready(function() {
+		$(".actorSearch").val("");
 	});
 
 	//when typing in search box
-	$("#searchSources").on("keyup", function() {
-		searchSource();
+	$(".actorSearch").on("keyup", function(event) {
+		actorSearch(event.target.id.substring(0, 6));
 	});
 
 	//on load of page, keep unchecked
-	$("#sourceOrgAllCheck").ready(function() {
-		$("#sourceOrgAllCheck").prop("checked", false);
+	$(".allCheck").ready(function() {
+		$(".allCheck").prop("checked", false);
 	});
 
-	//on load of page, keep unchecked
-	$("#sourceCountryAllCheck").ready(function() {
-		$("#sourceCountryAllCheck").prop("checked", false);
-	});
+	//selects all checks for specified element
+	$(".allCheck").click(function(event) {
+		var currentActorType = event.target.id.substring(0, 6);
+		var currentEntityType = event.target.id.substring(6, 9);
+		var currentElement = (currentEntityType == "Org") ? $("#" + currentActorType + currentEntityType + "AllCheck") : $("#" + currentActorType + "CountryAllCheck");
 
+		currentElement.prop("indeterminate", false);
+		if (currentElement.prop("checked")) {
+			if (currentEntityType == "Org") {
+				$("#org" + currentActorType.charAt(0).toUpperCase() + currentActorType.substring(1) + "sList input:checkbox:not(:checked)").each(function() {
+					window[currentActorType + "EntityChecked"].push(this.value + "orga");
+					$(this).prop("checked", true);
+				});
+				window[currentActorType + "OrgSelect"] = window[currentActorType + "OrgLength"];
+			}
+			else {
+				$("#country" + currentActorType.charAt(0).toUpperCase() + currentActorType.substring(1) + "sList input:checkbox:not(:checked)").each(function() {
+					window[currentActorType + "EntityChecked"].push(this.value + "coun");
+					$(this).prop("checked", true);
+				});
+				window[currentActorType + "CountrySelect"] = window[currentActorType + "CountryLength"];
+			}
+		}
+		else {
+			if (currentEntityType == "Org") {
+				$("#org" + currentActorType.charAt(0).toUpperCase() + currentActorType.substring(1) + "sList input:checkbox:checked").each(function() {
+					window[currentActorType + "EntityChecked"].splice(window[currentActorType + "EntityChecked"].indexOf(this.value + "orga"), 1);
+					$(this).prop("checked", false);
+				});
+				window[currentActorType + "OrgSelect"] = 0;
+			}
+			else {
+				$("#country" + currentActorType.charAt(0).toUpperCase() + currentActorType.substring(1) + "sList input:checkbox:checked").each(function() {
+					window[currentActorType + "EntityChecked"].splice(window[currentActorType + "EntityChecked"].indexOf(this.value + "coun"), 1);
+					$(this).prop("checked", false);
+				});
+				window[currentActorType + "CountrySelect"] = 0;
+			}
+		}
+		actorSearch(currentActorType);
+	});
 	//select all checks for org if select all org
-	$("#sourceOrgAllCheck").click(function() {
-		$(this).prop("indeterminate", false);
-		if (this.checked) {
-			$("#orgSourcesList input:checkbox:not(:checked)").each(function() {
-				sourceEntityChecked.push(this.value + "orga");
-				$(this).prop("checked", true);
-			});
-			sourceOrgSelect = sourceOrgLength;
-		}
-		else {
-			$("#orgSourcesList input:checkbox:checked").each(function() {
-				sourceEntityChecked.splice(sourceEntityChecked.indexOf(this.value + "orga"), 1);
-				$(this).prop("checked", false);
-			});
-			sourceOrgSelect = 0;
-		}
-		searchSource();
-	});
+	//~ $("#sourceOrgAllCheck").click(function() {
+		//~ $(this).prop("indeterminate", false);
+		//~ if (this.checked) {
+			//~ $("#orgSourcesList input:checkbox:not(:checked)").each(function() {
+				//~ sourceEntityChecked.push(this.value + "orga");
+				//~ $(this).prop("checked", true);
+			//~ });
+			//~ sourceOrgSelect = sourceOrgLength;
+		//~ }
+		//~ else {
+			//~ $("#orgSourcesList input:checkbox:checked").each(function() {
+				//~ sourceEntityChecked.splice(sourceEntityChecked.indexOf(this.value + "orga"), 1);
+				//~ $(this).prop("checked", false);
+			//~ });
+			//~ sourceOrgSelect = 0;
+		//~ }
+		//~ actorSearch("source");
+	//~ });
 
-	//select all checked for country if select all country
-	$("#sourceCountryAllCheck").click(function() {
-		$(this).prop("indeterminate", false);
-		if (this.checked) {
-			$("#countrySourcesList input:checkbox:not(:checked)").each(function() {
-				sourceEntityChecked.push(this.value + "coun");
-				$(this).prop("checked", true);
-				sourceCountrySelect = sourceCountryLength;
-			});
-		}
-		else {
-			$("#countrySourcesList input:checkbox:checked").each(function() {
-				sourceEntityChecked.splice(sourceEntityChecked.indexOf(this.value + "coun"), 1);
-				$(this).prop("checked", false);
-				sourceCountrySelect = 0;
-			});
-		}
-		searchSource();
-	});
+	//~ //select all checked for country if select all country
+	//~ $("#sourceCountryAllCheck").click(function() {
+		//~ $(this).prop("indeterminate", false);
+		//~ if (this.checked) {
+			//~ $("#countrySourcesList input:checkbox:not(:checked)").each(function() {
+				//~ sourceEntityChecked.push(this.value + "coun");
+				//~ $(this).prop("checked", true);
+				//~ sourceCountrySelect = sourceCountryLength;
+			//~ });
+		//~ }
+		//~ else {
+			//~ $("#countrySourcesList input:checkbox:checked").each(function() {
+				//~ sourceEntityChecked.splice(sourceEntityChecked.indexOf(this.value + "coun"), 1);
+				//~ $(this).prop("checked", false);
+				//~ sourceCountrySelect = 0;
+			//~ });
+		//~ }
+		//~ actorSearch("source");
+	//~ });
 
 	//searches for the specified text and filters (maybe implement escape characters for text search?)
-	function searchSource() {
-		var searchText = $("#searchSources").val().toUpperCase();
+	function actorSearch(actorName) {
+		actorName = actorName.toLowerCase();
+		var searchText = $("#" + actorName + "Search").val().toUpperCase();
 
-		for (x = 0; x < fullSourceList.length; x++) {
+		var listLen = window[actorName + "FullList"].length;
+		for (x = 0; x < listLen; x++) {
 			var matched = false;
 			//search for entity
-			for (i = 0; i < sourceEntityChecked.length; i++) {
-				if (sourceEntityChecked[i].substring(0, 3) == fullSourceList[x].substring(0, 3)) {
+			var tempLen = window[actorName + "EntityChecked"].length;
+			for (i = 0; i < tempLen; i++) {
+				if (window[actorName + "EntityChecked"][i].substring(0, 3) == window[actorName + "FullList"][x].substring(0, 3)) {
 					matched = true;
 					break;
 				}
 			}
-			if (!matched && sourceEntityChecked.length > 0) {
-				$("#sourceFullCheck"+x).css("display", "none");
-				$("#sourceFullLbl" + x).css("display", "none");
+			if (!matched && window[actorName + "EntityChecked"].length > 0) {
+				$("#" + actorName + "FullCheck"+x).css("display", "none");
+				$("#" + actorName + "FullLbl" + x).css("display", "none");
 			}
 			else {
-				var matchSourceFilter = true;
+				var matchFilter = true;
 				//search for text
-				if (searchText != "" && fullSourceList[x].indexOf(searchText) == -1) {
-					matchSourceFilter = false;
+				if (searchText != "" && window[actorName + "FullList"][x].indexOf(searchText) == -1) {
+					matchFilter = false;
 				}
 
 				//search for other filters
-				for (i = 0; matchSourceFilter && i < sourceFilterChecked.length; i++) {
-					var index = fullSourceList[x].indexOf(sourceFilterChecked[i].substring(0, 3));
+				tempLen = window[actorName + "FilterChecked"].length;
+				for (i = 0; matchFilter && i < tempLen; i++) {
+					var index = window[actorName + "FullList"][x].indexOf(window[actorName + "FilterChecked"][i].substring(0, 3));
 					if (index < 0 || index%3 != 0) {
-						matchSourceFilter = false;
+						matchFilter = false;
 					}
 				}
-				if (matchSourceFilter) {
-					$("#sourceFullCheck"+x).css("display", "inline-block");
-					$("#sourceFullLbl" + x).css("display", "inline-block");
+				if (matchFilter) {
+					$("#" + actorName + "FullCheck"+x).css("display", "inline-block");
+					$("#" + actorName + "FullLbl" + x).css("display", "inline-block");
 				}
 				else {
-					$("#sourceFullCheck"+x).css("display", "none");
-					$("#sourceFullLbl" + x).css("display", "none");
+					$("#" + actorName + "FullCheck"+x).css("display", "none");
+					$("#" + actorName + "FullLbl" + x).css("display", "none");
 				}
 			}
 		}			
 	}
-}
+//}
 
 /**
  * Variables declared for location

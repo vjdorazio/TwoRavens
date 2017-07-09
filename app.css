@@ -1049,6 +1049,13 @@ display: inline;}
 	left:50%;
 }
 
+/*begin styling for actor*/
+
+#tabDiv {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
 #sourceTabBtn {
 	width: 50%;
 	border-top-right-radius: 0;
@@ -1098,6 +1105,64 @@ div.actorTab button.active {
     to {opacity: 1;}
 }
 
+#fullContainer {
+	margin-top: 40px;
+	width: 100%;
+	height: calc(100% - 110px);
+	box-sizing: border-box;
+}
+
+.actorTabContent {
+	width: 100%;
+	height: 100%;
+}
+
+.actorLeft {
+	width: 180px;
+	height: 100%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.actorRight {
+	width: 150px;
+	height: 100%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.actorSearch {
+	margin: 5px 0 5px 5px;
+	height: 30px;
+	width: 175px;
+}
+
+.actorFullList {
+	display: inline-block;
+	position: absolute;
+	width :180px;
+	height: calc(100% - 180px);
+	overflow-x: scroll;
+	overflow-y: scroll;
+	white-space: nowrap;
+}
+
+.actorFilterList {
+	display: inline-block;
+	position: absolute;
+	width: 150px;
+	height: calc(100% - 180px);
+	overflow-x: scroll;
+	overflow-y: scroll;
+	white-space: nowrap;
+}
+
+.clearActorBtn {
+	display: block;
+	margin: 5px;
+	height: 30px;
+}
+
 #actorSelectionDiv {
 	width: 340px;
 	border: 1px solid #ADADAD;
@@ -1107,6 +1172,11 @@ div.actorTab button.active {
 	background: #F9F9F9;
 	margin-top: 10px;
 	margin-bottom: 4px;
+}
+
+.actorHead4 {
+	margin-bottom: 0px;
+	display: inline-block;
 }
 
 .filterExpand {
@@ -1132,3 +1202,4 @@ div.actorTab button.active {
 	display: inline-block;
 	margin-right: 10px;
 }
+/*end styling for actor*/
