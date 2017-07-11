@@ -1,31 +1,35 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <title>TwoRavens</title>
 
-        <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
-        <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
-        
-        <link rel="stylesheet" href="app.css">
-				
-        <link rel="stylesheet" href="Ladda/dist/ladda-themeless.min.css">
-         <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css">
-           
-        <script src="Ladda/dist/spin.min.js"></script>
-        <script src="Ladda/dist/ladda.min.js"></script>
-        
-        <script type="text/javascript" src="jquery/jquery.min.js"></script>
-          <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
 
-      <!--NOTE: JQuery-ui must be loaded before bootstrap-->
-      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-      <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="app.css">
 
-        <script type="text/javascript" src="d3.v3.min.js"></script>
-        <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
-        <!-- <script type="text/javascript" src="plots.js"></script> -->
-  </head>
+    <link rel="stylesheet" href="Ladda/dist/ladda-themeless.min.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css">
+
+    <script src="Ladda/dist/spin.min.js"></script>
+    <script src="Ladda/dist/ladda.min.js"></script>
+
+    <script type="text/javascript" src="jquery/jquery.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+
+    <!--Used for right panel query tree-->
+    <script src="jqtree/tree.jquery.js"></script>
+    <link rel="stylesheet" href="jqtree/jqtree.css">
+
+    <!--NOTE: JQuery-ui must be loaded before bootstrap-->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="d3.v3.min.js"></script>
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <!-- <script type="text/javascript" src="plots.js"></script> -->
+</head>
 
 <!--svg id="accidents">
 <defs>
@@ -101,13 +105,7 @@
             <h3 class="panel-title">Query Listing</h3>
         </div>
 
-        <div id="queryTree" class="container" style="width:245px;padding-right:0;margin-top:3px;padding-top:3px;">
-            <div id="rootTree" data-elements='0' style='width:calc(100% + 2px);margin-left:-15px;'>
-                <div id="buttonTray" style="text-align: center;margin-bottom:10px">
-                    <button type='button' class='btn btn-primary btn-xs' onclick='addRule(this.parentElement.parentElement)' style="margin-left:5px">Add Rule</button>
-                    <button type='button' class='btn btn-primary btn-xs' onclick='addGroup(this.parentElement.parentElement)'>Add Group</button>
-                </div>
-            </div>
+        <div id="queryTree" style="width:232px">
         </div>
         <button id="Submit Query" class="btn btn-default ladda-button" data-spinner-color="#000000" onclick="buildQuery(document.getElementById('rootTree'))" type="button" style="left:calc(50% - 21px);position:absolute;bottom:10px">Submit</button>
     </div>
@@ -131,7 +129,7 @@
                 <input id="todate" class="form-control" type="text">
             </div>
         </div>
-        
+
         <div id="subsetLocation" class="canvas" style="display:none">
         </div>
 
@@ -156,7 +154,7 @@
 						</div>
 					</div>
 				</div>
-			
+
 				<div id="targetDiv" class="form-group>" style="display:inline-block; width:50%; float:left;">
 					<label id="targetActorLab" style="text-align:center; width:100%;">Target Actor</label>
 					<div id="targSelectionDiv">
@@ -187,17 +185,17 @@
 							<!--checks will be added dynamically in JS once at load-->
 						</div>
 					</div>
-					
+
 					<div id="filterSources" style="width:45%; float:right; height:200px; overflow-y:scroll; border: 1px solid red;">
 						<h4 id="entitySources" style="margin-bottom:0px;"><b>Entity</b></h4>
 						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceEntityCheck" type="checkbox" value="org1">org1</label>
 						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceEntityCheck" type="checkbox" value="org2">org2</label>
-						
+
 						<h4 id="roleSources" style="margin-bottom:0px;"><b>Role</b></h4>
 						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceRoleCheck" type="checkbox" value="role1">role1</label>
 						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceRoleCheck" type="checkbox" value="role2">role2</label>
 						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceRoleCheck" type="checkbox" value="role3">role3</label>
-						
+
 						<h4 id="attributeSources" style="margin-bottom:0px;"><b>Attributes</b></h4>
 						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceAttrCheck" type="checkbox" value="attr1">attr1</label>
 						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceAttrCheck" type="checkbox" value="attr2">attr2</label>
@@ -206,7 +204,7 @@
 				</div>
 
 
-				
+
 			</div>
         </div>
 

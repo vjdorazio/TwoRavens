@@ -1462,15 +1462,16 @@ function callquery(btn){
 
 
     if(selectedevent.length===0)
-    delete qr["query"]["root_code"]    
+    delete qr["query"]["root_code"]
+
+    // console.log("jsonout",jsonout);
     //out.push({type:"postquery",query:{"date8":{"$gte":fromdate,"$lte":todate},"country_code":{"$in": selectedcountry},"source":{"$in":sourcecode},"target":{"$in":targetcode}}});
-    
+
     // qry='{"date8":{"$gte":"'+fromdate+'","$lte":"'+todate+'"},"country_code":{"$in":"'+selectedcountry+'"},"source":{"$in":"'+sourcecode+'"},"target":{"$in":}}';
     //qr["query"]=qry;
-    jsonout=JSON.stringify(qr);
-    // console.log("jsonout",jsonout);
-    
-    urlcall = rappURL+"queryapp"; //base.concat(jsonout);
+    var urlcall = rappURL+"queryapp"; //base.concat(jsonout);
+
+    var jsonout = JSON.stringify(qr);
     var solajsonout = "solaJSON="+jsonout;
 
     function downloadSuccess(btn, json) {
