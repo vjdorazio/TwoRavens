@@ -3314,7 +3314,9 @@ function render(blnIsSubgraph, cid){
 			return y(d.cname); })
 			.attr("width", function(d) { return x(d.freq); })
 			.attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; })
-			.attr("id", function(d) { return "tg_rect_" + cid + "_" + d.id; });
+			.attr("id", function(d) { return "tg_rect_" + cid + "_" + d.id; })
+			.append("svg:title")
+			.text(function(d) { return d.fullcname; });
 			
 			g.selectAll(".bar_label")
 			.data(arr_countries)
@@ -3670,18 +3672,16 @@ function removeFromCountryList(cname) {
 
 function locationStage() {
 	
-	var listToText = "Location = [ ";
+	var lstLocation = [];
 	
 	for(var country in mapListCountriesSelected) {
 		var bool = mapListCountriesSelected[country];
 		if(bool) {
-			listToText += "\"" + country + "\" ; ";
+			lstLocation.push(country);
 		}
 	}
-	
-	listToText += "]";
-	
-	alert(listToText);
+		
+	alert("Location = [ " + lstLocation + " ]");
 }
 
 window.onresize = rightpanelMargin;
