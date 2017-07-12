@@ -537,6 +537,19 @@ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
   */
 
 
+
+// function populatePopoverVariable () {
+    
+//     d3.select("#pre_selection").selectAll("p")
+//     .attr("data-content", function(d) {
+      
+//           var onNode = findNodeIndex(d);
+        
+//           return popoverContent(allNodes[onNode]);
+//           });
+// }
+
+
 //get the current select var's name
 function pre_varlist(){
     console.log("pre_varList called ");
@@ -575,11 +588,12 @@ function pre_varlist(){
     .attr("data-html", "true")
     .attr("onmouseover", "$(this).popover('toggle');")
     .attr("onmouseout", "$(this).popover('toggle');")
-    .attr("data-content", function(d){
-         return mods_ps[d];
-         });
+    // .attr("data-content", function(d){
+    //      return mods_ps[d];
+    //      });
     //return mods_ps;
 
+        //click action
     d3.select("#pre_selection").selectAll("p") // preprocess tab
     .on("mouseover", function(d) {
         // REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
@@ -590,27 +604,84 @@ function pre_varlist(){
         //d3.select("#tooltip").style("display", "none");
         })
         //  d3.select("#Display_content")
-        .on("click", function(d){
-          console.log(d.toString()+" is clicked");
-            pre_varlist();
-            var myColor = d3.select(this).style('background-color');
-            d3.select("#pre_selection ").selectAll("p")
-            .style('background-color',varColor);
-            d3.select(this)
-            .style('background-color',function(d) {
-                   if(d3.rgb(myColor).toString() === varColor.toString()) {
-                    zparams.zmodel = d.toString();
+        .on("click", function varClick(){
+          console.log(" listen , this is pre_varlist Click");
+
+        d3.select(this)
+        .style('background-color',function(d,i) {
+               //console.log(" d",d.id);
+               var myText = d3.select(this).text();
+               console.log("myText",myText);
+               var myColor = d3.select(this).style('background-color');
+               //var mySC = mods_ps[findSelectVarIndex(myText)].strokeColor;
+               //var myNode = mods_ps[findSelectVarIndex(this.id)];
+               var mySC = mods_ps[i].strokeColor;
+               var myNode = mods_ps[i];
+
+               //console.log("myNode",myNode);
+
+               console.log("this is ", this.id);
+               // SC=timeColor;
+               
+               zparams.zvars = []; //empty the zvars array
+               if(d3.rgb(myColor).toString() === varColor.toString()) { // we are adding a var
+               
+                if(nodes.length==0) {
+                    nodes.push(findNode(myText));
+                    nodes[0].reflexive=true;
+                }
+                
+                else {nodes.push(findNode(myText));}
+                  
+               if(myNode.time==="yes") {
+                    tagColors(myNode, timeColor);
+                    return hexToRgba(timeColor);
+               }
+               else if(myNode.nature==="nominal") {
+                    tagColors(myNode, nomColor);
+                    return hexToRgba(nomColor);
+               }
+               else {
                     return hexToRgba(selVarColor);
-                   }
-                   else {
-                    zparams.zmodel = "";
-                    return varColor;
-                   }
-                   });
-            restart();
-            });
+               }
 
+               }
+               else { // dropping a variable
+            
+                    nodes.splice(findNode(myText)["index"], 1);
+                    spliceLinksForNode(findNode(myText));
+               
+                if(mySC==dvColor) {
+                    var dvIndex = zparams.zdv.indexOf(myText);
+                    if (dvIndex > -1) { zparams.zdv.splice(dvIndex, 1); }
+                    //zparams.zdv="";
+                }
+                else if(mySC==csColor) {
+                    var csIndex = zparams.zcross.indexOf(myText);
+                    if (csIndex > -1) { zparams.zcross.splice(csIndex, 1); }
+                }
+                else if(mySC==timeColor) {
+                  //console.log("entering some if");
+                    var timeIndex = zparams.ztime.indexOf(myText);
+                    //console.log("Timeindex=",timeIndex);
+                    if (timeIndex > -1) { zparams.ztime.splice(timeIndex, 1); }
+                }
+               else if(mySC==nomColor) {
+                    var nomIndex = zparams.znom.indexOf(myText);
+                    if (nomIndex > -1) { zparams.znom.splice(dvIndex, 1); }
+               }
 
+               // nodeReset(allNodes[findNodeIndex(myText)]);
+                borderState();
+               legend();
+                return varColor;
+               }
+               });
+         
+        panelPlots();
+        //restart();
+        });
+    
   }
 
 
@@ -2248,7 +2319,7 @@ function mousedown(d) {
                var myNode = allNodes[findNodeIndex(this.id)];
 
                 //console.log("inside SC wala if");
-               // SC=timeColor;
+               console.log("tab1 myNode",myNode);
                
                zparams.zvars = []; //empty the zvars array
                if(d3.rgb(myColor).toString() === varColor.toString()) { // we are adding a var
@@ -2320,6 +2391,14 @@ var findNodeIndex = function(nodeName) {
     };
 }
 
+
+var findSelectVarIndex = function(nodeName) {
+    for (var i in mods_ps) {
+        if(mods_ps[i]["name"] === nodeName) {return mods_ps[i]["id"];}
+    
+    };
+}
+
 var nodeIndex = function(nodeName) {
     for (var i in nodes) {
         if(nodes[i]["name"] === nodeName) {return i;}
@@ -2328,6 +2407,10 @@ var nodeIndex = function(nodeName) {
 
 var findNode = function(nodeName) {
     for (var i in allNodes) {if (allNodes[i]["name"] === nodeName) return allNodes[i]};
+}
+
+var findSelectVarNode = function(nodeName) {
+    for (var i in mods_ps) {if (mods_ps[i]["name"] === nodeName) return mods_ps[i]};
 }
 
 
