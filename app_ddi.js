@@ -715,8 +715,18 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
 
 var data_plot = [];
 function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
-    $("#scatterplot").html("");
+    document.getElementById('scatterplot').style.display = "block";
+    document.getElementById('button_container').style.display = "block";
+    d3.select("#scatterplot").html("");
+    d3.select("#scatterplot").select("svg").remove();
     document.getElementById('heatchart').style.display = "none";
+    document.getElementById('linechart').style.display = "none";
+    d3.select("#heatchart").select("svg").remove();
+    d3.select("#linechart").select("svg").remove();
+    d3.select("#linechart").html("");
+    d3.select("#heatchart").html("");
+   // $("#NAcount").html("");
+
 
     /*
      for(var i=0; i<1000; i++)
@@ -729,10 +739,10 @@ function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
 
 
 
-
+console.log("bivariate plot called");
     // scatter plot
 
-
+data_plot=[];
     var nanCount = 0;
     for (var i = 0; i < 1000; i++) {
         if (isNaN(x_Axis[i]) || isNaN(y_Axis[i])) {
@@ -751,7 +761,7 @@ function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
 
     var margin = {top: 20, right: 10, bottom: 20, left: 60},
         width = 460 - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
+        height = 200 - margin.top - margin.bottom;
 
     var xMax = d3.max(data_plot, function (d, i) {
             return data_plot[i].xaxis
@@ -800,7 +810,8 @@ var svg = d3.select("#scatterplot")  // This is where we put our vis
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .call(d3.behavior.zoom().x(x).y(y).scaleExtent([1, 20]).on("zoom", zoom))
-   ;
+;
+
 
 svg.append("rect")
     .attr("width", width)
@@ -852,11 +863,14 @@ function zoom(d) {
 //heatmap
 
 
+    //d3.select("#NAcount").text("There are "+ nanCount + " number of NA values in the relation.");
 
 }
 function heatmap() {
+    document.getElementById('linechart').style.display = "none";
     document.getElementById('heatchart').style.display = "block";
-    $("#heatchart").html("");
+    d3.select("#heatChart").select("svg").remove();
+    $('#heatchart').html("");
     var gridSize = 25,
         h_heat = gridSize,
         w_heat = gridSize,
@@ -866,7 +880,7 @@ function heatmap() {
 
     var margin_heat = {top: 20, right: 80, bottom: 30, left: 50},
         width_heat = 500 - margin_heat.left - margin_heat.right,
-        height_heat = 300 - margin_heat.top - margin_heat.bottom;
+        height_heat = 200 - margin_heat.top - margin_heat.bottom;
 
     var colorScale = d3.scale.linear()
         .domain([-1, 0, 1])
@@ -921,6 +935,106 @@ function heatmap() {
 
 
 
+}
+function linechart()
+{document.getElementById('heatchart').style.display = "none";
+    document.getElementById('linechart').style.display = "block";
+    d3.select("#lineChart").select("svg").remove();
+    $('#linechart').html("");
+
+    var w_linechart = 500;
+    var h_linechart = 300;
+    var margin_linechart = {top: 20, right: 80, bottom: 30, left: 50};
+    var width_linechart = w_linechart - margin_linechart.left - margin_linechart.right;
+    var height_linechart = h_linechart - margin_linechart.top - margin_linechart.bottom;
+
+    var svg = d3.select("#linechart").append("svg")
+        .attr("id", "chart")
+        .attr("width", w_linechart)
+        .attr("height", h_linechart);
+    var chart = svg.append("g")
+        .classed("display", true)
+        .attr("transform", "translate(" + margin_linechart.left + "," + margin_linechart.top + ")");
+    // var dateParser = d3.time.format("%Y/%m/%d").parse;
+    var x = d3.time.scale()
+        .domain(d3.extent(data_plot, function(d){
+
+            return d.xaxis;
+        }))
+        .range([0,width_linechart]);
+    var y = d3.scale.linear()
+        .domain([500, d3.max(data_plot, function(d){
+            return d.yaxis;
+        })])
+        .range([height_linechart,0]);
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .ticks(5)
+    ;
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(5);
+    var line = d3.svg.line()
+        .x(function(d){
+
+            return x(d.xaxis);
+        })
+        .y(function(d){
+            return y(d.yaxis);
+        });
+    function plot(params){
+        this.append("g")
+            .classed("x axis", true)
+            .attr("transform", "translate(0," + height_linechart + ")")
+            .call(params.axis.x);
+        this.append("g")
+            .classed("y axis", true)
+            .attr("transform", "translate(0,0)")
+            .call(params.axis.y);
+        //enter()
+        this.selectAll(".trendline")
+            .data([params.data])
+            .enter()
+            .append("path")
+            .classed("trendline", true);
+        this.selectAll(".point")
+            .data(params.data)
+            .enter()
+            .append("circle")
+            .classed("point", true)
+            .attr("r", 2);
+        //update
+        this.selectAll(".trendline")
+            .attr("d", function(d){
+                return line(d);
+            })
+        this.selectAll(".point")
+            .attr("cx", function(d){
+                var date = d.xaxis;
+                return x(date);
+            })
+            .attr("cy", function(d){
+                return y(d.yaxis);
+            })
+        //exit()
+        this.selectAll(".trendline")
+            .data([params.data])
+            .exit()
+            .remove();
+        this.selectAll(".point")
+            .data(params.data)
+            .exit()
+            .remove();
+    }
+    plot.call(chart, {
+        data: data_plot,
+        axis: {
+            x: xAxis,
+            y: yAxis
+        }
+    });
 }
 
 
@@ -3290,7 +3404,7 @@ function viz(m) {
 
 //KRIPANSHU BHARGAVA, this is viz for explore
 function viz_explore(m, json_vizexplore, model_name_set) {
-    //console.log("Viz explore method called: " + model_name);
+    console.log("Viz explore method called: " + model_name_set);
 
     var get_data = [];
     get_data = model_name_set.split("-");
@@ -3334,7 +3448,7 @@ function viz_explore(m, json_vizexplore, model_name_set) {
 
         for (var j in json.plotdata[i].varname) {
 
-            console.log(" the var name is : " + json.plotdata[i].varname[j]);
+            //console.log(" the var name is : " + json.plotdata[i].varname[j]);
 
             if (json.plotdata[i].varname[j] === get_data[0]) {
                 for (var k in json.plotdata[i].data) {
@@ -3359,6 +3473,7 @@ function viz_explore(m, json_vizexplore, model_name_set) {
     }
 //console.log(" the x length is : "+ x_axis.length);
     //  console.log(" the x length is : "+ y_axis.length);
+    document.getElementById('scatterplot').style.display = "none";
     bivariatePlot(x_axis, y_axis, get_data[0], get_data[1]);
 
     /*

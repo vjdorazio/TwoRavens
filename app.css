@@ -420,5 +420,41 @@ div#scatterplot .axis
 
 
 
+div#linechart  .bar{
+    fill: purple;
+    shape-rendering: crispEdges;
+}
+div#linechart .bar-label{
+    fill: black;
+    text-anchor: middle;
+    font-size: 18px;
+}
+div#linechart .axis path,
+div#linechart .axis line{
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+div#linechart .gridline path,
+div#linechart .gridline line{
+    fill: none;
+    stroke: #ccc;
+    shape-rendering: crispEdges;
+}
+div#linechart .trendline{
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 4px;
+    stroke-dasharray: 10;
+}
+div#linechart .area{
+    opacity: 0.25;
+    fill: #ccc;
+    stroke: #ccc;
+    stroke-width: 1px;
+}
+
+
+
 
 
