@@ -1,0 +1,1263 @@
+COP	Cop
+GOV	Government
+INS	Insurgents
+JUD	Judiciary
+MIL	Military
+OPP	Political Opposition
+REB	Rebels
+SEP	Separatist Rebels
+SPY	State Intelligence Services
+UAF	Unidentified Armed forces
+AGR	Agriculture
+BUS	Business
+CRM	Criminal
+CVL	Civilian
+DEV	Development
+EDU	Education
+ELI	Elites
+ENV	Environmental
+HLH	Health
+HRI	Human Rights
+LAB	Labor
+LEG	Legislature
+MED	Media
+REF	Refugees
+MOD	Moderate
+RAD	Radical
+IGO	Inter-governmental Organization
+IMG	Internationl Militarized Group
+INT	Internationl Actor
+MNC	Multi-national Corporations
+NGM	Non-governmental Movements
+NGO	Non-governmental Organizations
+UIS	Unidentified State Actors
+AFR	Africa
+ASA	Asia
+BLK	Balkans
+CRB	Caribbean
+CAU	Caucasus
+CFR	Central Africa
+CAS	Central Asia
+CEU	Central Europe
+EIN	East Indies
+EAF	Eastern Africa
+EEU	Eastern Europe
+EUR	Europe
+LAM	Latin America
+MEA	Middle East
+MDT	Mediterranean
+NAF	North Africa
+NMR	North America
+PGS	Persian Gulf
+SCN	Scandinavia
+SAM	South America
+SAS	South Asia
+SEA	Southeast Asia
+SAF	Southern Africa
+WAF	West Africa
+WST	“the West”
+African Development Bank IGOAFB
+Arab Bank for Economic Development in Africa IGOABD
+Bank of Central African States (BEAC) IGOBCA
+Common Market for Eastern and Southern Africa IGOCEM
+Community of Sahel-Saharan States (CENSAD) IGOCSS
+Eastern and Southern African Trade and Development Bank IGOATD
+Economic and Monetary Union of West Africa (UEMOA) IGOUEM
+Economic Community of Central African States IGOECA
+Economic Community of West African States (ECOWAS) IGOWAS
+Franc Zone Financial Community of Africa IGOCFA
+Inter-African Coffee Organization (IACO) IGOIAC
+Intergovernmental Authority on Development (IGAD) IGOIAD
+Monetary and Economic Community of Central Africa IGOCEM
+New Economic Partnership for Africa’s Development IGONEP
+Organization of African Unity (OAU) IGOOAU
+Pan-African Parliament IGOPAP
+Southern African Development Community IGOSAD
+West Africa Development Bank IGOWAD
+West Africa Monetary and Economic Union IGOWAM
+Arab Cooperation Council IGOACC
+Arab Economic Unity Council IGOAEU
+Arab League IGOARL
+Arab Maghreb Union IGOAMU
+Arab Monetary Fund for Economic and Social Development IGOAMF
+Gulf Cooperation Council IGOGCC
+Org. of Arab Petroleum Exporting Countries (OAPEC) IGOAPE
+Asian Development Bank IGOADB
+Association of Southeast Asian Nations (ASEAN) IGOASN
+Commonwealth of Independent States IGOCIS
+Council of Europe IGOCOE
+Council of Security and Cooperation in Europe (OSCE) IGOSCE
+European Bank for Reconstruction and Development IGOEBR
+European Free Trade Association IGOEFT
+European Union IGOEEC
+South Asian Association IGOSAA
+Southeast Asia Collective Defense Treaty (SEATO) IGOSOT
+Amnesty International NGOAMN
+Association of Coffee Producing Countries IGOCPC
+Bank for International Settlements IGOBIS
+Cocoa Producer’s Alliance IGOCPA
+Commonwealth of Nations IGOCWN
+Group of Eight (G-8) (G-7 plus Russia) IGOGOE
+Group of Seven (G-7) IGOGOS
+Group of Seventy-Seven (G-77) IGOGSS
+Highly Indebted Poor Countries (HIPC) IGOHIP
+Human Rights Watch NGOHRW
+International Atomic Energy Agency (IAEA) IGOUNOIAE
+International Cocoa Organization (ICCO) IGOICO
+International Commission of Jurists NGOJUR
+International Court of Justice (ICJ) IGOUNOICJ
+International Criminal Court IGOICC
+International Crisis Group NGOICG
+International Federation of Human Rights (FIDH) NGOFID
+International Fed. of Red Cross and Red Crescent (ICRC) NGOCRC
+International Grains Council IGOIGC
+International Helsinki Federation for Human Rights NGOIHF
+International Labor Organization IGOUNOILO
+International Monetary Fund (IMF) IGOIMF
+International Organization for Migration NGOIOM
+International War Crimes Tribunals IGOUNOWCT
+Inter-Parliamentary Union IGOIPU
+Interpol IGOITP
+Islamic Development Bank IGOIDB
+Medecins Sans Frontieres (Doctors Without Borders) NGOMSF
+North Atlantic Treaty Organization (NATO) IGONAT
+Organization of American States IGOOAS
+Organization of Islamic Conferences (OIC) IGOOIC
+Organization of Non-Aligned Countries IGONON
+Organization of Petroleum Exporting Countries (OPEC) IGOOPC
+Oxfam NGOXFM
+Paris Club IGOPRC
+Red Cross NGOIRC
+Red Crescent NGORCR
+United Nations IGOUNO
+United Nations Children’s Fund (UNICEF) IGOUNOKID
+United Nations Food and Agriculture Organization IGOUNOFAO
+UN High Commission for Human Rights IGOUNOHCH
+UN High Commission for Refugees IGOUNOHCR
+World Bank IGOUNOWBK
+World Economic Forum NGOWEF
+World Food Program IGOUNOWFP
+World Health Organization IGOUNOWHO
+World Trade Organization (WTO) IGOWTO
+Atheism/Agnosticism ATH
+Bahai Faith BAH
+Buddhism BUD
+Christianity CHR
+Confucianism CON
+Hinduism HIN
+Jainism JAN
+Judaism JEW
+Islam MOS
+Shintoism SHN
+Sikhism SIK
+Taoism TAO
+Abrahamic religions ABR
+African diasporic religions ADR
+East Asian religions EAR
+Indian religions INR
+Iranic religions IRR
+Indigenous tribal religions ITR
+New Religious Movements NRM
+Offshoot OFF
+African diasporic religions ADR
+gnostic GNO
+millenarian MLN
+pagan PAG
+racialist RAC
+syncretic SYN
+extraterrestrial UFO
+wellness-centric WLN
+controversial status MAY
+AFG Afghanistan
+ABN ethnic Albanian
+ABW Aruba
+AFG Afghanistan
+AFGGOVTAL Taliban (d.r.)
+AFGREBTAL Taliban (d.r.)
+AFR Africa
+AGO Angola
+AGOCAB Cabinda Enclave
+AGOREBUNI National Union for the Total Independence of Angola (UNITA)
+AGR Agriculture
+AIA Anguilla
+ALA ˚Aland Islands
+ALB Albania
+AND Andorra
+ANT Netherlands Antilles
+ARB Arab (ethnic group)
+ARBBTH Baath Party
+ARE United Arab Emirates
+ARG Argentina
+ARM Armenia
+ASA Asia (region)
+ASM American Samoa
+ATG Antigua and Barbuda
+ATH Agnostic/Atheist
+AUS Australia
+AUT Austria
+AZE Azerbaijan
+BAH Bahai
+BDI Burundi
+BEL Belgium
+BEN Benin
+BFA Burkina Faso
+BGD Bangladesh
+BGR Bulgaria
+BHR Bahrain
+BHS Bahamas
+BIH Bosnia and Herzegovina (d.r.)
+BIHBHF Bosniak/Croat Federation of Bosnia and Herzegovina (d.r.)
+BIHSRP Bosnian Serb Republika Srpska (d.r.)
+BLK Balkans
+BLR Belarus
+BLZ Belize
+BMU Bermuda
+BOL Bolivia
+BRA Brazil
+BRB Barbados
+BRN Brunei Darussalam
+BTN Bhutan
+BUD Buddhist
+BUS Business
+BWA Botswana
+CAF Central African Republic
+CAN Canada
+CAS Central Asia
+CAU Caucasus
+CEU Central Europe
+CFR Central Africa
+CHE Switzerland
+CHL Chile
+CHN China
+CHNTIC Tibet
+CHR Christian
+CHRCPT Coptic
+CHRCTH Catholic
+CHRDOX Orthodox
+CHRJHW Jehovah’s Witnesses
+CHRLDS Latter Day Saints
+CHRMRN Maronite
+CHRPRO Protestant
+CHRRAD “fundamentalist” Christian
+CIV Cte d’Ivoire (Ivory Coast)
+CMN Communist Party
+CMR Cameroon
+COD Democratic Republic of the Congo (Kinshasa)
+COG People’s Republic of the Congo (Brazzaville)
+COK Cook Islands
+COL Colombia
+COM Comoros
+CON Confucian
+COP Cop
+CPV Cape Verde
+CRB Caribbean
+CRI Costa Rica
+CRM Criminal
+CRO ethnic Croat
+CUB Cuba
+CVL Civilian
+CYM Cayman Islands
+CYP Cyprus
+CYPGRK Greek Cypriot
+CYPTRK Turkish Cypriot
+CZA Czechoslovakia
+CZE Czech Republic
+DEV Development
+DEU Germany
+DJI Djibouti
+DMA Dominica
+DNK Denmark
+DOM Dominican Republic
+DZA Algeria
+DZAGOVFLN National Liberation Front (FLN)
+DZAGOVMSP Movement of the Society for Peace
+DZAGOVRND Democratic National Rally
+DZAOPPENN Ennahda Movement
+DZAOPPFIS Islamic Salvation Front
+DZAOPPFLN National Liberation Front (FLN)
+DZAOPPMSP Movement of the Society for Peace
+DZAREBFIS Islamic Salvation Army
+DZAREBGIA Armed Islamic Group (GIA)
+DZAREBGSP Salafist Group
+EAF Eastern Africa
+ECU Ecuador
+EDU Education
+EEU Eastern Europe
+EGY Egypt
+EGYREBMBR Muslim Brotherhood
+EIN East Indies (region)
+ELI Elites
+ENV Environment
+ERI Eritrea
+ESH Western Sahara
+ESP Spain
+ESPBSQ Basque
+EST Estonia
+ETH Ethiopia
+EUR Europe
+FIN Finland
+FJI Fiji
+FLK Falkland Islands (Malvinas)
+FRA France
+FRO Faeroe Islands
+FRY Federal Republic of Yugoslavia
+FRYKSV Kosovo (d.r.)
+FRYMTN Montenegro (d.r.)
+FRYSRB Serbia (d.r.)
+FRYVVD Vojvodina (d.r.)
+FSM Micronesia
+GAB Gabon
+GBR United Kingdom
+GBRREBIRA Irish Republican Army
+GEO Georgia
+GHA Ghana
+GIB Gibraltar
+GIN Guinea
+GLP Guadeloupe
+GMB Gambia
+GME Democratic Republic of Germany (East Berlin)
+GMW Federal Republic of Germany (Bonn)
+GNB Guinea-Bissau
+GNQ Equatorial Guinea
+GOV Government
+GRC Greece
+GRD Grenada
+GRL Greenland
+GTM Guatemala
+GUF French Guiana
+GUM Guam
+GUY Guyana
+GYP Gypsy
+HIN Hindu
+HKG Hong Kong (Special Administrative Region of China)
+HLH Health
+HND Honduras
+HRV Croatia (d.r.)
+HTI Haiti
+HUN Hungary
+HUT Hutu (ethnic group)
+IDN Indonesia
+IGO Inter-governmental organizations
+IGOAGRCPA Cocoa Producer’s Alliance
+IGOAGRCPC Association of Coffee Producing Countries
+IGOAGRICO International Cocoa Organization (ICCO)
+IGOAGRIGC International Grains Council
+IGOAFRAFU African Union
+IGOAFRAGRIAC Inter-African Coffee Organization (IACO)
+IGOAFRBUSCES Common Market for Eastern and Southern Africa
+IGOAFRBUSCFA Franc Zone Financial Community of Africa
+IGOAFRDEVAFB African Development Bank
+IGOAFRDEVATD Eastern and Southern African Trade and Development Bank
+IGOAFRDEVNEP New Economic Partnership for Africa’s Development
+IGOAFROAU Organization of African Unity (OAU)
+IGOAFRPAP Pan African Parliament
+IGOARBAPE Organization of Arab Petroleum Exporting Countries (OAPEC)
+IGOARBDEVABD Arab Bank for Economic Development in Africa
+IGOBUSBIS Bank for International Settlements
+IGOBUSGOE Group of Eight (G-8)
+IGOBUSGOS Group of Seven (G-7)
+IGOBUSGSS Group of Seventy-Seven (G-77)
+IGOBUSHIP Highly Indebted Poor Countries (HIPC)
+IGOBUSIMF International Monetary Fund (IMF)
+IGOBUSOPC Organization of Petroleum Exporting Countries (OPEC)
+IGOBUSPRC Paris Club
+IGOBUSWTO World Trade Organization (WTO)
+IGOCAFBCA Bank of Central African States (BEAC)
+IGOCAFECA Economic Community of Central African States
+IGOCAFCEM Monetary and Economic Community of Central Africa (CEMAC)
+IGOCASCIS Commonwealth of Independent States
+IGOCOPITP Interpol
+IGOCWN Commonwealth of Nations
+IGOEAFDEVIAD Intergovernmental Authority on Development (IGAD)
+IGOEAFEAC East African Community
+IGOEURBUSEFT European Free Trade Association
+IGOEURCOE Council of Europe
+IGOEURDEVEBR European Bank for Reconstruction and Development
+IGOEUREEC European Union
+IGOEURSCE Council of Security and Cooperation in Europe (OSCE)
+IGOJUDICC International Criminal Court
+IGOLEGIPU Inter-Parliamentary Union
+IGOMEAAEU Arab Economic Unity Council
+IGOMEAACC Arab Cooperation Council
+IGOMEAAMF Arab Monetary Fund for Economic and Social Development
+IGOMEAAMU Arab Maghreb Union
+IGOMEAARL Arab League
+IGOMOSDEVIDB Islamic Development Bank
+IGOMOSOIC Organization of Islamic Conferences (OIC)
+IGONAFCSS Community of Sahel-Saharan States (CENSAD)
+IGONON Organization of Non-Aligned Countries
+IGOOAS Organization of American States
+IGOPGSGCC Gulf Cooperation Council
+IGOPKO Peacekeeping force (organization unknown)
+IGOSAFDEVSAD Southern African Development Community
+IGOSASSAA South Asian Association
+IGOSEAASN Association of Southeast Asian Nations (ASEAN)
+IGOSEASOT Southeast Asia Collective Defense Treaty (SEATO)
+IGOSEADEVADB Asian Development Bank
+IGOUNO United Nations
+IGOUNOAGRFAO United Nations Food and Agriculture Organization
+IGOUNOAIE International Energy Agency
+IGOUNODEVWBK The World Bank
+IGOUNOHLHWHO World Health Organization (WHO)
+IGOUNOHRIHCH United Nations High Commission for Human Rights (OHCHR)
+IGOUNOIAE International Atomic Energy Agency (IAEA)
+IGOUNOJUDICJ International Court of Justice (ICJ)
+IGOUNOJUDWCT International War Crimes Tribunals
+IGOUNOKID United Nations Children’s Fund (UNICEF)
+IGOUNOLABILO International Labor Organization
+IGOUNOREFHCR United Nations High Commission for Refugees (OHCR)
+IGOUNOWFP World Food Program
+IGOWAFDEVWAM West Africa Monetary and Economic Union
+IGOWAFUEM Economic and Monetary Union of West Africa (UEMOA)
+IGOWAFWAD West Africa Development Bank
+IGOWAFWAS Economic Community of West African States (ECOWAS)
+IGOWEU Western European Union
+IGOWSTNAT North Atlantic Treaty Organization (NATO)
+IMGMOSALQ Al Qaeda
+IMGSEAMOSASF Abu Sayyaf
+IMGSEAMOSJMA Jemaah Islamiya
+IMY Isle of Man
+IND India
+INDKAS Indian-controlled Kashmir
+INT Ambiguous international or transnational actor
+IRL Ireland
+IRN Iran
+IRQ Iraq
+IRQBAG Baghdad
+IRQKURKDP Kurdish Democratic Party (KDP)
+ISL Iceland
+ISR Israel
+ISRGOVCMN Israeli Communist Party (d.r.)
+ISRGOVLBA Israeli Labor Party (d.r.)
+ISRGOVLKD Likud Party (d.r.)
+ISRGOVMRZ Meretz Party (d.r.)
+ISRGOVSHA Shas Party (d.r.)
+ISRGOVCMN Israeli Communist Party (d.r.)
+ISROPPLBA Israeli Labor Party (d.r.)
+ISROPPLKD Likud Party (d.r.)
+ISROPPMRZ Meretz Party (d.r.)
+ISROPPSHA Shas Party (d.r.)
+ISRSET Israeli Settlers
+ITA Italy
+JAM Jamaica
+JAN Jain
+JEW Jew
+JEWHSD Hasidic Jew
+JEWUDX Ultra-Orthodox Jew
+JOR Jordan
+JOROPPIAF Islamic Action Front
+JPN Japan
+JUD Judiciary
+KAS Kashmir
+KAZ Kazakhstan
+KEN Kenya
+KGZ Kyrgyzstan
+KHM Cambodia
+KHMREBKMR Khmer Rouge
+KIR Kiribati
+KNA Saint Kitts-Nevis
+KOR Republic of Korea (Seoul)
+KUR Kurd (ethnic group)
+KWT Kuwait
+LAB Labor
+LAM Latin America
+LAO Laos
+LBN Lebanon
+LBNREBAML Amal Militia
+LBNREBASL South Lebanon Army
+LBNREBHEZ Hezbullah
+LBR Liberia
+LBRBOM Bomi (Liberia)
+LBRBON Bong (Liberia)
+LBRCAP Grand Cape Mount (Liberia)
+LBRGBA Grand Bassa (Liberia)
+LBRGGC Grand Gedeh (Liberia)
+LBRGOVLAP Liberia Action Party (d.r.)
+LBRGOVNDP National Democratic Party of Liberia (d.r.)
+LBRGOVNPF National Patriotic Front of Liberia (NPFL) (d.r.)
+LBRGOVUPP United People’s Party (d.r.)
+LBRKRH Krahn (ethnic group)
+LBRKRU Grand Kru (Liberia)
+LBRLOF Lofa (Liberia)
+LBRMAN Mandingo, Mandingoe (ethnic group)
+LBRMNT Montserrado (Liberia)
+LBRMRG Margibi (Liberia)
+LBRMRY Maryland (Liberia)
+LBRNIM Nimba (Liberia)
+LBROPPALC All Liberia Coalition Party
+LBROPPLAP Liberia Action Party (d.r.)
+LBROPPNDM New Deal Movement
+LBROPPNDP National Democratic Party of Liberia (d.r.)
+LBROPPUPP United People’s Party (d.r.)
+LBRREBAFL Armed Forces of Liberia (d.r.)
+LBRREBINP Independent NPFL
+LBRREBLPC Liberia Peace Council
+LBRREBLUR Liberians United for Reconciliation and Democracy (LURD)
+LBRREBNPF National Patriotic Front of Liberia (NPFL) (d.r.)
+LBRREBULM United Liberation Front for Democracy
+LBRRVC Rivercess (Liberia)
+LBRSIN Sino (Liberia)
+LBY Libya
+LCA Saint Lucia
+LEG Legislature
+LIE Liechtenstein
+LKA Sri Lanka
+LKAREBJVP People’s Liberation Front
+LSO Lesotho
+LTU Lithuania
+LUX Luxembourg
+LVA Latvia
+MAC Macao (Special Administrative Region of China)
+MAR Morocco
+MARREBPLS Polisario Guerillas
+MCO Monaco
+MDA Moldova
+MDG Madagascar
+MDT Mediterranean
+MDV Maldives
+MEA Middle East
+MED Medical
+MEX Mexico
+MHL Marshall Islands
+MIL MIlitary
+MKD Macedonia
+MLI Mali
+MLT Malta
+MMR Myanmar (Burma)
+MNC Multi-national corporation
+MNG Mongolia
+MNP Northern Mariana Islands
+MOD Moderate
+MOS Muslim
+MOSALE Alewi
+MOSDRZ Druze
+MOSRAD “Fundamentalist,” “radical,” “extremist” Muslim
+MOSSFI Sufi
+MOSSHI Shia
+MOSSUN Sunni
+MOZ Mozambique
+MRT Mauritania
+MSR Montserrat
+MTN Montenegro
+MTQ Martinique
+MUS Mauritius
+MWI Malawi
+MYS Malaysia
+MYT Mayotte
+NAF North Africa
+NAM Namibia
+NCL New Caledonia
+NER Niger
+NFK Norfolk Island
+NGA Nigeria
+NGAABI Abia (Nigeria)
+NGAABU Abuja (Nigeria)
+NGAADA Adamawa (Nigeria)
+NGAAKI Akwa Ibom (Nigeria)
+NGAANB Anambra (Nigeria)
+NGABAU Bauchi (Nigeria)
+NGABAY Bayelsa (Nigeria)
+NGABIA Biafra (Nigeria)
+NGABNU Benue (Nigeria)
+NGABOR Borno (Nigeria)
+NGACRR Cross River (Nigeria)
+NGADEL Delta (Nigeria)
+NGAEBO Edo (Nigeria)
+NGAEKI Ekiti (Nigeria)
+NGAENU Enugu (Nigeria)
+NGAGOM Gombe (Nigeria)
+NGAHAU Hausa (ethnic group)
+NGAIBO Ibo, Igbo (ethnic group)
+NGAIJW Ijaws (ethnic group)
+NGAIMO Imo (Nigeria)
+NGAJIG Jigawa (Nigeria)
+NGAKAD Kaduna (Nigeria)
+NGAKAN Kano (Nigeria)
+NGAKAT Katsina (Nigeria)
+NGAKEB Kebbi (Nigeria)
+NGAKOG Kogi (Nigeria)
+NGAKWA Kwara (Nigeria)
+NGALAG Lagos (Nigeria)
+NGANAS Nassarawa (Nigeria)
+NGANDR Niger Delta Region (Nigeria)
+NGANGR Niger (Nigeria)
+NGANNG North Nigeria (Nigeria)
+NGAOGO Ogoni (ethnic group)
+NGAOGU Ogun (Nigeria)
+NGAOND Ondo (Nigeria)
+NGAOPPANP All Nigeria People’s Party
+NGAOPPCFD Campaign for Democracy
+NGAOPPNDC National Democratic Coalition of Nigeria (NADECO)
+NGAOSU Osun (Nigeria)
+NGAOYO Oyo (Nigeria)
+NGAPLA Plateu State (Nigeria)
+NGAREBMAD Movement for the Advancement of Democracy (MAD)
+NGARIV Rivers (Nigeria)
+NGASOK Sokoto (Nigeria)
+NGATAR Taraba (Nigeria)
+NGATIV Tiv (ethnic group, language)
+NGAYOB Yobe (Nigeria)
+NGAYRB Yoruba (ethnic group)
+NGAZAM Zamfara (Nigeria)
+NGM Non-governmental movements
+NGMGRP Greenpeace
+NGO Non-governmental organizations
+NGOCHRCSI Christian Solidarity International
+NGOHLHCRC International Fed. of Red Cross and Red Crescent (ICRC)
+NGOHLHIRC Red Cross
+NGOHLHMSF Medecins Sans Frontieres (Doctors Without Borders)
+NGOHLHRCR Red Crescent
+NGOHRIAMN Amnesty International
+NGOHRIFID International Federation of Human Rights (FIDH)
+NGOHRIHRW Human Rights Watch
+NGOHRIIHF International Helsinki Federation for Human Rights
+NGOICG International Crisis Group
+NGOJUDJUR International Commission of Jurists
+NGOREFIOM International Organization for Migration
+NGOUAJ Union of Arab Journalists
+NGOWEF World Economic Forum
+NGOXFM Oxfam
+NIC Nicaragua
+NIU Niue
+NLD Netherlands
+NMR North America
+NOR Norway
+NPL Nepal
+NRU Nauru
+NZL New Zealand
+OMN Oman
+OPP Opposition
+PAG Animist/Pagan
+PAK Pakistan
+PAKKAS Pakistani-controlled Kashmir
+PAL Palestinian
+PALPLO Palestine Liberation Organization
+PALREBANO Abu Nidal Organization
+PALREBPLF Palestine Liberation Front
+PAN Panama
+PCN Pitcairn
+PER Peru
+PGS Persian Gulf
+PHL Philippines
+PLW Palau
+PNG Papua New Guinea
+PNGBOU Bougainville
+POL Poland
+PRI Puerto Rico
+PRK Democratic People’s Rep. of Korea (Pyongyang)
+PRT Portugal
+PRY Paraguay
+PSE Palestinian Occupied Territories
+PSEGOVFTA Fatah (d.r.)
+PSEGOVHMS Hamas (d.r.)
+PSEGZS Gaza Strip
+PSEREBAAM Al Aqsa Martyrs Brigade
+PSEREBDFL Democratic Front for the Liberation of Palestine (DFLP)
+PSEREBHMS Hamas (d.r.)
+PSEREBISJ Palestinian Islamic Jihad
+PSEREBPFL People’s Front for the Liberation of Palestine (PFLP)
+PSEWSB West Bank
+PYF French Polynesia
+QAT Qatar
+RAD Radical
+REB Rebel
+REF Refugee
+REU Runion
+ROM Romania
+RUS Russia
+RUSCNY Chechnya
+RWA Rwanda
+RWAGOVRPF Rwandan Patriotic Front (d.r.)
+RWAUAFRPF Rwandan Patriotic Front (d.r.)
+SAF Southern Africa
+SAM South America
+SAS South Asia
+SAU Saudi Arabia
+SCG Serbia and Montenegro (d.r.)
+SCGKSV Kosovo (d.r.)
+SCGMTN Montenegro (d.r.)
+SCGSRB Serbia (d.r.)
+SCGVVD Vojvodina (d.r.)
+SCN Scandinavia
+SDN Sudan
+SDNDFR Darfur
+SDNREBNDA National Democratic Alliance
+SDNREBSPL Sudan People’s Liberation Army
+SEA Southeast Asia
+SEN Senegal
+SENREBMDF Movement of Democratic Forces of Casamance
+SER ethnic Serb
+SGP Singapore
+SHN Saint Helena
+SIK Sikh
+SJM Svalbard and Jan Mayen Islands
+SLA Slav
+SLB Solomon Islands
+SLE Sierra Leone
+SLEREBKAM Kamojor militia
+SLEREBRUF Revolutionary United Front
+SLV El Salvador
+SMR San Marino
+SNL Sinhalese (ethnic group)
+SOM Somalia
+SPM Saint Pierre and Miquelon
+SPY Spy
+SRB Serbia (d.r.)
+SRBKSV Kosovo (d.r.)
+SRBVVD Vojvodina (d.r.)
+STP Sao Tome and Principe
+SUR Suriname
+SVK Slovakia
+SVN Slovenia
+SWE Sweden
+SWZ Swaziland
+SYC Seychelles
+SYR Syria
+TAM Tamil (ethnic group)
+TAO Taoist
+TCA Turks and Caicos Islands
+TCD Chad
+TER Terai (region in northern India/southern Nepal)
+TGO Togo
+THA Thailand
+TJK Tajikistan
+TKL Tokelau
+TKM Turkmenistan
+TMP East Timor (Timor-Leste)
+TON Tonga
+TRG Tuareg (ethnic group)
+TRK ethnic Turk
+TTO Trinidad and Tobago
+TUN Tunisia
+TUR Turkey
+TURANK Ankara
+TURGOVAKP Justice and Development Party (AKP) (d.r.)
+TURGOVANP Motherland Party (ANAP) (d.r.)
+TURGOVCHP Republican People’s Party (CHP) (d.r.)
+TURGOVDSP Democratic Left Party (DSP) (d.r.)
+TURGOVDYP True Path Party (DYP) (d.r.)
+TURGOVMHP National Action Party (MHP) (d.r.)
+TURGOVREP Welfare Party (Refah) (d.r.)
+TURIST Istanbul
+TURIZM Izmir
+TUROPPAKP Justice and Development Party (AKP) (d.r.)
+TUROPPANP Motherland Party (ANAP) (d.r.)
+TUROPPCHP Republican People’s Party (CHP) (d.r.)
+TUROPPDSP Democratic Left Party (DSP) (d.r.)
+TUROPPDTP Democratic Society Party (DTP)
+TUROPPDYP True Path Party (DYP) (d.r.)
+TUROPPFAZ Virtue Party (Fazilet)
+TUROPPHDP Democratic People’s Party (DEHAP/HADEP)
+TUROPPMHP National Action Party (MHP) (d.r.)
+TUROPPREP Welfare Party (Refah) (d.r.)
+TURREBDSL Dev-Sol
+TURREBPKK Kurdistan Workers’ Party (PKK)
+TURSOE Southeast Turkey
+TUT Tutsi (ethnic group)
+TUV Tuvalu
+TWN Taiwan
+TZA Tanzania
+UAF Unidentified Armed Force
+UGA Uganda
+UGAREBADF Allied Democratic Forces
+UGAREBLRA Lord’s Resistance Army
+UIG Uighur (Chinese ethnic minority)
+UIS Unidentified state actors
+UKR Ukraine
+URY Uruguay
+USA United States
+USR Union of Soviet Socialist Republics (USSR)
+UZB Uzbekistan
+VAT Holy See (Vatican City)
+VCT Saint Vincent and the Grenadines
+VEN Venezuela
+VGB British Virgin Islands
+VIR U.S. Virigin Islands
+VNM Vietnam
+VUT Vanuatu
+WAF West Africa
+WLF Wallis and Futuna Islands
+WSM Samoa
+WST “the West”
+YEM Yemen
+YMN North Yemen
+YMS South Yemen
+YUG Socialist Federal Republic of Yugoslavia (d.r.)
+YUGBSN Yugoslavia’s Republic of Bosnia (d.r.)
+YUGCTA Yugoslavia’s Republic of Croatia (d.r.)
+YUGKSV Kosovo (d.r.)
+YUGMCD Yugoslavia’s Republic of Macedonia (d.r.)
+YUGMTN Montenegro (d.r.)
+YUGSLN Yugoslavia’s Republic of Slovenia (d.r.)
+YUGSRB Yugoslavia’s Republic of Serbia (d.r.)
+YUGVVD Vojvodina (d.r.)
+ZAF South Africa
+ZMB Zambia
+ZRO Zoroastrian
+ZWE Zimbabwe
+Afghanistan AFG
+˚Aland Islands ALA
+Albania ALB
+Algeria DZA
+American Samoa ASM
+Andorra AND
+Angola AGO
+Anguilla AIA
+Antigua and Barbuda ATG
+Argentina ARG
+Armenia ARM
+Aruba ABW
+Australia AUS
+Austria AUT
+Azerbaijan AZE
+Bahamas BHS
+Bahrain BHR
+Bangladesh BGD
+Barbados BRB
+Belarus BLR
+Belgium BEL
+Belize BLZ
+Benin BEN
+Bermuda BMU
+Bhutan BTN
+Bolivia BOL
+Bosnia and Herzegovina BIH
+Botswana BWA
+Brazil BRA
+British Virgin Islands VGB
+Brunei Darussalam BRN
+Bulgaria BGR
+Burkina Faso BFA
+Burundi BDI
+Cambodia KHM
+Cameroon CMR
+Canada CAN
+Cape Verde CPV
+Cayman Islands CYM
+Central African Republic CAF
+Chad TCD
+Chile CHL
+China CHN
+Columbia COL
+Comoros COM
+Congo, Democratic R. of the (Kinshasa) COD
+Congo, People’s R. of the (Brazzaville) COG
+Cook Islands COK
+Costa Rica CRI
+Cte d’Ivoire (Ivory Coast) CIV
+Croatia HRV
+Cuba CUB
+Cyprus CYP
+Czech Republic CZE
+Denmark DNK
+Djibouti DJI
+Dominica DMA
+Dominican Republic DOM
+East Timor (Timor-Leste) TMP
+Ecuador ECU
+Egypt EGY
+El Salvador SLV
+Equatorial Guinea GNQ
+Eritrea ERI
+Estonia EST
+Ethiopia ETH
+Faeroe Islands FRO
+Falkland Islands (Malvinas) FLK
+Fiji FJI
+Finland FIN
+France FRA
+French Guiana GUF
+French Polynesia PYF
+Gabon GAB
+Gambia GMB
+Georgia GEO
+Germany DEU
+Ghana GHA
+Gibraltar GIB
+Greece GRC
+Greenland GRL
+Grenada GRD
+Guadeloupe GLP
+Guam GUM
+Guatemala GTM
+Guinea GIN
+Guinea-Bissau GNB
+Guyana GUY
+Haiti HTI
+Holy See (Vatican City) VAT
+Honduras HND
+Hong Kong Special Adm. Region of China HKG
+Hungary HUN
+Iceland ISL
+India IND
+Indonesia IDN
+Iran IRN
+Iraq IRQ
+Ireland IRL
+Isle of Man IMY
+Israel ISR
+Italy ITA
+Jamaica JAM
+Japan JPN
+Jordan JOR
+Kazakhstan KAZ
+Kenya KEN
+Kiribati KIR
+Korea, Democratic People’s R. (Pyongyang) PRK
+Korea, Republic of (Seoul) KOR
+Kuwait KWT
+Kyrgyzstan KGZ
+Laos LAO
+Latvia LVA
+Lebanon LBN
+Lesotho LSO
+Liberia LBR
+Libya LBY
+Liechtenstein LIE
+Lithuania LTU
+Luxembourg LUX
+Macao Special Adm. Region of China MAC
+Macedonia MKD
+Madagascar MDG
+Malawi MWI
+Malaysia MYS
+Maldives MDV
+Mali MLI
+Malta MLT
+Marshall Islands MHL
+Martinique MTQ
+Mauritania MRT
+Mauritius MUS
+Mayotte MYT
+Mexico MEX
+Micronesia FSM
+Moldova MDA
+Monaco MCO
+Mongolia MNG
+Montenegro MTN
+Montserrat MSR
+Morocco MAR
+Mozambique MOZ
+Myanmar MMR
+Namibia NAM
+Nauru NRU
+Nepal NPL
+Netherlands NLD
+Netherlands Antilles ANT
+New Caledonia NCL
+New Zealand NZL
+Nicaragua NIC
+Niger NER
+Nigeria NGA
+Niue NIU
+Norfolk Island NFK
+Northern Mariana Islands MNP
+Norway NOR
+Occupied Palestinian Territory PSE
+Oman OMN
+Pakistan PAK
+Palau PLW
+Panama PAN
+Papua New Guinea PNG
+Paraguay PRY
+Peru PER
+Philippines PHL
+Pitcairn PCN
+Poland POL
+Portugal PRT
+Puerto Rico PRI
+Qatar QAT
+Runion REU
+Romania ROM
+Russia RUS
+Rwanda RWA
+Saint Helena SHN
+Saint Kitts-Nevis KNA
+Saint Lucia LCA
+Saint Pierre and Miquelon SPM
+Saint Vincent and the Grenadines VCT
+Samoa WSM
+San Marino SMR
+Sao Tome and Principe STP
+Saudi Arabia SAU
+Senegal SEN
+Serbia SRB
+Seychelles SYC
+Sierra Leone SLE
+Singapore SGP
+Slovakia SVK
+Slovenia SVN
+Solomon Islands SLB
+Somalia SOM
+South Africa ZAF
+Spain ESP
+Sri Lanka LKA
+Sudan SDN
+Suriname SUR
+Svalbard and Jan Mayen Islands SJM
+Swaziland SWZ
+Sweden SWE
+Switzerland CHE
+Syria SYR
+Tajikistan TJK
+Tanzania TZA
+Thailand THA
+Togo TGO
+Tokelau TKL
+Tonga TON
+Trinidad and Tobago TTO
+Tunisia TUN
+Turkey TUR
+Turkmenistan TKM
+Turks and Caicos Islands TCA
+Tuvalu TUV
+Uganda UGA
+Ukraine UKR
+United Arab Emirates ARE
+United Kingdom GBR
+United States USA
+United States Virgin Islands VIR
+Uruguay URY
+Uzbekistan UZB
+Vanuatu VUT
+Venezuela VEN
+Viet Nam VNM
+Wallis and Futuna Islands WLF
+Western Sahara ESH
+Yemen YEM
+Zambia ZMB
+Zimbabwe ZWE
+Albanian ABN
+Arab ARB
+Bedouin BED
+Chakma CKM
+Croat CRO
+Gypsy GYP
+Hausa HAU
+Hutu HUT
+Ibo IBO
+Ijaws IJW
+Krahn KRH
+Kurd KUR
+Mandingoe MAN
+Ogoni OGO
+Palestinian PAL
+Serb SER
+Slav SLV
+Sinhalese SNL
+Tamil TAM
+Tuareg TRG
+Turk TRK
+Tutsi TUT
+Uighur UIG
+Yoruba YRB
+Unspecified Religious REL
+Agnostic/Atheist ATH
+Alewi MOSALE
+Animist/Pagan PAG
+Bahai BAH
+Buddhist BUD
+Christian CHR
+Catholic CHRCTH
+Coptic CHRCPT
+Jehovah’s Witnesses CHRJHW
+Latter Day Saints CHRLDS
+Maronite CHRMRN
+Orthodox Christian CHRDOX
+Protestant CHRPRO
+Confucian CON
+Hindu HIN
+Jain JAN
+Jew JEW
+Hasidic JEWHSD
+Orthodox/Ultra-Orthodox Jew JEWUDX
+Muslim MOS
+Druze MOSDRZ
+Shi’a MOSSHI
+Sikh SIK
+Sufi MOSSFI
+Sunni MOSSUN
+Taoist TAO
+Zoroastrian ZRO
+Abu Nidal Organization PALREBANO
+Al Aqsa Martyrs Brigade PSEREBAAM
+Al Qaeda IMGMOSALQ
+Amal Militia LBNREBAML
+Arab (ethnic group) ARB
+Arab Israeli ISRARB
+Armed Islamic Group (GIA) DZAREBGIA
+Baath Party ARBBTH
+Baghdad IRQBAG
+DFL	Democratic Front for the Lib. of Palestine (DLFP)
+DZAGOVRND	Democratic National Rally
+DZAOPPENN	Ennahda Movement
+PALPLO	Fatah
+PSEGOVFTA	Fatah
+PSEGZS	Gaza Strip
+PSEREBHMS	Hamas
+PSEGOVHMS	Hamas
+LBNREBHEZ	Hezbullah
+JOROPPIAF	Islamic Action Front
+DZAREBFIS	Islamic Salvation Army
+DZAOPPFIS	Islamic Salvation Front
+ISROPPCMN	Israeli Communist Party
+ISRGOVLBA	Israeli Labor Party
+ISROPPLBA	Israeli Labor Party
+ISRSET	Israeli Settlers
+Kurd	KUR
+IRQKURKDP	Kurdish Democratic Party (KDP)
+KDP	Kurdish Democratic Party (KDP)
+ISRGOVLKD	Likud Party
+ISROPPLKD	Likud Party
+ISRGOVMRZ	Meretz Party
+ISROPPMRZ	Meretz Party
+DZAGOVMSP	Movement of the Society for Peace
+DZAOPPMSP	Movement of the Society for Peace
+Muslim Brotherhood EGYREBMBR
+DZAGOVFLN	National Liberation Front (FLN)
+DZAOPPFLN	National Liberation Front (FLN)
+Occupied Palestinian Territories PSE
+Palestine Liberation Front PALREBPLF
+Palestine Liberation Organization PALPLO
+Palestinian PAL
+Palestinian Islamic Jihad PSEREBISJ
+People’s Mujahedeen IRNREBPMD
+Polisario Guerillas MARREBPLS
+People’s Front for the Lib. of Palestine (PFLP) PSEREBPFL
+Salafist Group DZAREBGSP
+ISRGOVSHA	Shas Party
+ISROPPSHA	Shas Party
+South Lebanon Army LBNREBASL
+AFGGOVTAL	Taliban
+AFGREBTAL	Taliban
+West Bank PSEWSB
+Ankara TURANK
+Democratic People’s Party (DEHAP/HADEP) TUROPPHDP
+TUROPPDSP	Democratic Left Party (DSP)
+TURGOVDSP	Democratic Left Party (DSP)
+Democratic Society Party (DTP) TUROPPDTP
+Dev-SOL TURREBDSL
+Istanbul TURIST
+Izmir TURIZM
+TUROPPAKP	Justice and Development Party (AK Party)
+TURGOVAKP	Justice and Development Party (AK Party)
+Kurdistan Workers’ Party (PKK) TURREBPKK
+Kurds in Turkey TURKUR
+TUROPPANP	Motherland Party (ANAP)
+TURGOVANP	Motherland Party (ANAP)
+TUROPPMHP	National Action Party (MHP)
+TURGOVMHP	National Action Party (MHP)
+TUROPPCHP	Republican People’s Party (CHP)
+TURGOVCHP	Republican People's Party (CHP)
+Southeast Turkey TURSOE
+TUROPPDYP	True Path Party (DYP)
+TURGOVDYP	True Path Party (DYP)
+Virtue Party (Fazilet) TUROPPFAZ
+TUROPPREP	Welfare Party (Refah)
+TURGOVREP	Welfare Party (Refah)
+Abuja NGAABU
+Abia NGAABI
+Adamawa NGAADA
+Akwa Ibom NGAAKI
+Anambra NGAANB
+Bauchi NGABAU
+Bayelsa NGABAY
+Benue NGABNU
+Biafra NGABIA
+Borno NGABOR
+Cross River NGACRR
+Delta NGADEL
+Ebonyi NGAEBO
+Edo NGAEDO
+Ekiti NGAEKI
+Enugu NGAENU
+Gombe NGAGOM
+Imo NGAIMO
+Jigawa NGAJIG
+Kaduna NGAKAD
+Kano NGAKAN
+Katsina NGAKAT
+Kebbi NGAKEB
+Kogi NGAKOG
+Kwara NGAKWA
+Lagos NGALAG
+Nassarawa NGANAS
+Niger NGANGR
+Niger Delta Region NGANDR
+North Nigeria NGANNG
+Ogun NGAOGU
+Ondo NGAOND
+Osun NGAOSU
+Oyo NGAOYO
+Plateu State NGAPLA
+Rivers NGARIV
+Sokoto NGASOK
+Taraba NGATAR
+Yobe NGAYOB
+Zamfara NGAZAM
+Bomi LBRBOM
+Bong LBRBON
+Grand Cape Mount LBRCAP
+Grand Gedeh LBRGGC
+Grand Bassa LBRGBA
+Grand Kru LBRKRU
+Lofa LBRLOF
+Margibi LBRMRG
+Maryland LBRMRY
+Montserrado LBRMNT
+Nimba LBRNIM
+Rivercess LBRRVC
+Sino LBRSIN
+All Liberia Coalition Party LBROPPALC
+All Nigeria People’s Party NGAOPPANP
+LBRREBAFL	Armed Forces of Liberia
+LBRMIL	Armed Forces of Liberia
+Campaign for Democracy NGAOPPCFD
+Hausa (ethnic group) NGAHAU
+Ibo, a.k.a. Igbo (ethnic group) NGAIBO
+Ijaws (ethnic group) NGAIJW
+Independent NPFL LBRREBINP
+Kamajor militia SLEREBKAM
+Krahn (ethnic group) LBRKRH
+LBROPPLAP	Liberia Action Party
+LBRGOVLAP	Liberia Action Party
+Liberia Peace Council LBRREBLPC
+Liberians United for Reconciliation and Democracy LBRREBLUR
+Mandingoe (ethnic group) LBRMAN
+Movement for the Advancement of Democracy (MAD) NGAREBMAD
+LBROPPNDP	National Democratic Party of Liberia
+LBRGOVNDP	National Democratic Party of Liberia
+National Democratic Coalition of Nigeria (NADECO) NGAOPPNDC
+LBRREBNPF	National Patriotic Front of Liberia (NPFL)
+LBRGOVNPF	National Patriotic Front of Liberia (NPFL)
+National Union for the Total Ind. of Angola (UNITA) AGOREBUNI
+New Deal Movement LBROPPNDM
+Ogoni (ethnic group) NGAOGO
+Revolutionary United Front SLEREBRUF
+Tiv (ethnic group) NGATIV
+United Liberation Front for Democracy LBRREBULM
+LBROPPUPP	United People’s Party
+LBRGOVUPP	United People's Party
+Yoruba (ethnic group) NGAYRB
+Albania ALB
+Croatia HRV
+Former Yugoslav Republic of Macedonia MKD
+Bosnia and Hercegovina BIH
+Federation of Bosnia-Hercegovina BIHBHF
+Republika Srpska BIHSRP
+Serbia SRB
+Montenegro MTN
+Kosovo SRBKSV
+Vojvodina SRBVVD
+Albanian ABN
+Croat CRO
+Serb SER
+Turk TRK
+Gypsy GYP
+Slav SLV
+Bosnian Croat BIHCRO
+Croatian Serb HRVSER
+Kosovar Albanian SRBKSVABN
+Bosnian Muslim BIHMOS
+Bosnian Serb BIHSER
+Kosovar Serb SRBKSVSRB

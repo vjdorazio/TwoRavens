@@ -1185,6 +1185,7 @@ div.actorTab button.active {
 	height: 20px;
 	width: 20px;
 	vertical-align: middle;
+	outline: none;
 
 	background-image: url(collapse.png);
 	background-repeat: no-repeat;
