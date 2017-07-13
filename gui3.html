@@ -48,9 +48,9 @@
                  onmouseover="about();" onmouseout="closeabout();">
         </a>
         <div id="navbarNav" style="margin-top:11px">
-            <button class="btn btn-default ladda-button navbar-right" style="margin-left:2em;margin-right:1em;"
+            <label class="btn btn-default ladda-button navbar-right" style="margin-left:2em;margin-right:1em;"
                     id="btnEstimate" onclick="estimate('btnEstimate')" data-spinner-color="#000000"
-                    data-style="zoom-in"><span class="ladda-label">Subset</span></button>
+                    data-style="zoom-in"><span class="ladda-label">Subset</span></label>
             <button class="btn btn-default navbar-right" id="btnReset" title="Reset" onclick="reset()"
                     style="margin-left:2.0em;"><span style="font-size:1em;color:#818181; pointer-events:none;"
                                                      class="glyphicon glyphicon-repeat"></span></button>
@@ -107,8 +107,10 @@
 
         <div id="queryTree" style="width:232px">
         </div>
-        <button id="Submit Query" class="btn btn-default ladda-button" data-spinner-color="#000000" onclick="buildQuery(document.getElementById('rootTree'))" type="button" style="left:calc(50% - 21px);position:absolute;bottom:10px">Submit</button>
+        <button id="buttonSubmitQuery" class="btn btn-default ladda-button" data-spinner-color="#000000" onclick="buildQuery(document.getElementById('rootTree'))" type="button" style="left:calc(50% - 21px);position:absolute;bottom:10px">Submit</button>
     </div>
+
+    <button id="stageButton" class="btn btn-default" type="button" onclick=addRule()>Stage</button>
 
     <div id="ticker" class="ticker">
         <a href="somelink" target="_blank" id="logID">Replication</a>
@@ -282,21 +284,20 @@
           $('#leftpanel').removeClass('expandpanel');
           $('#leftpanel > div.row-fluid').toggleClass('closepanel');
           $('#leftpanel').toggleClass('closepanel');
-          $('#main').toggleClass('svg-leftpanel');
-          $('#btnSelect').css('display','none');
       }
   }
-  function closeRightPanel() {
-      if ($('#leftpanel').hasClass('forceclosepanel')) {
+
+function closeRightPanel() {
+    if ($('#rightpanel').hasClass('forceclosepanel')) {
         // do nothing
-      } else {
-      /*$('#rightpanel .nav-tabs').hide();*/
-      $('#rightpanel').removeClass('expandpanel');
-      $('#rightpanel > div.row-fluid').toggleClass('closepanel');
-      $('#rightpanel').toggleClass('closepanel');
-      $('#main').toggleClass('svg-rightpanel');
-      }
-  }
+    } else {
+        /*$('#rightpanel .nav-tabs').hide();*/
+        $('#rightpanel').removeClass('expandpanel');
+        $('#rightpanel > div.row-fluid').toggleClass('closepanel');
+        $('#rightpanel').toggleClass('closepanel');
+        rightpanelMargin()
+    }
+}
 
   var myurl=window.location.toString();
   var fileid="";

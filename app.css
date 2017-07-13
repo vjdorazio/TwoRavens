@@ -190,11 +190,13 @@ table tr td{
     padding: 0 0 0 16px;
     z-index:25;
 }
+
 #rightpanel #rightContentArea div {display:none;}
 #rightpanel #rightContentArea div.active {display:block;}
 
 #rightpanel.closepanel {width:1px;}
-#rightpanel.closepanel #rightpaneltitle, #rightpanel.closepanel div.btn-group-justified, #rightpanel.closepanel div.row-fluid.closepanel {display:none;}
+#rightpanel.closepanel #rightpaneltitle, #rightpanel.closepanel #queryTree, #rightpanel.closepanel #buttonSubmitQuery {display:none;}
+
 
 div.sidepanel div.panelbar {
     position:absolute;
@@ -217,6 +219,13 @@ div.sidepanel div.panelbar span {
     font-size: .75em;
     color: #ADADAD;
     background: #eee;
+}
+
+#stageButton {
+    position:fixed;
+    bottom:61px;
+    right:270px; /* buffer: 10px, scrollbar: 17px */
+    z-index:25;
 }
 
 #boolToggle.btn.active, #boolToggle.btn:active {

@@ -615,9 +615,9 @@ eventlist=new Array(20)
             document.getElementById("subsetActor").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
 
-            rightpanelMargin();
 			selectionMade("Date");
             d3date();
+            rightpanelMargin();
         }
         else if(d3.select(this).text()=="Location") {
             document.getElementById("subsetLocation").style.display = 'inline';
@@ -625,9 +625,9 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
-            rightpanelMargin();
 			selectionMade("Location");
             d3loc();
+            rightpanelMargin();
         }
         else if(d3.select(this).text()=="Actor") {
             document.getElementById("subsetActor").style.display = 'inline';
@@ -635,9 +635,9 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
-            rightpanelMargin();
 			selectionMade("Actor");
             d3actor();
+            rightpanelMargin();
         }
         else if(d3.select(this).text()=="Action") {
             document.getElementById("subsetAction").style.display = 'inline';
@@ -645,9 +645,9 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
-            rightpanelMargin();
 			selectionMade("Action");
             d3action();
+            rightpanelMargin();
         }
         });
 	
@@ -3495,14 +3495,30 @@ rightpanelMargin();
 function rightpanelMargin() {
     main = $("#main");
     if (main.get(0).scrollHeight > main.get(0).clientHeight) {
+        // Vertical scrollbar
         document.getElementById("rightpanel").style.right = "27px";
+        if ($('#rightpanel').hasClass('closepanel')) {
+            document.getElementById("stageButton").style.right = "46px"
+        } else {
+            document.getElementById("stageButton").style.right = "286px"
+        }
     } else {
+        // No vertical scrollbar
         document.getElementById("rightpanel").style.right = "10px";
+        if ($('#rightpanel').hasClass('closepanel')) {
+            document.getElementById("stageButton").style.right = "40px"
+        } else {
+            document.getElementById("stageButton").style.right = "270px"
+        }
     }
 
     if (main.get(0).scrollWidth > main.get(0).clientWidth) {
+        // Horizontal scrollbar
         document.getElementById("rightpanel").style.height = "calc(100% - 139px)";
+        document.getElementById("stageButton").style.bottom = "78px";
     } else {
+        // No horizontal scrollbar
         document.getElementById("rightpanel").style.height = "calc(100% - 122px)";
+        document.getElementById("stageButton").style.bottom = "61px";
     }
 }

@@ -10,18 +10,16 @@ logDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" s
     '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2">nor </a></li>' +
     '</ul></div>';
 
+var cancelButton = "<button type='button' class='btn btn-primary btn-xs' style='background:none;border:none;box-shadow:none;float:right;margin-top:3px' onclick='this.parentElement.remove()'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button></div>";
+
 var data = [
     {
-        name: 'node1',
+        name: 'Root',
+        group: true,
+        operation: 'and',
         children: [
-            { name: 'child1' },
-            { name: 'child2' }
-        ]
-    },
-    {
-        name: 'node2',
-        children: [
-            { name: 'child3' }
+            { name: 'Location Subset' },
+            { name: 'Date Subset' }
         ]
     }
 ];
@@ -102,22 +100,9 @@ function addGroup(parent, cancellable=true){
 var subsetCount = 0;
 var subsetDicts = [];
 
-function addRule(parent){
-
-    if (subsetSelection !== "") {
-        var ruleMeta = "<div id='rule' style='display:inline-block;text-align:left;margin-top:3px;padding-left:15px'>";
-        subsetDicts.push(getSubsetPreferences());
-        // Uncomment to view the preferences dict collected from current subset panel
-        console.log(subsetDicts[subsetCount]);
-        subsetCount++;
-
-        // Add negation toggle, subset and cancel
-        var boolToggle = "<button id='boolToggle' type='button' class='btn btn-primary btn-xs active' data-toggle='button' aria-pressed='true'>not</button> ";
-        var subsetIcon = "<span class='label label-default'>" + subsetSelection + " Subset</span> ";
-        var cancelButton = "<button type='button' class='btn btn-primary btn-xs' style='background:none;border:none;box-shadow:none;float:right;margin-top:3px' onclick='this.parentElement.remove()'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button></div>";
-
-        parent.innerHTML += ruleMeta + boolToggle + subsetIcon + cancelButton
-    }
+function addRule(){
+    // Index zero is root node. Add subset pref to nodes
+    data[0]['children'].push(getSubsetPreferences())
 }
 
 /**
