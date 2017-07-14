@@ -142,7 +142,6 @@ function addRule() {
         data[0]['children'].push(preferences);
 
         var qtree = $('#queryTree')
-        console.log(preferences['id'])
         var state = qtree.tree('getState');
         qtree.tree('loadData', data, 0);
         qtree.tree('setState', state);
@@ -180,14 +179,25 @@ function getSubsetPreferences() {
             open: false
         };
     }
+
     if (subsetSelection == 'Location') {
-        // TODO: Retrieve country listing from location panel, wrap in dictionary
-        return {
+        var subset = {
             name: 'Location Subset',
             operation: 'and',
             children: []
+        };
+
+        // Add each country as another rule
+        for (var country in mapListCountriesSelected) {
+            if (mapListCountriesSelected[country]) {
+                subset['children'].push({
+                    name: String(country)
+                });
+            }
         }
+        return subset
     }
+
     if (subsetSelection == 'Action') {
         return {
             name: 'Action Subset',
