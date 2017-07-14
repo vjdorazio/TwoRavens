@@ -1096,3 +1096,159 @@ display: inline;}
 	background-color: steelblue;
 	color: white;
 }
+
+/*begin styling for actor*/
+
+#tabDiv {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+#sourceTabBtn {
+	width: 50%;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	margin-left: 0;
+
+}
+
+#targetTabBtn {
+	width: 50%;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	margin-left: -1px;
+}
+
+/* style the buttons inside the tab */
+div.actorTab button {
+    position: relative;
+	float: left;
+	border: none !important;
+	outline: none !important;
+}
+
+/* create an active/current tablink class */
+div.actorTab button.active {
+    background-image: none;
+	outline: 0;
+	-webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+	box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+}
+
+/* style the tab content */
+.actorTabContent {
+    display: none;
+   -webkit-animation: fadeEffect 0.5s;
+    animation: fadeEffect 0.5s;
+}
+
+/* fade in tabs */
+@-webkit-keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+#fullContainer {
+	margin-top: 40px;
+	width: 100%;
+	height: calc(100% - 110px);
+	box-sizing: border-box;
+}
+
+.actorTabContent {
+	width: 100%;
+	height: 100%;
+}
+
+.actorLeft {
+	width: 180px;
+	height: 100%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.actorRight {
+	width: 150px;
+	height: 100%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.actorSearch {
+	margin: 5px 0 5px 5px;
+	height: 30px;
+	width: 175px;
+}
+
+.actorFullList {
+	display: inline-block;
+	position: absolute;
+	width :180px;
+	height: calc(100% - 180px);
+	overflow-x: scroll;
+	overflow-y: scroll;
+	white-space: nowrap;
+}
+
+.actorFilterList {
+	display: inline-block;
+	position: absolute;
+	width: 150px;
+	height: calc(100% - 180px);
+	overflow-x: scroll;
+	overflow-y: scroll;
+	white-space: nowrap;
+}
+
+.clearActorBtn {
+	display: block;
+	margin: 5px;
+	height: 30px;
+}
+
+#actorSelectionDiv {
+	width: 340px;
+	border: 1px solid #ADADAD;
+	top: 72px;
+	left: 10px;
+	height: calc(100% - 20px);
+	background: #F9F9F9;
+	margin-top: 10px;
+	margin-bottom: 4px;
+}
+
+.actorHead4 {
+	margin-bottom: 0px;
+	display: inline-block;
+}
+
+.filterExpand {
+	display: inline-block;
+	padding: 0px;
+	height: 20px;
+	width: 20px;
+	vertical-align: middle;
+	outline: none;
+
+	background-image: url(collapse.png);
+	background-repeat: no-repeat;
+	background-position: 0px 0px;
+	border: none;
+}
+
+.actorChk {
+	display: inline-block;
+	vertical-align: text-bottom;
+	margin: 1px 5px 0px 5px !important;
+}
+
+.actorChkLbl {
+	display: inline-block;
+	margin-right: 10px;
+}
+/*end styling for actor*/

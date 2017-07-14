@@ -15,7 +15,6 @@
 // local files if nothing is supplied. 
 // -- L.A.
 
-
 var production=false;
 var private=false;
 
@@ -3033,8 +3032,353 @@ function d3loc() {
 function d3action() {
 }
 
-function d3actor() {
+
+
+function d3actor() {}
+var sourceFilterChecked = [];
+var sourceEntityChecked = [];
+var targetFilterChecked = [];
+var targetEntityChecked = [];
+
+var sourceFullList = [];
+var targetFullList= [];
+
+var orgs = ["IGO", "IMG", "MNC", "NGO"]		//hard coded organizations to remove from entities list; hopefully temporary
+
+var sourceOrgLength = orgs.length, sourceCountryLength;
+var sourceOrgSelect = 0, sourceCountrySelect = 0;
+
+var targetOrgLength = orgs.length, targetCountryLength;
+var targetOrgSelect = 0, targetCountrySelect = 0;
+
+var actorType = ["source", "target"];
+var actorOrder = ["Full", "Entity", "Role", "Attr"];
+
+window.onload = function(){
+	//read dictionary and store for fast retrieval
+	var dict;
+	$.get('data/CAMEO_actor_dict_1.csv', function (data) {		//probably will have to wrap this in a function so it can be read first
+		dict = data.split('\n');
+	});
+
+	for (var m = 0; m < actorType.length; m++) {
+		var orgList;
+		if (m == 0) {
+			orgList = document.getElementById("orgSourcesList");
+		}
+		else {
+			orgList = document.getElementById("orgTargetsList");
+		}
+		for (y = 0; y < orgs.length; y ++) {
+			createElement(true, actorType[m], "Org", orgs, y, orgList);
+		}
+
+		for (var i = 0; i < actorOrder.length; i++) {
+			(function(i,m) {
+				$.get('data/' + actorType[m] + actorOrder[i] + '.csv', function(data) {
+					var lines = data.split('\n');
+					var displayList;
+					var chkSwitch = true;		//enables code for filter
+					switch (i) {
+						case 0:
+							displayList = document.getElementById("searchList" + capitalizeFirst(actorType[m]) + "s");
+							chkSwitch = false;
+							break;
+						case 1:
+							displayList = document.getElementById("country" + capitalizeFirst(actorType[m]) + "sList");
+							lines = lines.filter(function(val) {
+								return (orgs.indexOf(val > -1));
+							});
+							window[actorType[m] + "CountryLength"] = lines.length;
+							actorOrder[i] = "Country";
+							break;
+						case 2:
+							displayList = document.getElementById("role" + capitalizeFirst(actorType[m]) + "sList");
+							break;
+						case 3:
+							displayList = document.getElementById("attribute" + capitalizeFirst(actorType[m]) + "sList");
+							break;
+						}
+
+					for (x = 0; x < lines.length - 1; x++) {
+						createElement(chkSwitch, actorType[m], actorOrder[i], lines, x, displayList);
+
+						switch (actorType[m] + actorOrder[i]) {
+							case "sourceFull":
+								sourceFullList.push(lines[x].replace(/["]+/g, ''));
+								break;
+							case "targetFull":
+								targetFullList.push(lines[x].replace(/["]+/g, ''));
+								break;
+						}
+					}
+					if (actorOrder[i] == "Country") {
+						actorOrder[i] = "Entity";
+					}
+				});
+			})(i,m);
+		}
+	}
+	$("#sourceTabBtn").trigger("click");
+	function createElement(chkSwitch = true, type, order, lines, x, displayList) {
+		var seperator = document.createElement("div");
+		seperator.className = "seperator";
+
+		var chkbox = document.createElement("input");
+		chkbox.type = "checkbox";
+		chkbox.name = type + order + "Check";
+		chkbox.id = type + order + "Check" + x;
+		chkbox.value = lines[x].replace(/["]+/g, '');
+		chkbox.className = "actorChk";
+		if (chkSwitch) {
+			chkbox.onchange = function(){actorFilterChanged(this);};
+		}
+
+		var lbl = document.createElement("label");
+		lbl.htmlFor = type + order + "Check" + x;
+		lbl.className = "actorChkLbl";
+		lbl.id = type + order + "Lbl" + x;
+		lbl.innerHTML = lines[x].replace(/["]+/g, '');
+
+		lbl.setAttribute("data-container", "body");
+		lbl.setAttribute("data-toggle", "popover");
+		lbl.setAttribute("data-placement", "right");
+		lbl.setAttribute("data-trigger", "hover");
+		lbl.setAttribute("data-content", "test lbl");
+
+		lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
+		lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
+
+		displayList.appendChild(chkbox);
+		displayList.appendChild(lbl);
+		displayList.appendChild(seperator);
+	}
 }
+
+//when checkbox checked, add or remove filter
+function actorFilterChanged(element) {
+	element.checked = !!(element.checked);
+	var ending = getActorEnding(element);
+	var currentActorType = element.id.substring(0, 6);
+	if (element.checked) {
+		if (ending == "orga" || ending == "coun") {
+			window[currentActorType + "EntityChecked"].push(element.value + ending);
+			switch(ending) {
+				case "orga":
+					window[currentActorType + "OrgSelect"]++;
+					if (window[currentActorType + "OrgSelect"] == window[currentActorType + "OrgLength"]) {
+						$("#" + currentActorType + "OrgAllCheck").prop("checked", true);
+						$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", false);
+					}
+					else {
+						$("#" + currentActorType + "OrgAllCheck").prop("checked", false);
+						$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", true);
+					}
+					break;
+				case "coun":
+					window[currentActorType + "CountrySelect"]++;
+					if (window[currentActorType + "CountrySelect"] == window[currentActorType + "CountryLength"]) {
+						$("#" + currentActorType + "CountryAllCheck").prop("checked", true);
+						$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", false);
+					}
+					else {
+						$("#" + currentActorType + "CountryAllCheck").prop("check", false);
+						$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", true);
+					}
+					break;
+				}
+		}
+		else {
+			window[currentActorType + "FilterChecked"].push(element.value + ending);
+		}
+	}
+	else {
+		if (ending == "orga" || ending == "coun"){
+			var index = window[currentActorType + "EntityChecked"].indexOf(element.value + ending);
+			if (index > -1 ) {
+				window[currentActorType + "EntityChecked"].splice(index, 1);
+				switch(ending) {
+				case "orga":
+					window[currentActorType + "OrgSelect"]--;
+					if (window[currentActorType + "OrgSelect"] == 0) {
+						$("#" + currentActorType + "OrgAllCheck").prop("checked", false);
+						$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", false);
+					}
+					else {
+						$("#" + currentActorType + "OrgAllCheck").prop("checked", false);
+						$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", true);
+					}
+					break;
+				case "coun":
+					window[currentActorType + "CountrySelect"]--;
+					if (window[currentActorType + "CountrySelect"] == 0) {
+						$("#" + currentActorType + "CountryAllCheck").prop("checked", false);
+						$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", false);
+					}
+					else {
+						$("#" + currentActorType + "CountryAllCheck").prop("check", false);
+						$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", true);
+					}
+					break;
+				}
+			}
+		}
+		else {
+			var index = window[currentActorType + "FilterChecked"].indexOf(element.value + ending);
+			if (index > -1) {
+				window[currentActorType + "FilterChecked"].splice(index, 1);
+			}
+		}
+	}
+	actorSearch(currentActorType);
+}
+
+//returns a string of the type of filter; element is a checkbox
+function getActorEnding(element) {
+	switch (element.name.substring(6)) {
+		case "OrgCheck":
+			return "orga";
+		case "CountryCheck":
+			return "coun";
+		case "RoleCheck":
+			return "role";
+		case "AttrCheck":
+			return "attr";
+	}
+}
+
+function removeEnding(str) {
+	return str.substring(0, str.length - 4);
+}
+
+//clears search and filter selections
+$(".clearActorBtn").click(function(event) {
+	var currentActorType = event.target.id.substring(8, 14).toLowerCase();
+	document.getElementById(currentActorType + "Search").value = "";
+	$("#" + currentActorType + "Filter :checkbox").prop("checked", false);
+	window[currentActorType + "FilterChecked"].length = 0;
+	window[currentActorType + "EntityChecked"].length = 0;
+	window[currentActorType + "OrgSelect"] = 0;
+	$("#" + currentActorType + "OrgAllCheck").prop("checked", false).prop("indeterminate", false);
+	window[currentActorType + "CountrySelect"] = 0;
+	$("#" + currentActorType + "CountryAllCheck").prop("checked", false).prop("indeterminate", false);
+	actorSearch(currentActorType);
+});
+
+//clear search box when reloading page
+$(".actorSearch").ready(function() {
+	$(".actorSearch").val("");
+});
+
+//when typing in search box
+$(".actorSearch").on("keyup", function(event) {
+	actorSearch(event.target.id.substring(0, 6));
+});
+
+//on load of page, keep unchecked
+$(".allCheck").ready(function() {
+	$(".allCheck").prop("checked", false);
+});
+
+//selects all checks for specified element
+$(".allCheck").click(function(event) {
+	var currentActorType = event.target.id.substring(0, 6);
+	var currentEntityType = event.target.id.substring(6, 9);
+	var currentElement = (currentEntityType == "Org") ? $("#" + currentActorType + currentEntityType + "AllCheck") : $("#" + currentActorType + "CountryAllCheck");
+
+	currentElement.prop("indeterminate", false);
+	if (currentElement.prop("checked")) {
+		if (currentEntityType == "Org") {
+			$("#org" + capitalizeFirst(currentActorType) + "sList input:checkbox:not(:checked)").each(function() {
+				window[currentActorType + "EntityChecked"].push(this.value + "orga");
+				$(this).prop("checked", true);
+			});
+			window[currentActorType + "OrgSelect"] = window[currentActorType + "OrgLength"];
+		}
+		else {
+			$("#country" + capitalizeFirst(currentActorType) + "sList input:checkbox:not(:checked)").each(function() {
+				window[currentActorType + "EntityChecked"].push(this.value + "coun");
+				$(this).prop("checked", true);
+			});
+			window[currentActorType + "CountrySelect"] = window[currentActorType + "CountryLength"];
+		}
+	}
+	else {
+		if (currentEntityType == "Org") {
+			$("#org" + capitalizeFirst(currentActorType) + "sList input:checkbox:checked").each(function() {
+				window[currentActorType + "EntityChecked"].splice(window[currentActorType + "EntityChecked"].indexOf(this.value + "orga"), 1);
+				$(this).prop("checked", false);
+			});
+			window[currentActorType + "OrgSelect"] = 0;
+		}
+		else {
+			$("#country" + capitalizeFirst(currentActorType) + "sList input:checkbox:checked").each(function() {
+				window[currentActorType + "EntityChecked"].splice(window[currentActorType + "EntityChecked"].indexOf(this.value + "coun"), 1);
+				$(this).prop("checked", false);
+			});
+			window[currentActorType + "CountrySelect"] = 0;
+		}
+	}
+	actorSearch(currentActorType);
+});
+
+//searches for the specified text and filters (maybe implement escape characters for text search?)
+function actorSearch(actorName) {
+	actorName = actorName.toLowerCase();
+	var searchText = $("#" + actorName + "Search").val().toUpperCase();
+
+	var listLen = window[actorName + "FullList"].length;
+	for (x = 0; x < listLen; x++) {
+		var matched = false;
+		//search for entity
+		var tempLen = window[actorName + "EntityChecked"].length;
+		for (i = 0; i < tempLen; i++) {
+			if (removeEnding(window[actorName + "EntityChecked"][i]) == window[actorName + "FullList"][x].substring(0, 3)) {
+				matched = true;
+				break;
+			}
+		}
+		if (!matched && window[actorName + "EntityChecked"].length > 0) {
+			$("#" + actorName + "FullCheck"+x).css("display", "none");
+			$("#" + actorName + "FullLbl" + x).css("display", "none");
+		}
+		else {
+			var matchFilter = true;
+			//search for text
+			if (searchText != "" && window[actorName + "FullList"][x].indexOf(searchText) == -1) {
+				matchFilter = false;
+			}
+
+			//search for other filters
+			tempLen = window[actorName + "FilterChecked"].length;
+			for (i = 0; matchFilter && i < tempLen; i++) {
+				var index = window[actorName + "FullList"][x].indexOf(removeEnding(window[actorName + "FilterChecked"][i]));
+				if (index < 0) {
+					matchFilter = false;
+				}
+				else {
+					if (removeEnding(window[actorName + "FilterChecked"][i]).length == 3 && index%3 != 0) {
+						matchFilter = false;
+					}
+				}
+			}
+			if (matchFilter) {
+				$("#" + actorName + "FullCheck"+x).css("display", "inline-block");
+				$("#" + actorName + "FullLbl" + x).css("display", "inline-block");
+			}
+			else {
+				$("#" + actorName + "FullCheck"+x).css("display", "none");
+				$("#" + actorName + "FullLbl" + x).css("display", "none");
+			}
+		}
+	}			
+}
+
+function capitalizeFirst(str) {
+	return str.charAt(0).toUpperCase() + str.substring(1);
+}
+
+//end of actor code
 
 /**
  * Variables declared for location

@@ -1,0 +1,395 @@
+ABN	Albanian
+ABN	ethnic Albanian
+ABR	Abrahamic religions
+ABW	Aruba
+ADR	African diasporic religions
+AFG	Afghanistan
+AFR	Africa
+AGO	Angola
+AGR	Agriculture
+AIA	Anguilla
+ALA	˚Aland Islands
+ALB	Albania
+AND	Andorra
+ANT	Netherlands Antilles
+ARB	Arab
+ARB	Arab (ethnic group)
+ARE	United Arab Emirates
+ARG	Argentina
+ARM	Armenia
+ASA	Asia (region)
+ASM	American Samoa
+ATG	Antigua and Barbuda
+ATH	Agnostic/Atheist
+ATH	Atheism/Agnosticism
+AUS	Australia
+AUT	Austria
+AZE	Azerbaijan
+BAH	Bahai
+BAH	Bahai Faith
+BDI	Burundi
+BED	Bedouin
+BEL	Belgium
+BEN	Benin
+BFA	Burkina Faso
+BGD	Bangladesh
+BGR	Bulgaria
+BHR	Bahrain
+BHS	Bahamas
+BIH	Bosnia and Hercegovina
+BIH	Bosnia and Herzegovina
+BIH	Bosnia and Herzegovina (d.r.)
+BLK	Balkans
+BLR	Belarus
+BLZ	Belize
+BMU	Bermuda
+BOL	Bolivia
+BRA	Brazil
+BRB	Barbados
+BRN	Brunei Darussalam
+BTN	Bhutan
+BUD	Buddhism
+BUD	Buddhist
+BUS	Business
+BWA	Botswana
+CAF	Central African Republic
+CAN	Canada
+CAS	Central Asia
+CAU	Caucasus
+CEU	Central Europe
+CFR	Central Africa
+CHE	Switzerland
+CHL	Chile
+CHN	China
+CHR	Christian
+CHR	Christianity
+CIV	Cte d’Ivoire (Ivory Coast)
+CKM	Chakma
+CMN	Communist Party
+CMR	Cameroon
+COD	Congo, Democratic R. of the (Kinshasa)
+COD	Democratic Republic of the Congo (Kinshasa)
+COG	Congo, People’s R. of the (Brazzaville)
+COG	People’s Republic of the Congo (Brazzaville)
+COK	Cook Islands
+COL	Colombia
+COL	Columbia
+COM	Comoros
+CON	Confucian
+CON	Confucianism
+COP	Cop
+CPV	Cape Verde
+CRB	Caribbean
+CRI	Costa Rica
+CRM	Criminal
+CRO	Croat
+CRO	ethnic Croat
+CUB	Cuba
+CVL	Civilian
+CYM	Cayman Islands
+CYP	Cyprus
+CZA	Czechoslovakia
+CZE	Czech Republic
+DEU	Germany
+DEV	Development
+DJI	Djibouti
+DMA	Dominica
+DNK	Denmark
+DOM	Dominican Republic
+DZA	Algeria
+EAF	Eastern Africa
+EAR	East Asian religions
+ECU	Ecuador
+EDU	Education
+EEU	Eastern Europe
+EGY	Egypt
+EIN	East Indies (region)
+ELI	Elites
+ENV	Environment
+ERI	Eritrea
+ESH	Western Sahara
+ESP	Spain
+EST	Estonia
+ETH	Ethiopia
+EUR	Europe
+FIN	Finland
+FJI	Fiji
+FLK	Falkland Islands (Malvinas)
+FRA	France
+FRO	Faeroe Islands
+FRY	Federal Republic of Yugoslavia
+FSM	Micronesia
+GAB	Gabon
+GBR	United Kingdom
+GEO	Georgia
+GHA	Ghana
+GIB	Gibraltar
+GIN	Guinea
+GLP	Guadeloupe
+GMB	Gambia
+GME	Democratic Republic of Germany (East Berlin)
+GMW	Federal Republic of Germany (Bonn)
+GNB	Guinea-Bissau
+GNO	gnostic
+GNQ	Equatorial Guinea
+GOV	Government
+GRC	Greece
+GRD	Grenada
+GRL	Greenland
+GTM	Guatemala
+GUF	French Guiana
+GUM	Guam
+GUY	Guyana
+GYP	Gypsy
+HAU	Hausa
+HIN	Hindu
+HIN	Hinduism
+HKG	Hong Kong (Special Administrative Region of China)
+HKG	Hong Kong Special Adm. Region of China
+HLH	Health
+HND	Honduras
+HRV	Croatia
+HRV	Croatia (d.r.)
+HTI	Haiti
+HUN	Hungary
+HUT	Hutu
+HUT	Hutu (ethnic group)
+IBO	Ibo
+IDN	Indonesia
+IGO	Inter-governmental organizations
+IJW	Ijaws
+IMY	Isle of Man
+IND	India
+INR	Indian religions
+INT	Ambiguous international or transnational actor
+IRL	Ireland
+IRN	Iran
+IRQ	Iraq
+IRR	Iranic religions
+ISL	Iceland
+ISR	Israel
+ITA	Italy
+ITR	Indigenous tribal religions
+JAM	Jamaica
+JAN	Jain
+JAN	Jainism
+JEW	Jew
+JEW	Judaism
+JOR	Jordan
+JPN	Japan
+JUD	Judiciary
+KAS	Kashmir
+KAZ	Kazakhstan
+KEN	Kenya
+KGZ	Kyrgyzstan
+KHM	Cambodia
+KIR	Kiribati
+KNA	Saint Kitts-Nevis
+KOR	Korea, Republic of (Seoul)
+KOR	Republic of Korea (Seoul)
+KRH	Krahn
+KUR	Kurd
+KUR	Kurd (ethnic group)
+KWT	Kuwait
+LAB	Labor
+LAM	Latin America
+LAO	Laos
+LBN	Lebanon
+LBR	Liberia
+LBY	Libya
+LCA	Saint Lucia
+LEG	Legislature
+LIE	Liechtenstein
+LKA	Sri Lanka
+LSO	Lesotho
+LTU	Lithuania
+LUX	Luxembourg
+LVA	Latvia
+MAC	Macao (Special Administrative Region of China)
+MAC	Macao Special Adm. Region of China
+MAN	Mandingoe
+MAR	Morocco
+MAY	controversial status
+MCO	Monaco
+MDA	Moldova
+MDG	Madagascar
+MDT	Mediterranean
+MDV	Maldives
+MEA	Middle East
+MED	Medical
+MEX	Mexico
+MHL	Marshall Islands
+MIL	MIlitary
+MKD	Former Yugoslav Republic of Macedonia
+MKD	Macedonia
+MLI	Mali
+MLN	millenarian
+MLT	Malta
+MMR	Myanmar
+MMR	Myanmar (Burma)
+MNC	Multi-national corporation
+MNG	Mongolia
+MNP	Northern Mariana Islands
+MOD	Moderate
+MOS	Islam
+MOS	Muslim
+MOZ	Mozambique
+MRT	Mauritania
+MSR	Montserrat
+MTN	Montenegro
+MTQ	Martinique
+MUS	Mauritius
+MWI	Malawi
+MYS	Malaysia
+MYT	Mayotte
+NAF	North Africa
+NAM	Namibia
+NCL	New Caledonia
+NER	Niger
+NFK	Norfolk Island
+NGA	Nigeria
+NGM	Non-governmental movements
+NGO	Non-governmental organizations
+NIC	Nicaragua
+NIU	Niue
+NLD	Netherlands
+NMR	North America
+NOR	Norway
+NPL	Nepal
+NRM	New Religious Movements
+NRU	Nauru
+NZL	New Zealand
+OFF	Offshoot
+OGO	Ogoni
+OMN	Oman
+OPP	Opposition
+PAG	Animist/Pagan
+PAG	pagan
+PAK	Pakistan
+PAL	Palestinian
+PAN	Panama
+PCN	Pitcairn
+PER	Peru
+PGS	Persian Gulf
+PHL	Philippines
+PLW	Palau
+PNG	Papua New Guinea
+POL	Poland
+PRI	Puerto Rico
+PRK	Democratic People’s Rep. of Korea (Pyongyang)
+PRK	Korea, Democratic People’s R. (Pyongyang)
+PRT	Portugal
+PRY	Paraguay
+PSE	Occupied Palestinian Territories
+PSE	Occupied Palestinian Territory
+PSE	Palestinian Occupied Territories
+PYF	French Polynesia
+QAT	Qatar
+RAC	racialist
+RAD	Radical
+REB	Rebel
+REF	Refugee
+REL	Unspecified Religious
+REU	Runion
+ROM	Romania
+RUS	Russia
+RWA	Rwanda
+SAF	Southern Africa
+SAM	South America
+SAS	South Asia
+SAU	Saudi Arabia
+SCG	Serbia and Montenegro (d.r.)
+SCN	Scandinavia
+SDN	Sudan
+SEA	Southeast Asia
+SEN	Senegal
+SER	Serb
+SER	ethnic Serb
+SGP	Singapore
+SHN	Saint Helena
+SHN	Shintoism
+SIK	Sikh
+SIK	Sikhism
+SJM	Svalbard and Jan Mayen Islands
+SLA	Slav
+SLB	Solomon Islands
+SLE	Sierra Leone
+SLV	El Salvador
+SLV	Slav
+SMR	San Marino
+SNL	Sinhalese
+SNL	Sinhalese (ethnic group)
+SOM	Somalia
+SPM	Saint Pierre and Miquelon
+SPY	Spy
+SRB	Serbia
+SRB	Serbia (d.r.)
+STP	Sao Tome and Principe
+SUR	Suriname
+SVK	Slovakia
+SVN	Slovenia
+SWE	Sweden
+SWZ	Swaziland
+SYC	Seychelles
+SYN	syncretic
+SYR	Syria
+TAM	Tamil
+TAM	Tamil (ethnic group)
+TAO	Taoism
+TAO	Taoist
+TCA	Turks and Caicos Islands
+TCD	Chad
+TER	Terai (region in northern India/southern Nepal)
+TGO	Togo
+THA	Thailand
+TJK	Tajikistan
+TKL	Tokelau
+TKM	Turkmenistan
+TMP	East Timor (Timor-Leste)
+TON	Tonga
+TRG	Tuareg
+TRG	Tuareg (ethnic group)
+TRK	Turk
+TRK	ethnic Turk
+TTO	Trinidad and Tobago
+TUN	Tunisia
+TUR	Turkey
+TUT	Tutsi
+TUT	Tutsi (ethnic group)
+TUV	Tuvalu
+TWN	Taiwan
+TZA	Tanzania
+UAF	Unidentified Armed Force
+UFO	extraterrestrial
+UGA	Uganda
+UIG	Uighur
+UIG	Uighur (Chinese ethnic minority)
+UIS	Unidentified state actors
+UKR	Ukraine
+URY	Uruguay
+USA	United States
+USR	Union of Soviet Socialist Republics (USSR)
+UZB	Uzbekistan
+VAT	Holy See (Vatican City)
+VCT	Saint Vincent and the Grenadines
+VEN	Venezuela
+VGB	British Virgin Islands
+VIR	U.S. Virigin Islands
+VIR	United States Virgin Islands
+VNM	Viet Nam
+VNM	Vietnam
+VUT	Vanuatu
+WAF	West Africa
+WLF	Wallis and Futuna Islands
+WLN	wellness-centric
+WSM	Samoa
+WST	“the West”
+YEM	Yemen
+YMN	North Yemen
+YMS	South Yemen
+YRB	Yoruba
+YUG	Socialist Federal Republic of Yugoslavia (d.r.)
+ZAF	South Africa
+ZMB	Zambia
+ZRO	Zoroastrian
+ZWE	Zimbabwe

@@ -150,74 +150,109 @@
 
         <div id="subsetActor" class="canvas" style="display:none">
 			<div id="actorSelectionDiv" style="width:700px;">
-				<!--<div id="sourceDiv" class="form-group" style="display:inline-block; width:50%; float:left;">
-					<label id="sourceActorsLab" style="text-align:center; width:100%;">Source Actor</label>
-					<div id="sourceSelectionDiv">
-						<div id="sourceOrgDiv" style="display:inline-block; width:50%; float:left;">
-							<label id="sourceOrgLab" style="width:100%; margin:1% 5%;">Organization</label>
-							<label style="display:block; margin:1% 5%;"><input name="sourceOrgCheck" type="checkbox" value="org1">org1</label>
-							<label style="display:block; margin:1% 5%;"><input name="sourceOrgCheck" type="checkbox" value="org2">org2</label>
-						</div>
-
-						<div id="sourceCountryDiv" style="display:inline-block; width:50%; float:left;">
-							<label id="sourceCountryDiv" style="width:100%; margin:1% 5%;">Country</label>
-							<label style="display:block; margin:1% 5%;"><input name="sourceCountryCheck" type="checkbox" value="country1">country1</label>
-							<label style="display:block; margin:1% 5%;"><input name="sourceCountryCheck" type="checkbox" value="country2">country2</label>
-						</div>
+				<div id="tabDiv">
+					<div class="actorTab">
+						<button id="sourceTabBtn" class="actorTabLink btn" type="button" onclick="actorTabSwitch('sourceTabBtn', 'sourceDiv')" title="Select sources">Sources</button>
+						<button id="targetTabBtn" class="actorTabLink btn btn-default" type="button" onclick="actorTabSwitch('targetTabBtn', 'targetDiv')" title="Select targets">Targets</button>
 					</div>
 				</div>
 
-				<div id="targetDiv" class="form-group>" style="display:inline-block; width:50%; float:left;">
-					<label id="targetActorLab" style="text-align:center; width:100%;">Target Actor</label>
-					<div id="targSelectionDiv">
-						<div id="targOrgDiv" style="display:inline-block; width:50%; float:left;">
-							<label id="targOrgLab" style="width:100%;">Organization</label>
-							<label style="display:block;"><input name="targOrgCheck" type="checkbox" value="org1">org1</label>
-							<label style="display:block;"><input name="targOrgCheck" type="checkbox" value="org2">org2</label>
+				<div id="fullContainer">
+					<div id="sourceDiv" class="actorTabContent">
+						<div id="allSources" class="actorLeft">
+							<input id="sourceSearch" class="form-control actorSearch" placeholder="Search source actors" type="text">
+							
+							<div id="searchListSources" class="actorFullList">
+								<!--checks will be added dynamically in JS once at load-->							
+							</div>
 						</div>
 
-						<div id="targCountryDiv" style="display:inline-block; width:50%; float:left;">
-							<label id="targCountryDiv" style="width:100%;">Country</label>
-							<label style="display:block;"><input name="targCountryCheck" type="checkbox" value="country1">country1</label>
-							<label style="display:block;"><input name="targCountryCheck" type="checkbox" value="country2">country2</label>
+						<div class="actorRight">
+							<button id="clearAllSources" type="button" class="clearActorBtn" title="Clears search text and filters">Clear All Filters</button>
+							
+							<div id="sourceFilter" class="actorFilterList">
+								<!--dynamically add checks for filters at load-->
+								<button id="entitySourceExpand" class="filterExpand" value="collapse"></button>
+								<h4 id="entitySources" class="actorHead4"><b>Entity</b></h4>
+								<div id="wrapEntitySource" class="filterContainer" style="padding-left:10px;">
+										<button id="orgSourceExpand" class="filterExpand" value="collapse"></button>
+										<label class="actorChkLbl"><input class="actorChk allCheck" name="sourceOrgAllCheck" id="sourceOrgAllCheck" type="checkbox" value="organizations">Organizations</label>
+										<div id="orgSourcesList" class="filterContainer" style="padding-left:30px;"></div>
+
+										<div class="seperator"></div>
+
+										<button id="countrySourceExpand" class="filterExpand" value="collapse"></button>
+										<label class="actorChkLbl"><input class="actorChk allCheck" name="sourceCountryAllCheck" id="sourceCountryAllCheck" type="checkbox" value="countries">Countries</label>
+										<div id="countrySourcesList" class="filterContainer" style="padding-left:30px;"></div>
+								</div>
+
+								<div class="seperator"></div>
+
+								<button id="roleSourceExpand" class="filterExpand" value="collapse"></button>
+								<h4 id="roleSources" class="actorHead4"><b>Role</b></h4>
+								<div id="roleSourcesList" class="filterContainer"></div>
+
+								<div class="seperator"></div>
+								
+								<button id="attributeSourceExpand" class="filterExpand" value="collapse"></button>
+								<h4 id="attributeSources" class="actorHead4"><b>Attributes</b></h4>
+								<div id="attributeSourcesList" class="filterContainer"></div>
+							</div>
 						</div>
-					</div>
-				</div>-->
 
-				<div id="sourceDiv" style="width:50%; float:left; border: 1px solid black;">
-					<h3 style="text-align:center; width:100%;">Source Actor</h3>
-					<div id="allSources" style="height:200px; width:50%; float:left; border: 1px solid blue;">
-						<input id="searchSources" class="form-control" placeholder="Search source actors" type="text" style="margin:5px; height:30px; width:100%;">
-						<div id="searchListSources" style="height:160px; overflow-y:scroll;">
-							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src1">src1</label>
-							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src2">src2</label>
-							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src3">src3</label>
-							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src4">src4</label>
-							<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceSearchCheck" type="checkbox" value="src5">src5</label>
-							<!--checks will be added dynamically in JS once at load-->
+						<button id="clearSelSource" type="button" style="position: relative;">Clear Selected Sources</button>
+
+						<button id="submitSources" type="button" style="position: relative;">Submit Sources</button>
+					</div>
+
+					<div id="targetDiv" class="actorTabContent">
+						<div id="allTargets" class="actorLeft">
+							<input id="targetSearch" class="form-control actorSearch" placeholder="Search target actors" type="text">
+							
+							<div id="searchListTargets" class="actorFullList">
+								<!--checks will be added dynamically in JS once at load-->							
+							</div>
 						</div>
+
+						<div class="actorRight">
+							<button id="clearAllTargets" type="button" class="clearActorBtn" title="Clears search text and filters">Clear All Filters</button>
+							
+							<div id="targetFilter" class="actorFilterList">
+								<!--dynamically add checks for filters at load-->
+								<button id="entityTargetExpand" class="filterExpand" value="collapse"></button>
+								<h4 id="entityTargets" class="actorHead4"><b>Entity</b></h4>
+								<div id="wrapEntityTarget" class="filterContainer" style="padding-left:10px;">
+										<button id="orgTargetExpand" class="filterExpand" value="collapse"></button>
+										<label class="actorChkLbl"><input class="actorChk allCheck" name="targetOrgAllCheck" id="targetOrgAllCheck" type="checkbox" value="organizations">Organizations</label>
+										<div id="orgTargetsList" class="filterContainer" style="padding-left:30px;"></div>
+
+										<div class="seperator"></div>
+
+										<button id="countryTargetExpand" class="filterExpand" value="collapse"></button>
+										<label class="actorChkLbl"><input class="actorChk allCheck" name="targetCountryAllCheck" id="targetCountryAllCheck" type="checkbox" value="countries">Countries</label>
+										<div id="countryTargetsList" class="filterContainer" style="padding-left:30px;"></div>
+								</div>
+
+								<div class="seperator"></div>
+
+								<button id="roleTargetExpand" class="filterExpand" value="collapse"></button>
+								<h4 id="roleTargets" class="actorHead4"><b>Role</b></h4>
+								<div id="roleTargetsList" class="filterContainer"></div>
+
+								<div class="seperator"></div>
+								
+								<button id="attributeTargetExpand" class="filterExpand" value="collapse"></button>
+								<h4 id="attributeTargets" class="actorHead4"><b>Attributes</b></h4>
+								<div id="attributeTargetsList" class="filterContainer"></div>
+							</div>
+						</div>
+
+						<button id="clearSelTarget" type="button" style="position: relative;">Clear Selected Targets</button>
+
+						<button id="submitTargets" type="button" style="position: relative;">Submit Targets</button>
 					</div>
-
-					<div id="filterSources" style="width:45%; float:right; height:200px; overflow-y:scroll; border: 1px solid red;">
-						<h4 id="entitySources" style="margin-bottom:0px;"><b>Entity</b></h4>
-						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceEntityCheck" type="checkbox" value="org1">org1</label>
-						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceEntityCheck" type="checkbox" value="org2">org2</label>
-
-						<h4 id="roleSources" style="margin-bottom:0px;"><b>Role</b></h4>
-						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceRoleCheck" type="checkbox" value="role1">role1</label>
-						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceRoleCheck" type="checkbox" value="role2">role2</label>
-						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceRoleCheck" type="checkbox" value="role3">role3</label>
-
-						<h4 id="attributeSources" style="margin-bottom:0px;"><b>Attributes</b></h4>
-						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceAttrCheck" type="checkbox" value="attr1">attr1</label>
-						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceAttrCheck" type="checkbox" value="attr2">attr2</label>
-						<label style="display:block; margin:1% 5%;"><input style="vertical-align:text-bottom;" name="sourceAttrCheck" type="checkbox" value="attr3">attr3</label>
-					</div>
-				</div>
-
-
-
-			</div>
+                </div>
+            </div>
         </div>
 
         <div id="legend" class="legendary panel panel-default" style="display:none">
@@ -371,12 +406,48 @@ function closeRightPanel() {
   }
   else{username="rohit";}
 
-     //  console.log("fileid: "+fileid);
-     //  console.log("hostname: "+hostname);
-     //  console.log("apikey: "+apikey);
-     //  console.log("ddiurl: "+ddiurl);
-     //  console.log("dataurl: "+dataurl);
-     //  console.log("Username:"+username);
+
+//  console.log("fileid: "+fileid);
+//  console.log("hostname: "+hostname);
+//  console.log("apikey: "+apikey);
+//  console.log("ddiurl: "+ddiurl);
+//  console.log("dataurl: "+dataurl);
+//  console.log("Username:"+username);
+
+	//switches tabs in actor subset
+	function actorTabSwitch(origin, tab) {
+		switch(origin) {
+			case "sourceTabBtn":
+				console.log("switching to source");
+				document.getElementById("targetDiv").style.display = "none";
+				$("#targetTabBtn").removeClass("active").addClass("btn-default");
+				$("#sourceTabBtn").removeClass("btn-default").addClass("active");
+				break;
+			default:
+				console.log("switching to target");
+				document.getElementById("sourceDiv").style.display = "none";
+				$("#sourceTabBtn").removeClass("active").addClass("btn-default");
+				$("#targetTabBtn").removeClass("btn-default").addClass("active");
+				break;
+		}
+
+		document.getElementById(tab).style.display = "inline-block";
+	}
+
+	//expands divs with filters
+	$(".filterExpand").click(function() {
+		if (this.value == "expand") {
+			this.value = "collapse";
+			$(this).css("background-image", "url(collapse.png)");
+			$(this).next().next("div.filterContainer").show("fast");
+		}
+		else {
+			this.value = "expand";
+			$(this).css("background-image", "url(expand.png)");
+			$(this).next().next("div.filterContainer").hide("fast");
+		}
+	});
+
 </script>
     <script src="app_ddi_eventdata.js"></script>
     <script src="app_ddi_eventdata_date.js"></script>
