@@ -15,8 +15,10 @@
 var nodeId = 1;
 
 if (localStorage.getItem("treeData") !== null) {
+    // If the user has already submitted a query, restore the previous query from local data
     var data = JSON.parse(localStorage.getItem('treeData'));
 } else {
+    // Otherwise, start a new root node
     var data = [
         {
             id: '0',
@@ -28,27 +30,57 @@ if (localStorage.getItem("treeData") !== null) {
     ];
 }
 
-function togglebutton(id) {
-    return ' <button id="boolToggle" href="#node-' + id + '" class="btn btn-primary btn-xs active" type="button" data-toggle="button" aria-pressed="true" data-node-id="' +
-        id + '">not</button>'
+// Define negation toggle, logic dropdown and delete button, as well as their callbacks
+function buttonNegate(id, state) {
+    // This state is negated simply because the buttons are visually inverted. An active button appears inactive
+    // This is due to css tomfoolery
+    if (!state){
+        return ' <button id="boolToggle" class="btn btn-default btn-xs active" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', true)">not</button>'
+    } else {
+        return ' <button id="boolToggle" class="btn btn-default btn-xs" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', false)">not</button>'
+    }
 }
 
-function logicbutton(id) {
-    logDropdown = ' <div class="dropdown" style="display:inline;"><button class="btn btn-primary dropdown-toggle btn-xs" type="button" data-toggle="dropdown"> and <span class="caret"></span></button>';
+function callbackNegate(id, state){
+    var node = $('#queryTree').tree('getNodeById', id);
+    node.negate = state;
+
+    // TODO: There should be a more efficient way to update this data
+    data = JSON.parse($('#queryTree').tree('toJson'))
+    var qtree = $('#queryTree')
+    var state = qtree.tree('getState');
+    qtree.tree('loadData', data, 0);
+    qtree.tree('setState', state);
+}
+
+function buttonLogic(id, state) {
+    logDropdown = ' <div class="dropdown" style="display:inline;"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + '<span class="caret"></span></button>';
     logDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" style="float:left;margin:0;padding:0;width:45px;min-width:45px">' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1">and </a></li>' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2">or </a></li>' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1">nand </a></li>' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2">nor </a></li>' +
+        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;and &quot;)">and </a></li>' +
+        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;or &quot;)">or </a></li>' +
+        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;nand &quot;)">nand </a></li>' +
+        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;nor &quot;)">nor </a></li>' +
         '</ul></div>';
     return logDropdown
 }
 
-function cancelButton(id) {
-    return "<button type='button' class='btn btn-primary btn-xs' style='background:none;border:none;box-shadow:none;float:right;margin-top:3px' onclick='cancelCallback(" + String(id) + ")'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button></div>";
+function callbackLogic(id, state){
+    var node = $('#queryTree').tree('getNodeById', id);
+    node.operation = state;
+
+    // TODO: There should be a more efficient way to update this data
+    data = JSON.parse($('#queryTree').tree('toJson'))
+    var qtree = $('#queryTree')
+    var state = qtree.tree('getState');
+    qtree.tree('loadData', data, 0);
+    qtree.tree('setState', state);
 }
 
-function cancelCallback(id) {
+function buttonDelete(id) {
+    return "<button type='button' class='btn btn-default btn-xs' style='background:none;border:none;box-shadow:none;float:right;margin-top:3px' onclick='callbackDelete(" + String(id) + ")'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button></div>";
+}
+
+function callbackDelete(id) {
     var node = $('#queryTree').tree('getNodeById', id);
     if (node.children) {
         for (var i = node.children.length - 1; i >= 0; i--) {
@@ -63,10 +95,22 @@ function cancelCallback(id) {
 $(function () {
     $('#queryTree').tree({
         data: data,
-        saveState:true,
+        saveState: true,
         dragAndDrop: true,
         autoOpen: true,
         selectable: false,
+        onCreateLi: function (node, $li) {
+            // Insert bootstrap gui elements into table upon creation
+            if ('operation' in node) {
+                $li.find('.jqtree-element').append(buttonLogic(node.id, node.operation));
+            }
+            if ('negate' in node) {
+                $li.find('.jqtree-element').append(buttonNegate(node.id, node.negate));
+            }
+            if (!('cancellable' in node) || (node['cancellable'] === true)) {
+                $li.find('.jqtree-element').append(buttonDelete(node.id));
+            }
+        },
         onCanMove: function (node) {
             // Only rules may be moved
             if (node.name.indexOf('Subset') !== -1) {
@@ -75,7 +119,7 @@ $(function () {
         },
         onCanMoveTo: function (moved_node, target_node, position) {
             // Nodes may not be moved outside of the root group
-            if (target_node.getLevel() === 1) {
+            if (target_node.getLevel() === 1 && target_node.name.indexOf('Root') === -1) {
                 return false;
             }
             // Rules may be moved next to another rule or grouping
@@ -84,26 +128,10 @@ $(function () {
             }
 
             // Rules may be moved inside a group or root
-            if (position == 'inside' && (target_node.name.indexOf('Root') !== -1 || target_node.name.indexOf('Subgroup') !== -1)) {
+            if ((position === 'inside') && (target_node.name.indexOf('Root') !== -1 || target_node.name.indexOf('Subgroup') !== -1)) {
                 return true;
             }
-
             return false;
-        },
-        onCreateLi: function (node, $li) {
-            if ('operation' in node) {
-                $li.find('.jqtree-element').append(logicbutton(node.id));
-            }
-            if ('negate' in node) {
-                $li.find('.jqtree-element').append(togglebutton(node.id));
-            }
-            if (!('cancellable' in node) || (node['cancellable'] === true)) {
-                $li.find('.jqtree-element').append(cancelButton(node.id));
-            }
-            // if ('open' in node && !node.open){
-            //     console.log(node);
-            //     $('#queryTree').tree('closeNode', $li, true)
-            // }
         }
     });
 });
@@ -113,7 +141,7 @@ $('#queryTree').on(
     function (event) {
         event.preventDefault();
         event.move_info.do_move();
-        // $.post('your_url', {tree: $(this).tree('toJson')});
+        data = JSON.parse($('#queryTree').tree('toJson'))
     }
 );
 
@@ -155,13 +183,21 @@ function addRule() {
  */
 function getSubsetPreferences() {
     if (subsetSelection == 'Date') {
+
+        // Don't add a rule if the dates have not been changed
+        if (dateminUser === datemin && datemaxUser === datemax){
+            return {}
+        }
+
+        // For mapping numerical months to strings in the child node name
         var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
             "July", "Aug", "Sep", "Oct", "Nov", "Dec"
         ];
+
         return {
             id: String(nodeId++),
             name: 'Date Subset',
-            is_open:false,
+            is_open: false,
             children: [
                 {
                     id: String(nodeId++),
@@ -181,20 +217,29 @@ function getSubsetPreferences() {
     }
 
     if (subsetSelection == 'Location') {
+        // Make parent node
         var subset = {
+            id: String(nodeId++),
             name: 'Location Subset',
             operation: 'and',
             children: []
         };
 
-        // Add each country as another rule
+        // Add each country to the parent node as another rule
         for (var country in mapListCountriesSelected) {
             if (mapListCountriesSelected[country]) {
                 subset['children'].push({
-                    name: String(country)
+                    id: String(nodeId++),
+                    negate: true,
+                    name: country
                 });
             }
         }
+        // Don't add a rule and ignore the stage if no countries are selected
+        if (subset['children'].length === 0){
+            return {}
+        }
+
         return subset
     }
 

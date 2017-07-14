@@ -106,7 +106,7 @@
             <h3 class="panel-title">Query Listing</h3>
         </div>
 
-        <div id="queryTree" style="width:232px">
+        <div id="queryTree" style="width:232px;height:calc(100% - 50px)">
         </div>
         <div id="rightpanelButtonBar" style="width:232px;position:absolute;bottom:5px">
             <button id="buttonAddGroup" class="btn btn-default ladda-button" data-spinner-color="#000000"
@@ -134,7 +134,7 @@
             <svg id="dateSVG" width="500" height="500"></svg>
 
             <div id="dateInterval" class="form-group" style="display: inline-block;vertical-align:top;width:20%;margin:20px">
-                <button id="setDatefromSlider" type="button" class="btn" onclick="setDatefromSlider()" style="margin-top:10px;text-align:center;">Bring Date from Slider</button>
+                <button id="setDatefromSlider" type="button" class="btn btn-default" onclick="setDatefromSlider()" style="margin-top:10px;text-align:center;">Bring Date from Slider</button>
                 <label id="dateFromLab" for="fromdate" style="text-align:left;width:100%;margin-top:10px;" >From:</label>
                 <input id="fromdate" class="form-control" type="text">
                 <label id="dateToLab" for="todate" style="text-align:left;width:100%;margin-top:10px;">To:</label>
