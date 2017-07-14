@@ -3162,7 +3162,11 @@ function render(blnIsSubgraph, cid){
 			
 				var region = "Other";
 				
-				if(map_location_lookup.has(d.fullcname)) {
+				if(map_location_lookup.has(d.cname)) {
+				
+					region = map_location_lookup.get(d.cname);
+				}
+				else if(map_location_lookup.has(d.fullcname)) {
 				
 					region = map_location_lookup.get(d.fullcname);
 				}
@@ -3271,18 +3275,19 @@ function render(blnIsSubgraph, cid){
 	else {
 		
 		console.log("Rendering Sub Graph...");
-				
+		
+		var MAX_HEIGHT = 35;
+		var arr_countries = arr_location_region_data[cid].countries;
+		var maxDomainX = arr_location_region_data[cid].maxCFreq;
+					
 		var svg = d3.select("#sub_graph_td_svg_"+ cid);
 		
 		var margin = {top: 20, right: 30, bottom: 30, left: 80},
 		width = +svg.attr("width") - margin.left - margin.right,
 		height = +svg.attr("height") - margin.top - margin.bottom;
-	  
+			  
 		var x = d3.scaleLinear().range([0, width]);
 		var y = d3.scaleBand().range([height, 0]);
-								
-		var arr_countries = arr_location_region_data[cid].countries;
-		var maxDomainX = arr_location_region_data[cid].maxCFreq;
 				
 		console.log(maxDomainX); 
 			
@@ -3307,11 +3312,11 @@ function render(blnIsSubgraph, cid){
 			.enter().append("rect")
 			.attr("class", "bar")
 			.attr("x", 0)
-			.attr("height", y.bandwidth())
+			.attr("height", d3.min([y.bandwidth(), MAX_HEIGHT]))
 			.attr("y", function(d) { 
 			mapSubGraphIdCname[d.cname] = cid + "_" + d.id;
 			if(mapListCountriesSelected[d.cname] == null) {mapListCountriesSelected[d.cname] = false;}
-			return y(d.cname); })
+			return y(d.cname) +  + (y.bandwidth() - d3.min([y.bandwidth(), MAX_HEIGHT]))/2; })
 			.attr("width", function(d) { return x(d.freq); })
 			.attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; })
 			.attr("id", function(d) { return "tg_rect_" + cid + "_" + d.id; })
@@ -3708,6 +3713,7 @@ function getMapLocationLookup() {
   
 		data.forEach(function(d) {
 			map_location_lookup.set(d.cname , d.rname);
+			map_location_lookup.set(d.fullcname , d.rname);
 		});
 	});
 }
