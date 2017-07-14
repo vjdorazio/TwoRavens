@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>TwoRavens</title>
 
+    <link rel="shortcut icon" href="images/favicon.ico?v=1" type="image/x-icon">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
     <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
 
@@ -107,7 +108,16 @@
 
         <div id="queryTree" style="width:232px">
         </div>
-        <button id="buttonSubmitQuery" class="btn btn-default ladda-button" data-spinner-color="#000000" onclick="buildQuery(document.getElementById('rootTree'))" type="button" style="left:calc(50% - 21px);position:absolute;bottom:10px">Submit</button>
+        <div id="rightpanelButtonBar" style="width:232px;position:absolute;bottom:5px">
+            <button id="buttonAddGroup" class="btn btn-default ladda-button" data-spinner-color="#000000"
+                    onclick="addGroup()" type="button"
+                    style="float:left;margin-left:6px;">Add Subgroup
+            </button>
+            <button id="buttonSubmitQuery" class="btn btn-default ladda-button" data-spinner-color="#000000"
+                    onclick="buildQuery()" type="button"
+                    style="float:right;margin-right:5px">Submit
+            </button>
+        </div>
     </div>
 
     <button id="stageButton" class="btn btn-default" type="button" onclick=addRule()>Stage</button>

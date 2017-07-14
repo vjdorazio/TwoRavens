@@ -3498,7 +3498,7 @@ function rightpanelMargin() {
         // Vertical scrollbar
         document.getElementById("rightpanel").style.right = "27px";
         if ($('#rightpanel').hasClass('closepanel')) {
-            document.getElementById("stageButton").style.right = "46px"
+            document.getElementById("stageButton").style.right = "56px"
         } else {
             document.getElementById("stageButton").style.right = "286px"
         }
@@ -3515,10 +3515,10 @@ function rightpanelMargin() {
     if (main.get(0).scrollWidth > main.get(0).clientWidth) {
         // Horizontal scrollbar
         document.getElementById("rightpanel").style.height = "calc(100% - 139px)";
-        document.getElementById("stageButton").style.bottom = "78px";
+        document.getElementById("stageButton").style.bottom = "73px";
     } else {
         // No horizontal scrollbar
         document.getElementById("rightpanel").style.height = "calc(100% - 122px)";
-        document.getElementById("stageButton").style.bottom = "61px";
+        document.getElementById("stageButton").style.bottom = "56px";
     }
 }
