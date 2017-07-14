@@ -1,0 +1,215 @@
+cname,fullcname,rname
+BDI,Burundi,Eastern Africa
+COM,Comoros,Eastern Africa
+DJI,Djibouti,Eastern Africa
+ERI,Eritrea,Eastern Africa
+ETH,Ethiopia,Eastern Africa
+KEN,Kenya,Eastern Africa
+MDG,Madagascar,Eastern Africa
+MWI,Malawi,Eastern Africa
+MUS,Mauritius,Eastern Africa
+MYT,Mayotte,Eastern Africa
+MOZ,Mozambique,Eastern Africa
+REU,Reunion,Eastern Africa
+RWA,Rwanda,Eastern Africa
+SYC,Seychelles,Eastern Africa
+SOM,Somalia,Eastern Africa
+SSD,South Sudan,Eastern Africa
+TZA,Tanzania,Eastern Africa
+UGA,Uganda,Eastern Africa
+ZMB,Zambia,Eastern Africa
+ZWE,Zimbabwe,Eastern Africa
+AGO,Angola,Central Africa
+CMR,Cameroon,Central Africa
+CAF,Central African Republic,Central Africa
+TCD,Chad,Central Africa
+CAF,Democratic Republic of the Congo,Central Africa
+GNQ,Equatorial Guinea,Central Africa
+GAB,Gabon,Central Africa
+STP,Sao Tome and Principe,Central Africa
+DZA,Algeria,Northern Africa
+EGY,Egypt,Northern Africa
+LBY,Libya,Northern Africa
+MAR,Morocco,Northern Africa
+SDN,Sudan,Northern Africa
+TUN,Tunisia,Northern Africa
+ESH,Western Sahara,Northern Africa
+BWA,Botswana,Southern Africa
+NAM,Namibia,Southern Africa
+ZAF,South Africa,Southern Africa
+SWZ,Swaziland,Southern Africa
+BEN,Benin,Western Africa
+BFA,Burkina Faso,Western Africa
+CPV,Cabo Verde,Western Africa
+CIV,Cote d'Ivoire,Western Africa
+GMB,Gambia,Western Africa
+GHA,Ghana,Western Africa
+GIN,Guinea,Western Africa
+GNB,Guinea-Bissau,Western Africa
+LBR,Liberia,Western Africa
+MLI,Mali,Western Africa
+MRT,Mauritania,Western Africa
+NER,Niger,Western Africa
+NGA,Nigeria,Western Africa
+SHN,Saint Helena,Western Africa
+SEN,Senegal,Western Africa
+SLE,Sierra Leone,Western Africa
+TGO,Togo,Western Africa
+AIA,Anguilla,Caribbean
+ATG,Antigua and Barbuda,Caribbean
+ABW,Aruba,Caribbean
+BHS,Bahamas,Caribbean
+BRB,Barbados,Caribbean
+VGB,British Virgin Islands,Caribbean
+CYM,Cayman Islands,Caribbean
+CUB,Cuba,Caribbean
+CUW,Curacao,Caribbean
+DMA,Dominica,Caribbean
+DOM,Dominican Republic,Caribbean
+GRD,Grenada,Caribbean
+GLP,Guadeloupe,Caribbean
+HTI,Haiti,Caribbean
+JAM,Jamaica,Caribbean
+MTQ,Martinique,Caribbean
+Montserrat,Caribbean
+MSR,Navassa Island,Caribbean
+PRI,Puerto Rico,Caribbean
+BLM,Saint-Barthelemy,Caribbean
+KNA,Saint Kitts and Nevis,Caribbean
+LCA,Saint Lucia,Caribbean
+MAF,Saint Martin,Caribbean
+VCT,Saint Vincent and the Grenadines,Caribbean
+SXM,Sint Maarten,Caribbean
+TTO,Trinidad and Tobago,Caribbean
+TCA,Turks and Caicos Islands,Caribbean
+VIR,United States Virgin Islands,Caribbean
+BLZ,Belize,Central America
+CRI,Costa Rica,Central America
+SLV,El Salvador,Central America
+GTM,Guatemala,Central America
+HND,Honduras,Central America
+MEX,Mexico,Central America
+NIC,Nicaragua,Central America
+PAN,Panama,Central America
+ARG,Argentina,South America
+BOL,Bolivia,South America
+BVT,Bouvet Island,South America
+BRA,Brazil,South America
+CHL,Chile,South America
+COL,Colombia,South America
+ECU,Ecuador,South America
+FLK,Falkland Islands,South America
+GUF,French Guiana,South America
+GUY,Guyana,South America
+PRY,Paraguay,South America
+PER,Peru,South America
+SGS,South Georgia and the South Sandwich Islands,South America
+SUR,Suriname,South America
+URY,Uruguay,South America
+VEN,Venezuela,South America
+BMU,Bermuda,Northern America
+CAN,Canada,Northern America
+GRL,Greenland,Northern America
+SPM,Saint Pierre and Miquelon,Northern America
+USA,United States of America,Northern America
+KAZ,Kazakhstan,Central Asia
+KGZ,Kyrgyzstan,Central Asia
+TJK,Tajikistan,Central Asia
+TKM,Turkmenistan,Central Asia
+UZB,Uzbekistan,Central Asia
+CHN,China,Eastern Asia
+HKG,Hong Kong,Eastern Asia
+JPN,Japan,Eastern Asia
+MAC,Macau,Eastern Asia
+MNG,Mongolia,Eastern Asia
+PRK,North Korea,Eastern Asia
+KOR,South Korea,Eastern Asia
+AFG,Afghanistan,Southern Asia
+BGD,Bangladesh,Southern Asia
+BTN,Bhutan,Southern Asia
+IND,India,Southern Asia
+IRN,Iran,Southern Asia
+MDV,Maldives,Southern Asia
+NLP,Nepal,Southern Asia
+PAK,Pakistan,Southern Asia
+LKA,Sri Lanka,Southern Asia
+BRN,Brunei Darussalam,Southeastern Asia
+KHM,Cambodia,Southeastern Asia
+IDN,Indonesia,Southeastern Asia
+LAO,Laos,Southeastern Asia
+MYS,Malaysia,Southeastern Asia
+MMR,Myanmar,Southeastern Asia
+PHL,Philippines,Southeastern Asia
+SGP,Singapore,Southeastern Asia
+THA,Thailand,Southeastern Asia
+TLS,Timor-Leste,Southeastern Asia
+VNM,Viet Nam,Southeastern Asia
+ARM,Armenia,Western Asia
+AZE,Azerbaijan,Western Asia
+BHR,Bahrain,Western Asia
+CYP,Cyprus,Western Asia
+GEO,Georgia,Western Asia
+IRQ,Iraq,Western Asia
+ISR,Israel,Western Asia
+JOR,Jordan,Western Asia
+KWT,Kuwait,Western Asia
+LBN,Lebanon,Western Asia
+OMN,Oman,Western Asia
+QAT,Qatar,Western Asia
+SAU,Saudi Arabia,Western Asia
+PSE,State of Palestine,Western Asia
+SYR,Syria,Western Asia
+TUR,Turkey,Western Asia
+ARE,United Arab Emirates,Western Asia
+YEM,Yemen,Western Asia
+BLR,Belarus,Eastern Europe
+BGR,Bulgaria,Eastern Europe
+CZE,Czech Republic,Eastern Europe
+HUN,Hungary,Eastern Europe
+POL,Poland,Eastern Europe
+MDA,Republic of Moldova,Eastern Europe
+ROU,Romania,Eastern Europe
+RUS,Russian Federation,Eastern Europe
+SVK,Slovakia,Eastern Europe
+UKR,Ukraine,Eastern Europe
+ALA,Aland Islands,Northern Europe
+DNK,Denmark,Northern Europe
+EST,Estonia,Northern Europe
+FRO,Faroe Islands,Northern Europe
+FIN,Finland,Northern Europe
+GGY,Guernsey,Northern Europe
+ISL,Iceland,Northern Europe
+IRL,Ireland,Northern Europe
+IMN,Isle of Man,Northern Europe
+JEY,Jersey,Northern Europe
+LVA,Latvia,Northern Europe
+LTU,Lithuania,Northern Europe
+NOR,Norway,Northern Europe
+SJM,Svalbard and Jan Mayen Islands,Northern Europe
+SWE,Sweden,Northern Europe
+GBR,United Kingdom,Northern Europe
+ALB,Albania,Southern Europe
+AND,Andorra,Southern Europe
+BIH,Bosnia and Herzegovina,Southern Europe
+HRV,Croatia,Southern Europe
+GIB,Gibraltar,Southern Europe
+GRC,Greece,Southern Europe
+ITA,Italy,Southern Europe
+MKD,Republic of Macedonia,Southern Europe
+MLT,Malta,Southern Europe
+MNE,Montenegro,Southern Europe
+PRT,Portugal,Southern Europe
+SMR,San Marino,Southern Europe
+SRB,Serbia,Southern Europe
+SVN,Slovenia,Southern Europe
+ESP,Spain,Southern Europe
+VAT,Vatican City,Southern Europe
+AUT,Austria,Western Europe
+BEL,Belgium,Western Europe
+FRA,France,Western Europe
+DEU,Germany,Western Europe
+LIE,Liechtenstein,Western Europe
+LUX,Luxembourg,Western Europe
+MCO,Monaco,Western Europe
+NLD,Netherlands,Western Europe
+CHE,Switzerland,Western Europe

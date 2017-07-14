@@ -1038,8 +1038,14 @@ display: inline;}
 	cursor: pointer;
 }
 
-.bar_open {
+.bar_all_selected {
 	fill: brown;
+	cursor: pointer;
+}
+
+.bar_some_selected {
+	stroke: #000000; 
+	fill: url(#pattern1);
 	cursor: pointer;
 }
 
@@ -1048,7 +1054,12 @@ display: inline;}
 	cursor: pointer;
 }
 
-.bar_open:hover {
+.bar_all_selected:hover {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+.bar_some_selected:hover {
 	fill: steelblue;
 	cursor: pointer;
 }
@@ -1075,6 +1086,13 @@ display: inline;}
 .location_right {
 	width:auto;
 	position:absolute;
-	top:30%;
+	top:10%;
 	left:50%;
+}
+
+
+.strike_through:hover {
+	text-decoration: line-through;
+	background-color: steelblue;
+	color: white;
 }
