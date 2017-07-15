@@ -54,12 +54,12 @@ function callbackNegate(id, state){
 }
 
 function buttonLogic(id, state) {
-    logDropdown = ' <div class="dropdown" style="display:inline;"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + '<span class="caret"></span></button>';
+    logDropdown = ' <div class="dropdown" style="display:inline;"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
     logDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" style="float:left;margin:0;padding:0;width:45px;min-width:45px">' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;and &quot;)">and </a></li>' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;or &quot;)">or </a></li>' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;nand &quot;)">nand </a></li>' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;nor &quot;)">nor </a></li>' +
+        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;and&quot;)">and</a></li>' +
+        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;or&quot;)">or</a></li>' +
+        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;nand&quot;)">nand</a></li>' +
+        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;nor&quot;)">nor</a></li>' +
         '</ul></div>';
     return logDropdown
 }
@@ -163,6 +163,9 @@ function addRule() {
     // Index zero is root node. Add subset pref to nodes
     if (subsetSelection !== "") {
         var preferences = getSubsetPreferences();
+        if (Object.keys(preferences).length === 0){
+            return
+        }
 
         if (!('children' in data[0])) {
             data[0]['children'] = [];
@@ -184,10 +187,11 @@ function addRule() {
 function getSubsetPreferences() {
     if (subsetSelection == 'Date') {
 
-        // Don't add a rule if the dates have not been changed
-        if (dateminUser === datemin && datemaxUser === datemax){
-            return {}
-        }
+        // There is a small bug here, but the case isn't very important in the first place
+        // // Don't add a rule if the dates have not been changed
+        // if (dateminUser.getTime() === datemin.getTime() && datemaxUser.getTime() === datemax.getTime()){
+        //     return {}
+        // }
 
         // For mapping numerical months to strings in the child node name
         var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
@@ -210,8 +214,7 @@ function getSubsetPreferences() {
                     toDate: datemaxUser
                 }
             ],
-            // Just assume the user means to 'and' the two date constraints together. Uncomment to re-add.
-            // operation: 'and',
+            operation: 'and',
             open: false
         };
     }
@@ -230,7 +233,7 @@ function getSubsetPreferences() {
             if (mapListCountriesSelected[country]) {
                 subset['children'].push({
                     id: String(nodeId++),
-                    negate: true,
+                    negate: false,
                     name: country
                 });
             }
@@ -265,7 +268,95 @@ function getSubsetPreferences() {
  * @returns {Array}
  */
 function buildQuery() {
+    // Store the state of the tree in local data
     var tree_json = $('#queryTree').tree('toJson');
     localStorage.setItem('treeData', tree_json);
 
+    var query = processNode(data[0]);
+
+    console.log(JSON.stringify(query));
+    return query;
+
+    // Return a mongoDB query for a group data structure
+    function processNode(node){
+        var node_query = {};
+
+        var operator = '$' + node['operation'];
+        node_query[operator] = [];
+        for (var child_id in node.children){
+            var child = node.children[child_id];
+
+            // Check if child node is a group
+            if ('children' in child && child.children.length !== 0){
+
+                if (child.name.indexOf('Subgroup') !== -1) {
+                    // Recursively process subgroups
+                    node_query[operator].push(processNode(child));
+                } else {
+                    // Explicitly process rules
+                    node_query[operator].push(processRule(child));
+                }
+            }
+        }
+        return node_query;
+    }
+
+    // Return a mongoDB query for a rule data structure
+    function processRule(rule){
+        var rule_query = {};
+
+        switch (rule.name) {
+            case 'Date Subset':
+                var rule_query_inner = {};
+                for (var child_id in rule.children) {
+                    var child = rule.children[child_id];
+                    if ('fromDate' in child) {
+                        rule_query_inner['$gte'] = child.fromDate;
+                    }
+                    if ('toDate' in child) {
+                        rule_query_inner['$lte'] = child.toDate;
+                    }
+                }
+                rule_query['date8'] = rule_query_inner;
+
+                // Wrap with conjunction operator if specified. MongoDB defaults to 'and'
+                if ('operation' in rule) {
+                    var temp = {};
+                    temp['$' + rule.operation] = rule_query;
+                    rule_query = temp
+                }
+                break;
+
+            case 'Location Subset':
+                var rule_query_inner = [];
+                for (var child_id in rule.children) {
+                    var child = rule.children[child_id];
+
+                    if ('negate' in child && child.negate){
+                        // Wrap in negation if set
+                        rule_query_inner.push({ '$not': child.name })
+                    } else {
+                        rule_query_inner.push(child.name)
+                    }
+                }
+
+                // Wrap with conjunction operator if specified. MongoDB defaults to 'and'
+                if ('operation' in rule) {
+                    var temp = {};
+                    temp['$' + rule.operation] = rule_query_inner;
+                    rule_query_inner = temp
+                }
+
+                rule_query['countrycode'] = rule_query_inner;
+                break;
+
+            case 'Action Subset':
+                break;
+
+            case 'Actor Subset':
+                break;
+        }
+
+        return rule_query;
+    }
 }
