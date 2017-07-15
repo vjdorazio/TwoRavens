@@ -12,11 +12,11 @@
 //     cancellable: false       // If exists and false, disable the delete button
 // }
 
-var nodeId = 1;
-
+// Holds the Id of the next node to add
 if (localStorage.getItem("treeData") !== null) {
     // If the user has already submitted a query, restore the previous query from local data
     var data = JSON.parse(localStorage.getItem('treeData'));
+    var nodeId = localStorage.getItem('nodeId');
 } else {
     // Otherwise, start a new root node
     var data = [
@@ -28,6 +28,7 @@ if (localStorage.getItem("treeData") !== null) {
             cancellable: false
         }
     ];
+    var nodeId = 1;
 }
 
 // Define negation toggle, logic dropdown and delete button, as well as their callbacks
@@ -35,9 +36,9 @@ function buttonNegate(id, state) {
     // This state is negated simply because the buttons are visually inverted. An active button appears inactive
     // This is due to css tomfoolery
     if (!state){
-        return ' <button id="boolToggle" class="btn btn-default btn-xs active" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', true)">not</button>'
+        return '<button id="boolToggle" class="btn btn-default btn-xs active" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', true)">not</button> '
     } else {
-        return ' <button id="boolToggle" class="btn btn-default btn-xs" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', false)">not</button>'
+        return '<button id="boolToggle" class="btn btn-default btn-xs" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', false)">not</button> '
     }
 }
 
@@ -54,13 +55,13 @@ function callbackNegate(id, state){
 }
 
 function buttonLogic(id, state) {
-    logDropdown = ' <div class="dropdown" style="display:inline;"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
+    logDropdown = '<div class="dropdown" style="display:inline;"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
     logDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" style="float:left;margin:0;padding:0;width:45px;min-width:45px">' +
         '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;and&quot;)">and</a></li>' +
         '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;or&quot;)">or</a></li>' +
         '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;nand&quot;)">nand</a></li>' +
         '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;nor&quot;)">nor</a></li>' +
-        '</ul></div>';
+        '</ul></div> ';
     return logDropdown
 }
 
@@ -102,13 +103,17 @@ $(function () {
         onCreateLi: function (node, $li) {
             // Insert bootstrap gui elements into table upon creation
             if ('operation' in node) {
-                $li.find('.jqtree-element').append(buttonLogic(node.id, node.operation));
+                $li.find('.jqtree-element').prepend(buttonLogic(node.id, node.operation));
             }
             if ('negate' in node) {
-                $li.find('.jqtree-element').append(buttonNegate(node.id, node.negate));
+                $li.find('.jqtree-element').prepend(buttonNegate(node.id, node.negate));
             }
             if (!('cancellable' in node) || (node['cancellable'] === true)) {
-                $li.find('.jqtree-element').append(buttonDelete(node.id));
+                $li.find('.jqtree-element').prepend(buttonDelete(node.id));
+            }
+            // Set a left margin on the first element of a leaf
+            if (node.children.length === 0) {
+                $li.find('.jqtree-element:first').css('margin-left', '14px');
             }
         },
         onCanMove: function (node) {
@@ -142,6 +147,18 @@ $('#queryTree').on(
         event.preventDefault();
         event.move_info.do_move();
         data = JSON.parse($('#queryTree').tree('toJson'))
+    }
+);
+
+$('#queryTree').on(
+    'tree.click',
+    function(event) {
+        console.log(event)
+        var node = event.node;
+
+        if (node.hasChildren() && node.name.indexOf('Root') === -1) {
+            $('#queryTree').tree('toggle', node);
+        }
     }
 );
 
@@ -271,6 +288,7 @@ function buildQuery() {
     // Store the state of the tree in local data
     var tree_json = $('#queryTree').tree('toJson');
     localStorage.setItem('treeData', tree_json);
+    localStorage.setItem('nodeId', nodeId);
 
     var query = processNode(data[0]);
 
