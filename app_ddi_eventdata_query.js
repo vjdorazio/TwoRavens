@@ -4,31 +4,39 @@
 // This is the data node format
 // {
 //     id: String(nodeId++),    // Node number with post-increment
-//     name: 'Root',            // 'Root', 'Subgroup #', '[Selection] Subset' or tag name
+//     name: '[title]',         // 'Subset', 'Group #', '[Selection] Subset' or tag name
 //     operation: 'and',        // If exists, have a logical drop down
 //     children: [],            // If exists, have a triangle expander
 //     negate: false,           // If exists, have a negation button
-//     open: true,              // If a group, remember if open or closed
 //     cancellable: false       // If exists and false, disable the delete button
 // }
+
+// Delete stored tree (debug)
+// localStorage.removeItem('treeData');
 
 // Holds the Id of the next node to add
 if (localStorage.getItem("treeData") !== null) {
     // If the user has already submitted a query, restore the previous query from local data
     var data = JSON.parse(localStorage.getItem('treeData'));
     var nodeId = localStorage.getItem('nodeId');
+    var groupId = localStorage.getItem('groupId');
 } else {
     // Otherwise, start a new root node
     var data = [
         {
             id: '0',
-            name: 'Root',
+            name: 'Variables',
+            cancellable: false
+        },
+        {
+            id: '1',
+            name: 'Subset',
             operation: 'and',
-            children: [],
             cancellable: false
         }
     ];
-    var nodeId = 1;
+    var nodeId = 2;
+    var groupId = 1;
 }
 
 // Define negation toggle, logic dropdown and delete button, as well as their callbacks
@@ -55,7 +63,7 @@ function callbackNegate(id, state){
 }
 
 function buttonLogic(id, state) {
-    logDropdown = '<div class="dropdown" style="display:inline;"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
+    logDropdown = ' <div class="dropdown" style="display:inline"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
     logDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" style="float:left;margin:0;padding:0;width:45px;min-width:45px">' +
         '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;and&quot;)">and</a></li>' +
         '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;or&quot;)">or</a></li>' +
@@ -83,6 +91,7 @@ function buttonDelete(id) {
 
 function callbackDelete(id) {
     var node = $('#queryTree').tree('getNodeById', id);
+
     if (node.children) {
         for (var i = node.children.length - 1; i >= 0; i--) {
             $('#queryTree').tree('removeNode', node.children[i])
@@ -103,7 +112,7 @@ $(function () {
         onCreateLi: function (node, $li) {
             // Insert bootstrap gui elements into table upon creation
             if ('operation' in node) {
-                $li.find('.jqtree-element').prepend(buttonLogic(node.id, node.operation));
+                $li.find('.jqtree-element').append(buttonLogic(node.id, node.operation));
             }
             if ('negate' in node) {
                 $li.find('.jqtree-element').prepend(buttonNegate(node.id, node.negate));
@@ -118,22 +127,22 @@ $(function () {
         },
         onCanMove: function (node) {
             // Only rules may be moved
-            if (node.name.indexOf('Subset') !== -1) {
+            if (node.name.indexOf('Subset') !== -1 || node.name.indexOf('Group') !== -1) {
                 return true;
             }
         },
         onCanMoveTo: function (moved_node, target_node, position) {
             // Nodes may not be moved outside of the root group
-            if (target_node.getLevel() === 1 && target_node.name.indexOf('Root') === -1) {
+            if (target_node.getLevel() === 1 && target_node.name.indexOf('Subset') === -1) {
                 return false;
             }
             // Rules may be moved next to another rule or grouping
-            if (position == 'after' && (target_node.name.indexOf('Subset') !== -1 || target_node.name.indexOf('Subgroup') !== -1)) {
+            if (position == 'after' && (target_node.name.indexOf('Subset') !== -1 || target_node.name.indexOf('Group') !== -1)) {
                 return true;
             }
 
             // Rules may be moved inside a group or root
-            if ((position === 'inside') && (target_node.name.indexOf('Root') !== -1 || target_node.name.indexOf('Subgroup') !== -1)) {
+            if ((position === 'inside') && (target_node.name.indexOf('Subset') !== -1 || target_node.name.indexOf('Group') !== -1)) {
                 return true;
             }
             return false;
@@ -153,23 +162,23 @@ $('#queryTree').on(
 $('#queryTree').on(
     'tree.click',
     function(event) {
-        console.log(event)
-        var node = event.node;
-
-        if (node.hasChildren() && node.name.indexOf('Root') === -1) {
-            $('#queryTree').tree('toggle', node);
+        if (event.node.hasChildren()) {
+            $('#queryTree').tree('toggle', event.node);
         }
     }
 );
 
-var groupCount = 0;
-
 function addGroup() {
-    groupCount += 1;
-    data[0]['children'].push(
+    // If no children in root, create an empty list and reset the group id.
+    if (!('children' in data[1])) {
+        data[1]['children'] = [];
+        groupId = 1;
+    }
+
+    data[1]['children'].push(
         {
             id: String(nodeId++),
-            name: 'Subgroup ' + String(groupCount),
+            name: 'Group ' + String(groupId++),
             operation: 'and',
             children: []
         });
@@ -184,16 +193,17 @@ function addRule() {
             return
         }
 
-        if (!('children' in data[0])) {
-            data[0]['children'] = [];
+        if (!('children' in data[1])) {
+            data[1]['children'] = [];
         }
-        data[0]['children'].push(preferences);
+        data[1]['children'].push(preferences);
 
         var qtree = $('#queryTree')
         var state = qtree.tree('getState');
         qtree.tree('loadData', data, 0);
         qtree.tree('setState', state);
         qtree.tree('closeNode', qtree.tree('getNodeById', preferences['id']), false);
+        qtree.tree('openNode', qtree.tree('getNodeById', 1), true);
     }
 }
 
@@ -218,21 +228,21 @@ function getSubsetPreferences() {
         return {
             id: String(nodeId++),
             name: 'Date Subset',
-            is_open: false,
             children: [
                 {
                     id: String(nodeId++),
                     name: 'From: ' + monthNames[dateminUser.getMonth()] + ' ' + String(dateminUser.getFullYear()),
-                    fromDate: dateminUser
+                    fromDate: dateminUser,
+                    cancellable: false
                 },
                 {
                     id: String(nodeId++),
                     name: 'To:   ' + monthNames[datemaxUser.getMonth()] + ' ' + String(datemaxUser.getFullYear()),
-                    toDate: datemaxUser
+                    toDate: datemaxUser,
+                    cancellable: false
                 }
             ],
             operation: 'and',
-            open: false
         };
     }
 
@@ -289,10 +299,11 @@ function buildQuery() {
     var tree_json = $('#queryTree').tree('toJson');
     localStorage.setItem('treeData', tree_json);
     localStorage.setItem('nodeId', nodeId);
+    localStorage.setItem('groupId', groupId);
 
-    var query = processNode(data[0]);
+    var query = processNode(data[1]);
 
-    console.log(JSON.stringify(query));
+    console.log(JSON.stringify(query,null,'  '));
     return query;
 
     // Return a mongoDB query for a group data structure
@@ -307,7 +318,7 @@ function buildQuery() {
             // Check if child node is a group
             if ('children' in child && child.children.length !== 0){
 
-                if (child.name.indexOf('Subgroup') !== -1) {
+                if (child.name.indexOf('Group') !== -1) {
                     // Recursively process subgroups
                     node_query[operator].push(processNode(child));
                 } else {
@@ -335,14 +346,13 @@ function buildQuery() {
                         rule_query_inner['$lte'] = child.toDate;
                     }
                 }
-                rule_query['date8'] = rule_query_inner;
-
                 // Wrap with conjunction operator if specified. MongoDB defaults to 'and'
                 if ('operation' in rule) {
                     var temp = {};
-                    temp['$' + rule.operation] = rule_query;
-                    rule_query = temp
+                    temp['$' + rule.operation] = rule_query_inner;
+                    rule_query_inner = temp
                 }
+                rule_query['date8'] = rule_query_inner;
                 break;
 
             case 'Location Subset':

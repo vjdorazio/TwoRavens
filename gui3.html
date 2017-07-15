@@ -104,15 +104,15 @@
         <div id="toggleRpanelicon" class="panelbar"><span>&#9679;<br/>&#9679;<br/>&#9679;<br/>&#9679;</span></div>
 
         <div class="panel-heading text-center" id="rightpaneltitle">
-            <h3 class="panel-title">Query Listing</h3>
+            <h3 class="panel-title">Query Summary</h3>
         </div>
 
-        <div id="queryTree" style="width:232px;height:calc(100% - 50px)">
+        <div id="queryTree" style="width:232px;height:calc(100% - 78px);overflow-y:auto">
         </div>
         <div id="rightpanelButtonBar" style="width:232px;position:absolute;bottom:5px">
             <button id="buttonAddGroup" class="btn btn-default ladda-button" data-spinner-color="#000000"
                     onclick="addGroup()" type="button"
-                    style="float:left;margin-left:6px;">Add Subgroup
+                    style="float:left;margin-left:6px;">Group
             </button>
             <button id="buttonSubmitQuery" class="btn btn-default ladda-button" data-spinner-color="#000000"
                     onclick="buildQuery()" type="button"
