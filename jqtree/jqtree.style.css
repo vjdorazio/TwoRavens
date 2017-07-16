@@ -4,7 +4,7 @@ ul.jqtree-tree li.jqtree-folder {
 	min-height: 19px;
 	text-overflow: ellipsis;
 	list-style-type: none;
-	background-image: url(images/treeview-default-line.png);
+	background-image: url(treeview-default-line.png);
 	background-repeat: no-repeat;
 	background-position: 0 0;
 	position: relative;
