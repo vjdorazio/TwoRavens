@@ -4,9 +4,9 @@
 // This is the data node format
 // {
 //     id: String(nodeId++),    // Node number with post-increment
-//     name: '[title]',         // 'Subset', 'Group #', '[Selection] Subset' or tag name
+//     name: '[title]',         // 'Subsets', 'Group #', '[Selection] Subset' or tag name
 //     operation: 'and',        // If exists, have a logical drop down
-//     children: [],            // If exists, have a triangle expander
+//     children: [],            // If children exist
 //     negate: false,           // If exists, have a negation button
 //     cancellable: false       // If exists and false, disable the delete button
 // }
@@ -14,23 +14,25 @@
 // Delete stored tree (debug)
 // localStorage.removeItem('treeData');
 
-// Holds the Id of the next node to add
+// Create the rightpanel data tree
 if (localStorage.getItem("treeData") !== null) {
     // If the user has already submitted a query, restore the previous query from local data
     var data = JSON.parse(localStorage.getItem('treeData'));
     var nodeId = localStorage.getItem('nodeId');
     var groupId = localStorage.getItem('groupId');
 } else {
-    // Otherwise, start a new root node
+    // Otherwise, start a new tree
     var data = [
+        // All variables are stored as children of this node
         {
             id: '0',
             name: 'Variables',
             cancellable: false
         },
+        // All subsets are stored as children of this node
         {
             id: '1',
-            name: 'Subset',
+            name: 'Subsets',
             operation: 'and',
             cancellable: false
         }
@@ -43,27 +45,27 @@ if (localStorage.getItem("treeData") !== null) {
 function buttonNegate(id, state) {
     // This state is negated simply because the buttons are visually inverted. An active button appears inactive
     // This is due to css tomfoolery
-    if (!state){
+    if (!state) {
         return '<button id="boolToggle" class="btn btn-default btn-xs active" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', true)">not</button> '
     } else {
         return '<button id="boolToggle" class="btn btn-default btn-xs" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', false)">not</button> '
     }
 }
 
-function callbackNegate(id, state){
+function callbackNegate(id, bool) {
     var node = $('#queryTree').tree('getNodeById', id);
-    node.negate = state;
+    node.negate = bool;
 
     // TODO: There should be a more efficient way to update this data
-    data = JSON.parse($('#queryTree').tree('toJson'))
-    var qtree = $('#queryTree')
+    data = JSON.parse($('#queryTree').tree('toJson'));
+    var qtree = $('#queryTree');
     var state = qtree.tree('getState');
     qtree.tree('loadData', data, 0);
     qtree.tree('setState', state);
 }
 
 function buttonLogic(id, state) {
-    logDropdown = ' <div class="dropdown" style="display:inline"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
+    var logDropdown = ' <div class="dropdown" style="display:inline"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
     logDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" style="float:left;margin:0;padding:0;width:45px;min-width:45px">' +
         '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;and&quot;)">and</a></li>' +
         '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;or&quot;)">or</a></li>' +
@@ -73,13 +75,13 @@ function buttonLogic(id, state) {
     return logDropdown
 }
 
-function callbackLogic(id, state){
+function callbackLogic(id, operand) {
     var node = $('#queryTree').tree('getNodeById', id);
-    node.operation = state;
+    node.operation = operand;
 
     // TODO: There should be a more efficient way to update this data
-    data = JSON.parse($('#queryTree').tree('toJson'))
-    var qtree = $('#queryTree')
+    data = JSON.parse($('#queryTree').tree('toJson'));
+    var qtree = $('#queryTree');
     var state = qtree.tree('getState');
     qtree.tree('loadData', data, 0);
     qtree.tree('setState', state);
@@ -102,6 +104,7 @@ function callbackDelete(id) {
     data = JSON.parse($('#queryTree').tree('toJson'))
 }
 
+// Create the query tree
 $(function () {
     $('#queryTree').tree({
         data: data,
@@ -109,8 +112,9 @@ $(function () {
         dragAndDrop: true,
         autoOpen: true,
         selectable: false,
+
+        // Executed for every node and leaf in the tree
         onCreateLi: function (node, $li) {
-            // Insert bootstrap gui elements into table upon creation
             if ('operation' in node) {
                 $li.find('.jqtree-element').append(buttonLogic(node.id, node.operation));
             }
@@ -118,7 +122,7 @@ $(function () {
                 $li.find('.jqtree-element').prepend(buttonNegate(node.id, node.negate));
             }
             if (!('cancellable' in node) || (node['cancellable'] === true)) {
-                $li.find('.jqtree-element').prepend(buttonDelete(node.id));
+                $li.find('.jqtree-element').append(buttonDelete(node.id));
             }
             // Set a left margin on the first element of a leaf
             if (node.children.length === 0) {
@@ -126,23 +130,24 @@ $(function () {
             }
         },
         onCanMove: function (node) {
-            // Only rules may be moved
+            // Subset and Group may be moved
             if (node.name.indexOf('Subset') !== -1 || node.name.indexOf('Group') !== -1) {
-                return true;
+                // Catches the case for the root subsets node, which cannot be moved
+                return (node.name.indexOf('Subsets') === -1);
             }
         },
         onCanMoveTo: function (moved_node, target_node, position) {
             // Nodes may not be moved outside of the root group
-            if (target_node.getLevel() === 1 && target_node.name.indexOf('Subset') === -1) {
+            if (target_node.getLevel() === 1 && target_node.name.indexOf('Subsets') === -1) {
                 return false;
             }
             // Rules may be moved next to another rule or grouping
-            if (position == 'after' && (target_node.name.indexOf('Subset') !== -1 || target_node.name.indexOf('Group') !== -1)) {
+            if (position == 'after' && (target_node.name.indexOf('Subsets') !== -1 || target_node.name.indexOf('Group') !== -1)) {
                 return true;
             }
 
             // Rules may be moved inside a group or root
-            if ((position === 'inside') && (target_node.name.indexOf('Subset') !== -1 || target_node.name.indexOf('Group') !== -1)) {
+            if ((position === 'inside') && (target_node.name.indexOf('Subsets') !== -1 || target_node.name.indexOf('Group') !== -1)) {
                 return true;
             }
             return false;
@@ -155,13 +160,15 @@ $('#queryTree').on(
     function (event) {
         event.preventDefault();
         event.move_info.do_move();
+        // Save changes when an element is moved
         data = JSON.parse($('#queryTree').tree('toJson'))
     }
 );
 
 $('#queryTree').on(
     'tree.click',
-    function(event) {
+    function (event) {
+        // TODO: Break if click occurred over one of the bootstrap buttons
         if (event.node.hasChildren()) {
             $('#queryTree').tree('toggle', event.node);
         }
@@ -189,7 +196,7 @@ function addRule() {
     // Index zero is root node. Add subset pref to nodes
     if (subsetSelection !== "") {
         var preferences = getSubsetPreferences();
-        if (Object.keys(preferences).length === 0){
+        if (Object.keys(preferences).length === 0) {
             return
         }
 
@@ -198,13 +205,31 @@ function addRule() {
         }
         data[1]['children'].push(preferences);
 
-        var qtree = $('#queryTree')
+        var qtree = $('#queryTree');
         var state = qtree.tree('getState');
         qtree.tree('loadData', data, 0);
         qtree.tree('setState', state);
         qtree.tree('closeNode', qtree.tree('getNodeById', preferences['id']), false);
         qtree.tree('openNode', qtree.tree('getNodeById', 1), true);
     }
+}
+
+function reloadVariables() {
+    console.log(selectedVariables)
+    data[0]['children'] = [];
+    selectedVariables.forEach(function(element){
+        data[0]['children'].push({
+            id: String(nodeId++),
+            name: element,
+            cancellable: false
+        })
+    });
+
+    var qtree = $('#queryTree');
+    var state = qtree.tree('getState');
+    qtree.tree('loadData', data, 0);
+    qtree.tree('setState', state);
+    qtree.tree('openNode', qtree.tree('getNodeById', 0), true);
 }
 
 /**
@@ -242,7 +267,7 @@ function getSubsetPreferences() {
                     cancellable: false
                 }
             ],
-            operation: 'and',
+            operation: 'and'
         };
     }
 
@@ -266,7 +291,7 @@ function getSubsetPreferences() {
             }
         }
         // Don't add a rule and ignore the stage if no countries are selected
-        if (subset['children'].length === 0){
+        if (subset['children'].length === 0) {
             return {}
         }
 
@@ -292,7 +317,7 @@ function getSubsetPreferences() {
 
 /**
  * Structures the data variable as a mongoDB CRUD query
- * @returns {Array}
+ * @returns String
  */
 function buildQuery() {
     // Store the state of the tree in local data
@@ -302,21 +327,21 @@ function buildQuery() {
     localStorage.setItem('groupId', groupId);
 
     var query = processNode(data[1]);
+    console.log(JSON.stringify(query, null, '  '));
 
-    console.log(JSON.stringify(query,null,'  '));
-    return query;
+    return JSON.stringify(query);
 
     // Return a mongoDB query for a group data structure
-    function processNode(node){
+    function processNode(node) {
         var node_query = {};
 
         var operator = '$' + node['operation'];
         node_query[operator] = [];
-        for (var child_id in node.children){
+        for (var child_id in node.children) {
             var child = node.children[child_id];
 
             // Check if child node is a group
-            if ('children' in child && child.children.length !== 0){
+            if ('children' in child && child.children.length !== 0) {
 
                 if (child.name.indexOf('Group') !== -1) {
                     // Recursively process subgroups
@@ -331,7 +356,7 @@ function buildQuery() {
     }
 
     // Return a mongoDB query for a rule data structure
-    function processRule(rule){
+    function processRule(rule) {
         var rule_query = {};
 
         switch (rule.name) {
@@ -346,11 +371,9 @@ function buildQuery() {
                         rule_query_inner['$lte'] = child.toDate;
                     }
                 }
-                // Wrap with conjunction operator if specified. MongoDB defaults to 'and'
+                // Wrap with conjunction operator if specified.
                 if ('operation' in rule) {
-                    var temp = {};
-                    temp['$' + rule.operation] = rule_query_inner;
-                    rule_query_inner = temp
+                    rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
                 }
                 rule_query['date8'] = rule_query_inner;
                 break;
@@ -360,19 +383,17 @@ function buildQuery() {
                 for (var child_id in rule.children) {
                     var child = rule.children[child_id];
 
-                    if ('negate' in child && child.negate){
+                    if ('negate' in child && child.negate) {
                         // Wrap in negation if set
-                        rule_query_inner.push({ '$not': child.name })
+                        rule_query_inner.push({'$not': child.name})
                     } else {
                         rule_query_inner.push(child.name)
                     }
                 }
 
-                // Wrap with conjunction operator if specified. MongoDB defaults to 'and'
+                // Wrap with conjunction operator if specified.
                 if ('operation' in rule) {
-                    var temp = {};
-                    temp['$' + rule.operation] = rule_query_inner;
-                    rule_query_inner = temp
+                    rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
                 }
 
                 rule_query['countrycode'] = rule_query_inner;
@@ -386,5 +407,20 @@ function buildQuery() {
         }
 
         return rule_query;
+    }
+
+    function operatorWrap(operation, json) {
+        // If no operator is specified, mongoDB will assume 'and'
+        var temp = {};
+
+        // NAND is not explicitly defined in mongoDB, but there is an equivalent:
+        // { '$nand': [content] } === { '$not': { '$and': [content] } }
+
+        if (operation.indexOf('nand') === -1) {
+            temp['$' + operation] = json;
+        } else {
+            temp['$not'] = {'$and': json};
+        }
+        return temp;
     }
 }

@@ -104,6 +104,8 @@ var grayColor = '#c0c0c0';
 
 var lefttab = "tab1"; //global for current tab in left panel
 var subsetSelection = "";
+var selectedVariables = new Set();
+
 var righttab = "btnModels"; // global for current tab in right panel
 
 var zparams = { zdata:[], zedges:[], ztime:[], znom:[], zcross:[], zmodel:"", zvars:[], zdv:[], zdataurl:"", zsubset:[], zsetx:[], zmodelcount:0, zplot:[], zsessionid:"", zdatacite:"", zmetadataurl:"", zusername:""};
@@ -578,7 +580,7 @@ eventlist=new Array(20)
 			  return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
 			  }) // perhapse ensure this id is unique by adding '_' to the front?
 		.text(function(d){return d;})
-		.style('background-color', varColor)
+		.style('background-color', hexToRgba(varColor))
         .attr("data-container", "body")
         .attr("data-toggle", "popover")
         .attr("data-trigger", "hover")
@@ -587,8 +589,22 @@ eventlist=new Array(20)
         .attr("data-html", "true")
         .attr("onmouseover", "$(this).popover('toggle');")
         .attr("onmouseout", "$(this).popover('toggle');")
-        .attr("data-original-title", "Summary Statistics");
+        .attr("data-original-title", "Summary Statistics")
+        .on("click", function (){
+            var variableName = d3.select(this).text();
+            var currentColor = d3.select(this).style('background-color') == hexToRgba(varColor) ? hexToRgba(selVarColor)  : hexToRgba(varColor) ;
 
+            if (currentColor === hexToRgba(selVarColor)) {
+                selectedVariables.add(variableName);
+            } else {
+                if (selectedVariables.has(variableName)) {
+                    selectedVariables.delete(variableName);
+                }
+            }
+
+            d3.select(this).style("background-color", currentColor);
+            reloadVariables();
+        });
 
 
     d3.select("#tab2").selectAll("p") 			//do something with this..
@@ -606,7 +622,7 @@ eventlist=new Array(20)
     .attr("data-trigger", "hover")
     .attr("data-placement", "right")
     .attr("data-html", "true")
-    .on("click", function varClick(){
+    .on("click", function (){
         if(d3.select(this).text()=="Date") {
             document.getElementById("subsetDate").style.display = 'inline';
 
@@ -614,7 +630,7 @@ eventlist=new Array(20)
             document.getElementById("subsetActor").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
 
-			selectionMade("Date");
+			selectionMadeSubset("Date");
             d3date();
             rightpanelMargin();
         }
@@ -624,7 +640,7 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
-			selectionMade("Location");
+			selectionMadeSubset("Location");
             d3loc();
             rightpanelMargin();
         }
@@ -634,7 +650,7 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
-			selectionMade("Actor");
+			selectionMadeSubset("Actor");
             d3actor();
             rightpanelMargin();
         }
@@ -644,24 +660,22 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
-			selectionMade("Action");
+			selectionMadeSubset("Action");
             d3action();
             rightpanelMargin();
         }
         });
 
-    function selectionMade(n) {
+    function selectionMadeSubset(n) {
         subsetSelection = n;
 
-    	d3.select("#tab2").selectAll("p").style('background-color',function(d) {
-    		if(d==n)
-    			return hexToRgba(selVarColor);
-    		else
-    			return varColor;
-    	})
+        d3.select("#tab2").selectAll("p").style('background-color',function(d) {
+            if(d==n)
+                return hexToRgba(selVarColor);
+            else
+                return varColor;
+        })
     }
-
-
 
     d3.select("#models")
     .style('height', 2000)
@@ -720,49 +734,45 @@ $(document).on('input', '#searchvar', function() {
 });
 
 
-
-
-
-	var srchid=[];
-	var vkey=[];
-	$("#searchvar").on("keyup",function search(e) {
+var srchid = [];
+var vkey = [];
+$("#searchvar").on("keyup", function search(e) {
     //if(e.keyCode == 8 ) {
-		//d3.select("#tab1").selectAll("p")
+    //d3.select("#tab1").selectAll("p")
 
-		$("#tab1").children().popover('hide');
-	//}
-	var flag=0;
-		var k=0;
-		  vkey=[];
-		 srchid=[];
+    $("#tab1").children().popover('hide');
+    //}
+    var flag = 0;
+    var k = 0;
+    vkey = [];
+    srchid = [];
 
-		 if($(this).val()===''){
-			srchid=[];
-			flag=0;
-			updatedata(valueKey,flag);
-			return;
-		}
+    if ($(this).val() === '') {
+        srchid = [];
+        flag = 0;
+        updatedata(valueKey, flag);
+        return;
+    }
 
-		for(var i=0;i<allNodes.length;i++)
-		{
-			if((allNodes[i]["name"].indexOf($(this).val())!=-1))
-			{
-				srchid[k]=i;
+    for (var i = 0; i < allNodes.length; i++) {
+        if ((allNodes[i]["name"].indexOf($(this).val()) != -1)) {
+            srchid[k] = i;
 
-			k=k+1;}
-		}
-		for(var i=0;i<allNodes.length;i++)
-		{
-			if((allNodes[i]["labl"].indexOf($(this).val())!=-1) && ($.inArray(i, srchid)==-1))
-			{
+            k = k + 1;
+        }
+    }
+    for (var i = 0; i < allNodes.length; i++) {
+        if ((allNodes[i]["labl"].indexOf($(this).val()) != -1) && ($.inArray(i, srchid) == -1)) {
 
-				srchid[k]=i;
+            srchid[k] = i;
 
-			k=k+1;}
-		}
+            k = k + 1;
+        }
+    }
 
-		//console.log(srchid);
-		lngth=srchid.length;
+    //console.log(srchid);
+    lngth = srchid.length;
+
 	if(k==0){
 			vkey=valueKey;
 
@@ -2241,6 +2251,18 @@ function leftpanelMedium() {
 }
 
 // function to convert color codes
+function hexToRgb(hex) {
+    var h=hex.replace('#', '');
+
+    var bigint = parseInt(h, 16);
+    var r = (bigint >> 16) & 255;
+    var g = (bigint >> 8) & 255;
+    var b = bigint & 255;
+
+    return "rgb(" + r + ", " + g + ", " + b + ")";
+}
+
+
 function hexToRgba(hex) {
     var h=hex.replace('#', '');
 
@@ -2250,7 +2272,7 @@ function hexToRgba(hex) {
     var b = bigint & 255;
     var a = '0.5';
 
-    return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+    return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
 }
 
 // function takes a node and a color and updates zparams
@@ -3022,14 +3044,12 @@ function fakeClick() {
 
 
 function d3date() {
+//    Code is located in app_ddi_eventdata_date.js
 }
 
 var d3loc_draw = false;
 function d3loc() {
-	if(!d3loc_draw) {
-		d3loc_draw = true;
-		drawMainGraph();
-	}
+	drawMainGraph();
 }
 
 function d3action() {
@@ -3064,6 +3084,64 @@ function d3actor() {
 			}
 		});
 	}
+
+	actorSearch(currentActorType);
+});
+
+//searches for the specified text and filters (maybe implement escape characters for text search?)
+function actorSearch(actorName) {
+	actorName = actorName.toLowerCase();
+	var searchText = $("#" + actorName + "Search").val().toUpperCase();
+
+	var listLen = window[actorName + "FullList"].length;
+	for (x = 0; x < listLen; x++) {
+		var matched = false;
+		//search for entity
+		var tempLen = window[actorName + "EntityChecked"].length;
+		for (i = 0; i < tempLen; i++) {
+			if (removeEnding(window[actorName + "EntityChecked"][i]) == window[actorName + "FullList"][x].substring(0, 3)) {
+				matched = true;
+				break;
+			}
+		}
+		if (!matched && window[actorName + "EntityChecked"].length > 0) {
+			$("#" + actorName + "FullCheck"+x).css("display", "none");
+			$("#" + actorName + "FullLbl" + x).css("display", "none");
+		}
+		else {
+			var matchFilter = true;
+			//search for text
+			if (searchText != "" && window[actorName + "FullList"][x].indexOf(searchText) == -1) {
+				matchFilter = false;
+			}
+
+			//search for other filters
+			tempLen = window[actorName + "FilterChecked"].length;
+			for (i = 0; matchFilter && i < tempLen; i++) {
+				var index = window[actorName + "FullList"][x].indexOf(removeEnding(window[actorName + "FilterChecked"][i]));
+				if (index < 0) {
+					matchFilter = false;
+				}
+				else {
+					if (removeEnding(window[actorName + "FilterChecked"][i]).length == 3 && index%3 != 0) {
+						matchFilter = false;
+					}
+				}
+			}
+			if (matchFilter) {
+				$("#" + actorName + "FullCheck"+x).css("display", "inline-block");
+				$("#" + actorName + "FullLbl" + x).css("display", "inline-block");
+			}
+			else {
+				$("#" + actorName + "FullCheck"+x).css("display", "none");
+				$("#" + actorName + "FullLbl" + x).css("display", "none");
+			}
+		}
+	}
+}
+
+function capitalizeFirst(str) {
+	return str.charAt(0).toUpperCase() + str.substring(1);
 }
 //actor code moved to app_ddi_eventdata_actor.js
 
