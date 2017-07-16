@@ -182,14 +182,41 @@ function addGroup() {
         groupId = 1;
     }
 
+    var movedChildren = [];
+    var removeIds = [];
+
+    // Make list of children to be moved
+    for (var child_id in data[1]['children']) {
+        var child = data[1]['children'][child_id];
+
+        if (child.name.indexOf('Subset') !== -1) {
+            movedChildren.push(child);
+            removeIds.push(child_id);
+        }
+    }
+
+    // Delete elements from root directory that are moved
+    for (var i = removeIds.length - 1; i >= 0; i--) {
+        data[1]['children'].splice(removeIds[i], 1);
+    }
+
+
     data[1]['children'].push(
         {
             id: String(nodeId++),
             name: 'Group ' + String(groupId++),
             operation: 'and',
-            children: []
+            children: movedChildren
         });
+
     $('#queryTree').tree('loadData', data);
+
+
+    var qtree = $('#queryTree');
+    var state = qtree.tree('getState');
+    qtree.tree('loadData', data, 0);
+    qtree.tree('setState', state);
+    qtree.tree('openNode', qtree.tree('getNodeById', nodeId - 1), true);
 }
 
 function addRule() {
@@ -214,8 +241,8 @@ function addRule() {
     }
 }
 
+// Useful for updating the rightpanel with the variable list when a variable is selected
 function reloadVariables() {
-    console.log(selectedVariables)
     data[0]['children'] = [];
     selectedVariables.forEach(function(element){
         data[0]['children'].push({
