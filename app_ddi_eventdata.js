@@ -3051,9 +3051,13 @@ function fakeClick() {
 function d3date() {
 }
 
+var d3loc_draw = false;
 function d3loc() {
 		
-	drawMainGraph();
+	if(!d3loc_draw) {
+		d3loc_draw = true;
+		drawMainGraph();
+	}
 }
 
 function d3action() {
@@ -3085,10 +3089,6 @@ function d3actor() {
  
 function drawMainGraph() {	
 	
-	if(mapGraphSVG["main_graph"] != null) {
-		return;
-	}
-	
 	$("#subsetLocation").append('<div class="container"><div id="subsetLocation_panel" class="row"></div></div>');
 
 	$("#subsetLocation_panel").append("<div class='col-xs-4' id='subsetLocationDivL'></div>");
@@ -3105,13 +3105,14 @@ function drawMainGraph() {
 	mainGraphLabel();
 	
 	var svg = d3.select("#main_graph_td").append("svg:svg")
-        .attr("width",  500)
-        .attr("height", 350)
-		.attr("id", "main_graph_svg");
+			.attr("width",  500)
+			.attr("height", 350)
+			.attr("id", "main_graph_svg");
 				
 	mapGraphSVG["main_graph"] = svg;
 	
 	render(false, 0); 
+		
 }
 	
 	
