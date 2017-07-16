@@ -3024,9 +3024,12 @@ function fakeClick() {
 function d3date() {
 }
 
+var d3loc_draw = false;
 function d3loc() {
-
-	drawMainGraph();
+	if(!d3loc_draw) {
+		d3loc_draw = true;
+		drawMainGraph();
+	}
 }
 
 function d3action() {
