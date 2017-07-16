@@ -149,7 +149,11 @@
         </div>
 
         <div id="subsetActor" class="canvas" style="display:none">
-			<div id="actorSelectionDiv" style="width:700px;">
+			<div id="actorSelectionDiv" style="width:350px;">
+				<div id="actorSelectionTitle" class="panel-heading text-center">
+					<h3 class="panel-title">Actor Selection</h3>
+				</div>
+				
 				<div id="tabDiv">
 					<div class="actorTab">
 						<button id="sourceTabBtn" class="actorTabLink btn" type="button" onclick="actorTabSwitch('sourceTabBtn', 'sourceDiv')" title="Select sources">Sources</button>
@@ -418,13 +422,11 @@ function closeRightPanel() {
 	function actorTabSwitch(origin, tab) {
 		switch(origin) {
 			case "sourceTabBtn":
-				console.log("switching to source");
 				document.getElementById("targetDiv").style.display = "none";
 				$("#targetTabBtn").removeClass("active").addClass("btn-default");
 				$("#sourceTabBtn").removeClass("btn-default").addClass("active");
 				break;
 			default:
-				console.log("switching to target");
 				document.getElementById("sourceDiv").style.display = "none";
 				$("#sourceTabBtn").removeClass("active").addClass("btn-default");
 				$("#targetTabBtn").removeClass("btn-default").addClass("active");

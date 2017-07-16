@@ -1,5 +1,8 @@
 #! /usr/bin/python
 
+#sorts all codes from CAMEO codebook into different files based on the length of their code: single (3 letters) and multiple (more than 3 letters)
+#also applies uniqueness to the resulting files, does not check across both for similarities
+
 urlBase = "/home/marcus/Documents/TwoRavens_Su17/Vito TwoRavens/data/"
 originFile = open(urlBase + "dict_work/all_tables_CAMEO", "r")
 singleCodeFile = open(urlBase + "dict_work/single_code.txt", "w")

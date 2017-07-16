@@ -148,6 +148,7 @@ HKG	Hong Kong (Special Administrative Region of China)
 HKG	Hong Kong Special Adm. Region of China
 HLH	Health
 HND	Honduras
+HRI	Human Rights
 HRV	Croatia
 HRV	Croatia (d.r.)
 HTI	Haiti
@@ -158,9 +159,11 @@ IBO	Ibo
 IDN	Indonesia
 IGO	Inter-governmental organizations
 IJW	Ijaws
+IMG	International Militarized Groups
 IMY	Isle of Man
 IND	India
 INR	Indian religions
+INS	Insurgents
 INT	Ambiguous international or transnational actor
 IRL	Ireland
 IRN	Iran
@@ -283,6 +286,7 @@ PRY	Paraguay
 PSE	Occupied Palestinian Territories
 PSE	Occupied Palestinian Territory
 PSE	Palestinian Occupied Territories
+PTY	Party
 PYF	French Polynesia
 QAT	Qatar
 RAC	racialist
@@ -303,6 +307,7 @@ SCN	Scandinavia
 SDN	Sudan
 SEA	Southeast Asia
 SEN	Senegal
+SEP	Separatist rebels
 SER	Serb
 SER	ethnic Serb
 SGP	Singapore

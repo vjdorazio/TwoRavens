@@ -3057,70 +3057,85 @@ var actorOrder = ["Full", "Entity", "Role", "Attr"];
 window.onload = function(){
 	//read dictionary and store for fast retrieval
 	var dict;
-	$.get('data/CAMEO_actor_dict_1.csv', function (data) {		//probably will have to wrap this in a function so it can be read first
-		dict = data.split('\n');
-	});
 
-	for (var m = 0; m < actorType.length; m++) {
-		var orgList;
-		if (m == 0) {
-			orgList = document.getElementById("orgSourcesList");
-		}
-		else {
-			orgList = document.getElementById("orgTargetsList");
-		}
-		for (y = 0; y < orgs.length; y ++) {
-			createElement(true, actorType[m], "Org", orgs, y, orgList);
-		}
+	var loadDictionary = function() {
+		var defer = $.Deferred();
+		$.get('data/dict_sorted.txt', function (data) {		//probably will have to wrap this in a function so it can be read first
+			dict = data.split('\n');
+			dict.length--;	//remove last element(empty line)
+			defer.resolve();
+		});
+		return defer;
+	};
 
-		for (var i = 0; i < actorOrder.length; i++) {
-			(function(i,m) {
-				$.get('data/' + actorType[m] + actorOrder[i] + '.csv', function(data) {
-					var lines = data.split('\n');
-					var displayList;
-					var chkSwitch = true;		//enables code for filter
-					switch (i) {
-						case 0:
-							displayList = document.getElementById("searchList" + capitalizeFirst(actorType[m]) + "s");
-							chkSwitch = false;
-							break;
-						case 1:
-							displayList = document.getElementById("country" + capitalizeFirst(actorType[m]) + "sList");
-							lines = lines.filter(function(val) {
-								return (orgs.indexOf(val > -1));
-							});
-							window[actorType[m] + "CountryLength"] = lines.length;
-							actorOrder[i] = "Country";
-							break;
-						case 2:
-							displayList = document.getElementById("role" + capitalizeFirst(actorType[m]) + "sList");
-							break;
-						case 3:
-							displayList = document.getElementById("attribute" + capitalizeFirst(actorType[m]) + "sList");
-							break;
-						}
+	var loadData = function() {
+		var defer = $.Deferred();
+		for (var m = 0; m < actorType.length; m++) {
+			var orgList;
+			if (m == 0) {
+				orgList = document.getElementById("orgSourcesList");
+			}
+			else {
+				orgList = document.getElementById("orgTargetsList");
+			}
+			for (y = 0; y < orgs.length; y ++) {
+				createElement(true, actorType[m], "Org", orgs[y], y, orgList);
+			}
 
-					for (x = 0; x < lines.length - 1; x++) {
-						createElement(chkSwitch, actorType[m], actorOrder[i], lines, x, displayList);
-
-						switch (actorType[m] + actorOrder[i]) {
-							case "sourceFull":
-								sourceFullList.push(lines[x].replace(/["]+/g, ''));
+			for (var i = 0; i < actorOrder.length; i++) {
+				(function(i,m) {
+					$.get('data/' + actorType[m] + actorOrder[i] + '.csv', function(data) {
+						var lines = data.split('\n');
+						var displayList;
+						var chkSwitch = true;		//enables code for filter
+						switch (i) {
+							case 0:
+								displayList = document.getElementById("searchList" + capitalizeFirst(actorType[m]) + "s");
+								chkSwitch = false;
 								break;
-							case "targetFull":
-								targetFullList.push(lines[x].replace(/["]+/g, ''));
+							case 1:
+								displayList = document.getElementById("country" + capitalizeFirst(actorType[m]) + "sList");
+								lines = lines.filter(function(val) {
+									return (orgs.indexOf(val) == -1);
+								});
+								window[actorType[m] + "CountryLength"] = lines.length;
+								actorOrder[i] = "Country";
 								break;
+							case 2:
+								displayList = document.getElementById("role" + capitalizeFirst(actorType[m]) + "sList");
+								break;
+							case 3:
+								displayList = document.getElementById("attribute" + capitalizeFirst(actorType[m]) + "sList");
+								break;
+							}
+
+						for (x = 0; x < lines.length - 1; x++) {
+							createElement(chkSwitch, actorType[m], actorOrder[i], lines[x].replace(/["]+/g, ''), x, displayList);
+
+							switch (actorType[m] + actorOrder[i]) {
+								case "sourceFull":
+									sourceFullList.push(lines[x].replace(/["]+/g, ''));
+									break;
+								case "targetFull":
+									targetFullList.push(lines[x].replace(/["]+/g, ''));
+									break;
+							}
 						}
-					}
-					if (actorOrder[i] == "Country") {
-						actorOrder[i] = "Entity";
-					}
-				});
-			})(i,m);
+						if (actorOrder[i] == "Country") {
+							actorOrder[i] = "Entity";
+						}
+					});
+				})(i,m);
+			}
 		}
-	}
+		defer.resolve();
+		return defer;
+	};
+	
+	loadDictionary().then(loadData);
 	$("#sourceTabBtn").trigger("click");
-	function createElement(chkSwitch = true, type, order, lines, x, displayList) {
+	
+	function createElement(chkSwitch = true, type, order, value, x, displayList) {
 		var seperator = document.createElement("div");
 		seperator.className = "seperator";
 
@@ -3128,7 +3143,7 @@ window.onload = function(){
 		chkbox.type = "checkbox";
 		chkbox.name = type + order + "Check";
 		chkbox.id = type + order + "Check" + x;
-		chkbox.value = lines[x].replace(/["]+/g, '');
+		chkbox.value = value;
 		chkbox.className = "actorChk";
 		if (chkSwitch) {
 			chkbox.onchange = function(){actorFilterChanged(this);};
@@ -3138,13 +3153,19 @@ window.onload = function(){
 		lbl.htmlFor = type + order + "Check" + x;
 		lbl.className = "actorChkLbl";
 		lbl.id = type + order + "Lbl" + x;
-		lbl.innerHTML = lines[x].replace(/["]+/g, '');
+		lbl.innerHTML = value;
 
 		lbl.setAttribute("data-container", "body");
 		lbl.setAttribute("data-toggle", "popover");
 		lbl.setAttribute("data-placement", "right");
 		lbl.setAttribute("data-trigger", "hover");
-		lbl.setAttribute("data-content", "test lbl");
+
+		if (order != "Full") {
+			lbl.setAttribute("data-content", binarySearch(value));
+		}
+		else {
+			lbl.setAttribute("data-content", "test lbl");
+		}
 
 		lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
 		lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
@@ -3152,6 +3173,27 @@ window.onload = function(){
 		displayList.appendChild(chkbox);
 		displayList.appendChild(lbl);
 		displayList.appendChild(seperator);
+
+		function binarySearch(element) {
+			var l = 0, r = dict.length-1;
+			while (l <= r) {
+				var m = Math.floor((l + r)/2);
+				var head = dict[m].split("\t")[0];
+				if (head == element) {
+					return dict[m].split("\t")[1];
+				}
+				else {
+					if (head < element) {
+						l = m + 1;
+					}
+					else {
+						r = m - 1;
+					}
+				}
+			}
+			return "no translation found";
+		}
+			
 	}
 }
 
@@ -3374,6 +3416,7 @@ function actorSearch(actorName) {
 	}			
 }
 
+//does as its name says; returns a string with the first character capitalized
 function capitalizeFirst(str) {
 	return str.charAt(0).toUpperCase() + str.substring(1);
 }
