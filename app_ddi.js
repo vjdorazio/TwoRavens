@@ -555,8 +555,7 @@ function pre_varlist(){
     console.log("pre_varList called ");
     var mods_ps = new Array()
     for(var i=0; i<nodes.length;i++){
-      //selectVar[i] = nodes[i].name;
-      //console.log(" pre process nodes : " + selectVar[i]);
+
 
       mods_ps.push(nodes[i].name);
       //var div = document.getElementById("pre_selection");
@@ -588,12 +587,9 @@ function pre_varlist(){
     .attr("data-html", "true")
     .attr("onmouseover", "$(this).popover('toggle');")
     .attr("onmouseout", "$(this).popover('toggle');")
-    // .attr("data-content", function(d){
-    //      return mods_ps[d];
-    //      });
-    //return mods_ps;
 
-        //click action
+
+    //click action
     d3.select("#pre_selection").selectAll("p") // preprocess tab
     .on("mouseover", function(d) {
         // REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
@@ -677,7 +673,9 @@ function pre_varlist(){
                 return varColor;
                }
                });
-         
+        
+        //check the nodes
+        console.log("The nodes element: ",nodes[0]);
         panelPlots();
         //restart();
         });
