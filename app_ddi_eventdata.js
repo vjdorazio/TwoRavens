@@ -3431,14 +3431,16 @@ function drawMainGraph() {
 
 	$("#subsetLocation").append('<div class="container"><div id="subsetLocation_panel" class="row"></div></div>');
 
-	$("#subsetLocation_panel").append("<div class='col-xs-4' id='subsetLocationDivL'></div>");
+	$("#subsetLocation_panel").append("<div class='col-xs-4 location_left' id='subsetLocationDivL'></div>");
 	$("#subsetLocation_panel").append("<div class='col-xs-4 location_right'><div class='affix' id='subsetLocationDivR'></div></div>");
 
-	$("#subsetLocationDivL").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
+	$("#subsetLocationDivL").append("<table id='svg_graph_table' border='0' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
 
-	$("#subsetLocationDivR").append('<div align="center"><table id="country_table" border="1" align="center"><tr><td>Location: <label style="cursor:pointer"><span class="glyphicon glyphicon-repeat glyphicon_border" onclick="javascript:removeFromCountryList(\'reset_all\')"></span></label></td></tr><tr><th>List of Selected Countries</th></tr><tr><td id="country_list"></td></tr></table></div>');
+	$("#subsetLocationDivR").append('<div align="center"><table id="country_table" border="0" align="center"><tr><th id="country_table_th" class="country_table_odd"></th></tr><tr><td id="country_list" class="country_table_config country_table_even"></td></tr></table></div>');
+    $("#country_table_th").append('<label align="right" id="Expand_Collapse_Country_Text" class="hide_label">Collapse</label>');
+    $("#country_table_th").append('<label>List of Selected Countries</label><label style="cursor:pointer"  onclick = "javascript:countryTableAction(\'Expand_Collapse\')"><span id="Exp_Col_Country_Icon" class="glyphicon glyphicon-resize-small btn btn-default"></span></label>');
 
-	$("#country_list").append("<div style='height:300px; overflow-y: scroll;'><table align='center' id='country_list_tab'></table></div>");
+	$("#country_list").append("<div style='height:300px; width:220px; overflow-y: scroll;'><table align='center' id='country_list_tab'></table></div>");
 
 	mainGraphLabel();
 
@@ -3790,6 +3792,39 @@ function maingraphAction(action) {
 	}
 }
 
+/**
+ * countryTableAction -> to map the header function {All, None, Expand/Collapse} for the countryTable
+ *
+ **/
+function countryTableAction(action) {
+
+    if(action == 'Expand_Collapse') {
+
+        action = $('#Expand_Collapse_Country_Text').text();
+    }
+
+    if(action == 'Collapse') {
+
+        $("#Expand_Collapse_Country_Text").text("Expand");
+
+        $("#Exp_Col_Country_Icon").removeClass("glyphicon-resize-small");
+        $("#Exp_Col_Country_Icon").addClass("glyphicon-resize-full");
+
+
+        $("#country_list").removeClass('country_table_config');
+        $("#country_list").addClass('country_table_collapse');
+    }
+    else if(action == 'Expand') {
+
+        $("#Expand_Collapse_Country_Text").text("Collapse");
+
+        $("#Exp_Col_Country_Icon").removeClass("glyphicon-resize-full");
+        $("#Exp_Col_Country_Icon").addClass("glyphicon-resize-small");
+
+        $("#country_list").removeClass('country_table_collapse');
+        $("#country_list").addClass('country_table_config');
+    }
+}
 
 /**
  * subgraphAction-> to map the subgraph function {All, None, Expand/Collapse}
@@ -3905,8 +3940,8 @@ function mainGraphLabel() {
 	$("#main_graph_td_div").append("&nbsp; &nbsp; &nbsp;");
 
 
-	var label11 = $('<label title="Expand All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" id="Main_All" onclick = "javascript:maingraphAction(\'All\')">All</label></span></label>');
-	var label12 = $('<label title="Collapse All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" id="Main_None" onclick = "javascript:maingraphAction(\'None\')">None</label></span></label>');
+	var label11 = $('<label title="Expand All" onclick = "javascript:maingraphAction(\'All\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right" id="Main_All">All</label></span></label>');
+	var label12 = $('<label title="Collapse All"  onclick = "javascript:maingraphAction(\'None\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right" id="Main_None">None</label></span></label>');
 	$("#main_graph_td_div").append(label11);
 	$("#main_graph_td_div").append("&nbsp; &nbsp; &nbsp;");
 	$("#main_graph_td_div").append(label12);
@@ -3914,7 +3949,7 @@ function mainGraphLabel() {
 
 	var label2 = $('<label align="right" id="Expand_Collapse_Main_Text" class="hide_label">Collapse</label>');
 	$("#main_graph_td_div").append(label2);
-	var label3 = $('<label style="cursor:pointer"><span class="glyphicon glyphicon-resize-small gi-2x glyphicon_border" id="Exp_Col_Icon" onclick = "javascript:maingraphAction(\'Expand_Collapse\')"></span></label>');
+	var label3 = $('<label style="cursor:pointer"  onclick = "javascript:maingraphAction(\'Expand_Collapse\')"><span class="glyphicon glyphicon-resize-small btn btn-default" id="Exp_Col_Icon"></span></label>');
 	$("#main_graph_td_div").append(label3);
 
 }
@@ -3932,15 +3967,15 @@ function subGraphLabel(cid) {
 	$("#sub_graph_td_div_"+cid).append(label1);
 	$("#sub_graph_td_div_"+cid).append("&nbsp;&nbsp;&nbsp;");
 
-	var label11 = $('<label title="Select All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" onclick = "javascript:subgraphAction(\'All_'+cid+'\')">All</label></span></label>');
-	var label12 = $('<label title="Remove All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" onclick = "javascript:subgraphAction(\'None_'+cid+'\')">None</label></span></label>');
+	var label11 = $('<label title="Select All"  onclick = "javascript:subgraphAction(\'All_'+cid+'\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right">All</label></span></label>');
+	var label12 = $('<label title="Remove All"  onclick = "javascript:subgraphAction(\'None_'+cid+'\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right">None</label></span></label>');
 	$("#sub_graph_td_div_"+cid).append(label11);
 	$("#sub_graph_td_div_"+cid).append("&nbsp; &nbsp; &nbsp;");
 	$("#sub_graph_td_div_"+cid).append(label12);
 	$("#sub_graph_td_div_"+cid).append("&nbsp; &nbsp; &nbsp;");
 
 
-	var label2 = $('<label style="cursor:pointer"><span class="glyphicon glyphicon-resize-small gi-2x glyphicon_border" id="Exp_Col_Icon_'+cid+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cid+'\')"></span></label>');
+	var label2 = $('<label style="cursor:pointer" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cid+'\')"><span class="glyphicon glyphicon-resize-small btn btn-default" id="Exp_Col_Icon_'+cid+'"></span></label>');
 	$("#sub_graph_td_div_"+cid).append(label2);
 
 	var label = $('<label class="hide_label" id="expand_collapse_text_'+cid+'">Collapse</label>');
@@ -3970,10 +4005,8 @@ function updateCountryList() {
 			$("#country_list_tab").append('<tr><td><label class="strike_through" style="cursor:pointer" onclick="javascript:removeFromCountryList(\''+country+'\');">' + country +'</label></td></tr>');
 			$("#tg_rect_"+ main_subGraphId).attr("class", "bar_all_selected");
 			mapLocalMainGraphIdWithSubGraphCnameList[mainGraphId].push(country);
-
 		}
 		else {
-
 			$("#tg_rect_"+ main_subGraphId).attr("class", "bar");
 		}
 	}
@@ -4003,7 +4036,6 @@ function removeFromCountryList(cname) {
 		for(var country in mapListCountriesSelected) {
 			mapListCountriesSelected[country] = false;
 		}
-
 	}
 	else {
 

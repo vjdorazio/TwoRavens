@@ -1021,6 +1021,22 @@ display: inline;}
 	-webkit-transition: all 1s ease;
 }
 
+.country_table_collapse {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 0px;
+    width:auto;
+    -webkit-transition: all 1s ease;
+}
+
+.country_table_config {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 300px;
+    width:auto;
+    -webkit-transition: all 1s ease;
+}
+
 .hide_label {
 	display:none;
 }
@@ -1085,10 +1101,30 @@ display: inline;}
 .location_right {
 	width:auto;
 	position:absolute;
-	top:10%;
+    top:20px;
 	left:50%;
 }
 
+.location_left {
+    top:20px;
+    width:220px;
+}
+
+#svg_graph_table tr:nth-child(odd) {
+    background: cyan;
+}
+
+#svg_graph_table tr:nth-child(even) {
+    background: #c4e3f3;
+}
+
+.country_table_odd {
+    background: cyan;
+}
+
+.country_table_even {
+    background: #c4e3f3;
+}
 
 .strike_through:hover {
 	text-decoration: line-through;
