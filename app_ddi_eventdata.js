@@ -3183,8 +3183,6 @@ function drawMainGraph() {
 
 	$("#country_list").append("<div style='height:300px; overflow-y: scroll;'><table align='center' id='country_list_tab'></table></div>");
 
-	$("#subsetLocationDivR").append('<div align="center"><br/><br/><button onclick="javascript:locationStage();">Stage</button></div>');
-
 	mainGraphLabel();
 
 	var svg = d3.select("#main_graph_td").append("svg:svg")
