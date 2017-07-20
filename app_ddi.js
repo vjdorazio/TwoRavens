@@ -742,6 +742,122 @@ function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
 console.log("bivariate plot called");
     // scatter plot
 
+    data_plot=[];
+    var nanCount = 0;
+    for (var i = 0; i < 1000; i++) {
+        if (isNaN(x_Axis[i]) || isNaN(y_Axis[i])) {
+            nanCount++;
+        } else {
+            var newNumber1 = Math.floor(x_Axis[i]);
+            var newNumber2 = Math.floor(y_Axis[i]);
+            data_plot.push({xaxis: newNumber1, yaxis: newNumber2, score:i/100});
+
+        }
+
+
+    }
+
+
+    var margin = {top: 30, right: 15, bottom: 60, left: 80}
+        , width = 500 - margin.left - margin.right
+        , height = 300 - margin.top - margin.bottom;
+
+    var min_x = d3.min(data_plot, function(d,i) { return data_plot[i].xaxis; });
+    var max_x = d3.max(data_plot, function(d,i) { return data_plot[i].xaxis; });
+    var avg_x = (max_x - min_x)/10;
+    var min_y = d3.min(data_plot, function(d,i) { return data_plot[i].yaxis; });
+    var max_y = d3.max(data_plot, function(d,i) { return data_plot[i].yaxis; });
+    var avg_y = (max_y - min_y)/10;
+
+    var xScale = d3.scale.linear()
+        .domain([min_x-avg_x, max_x+avg_x])
+        .range([ 0, width ]);
+
+    var yScale = d3.scale.linear()
+        .domain([min_y-avg_y, max_y+avg_y])
+        .range([ height, 0 ]);
+
+    var xAxis = d3.svg.axis()
+        .scale(xScale)
+        .orient('bottom')
+        .tickSize(-height);
+
+    var yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient('left')
+        .ticks(5)
+        .tickSize(-width);
+
+    var zoom = d3.behavior.zoom()
+        .x(xScale)
+        .y(yScale)
+        .scaleExtent([1, 10])
+        .on("zoom", zoomed);
+
+    var chart_scatter = d3.select('#scatterplot')
+        .append('svg:svg')
+        .attr('width', width + margin.right + margin.left)
+        .attr('height', height + margin.top + margin.bottom)
+        .call(zoom);
+
+    var main1 = chart_scatter.append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('class', 'main');
+
+    main1.append('g')
+        .attr('transform', 'translate(0,' + height + ')')
+        .attr('class', 'x axis')
+        .call(xAxis);
+
+    main1.append('g')
+        .attr('transform', 'translate(0,0)')
+        .attr('class', 'y axis')
+        .call(yAxis);
+
+    var clip = main1.append("defs").append("svg:clipPath")
+        .attr("id", "clip")
+        .append("svg:rect")
+        .attr("id", "clip-rect")
+        .attr("x", "0")
+        .attr("y", "0")
+        .attr('width', width)
+        .attr('height', height);
+
+    main1.append("g").attr("clip-path", "url(#clip)")
+        .selectAll("circle")
+        .data(data_plot)
+        .enter()
+        .append("circle")
+        .attr("cx", function (d,i) { return xScale(data_plot[i].xaxis); } )
+        .attr("cy", function (d,i) { return yScale(data_plot[i].yaxis); } )
+        .attr("r", 2);
+
+    function zoomed() {
+        var panX = d3.event.translate[0];
+        var panY = d3.event.translate[1];
+        var scale = d3.event.scale;
+
+        panX = panX > 10 ? 10 : panX;
+        var maxX = -(scale-1)*width-10;
+        panX = panX < maxX ? maxX : panX;
+
+        panY = panY > 10 ? 10 : panY;
+        var maxY = -(scale-1)*height-10;
+        panY = panY < maxY ? maxY : panY;
+
+        zoom.translate([panX, panY]);
+
+
+        main1.select(".x.axis").call(xAxis);
+        main1.select(".y.axis").call(yAxis);
+        main1.selectAll("circle")
+            .attr("cx", function (d,i) { return xScale(data_plot[i].xaxis); } )
+            .attr("cy", function (d,i) { return yScale(data_plot[i].yaxis); } )
+            .attr("r", 3);
+    }
+/*
 data_plot=[];
     var nanCount = 0;
     for (var i = 0; i < 1000; i++) {
@@ -859,11 +975,12 @@ function zoom(d) {
         })
         .attr('r', 6);
 }
-
+ */
 //heatmap
 
 
     //d3.select("#NAcount").text("There are "+ nanCount + " number of NA values in the relation.");
+
 
 }
 function heatmap() {
