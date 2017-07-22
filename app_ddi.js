@@ -716,10 +716,10 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
 var data_plot = [];
 function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
     document.getElementById('scatterplot').style.display = "block";
-    document.getElementById('button_container').style.display = "block";
+    document.getElementById('NAcount').style.display = "block";
     d3.select("#scatterplot").html("");
     d3.select("#scatterplot").select("svg").remove();
-    document.getElementById('heatchart').style.display = "none";
+
     document.getElementById('linechart').style.display = "none";
     d3.select("#heatchart").select("svg").remove();
     d3.select("#linechart").select("svg").remove();
@@ -750,7 +750,7 @@ console.log("bivariate plot called");
         } else {
             var newNumber1 = Math.floor(x_Axis[i]);
             var newNumber2 = Math.floor(y_Axis[i]);
-            data_plot.push({xaxis: newNumber1, yaxis: newNumber2, score:i/100});
+            data_plot.push({xaxis: newNumber1, yaxis: newNumber2, score:Math.random()*100});
 
         }
 
@@ -758,8 +758,8 @@ console.log("bivariate plot called");
     }
 
 
-    var margin = {top: 30, right: 15, bottom: 60, left: 80}
-        , width = 500 - margin.left - margin.right
+    var margin = {top: 20, right: 15, bottom: 40, left: 60}
+        , width = 520 - margin.left - margin.right
         , height = 300 - margin.top - margin.bottom;
 
     var min_x = d3.min(data_plot, function(d,i) { return data_plot[i].xaxis; });
@@ -832,7 +832,9 @@ console.log("bivariate plot called");
         .append("circle")
         .attr("cx", function (d,i) { return xScale(data_plot[i].xaxis); } )
         .attr("cy", function (d,i) { return yScale(data_plot[i].yaxis); } )
-        .attr("r", 2);
+        .attr("r", 3)
+        .style("fill", "#B71C1C" )
+        ;
 
     function zoomed() {
         var panX = d3.event.translate[0];
@@ -855,7 +857,9 @@ console.log("bivariate plot called");
         main1.selectAll("circle")
             .attr("cx", function (d,i) { return xScale(data_plot[i].xaxis); } )
             .attr("cy", function (d,i) { return yScale(data_plot[i].yaxis); } )
-            .attr("r", 3);
+            .attr("r", 4)
+            .style("fill", "#B71C1C" )
+        ;
     }
 /*
 data_plot=[];
@@ -979,15 +983,18 @@ function zoom(d) {
 //heatmap
 
 
-    //d3.select("#NAcount").text("There are "+ nanCount + " number of NA values in the relation.");
-
+    d3.select("#NAcount").text("There are "+ nanCount + " number of NA values in the relation.");
+   // document.getElementById('heatchart').style.display = "block";
+    heatmap();
 
 }
 function heatmap() {
-    document.getElementById('linechart').style.display = "none";
-    document.getElementById('heatchart').style.display = "block";
+
+
     d3.select("#heatChart").select("svg").remove();
     $('#heatchart').html("");
+
+    /*
     var gridSize = 25,
         h_heat = gridSize,
         w_heat = gridSize,
@@ -1050,11 +1057,105 @@ function heatmap() {
             }
         });
 
+*/
+
+    var margin_heat = {top: 30, right: 10, bottom: 60, left: 60},
+        width_heat = 500 - margin_heat.left - margin_heat.right,
+        height_heat = 300 - margin_heat.top - margin_heat.bottom;
+
+
+    var min_x = d3.min(data_plot, function(d,i) { return data_plot[i].xaxis; });
+    var max_x = d3.max(data_plot, function(d,i) { return data_plot[i].xaxis; });
+    var avg_x = (max_x - min_x)/100;
+    var min_y = d3.min(data_plot, function(d,i) { return data_plot[i].yaxis; });
+    var max_y = d3.max(data_plot, function(d,i) { return data_plot[i].yaxis; });
+    var avg_y = (max_y - min_y)/100;
+
+    var x = d3.scale.linear()
+        .domain([min_x-avg_x, max_x+avg_x])
+        .range([ 0, width_heat ]);
+
+    var y = d3.scale.linear()
+        .domain([min_y-avg_y, max_y+avg_y])
+        .range([ height_heat, 0 ]);
+
+    var z = d3.scale.linear().range(["#EF9A9A", "#EF5350"]);
+
+
+// This could be inferred from the data if it weren't sparse.
+    var xStep = avg_x,
+        yStep = avg_y;
+    var svg_heat = d3.select("#heatchart").append("svg")
+        .attr("width", width_heat + margin_heat.left + margin_heat.right)
+        .attr("height", height_heat + margin_heat.top + margin_heat.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin_heat.left + "," + margin_heat.top + ")")
+        .style("background-color","#FFEBEE");
+
+
+
+        // Compute the scale domains.
+        x.domain(d3.extent(data_plot, function(d,i) { return data_plot[i].xaxis; }));
+        y.domain(d3.extent(data_plot, function(d,i) { return data_plot[i].yaxis; }));
+        z.domain([0, d3.max(data_plot, function(d,i) { return data_plot[i].score; })]);
+
+        // Extend the x- and y-domain to fit the last bucket.
+        // For example, the y-bucket 3200 corresponds to values [3200, 3300].
+        x.domain([x.domain()[0], +x.domain()[1] + xStep]);
+        y.domain([y.domain()[0], y.domain()[1] + yStep]);
+
+        // Display the tiles for each non-zero bucket.
+        // See http://bl.ocks.org/3074470 for an alternative implementation.
+        svg_heat.selectAll(".tile")
+            .data(data_plot)
+            .enter().append("rect")
+            .attr("class", "tile")
+            .attr("x", function(d,i) { return x(data_plot[i].xaxis ); })
+            .attr("y", function(d,i) { return y(data_plot[i].yaxis +yStep); })
+            .attr("width", 15)
+            .attr("height", 15)
+            .attr("dx", ".35em")
+            .attr("dy", ".35em")
+            .style("fill", function(d,i) { return z(data_plot[i].score); });
+
+
+
+
+        svg_heat.append("text")
+            .attr("class", "label")
+            .attr("x", width_heat + 20)
+            .attr("y", 10)
+            .attr("dy", ".35em")
+            .text("Count");
+
+        // Add an x-axis with label.
+        svg_heat.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height_heat + ")")
+            .call(d3.svg.axis().scale(x).ticks(5).tickSize(-height_heat).orient("bottom"))
+            .append("text")
+            .attr("class", "label")
+            .attr("x", width_heat)
+            .attr("y", -6)
+            .attr("text-anchor", "end")
+            .text("");
+
+        // Add a y-axis with label.
+        svg_heat.append("g")
+            .attr("class", "y axis")
+            .call(d3.svg.axis().scale(y).tickSize(-width_heat).orient("left"))
+            .append("text")
+            .attr("class", "label")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .attr("text-anchor", "end")
+            .attr("transform", "rotate(-90)")
+            .text("");
 
 
 }
 function linechart()
-{document.getElementById('heatchart').style.display = "none";
+{
     document.getElementById('linechart').style.display = "block";
     d3.select("#lineChart").select("svg").remove();
     $('#linechart').html("");
@@ -1080,7 +1181,9 @@ function linechart()
         }))
         .range([0,width_linechart]);
     var y = d3.scale.linear()
-        .domain([500, d3.max(data_plot, function(d){
+        .domain([d3.min(data_plot, function(d){
+            return d.yaxis;
+        }), d3.max(data_plot, function(d){
             return d.yaxis;
         })])
         .range([height_linechart,0]);
