@@ -854,6 +854,7 @@ var force;
             nodes.push(allNodes[ii]);
             var selectMe = zparams.zvars[j].replace(/\W/g, "_");
             selectMe = "#".concat(selectMe);
+            console.log("before selectMe");		//MWD
             console.log(selectMe);
             d3.select(selectMe).style('background-color',function(){
                                       return hexToRgba(nodes[j].strokeColor);
@@ -872,7 +873,11 @@ var force;
         //restart();
     }
     else {
+		console.log("in something " + allNodes.length);		//MWD
         if(allNodes.length > 2) {
+			console.log("allNodes[0] = " + allNodes[0]);	//MWD
+			console.log(allNodes[0]);		//MWD
+			console.log("nodes[0] = " + nodes[0]);		//MWD
             nodes = [allNodes[0], allNodes[1], allNodes[2]];
             links = [
                 {source: nodes[1], target: nodes[0], left: false, right: true },
@@ -958,6 +963,7 @@ var force;
         mousedown_link = null,
         mousedown_node = null,
         mouseup_node = null;
+        console.log("before resetMouse");	//MWD
 
         //ROHIT BHATTACHARJEE reset mouse
 		//function
@@ -988,6 +994,7 @@ var force;
        //    
        //    //  if(forcetoggle){
            circle.attr('transform', function(d) {
+			   console.log("in circle transform attr");	//MWD
                        return 'translate(' + d.x + ',' + d.y + ')';
                        });
            //  };
@@ -1179,12 +1186,14 @@ var force;
 //Rohit BHATTACHARJEE circle
 //circle = svg.append('svg:g').selectAll('g');
 function restart() {
+	//console.log("in restart func");		//MWD	I think this handles redrawing
         // nodes.id is pegged to allNodes, i.e. the order in which variables are read in
         // nodes.index is floating and depends on updates to nodes.  a variables index changes when new variables are added.
 		//var force=forced3layout(nodes, links,  width,  height, tick);
         circle.call(force.drag);
         if(forcetoggle[0]==="true")
         {
+			//console.log("force toggle 0 is true");		//MWD	this enables force layout
             force.gravity(0.1);
             force.charge(-800);
             force.linkStrength(1);
@@ -1196,6 +1205,7 @@ function restart() {
         }
         else
         {
+			//console.log("force is 0");		//MWD	this disables force
             force.gravity(0);
             force.charge(0);
             force.linkStrength(0);
@@ -1221,6 +1231,7 @@ function restart() {
         .style('marker-start', function(d) { return d.left ? 'url(#start-arrow)' : ''; })
         .style('marker-end', function(d) { return d.right ? 'url(#end-arrow)' : ''; })
         .on('mousedown', function(d) { // do we ever need to select a link? make it delete..
+			console.log("mousedown on connector");		//MWD	this seems to be a mousedown on the connector
             var obj1 = JSON.stringify(d);
             for(var j =0; j < links.length; j++) {
                 if(obj1 === JSON.stringify(links[j])) {
@@ -1256,12 +1267,14 @@ function restart() {
         var g = circle.enter()
         .append('svg:g')
         .attr("id", function(d) {
+			console.log("something about circle id");		//MWD	occurs when adding pebble
               var myname = d.name+"biggroup";
               return (myname);
               });
        
         // add plot
         g.each(function(d) {
+			console.log("something about circle plot");		//MWD	also occurs when adding pebble
                d3.select(this);
                if(d.plottype === "continuous") {
                 densityNode(d, obj=this);
@@ -1282,6 +1295,7 @@ function restart() {
         .style("fill", "yellow")
         .attr("fill-opacity", 0)
         .on('mouseover', function(d){
+			//MWD	this seems to be a mouseover for the "time" label
             d3.select(this).transition()  .attr("fill-opacity", .3)
             .delay(0)
             .duration(100);   //.attr('transform', 'scale(2)');
@@ -1301,7 +1315,7 @@ function restart() {
             .duration(500);
             })
         .on('click', function(d){ //this event changes the all nodes time value
-        	
+        	console.log("path click");
             setColors(d, timeColor);
             
             legend(timeColor);
@@ -1350,7 +1364,7 @@ function restart() {
             restart();
            
             });
-        g.append("text")
+        g.append("text")		//MWD	I think this adds the text
         .attr("id", function(d){
               return "timeText".concat(d.id);
               })
@@ -1410,7 +1424,7 @@ function restart() {
               })
         .text("Cross Sec");
 */
-        
+        //MWD	similar to "Time" adds "Dep. Var" to pebble
         g.append("path")
         .attr("id", function(d){
               return "dvArc".concat(d.id);
@@ -1451,7 +1465,7 @@ function restart() {
               return "#dvArc".concat(d.id);
               })
         .text("Dep Var");
-        
+        //MWD	adds "Nominal" to pebble
        g.append("path")
         .attr("id", function(d){
               return "nomArc".concat(d.id);
@@ -1532,9 +1546,11 @@ function restart() {
                return d3.rgb(d.strokeColor).toString(); })
         .classed('reflexive', function(d) { return d.reflexive; })
         .on('mouseover', function(d) {
+			console.log("circle mouseover???");		//MWD		why is this not triggering?
        //     if(!mousedown_node || d === mousedown_node) return;
             })
         .on('mouseout', function(d) {
+			console.log("circle mouseout???");		//MWD		why is this not triggering?
         //    if(!mousedown_node || d === mousedown_node) return;
             // unenlarge target node
             //tooltip.style("visibility", "hidden");
@@ -1543,11 +1559,13 @@ function restart() {
   //      .on('mousedown', function(d) {
    //         })
         .on('dblclick', function(d){
+			console.log("circle double click")		//MWD
             d3.event.stopPropagation(); // stop click from bubbling
             summaryHold = true;
 //            document.getElementById('transformations').setAttribute("style", "display:block");
             })
         .on('contextmenu', function(d) { // right click on node
+			console.log("pebble rightclick");	//MWD
             d3.event.preventDefault();
             d3.event.stopPropagation(); // stop right click from bubbling
             rightClickLast=true;
@@ -1567,6 +1585,7 @@ function restart() {
             restart();
             })
         .on('mouseup', function(d) {
+			console.log("pebble mouse up");		//MWD
             d3.event.stopPropagation(); // stop mouseup from bubbling
             
             if(rightClickLast) {
@@ -1630,13 +1649,15 @@ function restart() {
         .attr('x', 0)
         .attr('y', 15)
         .attr('class', 'id')
-        .text(function(d) {return d.name; });
+        .text(function(d) {console.log("node name show " + d.name);		//MWD	this adds the text to the pebble
+			return d.name; });
         
         
         // show summary stats on mouseover
         // SVG doesn't support text wrapping, use html instead
         g.selectAll("circle.node")
         .on("mouseover", function(d) {
+			console.log("pebble mouseover!!!");		//MWD		//so mouseover works on circle.node, not circle
             tabLeft("tab3");
             varSummary(d);
             document.getElementById('transformations').setAttribute("style", "display:block");
@@ -1674,6 +1695,7 @@ function restart() {
             // popup(d, xPos, yPos);
         
         .on("mouseout", function(d) {
+			//MWD		mouseout on pebble
             if(summaryHold===false) { tabLeft(lefttab); }
 
             d3.select("#csArc".concat(d.id)).transition()
@@ -1731,7 +1753,7 @@ function restart() {
         .text(function(d) {return d; });
         
         $('#transSel li').click(function(event) {
-                                
+                                console.log("transSel click");		//MWD	//not really important, when click on transformation box
                                 // if 'interaction' is the selected function, don't show the function list again
                                 if(selInteract === true) {
                                     var n = $('#tInput').val().concat($(this).text());
@@ -1757,8 +1779,10 @@ function restart() {
 //Rohit BHATTACHARJEE TICK
  // update force layout (called automatically each iteration)
         function tick() {
+			//MWD	this is called per layout update to draw everything
             // draw directed edges with proper padding from node centers
             path.attr('d', function(d) {
+				//MWD	called when line moves/added/removed
                       var deltaX = d.target.x - d.source.x,
                       deltaY = d.target.y - d.source.y,
                       dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
@@ -1775,6 +1799,7 @@ function restart() {
             
             //  if(forcetoggle){
             circle.attr('transform', function(d) {
+				//MWD	called on circle move
                         return 'translate(' + d.x + ',' + d.y + ')';
                         });
             //  };
@@ -1842,6 +1867,7 @@ var drag_line = svg.append('svg:path')
        .attr('d', 'M0,0L0,0');
 
 function mousedown(d) {
+	//console.log("mouse down func");		//MWD	this seems limited to only on the SVG
         // prevent I-bar on drag
         d3.event.preventDefault();
         
@@ -1882,6 +1908,7 @@ function mousedown(d) {
 		// init D3 force layout
 		function forced3layout(nodes, links,  width,  height,tick)
         {
+			console.log("in forced3 func");		//MWD	seems to be the initializer, only called at start
 		var force = d3.layout.force()
         .nodes(nodes)
         .links(links)
@@ -1955,7 +1982,7 @@ function mousedown(d) {
                }
                else { // dropping a variable
             
-                    nodes.splice(findNode(myText)["index"], 1);
+                    nodes.splice(findNode(myText)["index"], 1);		//MWD lookup this "findNode" function, sounds useful
                     spliceLinksForNode(findNode(myText));
                
                 if(mySC==dvColor) {
@@ -1991,7 +2018,7 @@ function mousedown(d) {
 	}
 		//console.log("Search ID at start: "+srchid);
 		
-		
+//MWD	these 3 functions do as they are called		
 // returns id
 var findNodeIndex = function(nodeName) {
     for (var i in allNodes) {
@@ -2010,7 +2037,7 @@ var findNode = function(nodeName) {
     for (var i in allNodes) {if (allNodes[i]["name"] === nodeName) return allNodes[i]};
 }
 
-
+//MWD	
 // function called by force button
 function forceSwitch() {
     if(forcetoggle[0]==="true") { forcetoggle = ["false"];}
@@ -2767,6 +2794,7 @@ function erase() {
     tabLeft('tab1');
     
     jQuery.fn.d3Click = function () {
+		//console.log("does this do something?");	//MWD this clears all pebbles!
         this.children().each(function (i, e) {
                     var mycol = d3.rgb(this.style.backgroundColor);
                     if(mycol.toString()===varColor.toString()) {return;}
@@ -3160,6 +3188,7 @@ function hexToRgba(hex) {
 function setColors (n, c) {
     //console.log("inside setColor: n=",n);
    //if(c==timeColor){
+   console.log("changing node color");		//MWD	occurs when setting a pebble as time/nominal/dep var
 
     if(n.strokeWidth=='1') { // adding time, cs, dv, nom to a node with no stroke
     	//console.log("inside strokewidth if");
