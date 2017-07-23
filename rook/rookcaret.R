@@ -82,5 +82,14 @@ caret.app <- function(env){
         print(myedges)
       
 	}
+	
+     if(!warning){
+        mysessionid <- everything$zsessionid
+        mylogfile<-logFile(mysessionid, production)
+        if(mysessionid==""){
+            warning <- TRUE
+            result <- list(warning="No session id.")
+        }
+    }
 
 }
