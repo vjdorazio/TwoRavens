@@ -6,7 +6,7 @@
 
 
 caret.app <- function(env){
-	production<-FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
+    production<-FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
     warning<-FALSE  
     result <-list()
 
@@ -33,36 +33,36 @@ caret.app <- function(env){
     
     #for dependent variable
     if(!warning){
-		mydv <- everything$zdv
+        mydv <- everything$zdv
         if(length(mydv) == 0){
-			warning <- TRUE
-			result<-list(warning="No dependent variable selected.")
-		}
+            warning <- TRUE
+            result<-list(warning="No dependent variable selected.")
+        }
         if(length(mydv) > 1){
-			warning <- TRUE
-			result<-list(warning="Too many dependent variable selected.")
-		}
-	}
+            warning <- TRUE
+            result<-list(warning="Too many dependent variable selected.")
+        }
+    }
 
-	#for model selection
-	if(!warning){
-		mymodel <- everything$zmodel
-		if(identical(mymodel,"")){
-			warning <- TRUE
-			result<-list(warning="No model selected.")
-		}
-	}
+    #for model selection
+    if(!warning){
+        mymodel <- everything$zmodel
+        if(identical(mymodel,"")){
+            warning <- TRUE
+            result<-list(warning="No model selected.")
+        }
+    }
     
-	if(!warning){
-		mymodelcount <- everything$zmodelcount
-		if(identical(mymodelcount,"")){
-			warning <- TRUE
-			result<-list(warning="No model count.")
-		}
-	}
+    if(!warning){
+        mymodelcount <- everything$zmodelcount
+        if(identical(mymodelcount,"")){
+            warning <- TRUE
+            result<-list(warning="No model count.")
+        }
+    }
 
-	#other things happened
-	if(!warning){
+    #other things happened
+    if(!warning){
         myplot <- everything$zplot
         if(is.null(myplot)){
             warning <- TRUE
@@ -71,18 +71,18 @@ caret.app <- function(env){
     }
     
     if(!warning){
-		mysetx <- everything$zsetx
+        mysetx <- everything$zsetx
         myvars <- everything$zvars
         setxCall <- buildSetx(mysetx, myvars)
-	}
+    }
 
 
-	if(!warning){
+    if(!warning){
         myedges<-everything$zedges
         print(myedges)
       
-	}
-	
+    }
+    
      if(!warning){
         mysessionid <- everything$zsessionid
         mylogfile<-logFile(mysessionid, production)
@@ -90,6 +90,61 @@ caret.app <- function(env){
             warning <- TRUE
             result <- list(warning="No session id.")
         }
+    }
+
+    if(!warning){
+        if(production){
+            mydata <- readData(sessionid=mysessionid,logfile=mylogfile)
+            write(deparse(bquote(mydata<-read.delim(file=.(paste("data_",mysessionid,".tab",sep=""))))),mylogfile,append=TRUE)
+        }else{
+            mydata <- read.delim("../data/fearonLaitin.tsv")
+            write("mydata <- read.delim(\"../data/fearonLaitin.tsv\")",mylogfile,append=TRUE)
+            #mydata <- read.delim("../data/QualOfGovt.tsv")
+        }
+    }
+
+    if(!warning){
+        mysubset <- parseSubset(everything$zsubset)
+        if(is.null(mysubset)){
+            warning <- TRUE
+            result <- list(warning="Problem with subset.")
+        }
+    }
+
+    if(!warning){
+        history <- everything$callHistory
+        
+        t<-jsonlite::toJSON(history)
+        write(deparse(bquote(history<-jsonlite::fromJSON(.(t)))),mylogfile,append=TRUE)
+        
+        if(is.null(history)){
+            warning<-TRUE
+            result<-list(warning="callHistory is null.")
+        }
+    }
+
+    if(!warning){
+        mynoms <- everything$znom
+        myformula <- buildFormula(dv=mydv, linkagelist=myedges, varnames=NULL, nomvars=mynoms) 
+        if(is.null(myformula)){
+            warning <- TRUE
+            result<-list(warning="Problem constructing formula expression.")
+        }
+    }
+
+    if(warning){
+        print(warning)
+        print(result)
+    }
+
+
+    if(!warning){
+        print(myformula)
+        print(setxCall)
+
+        tryCatch({
+
+        })
     }
 
 }
