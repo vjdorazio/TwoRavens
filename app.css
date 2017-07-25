@@ -443,8 +443,8 @@ div#heatchart .axis
 
 
 
-div#linechart  .bar{
-    fill: purple;
+div#linechart  .point{
+    fill: #EF5350;
     shape-rendering: crispEdges;
 }
 div#linechart .bar-label{
@@ -466,18 +466,39 @@ div#linechart .gridline line{
 }
 div#linechart .trendline{
     fill: none;
-    stroke: #EF5350;
-    stroke-width: 4px;
-    stroke-dasharray: 10;
+    stroke:#f0f8ff;
+    stroke-width: 2px;
+    stroke-dasharray: 15;
 }
 div#linechart .area{
-    opacity: 0.25;
-    fill: #FFEBEE;
-    stroke: #FFEBEE;
+    opacity: 0.70;
+    fill: #f0f8ff;
+    stroke: #EF5350;
     stroke-width: 1px;
 }
 
 
+div#resultsView_tabular .area {
+    fill: #bbb;
+    shape-rendering: crispEdges;
+}
+
+div#resultsView_tabular .line {
+    fill: none;
+    stroke: #000;
+    stroke-width: 1.5px;
+}
+
+div#resultsView_tabular .axis path,
+div#resultsView_tabular .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+div#resultsView_tabular .y.axis path {
+    display: none;
+}
 
 
 

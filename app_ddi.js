@@ -712,6 +712,68 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
 
 });
 
+var data_cross=[];
+function crossTabDensityPlot(plotA,plotB,nameA,nameB)
+{
+    var nanCount = 0;
+    for (var i = 0; i < 1000; i++) {
+        if (isNaN(plotA[i]) || isNaN(plotB[i])) {
+            nanCount++;
+        } else {
+            var newNumber1 = Math.floor(plotA[i]);
+            var newNumber2 = Math.floor(plotB[i]);
+            data_cross.push({xaxis: newNumber1, yaxis: newNumber2, score:i});
+
+        }
+
+
+    }
+    var margin = {top: 20, right: 20, bottom: 40, left: 50},
+        width = 575 - margin.left - margin.right,
+        height = 350 - margin.top - margin.bottom;
+
+    var x = d3.scale.linear()
+        .domain([0, d3.max(data_cross, function(d) { return d.score; })])
+        .range([0, width]);
+
+    var y = d3.scale.linear()
+        .domain([0, d3.max(data_cross, function(d) { return d.xaxis; })])
+        .range([height, 0]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+
+    var area = d3.svg.area()
+        .x(function(d) { return x(d.x); })
+        .y0(height)
+        .y1(function(d) { return y(d.y); });
+
+    var svg = d3.select("#resultsView_tabular").append("svg:svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.append("path")
+        .datum(data_cross)
+        .attr("class", "area")
+        .attr("d", area);
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+}
 
 var data_plot = [];
 function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
@@ -748,8 +810,8 @@ console.log("bivariate plot called");
         if (isNaN(x_Axis[i]) || isNaN(y_Axis[i])) {
             nanCount++;
         } else {
-            var newNumber1 = Math.floor(x_Axis[i]);
-            var newNumber2 = Math.floor(y_Axis[i]);
+            var newNumber1 = x_Axis[i];
+            var newNumber2 =y_Axis[i];
             data_plot.push({xaxis: newNumber1, yaxis: newNumber2, score:Math.random()*100});
 
         }
@@ -1084,7 +1146,7 @@ function heatmap() {
 
 // This could be inferred from the data if it weren't sparse.
     var xStep = avg_x,
-        yStep = avg_y;
+        yStep = avg_y+0.1;
     var svg_heat = d3.select("#heatchart").append("svg")
         .attr("width", width_heat + margin_heat.left + margin_heat.right)
         .attr("height", height_heat + margin_heat.top + margin_heat.bottom)
@@ -1229,7 +1291,7 @@ function linechart()
         this.selectAll(".trendline")
             .attr("d", function(d){
                 return line(d);
-            })
+            });
         this.selectAll(".point")
             .attr("cx", function(d){
                 var date = d.xaxis;
@@ -1238,6 +1300,7 @@ function linechart()
             .attr("cy", function(d){
                 return y(d.yaxis);
             })
+            .style("color","#EF5350");
         //exit()
         this.selectAll(".trendline")
             .data([params.data])
@@ -1676,7 +1739,7 @@ function layout(v) {
             nodes.push(allNodes[ii]);
             var selectMe = zparams.zvars[j].replace(/\W/g, "_");
             selectMe = "#".concat(selectMe);
-            console.log("select Me" + selectMe);
+            //console.log("select Me" + selectMe);
             d3.select(selectMe).style('background-color', function () {
                 return hexToRgba(nodes[j].strokeColor);
             });
@@ -3695,7 +3758,7 @@ function viz_explore(m, json_vizexplore, model_name_set) {
     //  console.log(" the x length is : "+ y_axis.length);
     document.getElementById('scatterplot').style.display = "none";
     bivariatePlot(x_axis, y_axis, get_data[0], get_data[1]);
-
+    crossTabDensityPlot(x_axis,y_axis,get_data[0],get_data[1]);
     /*
      for(var t=0; t<x_axis.length; t++){
      console.log(" the x axis is :"+x_axis[t] );
@@ -3887,7 +3950,8 @@ function viz_explore(m, json_vizexplore, model_name_set) {
     }
 
 
-    d3.select("#resultsView_tabular").html("");
+   // d3.select("#resultsView_tabular").html("");
+   /*
     function d3table1(data) {
         var width = 120,   // width of svg
             height = 160,  // height of svg
@@ -3940,7 +4004,7 @@ function viz_explore(m, json_vizexplore, model_name_set) {
 
     d3table1(table_obj);
 
-
+*/
     // data for the statistical div
     var string1 = cork.toString();
     var string3 = string1.substring(string1.indexOf(":"), string1.length);
