@@ -12,7 +12,7 @@
 // }
 
 // Delete stored tree (debug)
-// localStorage.removeItem('treeData');
+localStorage.removeItem('treeData');
 
 // Create the rightpanel data tree
 if (localStorage.getItem("treeData") !== null) {
@@ -27,14 +27,15 @@ if (localStorage.getItem("treeData") !== null) {
         {
             id: '0',
             name: 'Variables',
-            cancellable: false
+            cancellable: false,
+            show_op: false
         },
         // All subsets are stored as children of this node
         {
             id: '1',
             name: 'Subsets',
-            operation: 'and',
-            cancellable: false
+            cancellable: false,
+            show_op: false
         }
     ];
     var nodeId = 2;
@@ -115,8 +116,9 @@ $(function () {
 
         // Executed for every node and leaf in the tree
         onCreateLi: function (node, $li) {
-            if ('operation' in node) {
-                $li.find('.jqtree-element').append(buttonLogic(node.id, node.operation));
+
+            if (!('show_op' in node) || ('show_op' in node && node.show_op)) {
+                $li.find('.jqtree-element').prepend(buttonLogic(node.id, node.operation));
             }
             if ('negate' in node) {
                 $li.find('.jqtree-element').prepend(buttonNegate(node.id, node.negate));
@@ -159,7 +161,11 @@ $('#queryTree').on(
     'tree.move',
     function (event) {
         event.preventDefault();
+        event.move_info.moved_node.parent['children'][0]['show_op'] = false;
+        event.move_info.target_node['children'][0]['show_op'] = false;
+        // event.move_info.target_node.parent['children'][0]['show_op'] = true;
         event.move_info.do_move();
+
         // Save changes when an element is moved
         data = JSON.parse($('#queryTree').tree('toJson'))
     }
@@ -194,19 +200,22 @@ function addGroup() {
             removeIds.push(child_id);
         }
     }
+    if (movedChildren.length > 0) {
+        movedChildren[0]['show_op'] = false;
+    }
 
     // Delete elements from root directory that are moved
     for (var i = removeIds.length - 1; i >= 0; i--) {
         data[1]['children'].splice(removeIds[i], 1);
     }
-
-
+    console.log(data[1]['children'].length)
     data[1]['children'].push(
         {
             id: String(nodeId++),
             name: 'Group ' + String(groupId++),
             operation: 'and',
-            children: movedChildren
+            children: movedChildren,
+            show_op: data[1]['children'].length - 1 === 0
         });
 
     $('#queryTree').tree('loadData', data);
@@ -230,6 +239,10 @@ function addRule() {
         if (!('children' in data[1])) {
             data[1]['children'] = [];
         }
+        if (data[1]['children'].length === 0) {
+            preferences['show_op'] = false;
+        }
+
         data[1]['children'].push(preferences);
 
         var qtree = $('#queryTree');
@@ -285,13 +298,15 @@ function getSubsetPreferences() {
                     id: String(nodeId++),
                     name: 'From: ' + monthNames[dateminUser.getMonth()] + ' ' + String(dateminUser.getFullYear()),
                     fromDate: dateminUser,
-                    cancellable: false
+                    cancellable: false,
+                    show_op: false
                 },
                 {
                     id: String(nodeId++),
                     name: 'To:   ' + monthNames[datemaxUser.getMonth()] + ' ' + String(datemaxUser.getFullYear()),
                     toDate: datemaxUser,
-                    cancellable: false
+                    cancellable: false,
+                    show_op: false
                 }
             ],
             operation: 'and'
@@ -312,8 +327,8 @@ function getSubsetPreferences() {
             if (mapListCountriesSelected[country]) {
                 subset['children'].push({
                     id: String(nodeId++),
-                    negate: false,
-                    name: country
+                    name: country,
+                    show_op: false
                 });
             }
         }
