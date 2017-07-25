@@ -466,7 +466,7 @@ div#linechart .gridline line{
 }
 div#linechart .trendline{
     fill: none;
-    stroke:#f0f8ff;
+    stroke:#90CAF9;
     stroke-width: 2px;
     stroke-dasharray: 15;
 }

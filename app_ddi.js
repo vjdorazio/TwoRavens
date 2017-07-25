@@ -1236,7 +1236,7 @@ function linechart()
         .classed("display", true)
         .attr("transform", "translate(" + margin_linechart.left + "," + margin_linechart.top + ")");
     // var dateParser = d3.time.format("%Y/%m/%d").parse;
-    var x = d3.time.scale()
+    var x = d3.scale.linear()
         .domain(d3.extent(data_plot, function(d){
 
             return d.xaxis;
