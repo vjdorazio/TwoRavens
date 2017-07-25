@@ -33,6 +33,11 @@ for oline in originFile:
 				singleList.append(towrite)
 			else:
 				multList.append(towrite)
+		else:
+			if (len(line.split("\t", 1)[0]) == 3):
+				singleList.append(line)
+			else:
+				multList.append(towrite)
 				
 originFile.close()		
 

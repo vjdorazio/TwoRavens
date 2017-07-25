@@ -1154,9 +1154,8 @@ div.actorTab button.active {
 }
 
 #fullContainer {
-	margin-top: 40px;
 	width: 100%;
-	height: calc(100% - 110px);
+	height: calc(100% - 130px);
 	box-sizing: border-box;
 }
 
@@ -1189,7 +1188,7 @@ div.actorTab button.active {
 	display: inline-block;
 	position: absolute;
 	width :180px;
-	height: calc(100% - 180px);
+	height: calc(100% - 200px);
 	overflow-x: scroll;
 	overflow-y: scroll;
 	white-space: nowrap;
@@ -1199,7 +1198,7 @@ div.actorTab button.active {
 	display: inline-block;
 	position: absolute;
 	width: 150px;
-	height: calc(100% - 180px);
+	height: calc(100% - 200px);
 	overflow-x: scroll;
 	overflow-y: scroll;
 	white-space: nowrap;
@@ -1211,20 +1210,39 @@ div.actorTab button.active {
 	height: 30px;
 }
 
-#actorSelectionDiv {
-	width: 340px;
-	border: 1px solid #ADADAD;
-	top: 72px;
-	left: 10px;
+#actorContainer {
+	width: calc(100% - 335px);
 	height: calc(100% - 20px);
+	margin-top:10px;
+}
+
+#actorSelectionDiv {
+	float: left;
+	width: 350px;
+	height: 100%;
+	border: 1px solid #ADADAD;
 	background: #F9F9F9;
-	margin-top: 10px;
 	margin-bottom: 4px;
+}
+
+#actorLinkDiv {
+	float: left;
+	width: calc(100% - 350px);
+	height: 100%;
+	border: 1px solid #ADADAD;
+}
+
+
+
+.actorBottom {
+
 }
 
 .actorHead4 {
 	margin-bottom: 0px;
 	display: inline-block;
+	font-size: 18px;
+	
 }
 
 .filterExpand {
@@ -1235,10 +1253,14 @@ div.actorTab button.active {
 	vertical-align: middle;
 	outline: none;
 
-	background-image: url(collapse.png);
+	background-image: url(expand.png);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 	border: none;
+}
+
+.filterContainer {
+	display: none;
 }
 
 .actorChk {
@@ -1250,5 +1272,20 @@ div.actorTab button.active {
 .actorChkLbl {
 	display: inline-block;
 	margin-right: 10px;
+}
+
+#editGroupName {
+	display: none;
+	text-align: center;
+	margin: 0 auto;
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1.1;
+	padding: 0px;
+	/*height: 17.6px;*/
+	border: none;
+	border-image-width: 0;
+	outline: none;
+	box-shadow: none;
 }
 /*end styling for actor*/

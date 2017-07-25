@@ -149,64 +149,73 @@
         </div>
 
         <div id="subsetActor" class="canvas" style="display:none">
-			<div id="actorSelectionDiv" style="width:350px;">
+			<div id="actorContainer">
+
+			<div id="actorSelectionDiv">
 				<div id="actorSelectionTitle" class="panel-heading text-center">
 					<h3 class="panel-title">Actor Selection</h3>
 				</div>
 				
-				<div id="tabDiv">
+				<div id="tabDiv" style="overflow:hidden;">
 					<div class="actorTab">
-						<button id="sourceTabBtn" class="actorTabLink btn" type="button" onclick="actorTabSwitch('sourceTabBtn', 'sourceDiv')" title="Select sources">Sources</button>
+						<button id="sourceTabBtn" class="actorTabLink btn active" type="button" onclick="actorTabSwitch('sourceTabBtn', 'sourceDiv')" title="Select sources">Sources</button>
 						<button id="targetTabBtn" class="actorTabLink btn btn-default" type="button" onclick="actorTabSwitch('targetTabBtn', 'targetDiv')" title="Select targets">Targets</button>
 					</div>
+				</div>
+
+				<div id="groupNameDisplayContainer" class="panel-heading text-center" style="padding-bottom:0px;">
+					<h3 id="groupNameDisplay" class="panel-title" style="overflow:hidden;">Group 0</h3>
+					<input id="editGroupName" type="text" placeholder="Group 0"/>	<!--change placeholder on group -->
 				</div>
 
 				<div id="fullContainer">
 					<div id="sourceDiv" class="actorTabContent">
 						<div id="allSources" class="actorLeft">
-							<input id="sourceSearch" class="form-control actorSearch" placeholder="Search source actors" type="text">
+							<input id="sourceSearch" class="form-control actorSearch" placeholder="Search source actors" type="text"/>
 							
 							<div id="searchListSources" class="actorFullList">
-								<!--checks will be added dynamically in JS once at load-->							
+								<!--checks will be added dynamically in JS once at load-->
 							</div>
 						</div>
 
 						<div class="actorRight">
-							<button id="clearAllSources" type="button" class="clearActorBtn" title="Clears search text and filters">Clear All Filters</button>
+							<button id="clearAllSources" type="button" data-toggle="tooltip" class="clearActorBtn" title="Clears search text and filters">Clear All Filters</button>
 							
 							<div id="sourceFilter" class="actorFilterList">
 								<!--dynamically add checks for filters at load-->
-								<button id="entitySourceExpand" class="filterExpand" value="collapse"></button>
-								<h4 id="entitySources" class="actorHead4"><b>Entity</b></h4>
+								<button id="entitySourceExpand" class="filterExpand" value="expand"></button>
+								<label id="entitySources" class="actorHead4" for="entitySourceExpand"><b>Entity</b></label>
 								<div id="wrapEntitySource" class="filterContainer" style="padding-left:10px;">
-										<button id="orgSourceExpand" class="filterExpand" value="collapse"></button>
+										<button id="orgSourceExpand" class="filterExpand" value="expand"></button>
 										<label class="actorChkLbl"><input class="actorChk allCheck" name="sourceOrgAllCheck" id="sourceOrgAllCheck" type="checkbox" value="organizations">Organizations</label>
 										<div id="orgSourcesList" class="filterContainer" style="padding-left:30px;"></div>
 
 										<div class="seperator"></div>
 
-										<button id="countrySourceExpand" class="filterExpand" value="collapse"></button>
+										<button id="countrySourceExpand" class="filterExpand" value="expand"></button>
 										<label class="actorChkLbl"><input class="actorChk allCheck" name="sourceCountryAllCheck" id="sourceCountryAllCheck" type="checkbox" value="countries">Countries</label>
 										<div id="countrySourcesList" class="filterContainer" style="padding-left:30px;"></div>
 								</div>
 
 								<div class="seperator"></div>
 
-								<button id="roleSourceExpand" class="filterExpand" value="collapse"></button>
-								<h4 id="roleSources" class="actorHead4"><b>Role</b></h4>
+								<button id="roleSourceExpand" class="filterExpand" value="expand"></button>
+								<label id="roleSources" class="actorHead4" for="roleSourceExpand"><b>Role</b></label>
 								<div id="roleSourcesList" class="filterContainer"></div>
 
 								<div class="seperator"></div>
 								
-								<button id="attributeSourceExpand" class="filterExpand" value="collapse"></button>
-								<h4 id="attributeSources" class="actorHead4"><b>Attributes</b></h4>
+								<button id="attributeSourceExpand" class="filterExpand" value="expand"></button>
+								<label id="attributeSources" class="actorHead4" for="attributeSourceExpand"><b>Attributes</b></label>
 								<div id="attributeSourcesList" class="filterContainer"></div>
 							</div>
 						</div>
 
-						<button id="clearSelSource" type="button" style="position: relative;">Clear Selected Sources</button>
+						<button id="sourceSelectAll" class="actorBottom actorSelectAll" type="button" data-toggle="tooltip" title="Selects all sources that match the filter criteria">Select All</button>
 
-						<button id="submitSources" type="button" style="position: relative;">Submit Sources</button>
+						<button id="sourceClearSel" class="actorBottom actorClearAll" type="button" data-toggle="tooltip" title="Clears all sources that match the filter criteria">Clear All</button>
+
+						<button id="sourceSubmit" class="actorBottom actorSubmit" type="button" data-toggle="tooltip" title="Submit sources to group 0">Submit Sources</button>
 					</div>
 
 					<div id="targetDiv" class="actorTabContent">
@@ -214,49 +223,57 @@
 							<input id="targetSearch" class="form-control actorSearch" placeholder="Search target actors" type="text">
 							
 							<div id="searchListTargets" class="actorFullList">
-								<!--checks will be added dynamically in JS once at load-->							
+								<!--checks will be added dynamically in JS once at load-->
 							</div>
 						</div>
 
 						<div class="actorRight">
-							<button id="clearAllTargets" type="button" class="clearActorBtn" title="Clears search text and filters">Clear All Filters</button>
+							<button id="clearAllTargets" type="button" data-toggle="tooltip" class="clearActorBtn" title="Clears search text and filters">Clear All Filters</button>
 							
 							<div id="targetFilter" class="actorFilterList">
 								<!--dynamically add checks for filters at load-->
-								<button id="entityTargetExpand" class="filterExpand" value="collapse"></button>
-								<h4 id="entityTargets" class="actorHead4"><b>Entity</b></h4>
+								<button id="entityTargetExpand" class="filterExpand" value="expand"></button>
+								<label id="entityTargets" class="actorHead4" for="entityTargetExpand"><b>Entity</b></label>
 								<div id="wrapEntityTarget" class="filterContainer" style="padding-left:10px;">
-										<button id="orgTargetExpand" class="filterExpand" value="collapse"></button>
+										<button id="orgTargetExpand" class="filterExpand" value="expand"></button>
 										<label class="actorChkLbl"><input class="actorChk allCheck" name="targetOrgAllCheck" id="targetOrgAllCheck" type="checkbox" value="organizations">Organizations</label>
 										<div id="orgTargetsList" class="filterContainer" style="padding-left:30px;"></div>
 
 										<div class="seperator"></div>
 
-										<button id="countryTargetExpand" class="filterExpand" value="collapse"></button>
+										<button id="countryTargetExpand" class="filterExpand" value="expand"></button>
 										<label class="actorChkLbl"><input class="actorChk allCheck" name="targetCountryAllCheck" id="targetCountryAllCheck" type="checkbox" value="countries">Countries</label>
 										<div id="countryTargetsList" class="filterContainer" style="padding-left:30px;"></div>
 								</div>
 
 								<div class="seperator"></div>
 
-								<button id="roleTargetExpand" class="filterExpand" value="collapse"></button>
-								<h4 id="roleTargets" class="actorHead4"><b>Role</b></h4>
+								<button id="roleTargetExpand" class="filterExpand" value="expand"></button>
+								<label id="roleTargets" class="actorHead4" for="roleTargetExpand"><b>Role</b></label>
 								<div id="roleTargetsList" class="filterContainer"></div>
 
 								<div class="seperator"></div>
 								
-								<button id="attributeTargetExpand" class="filterExpand" value="collapse"></button>
-								<h4 id="attributeTargets" class="actorHead4"><b>Attributes</b></h4>
+								<button id="attributeTargetExpand" class="filterExpand" value="expand"></button>
+								<label id="attributeTargets" class="actorHead4" for="attributeTargetExpand"><b>Attributes</b></label>
 								<div id="attributeTargetsList" class="filterContainer"></div>
 							</div>
 						</div>
 
-						<button id="clearSelTarget" type="button" style="position: relative;">Clear Selected Targets</button>
+						<button id="targetSelectAll" class="actorBottom actorSelectAll" type="button" data-toggle="tooltip" title="Selects all targets that match the filter criteria">Select All</button>
 
-						<button id="submitTargets" type="button" style="position: relative;">Submit Targets</button>
+						<button id="targetClearSel" class="actorBottom actorClearAll" type="button" data-toggle="tooltip" title="Clears all targets that match the filter criteria">Clear All</button>
+
+						<button id="targetSubmit" class="actorBottom actorSubmit" type="button" data-toggle="tooltip" title="Submit targets to group 0">Submit Targets</button>
 					</div>
                 </div>
             </div>
+
+            <div id="actorLinkDiv">
+				<svg id="actorLinkSvg">
+				</svg>
+            </div>
+        </div>
         </div>
 
         <div id="legend" class="legendary panel panel-default" style="display:none">
@@ -344,7 +361,7 @@ function closeRightPanel() {
         $('#rightpanel').removeClass('expandpanel');
         $('#rightpanel > div.row-fluid').toggleClass('closepanel');
         $('#rightpanel').toggleClass('closepanel');
-        rightpanelMargin()
+        rightpanelMargin();
     }
 }
 
@@ -418,24 +435,9 @@ function closeRightPanel() {
 //  console.log("dataurl: "+dataurl);
 //  console.log("Username:"+username);
 
-	//switches tabs in actor subset
-	function actorTabSwitch(origin, tab) {
-		switch(origin) {
-			case "sourceTabBtn":
-				document.getElementById("targetDiv").style.display = "none";
-				$("#targetTabBtn").removeClass("active").addClass("btn-default");
-				$("#sourceTabBtn").removeClass("btn-default").addClass("active");
-				break;
-			default:
-				document.getElementById("sourceDiv").style.display = "none";
-				$("#sourceTabBtn").removeClass("active").addClass("btn-default");
-				$("#targetTabBtn").removeClass("btn-default").addClass("active");
-				break;
-		}
 
-		document.getElementById(tab).style.display = "inline-block";
-	}
 
+$(document).ready(function() {
 	//expands divs with filters
 	$(".filterExpand").click(function() {
 		if (this.value == "expand") {
@@ -449,6 +451,11 @@ function closeRightPanel() {
 			$(this).next().next("div.filterContainer").hide("fast");
 		}
 	});
+
+	//enable hover text
+	//$(".actorBottom").attr("data-container", "body").attr("data-toggle", "popover").attr("data-placement", "top").attr("data-trigger", "hover").attr("data-content", $(this).prop("title")).attr("onmouseover", "$(this).popover('toggle')").attr("onmouseout", "$(this).popover('toggle')");
+	$(".actorBottom, .clearActorBtn").tooltip({container: "body"});
+});
 
 </script>
     <script src="app_ddi_eventdata.js"></script>

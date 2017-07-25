@@ -1,0 +1,23 @@
+Run the following Python scripts in this order to build the dictionary:
+*you may need to rename some of the file names in the scripts
+
+1. cleanDict.py
+2. cleanPetrarch.py
+3. consolidateDict.py		!!!be sure to edit the file to remove marks
+							-I usually tend to favor the longer strings
+							-the following were marked:
+							-MED -> Media (favor HLH for Medical)
+							-NGAEBO -> Ebonyi OR Edo (Nigeria) (both are in Nigeria)
+							-SHN (Saint Helena OR Shintoism)
+							-SLV -> El Salvador (by ISO 3166)
+							-SLV -> SLA -> Slav (by another CAMEO code)
+4. sortFile.py
+4.a. quickCompare.py		*test if file generated has most of what I did by hand
+							-only items missing:
+							-" >0"
+							-"04"
+							-"810"
+							-"AEA"
+							-"ISI"
+5. combineDict.py			-combines the CAMEO and PETRARCH, follow the instructions
+							-MAKE SURE TO COPY THE FILE TO THE DATA PATH

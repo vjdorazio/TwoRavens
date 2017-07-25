@@ -1,15 +1,8 @@
-!!!	!!!	IGOCEM	Common Market for Eastern and Southern Africa
-!!!	!!!	!!!	IGOCEM	Monetary and Economic Community of Central Africa
-!!!	!!!	!!!	NGAEBO	Ebonyi
-!!!	!!!	!!!	NGAEBO	Edo (Nigeria)
-!!!	!!!	!!!	SHN	Saint Helena
-!!!	!!!	!!!	SHN	Shintoism
-!!!	!!!	!!!	SLV	El Salvador
-!!!	!!!	SLV	Slav
+SHN	Saint Helena OR Shintoism
 AAM	Al Aqsa Martyrs Brigade
 ABD	Arab Bank for Economic Development in Africa
 ABI	Abia
-ABN	Albanian
+ABN	ethnic Albanian
 ABR	Abrahamic religions
 ABU	Abuja
 ABW	Aruba
@@ -68,7 +61,7 @@ AUS	Australia
 AUT	Austria
 AZE	Azerbaijan
 BAG	Baghdad
-BAH	Bahai
+BAH	Bahai Faith
 BAU	Bauchi
 BAY	Bayelsa
 BCA	Bank of Central African States (BEAC)
@@ -158,11 +151,10 @@ CRB	Caribbean
 CRC	International Fed. of Red Cross and Red Crescent (ICRC)
 CRI	Costa Rica
 CRM	Criminal
-CRO	Croat
+CRO	ethnic Croat
 CRR	Cross River
 CSI	Christian Solidarity International
 CSS	Community of Sahel-Saharan States (CENSAD)
-CTA	Yugoslavia’s Republic of Croatia (d.r.)
 CTH	Catholic
 CUB	Cuba
 CVL	Civilian
@@ -176,7 +168,7 @@ CZE	Czech Republic
 DEL	Delta
 DEU	Germany
 DEV	Development
-DFL	Democratic Front for the Liberation of Palestine (DFLP)
+DFL	Democratic Front for the Lib. of Palestine (DLFP)
 DFR	Darfur
 DJI	Djibouti
 DMA	Dominica
@@ -218,7 +210,7 @@ EKI	Ekiti
 ELI	Elites
 ENN	Ennahda Movement
 ENU	Enugu
-ENV	Environment
+ENV	Environmental
 ERI	Eritrea
 ESH	Western Sahara
 ESP	Spain
@@ -238,7 +230,7 @@ FRA	France
 FRO	Faeroe Islands
 FRY	Federal Republic of Yugoslavia
 FRYKSV	Kosovo (d.r.)
-FRYMTN	Montenegro (d.r.)
+FRYMNE	Montenegro (d.r.)
 FRYSRB	Serbia (d.r.)
 FRYVVD	Vojvodina (d.r.)
 FSM	Micronesia
@@ -277,7 +269,7 @@ GUF	French Guiana
 GUM	Guam
 GUY	Guyana
 GYP	Gypsy
-GZS	Gaza Strip
+GZA	Gaza Strip
 HAU	Hausa
 HCH	UN High Commission for Human Rights
 HCR	UN High Commission for Refugees
@@ -309,7 +301,7 @@ ICO	International Cocoa Organization (ICCO)
 IDB	Islamic Development Bank
 IDN	Indonesia
 IGC	International Grains Council
-IGO	Inter-governmental organizations
+IGO	Inter-governmental Organization
 IGOABD	Arab Bank for Economic Development in Africa
 IGOACC	Arab Cooperation Council
 IGOADB	Asian Development Bank
@@ -351,6 +343,8 @@ IGOCAFBCA	Bank of Central African States (BEAC)
 IGOCAFCEM	Monetary and Economic Community of Central Africa (CEMAC)
 IGOCAFECA	Economic Community of Central African States
 IGOCASCIS	Commonwealth of Independent States
+IGOCEM	Monetary and Economic Community of Central Africa
+IGOCES	Common Market for Eastern and Southern Africa
 IGOCFA	Franc Zone Financial Community of Africa
 IGOCIS	Commonwealth of Independent States
 IGOCOE	Council of Europe
@@ -450,7 +444,7 @@ IHF	International Helsinki Federation for Human Rights
 IJW	Ijaws
 ILO	International Labor Organization
 IMF	International Monetary Fund (IMF)
-IMG	International Militarized Groups
+IMG	Internationl Militarized Group
 IMGMOSALQ	Al Qaeda
 IMGSEAMOSASF	Abu Sayyaf
 IMGSEAMOSJMA	Jemaah Islamiya
@@ -553,7 +547,7 @@ LBRGOVUPP	United People’s Party (d.r.)
 LBRKRH	Krahn (ethnic group)
 LBRKRU	Grand Kru (Liberia)
 LBRLOF	Lofa (Liberia)
-LBRMAN	Mandingoe (ethnic group)
+LBRMAN	Mandingo, Mandingoe (ethnic group)
 LBRMNT	Montserrado (Liberia)
 LBRMRG	Margibi (Liberia)
 LBRMRY	Maryland (Liberia)
@@ -602,17 +596,18 @@ MDG	Madagascar
 MDT	Mediterranean
 MDV	Maldives
 MEA	Middle East
-MED	Medical
+MED	Media
 MEX	Mexico
 MHL	Marshall Islands
 MHP	National Action Party (MHP) (d.r.)
-MIL	MIlitary
+MIL	Military
 MKD	Former Yugoslav Republic of Macedonia
 MLI	Mali
 MLN	millenarian
 MLT	Malta
 MMR	Myanmar (Burma)
 MNC	Multi-national corporation
+MNE	Montenegro
 MNG	Mongolia
 MNP	Northern Mariana Islands
 MNT	Montserrado
@@ -633,7 +628,6 @@ MRZ	Meretz Party (d.r.)
 MSF	Medecins Sans Frontieres (Doctors Without Borders)
 MSP	Movement of the Society for Peace
 MSR	Montserrat
-MTN	Montenegro
 MTQ	Martinique
 MUS	Mauritius
 MWI	Malawi
@@ -665,12 +659,13 @@ NGABNU	Benue (Nigeria)
 NGABOR	Borno (Nigeria)
 NGACRR	Cross River (Nigeria)
 NGADEL	Delta (Nigeria)
+NGAEBO	Edo (Nigeria)
 NGAEDO	Edo
 NGAEKI	Ekiti (Nigeria)
 NGAENU	Enugu (Nigeria)
 NGAGOM	Gombe (Nigeria)
 NGAHAU	Hausa (ethnic group)
-NGAIBO	Ibo, a.k.a. Igbo (ethnic group)
+NGAIBO	Ibo, Igbo (ethnic group)
 NGAIJW	Ijaws (ethnic group)
 NGAIMO	Imo (Nigeria)
 NGAJIG	Jigawa (Nigeria)
@@ -753,7 +748,7 @@ OIC	Organization of Islamic Conferences (OIC)
 OMN	Oman
 OND	Ondo
 OPC	Organization of Petroleum Exporting Countries (OPEC)
-OPP	Opposition
+OPP	Political Opposition
 OSU	Osun
 OYO	Oyo
 PAG	Animist/Pagan
@@ -787,10 +782,10 @@ PRK	Democratic People’s Rep. of Korea (Pyongyang)
 PRO	Protestant
 PRT	Portugal
 PRY	Paraguay
-PSE	Palestinian Occupied Territories
+PSE	Occupied Palestinian Territories
 PSEGOVFTA	Fatah (d.r.)
 PSEGOVHMS	Hamas (d.r.)
-PSEGZS	Gaza Strip
+PSEGZA	Gaza Strip
 PSEREBAAM	Al Aqsa Martyrs Brigade
 PSEREBDFL	Democratic Front for the Liberation of Palestine (DFLP)
 PSEREBHMS	Hamas (d.r.)
@@ -803,14 +798,14 @@ QAT	Qatar
 RAC	racialist
 RAD	Radical
 RCR	Red Crescent
-REB	Rebel
-REF	Refugee
+REB	Rebels
+REF	Refugees
 REL	Unspecified Religious
 REP	Welfare Party (Refah) (d.r.)
 REU	Runion
 RIV	Rivers
 RND	Democratic National Rally
-ROM	Romania
+ROU	Romania
 RPF	Rwandan Patriotic Front (d.r.)
 RUF	Revolutionary United Front
 RUS	Russia
@@ -828,7 +823,7 @@ SAU	Saudi Arabia
 SCE	Council of Security and Cooperation in Europe (OSCE)
 SCG	Serbia and Montenegro (d.r.)
 SCGKSV	Kosovo (d.r.)
-SCGMTN	Montenegro (d.r.)
+SCGMNE	Montenegro (d.r.)
 SCGSRB	Serbia (d.r.)
 SCGVVD	Vojvodina (d.r.)
 SCN	Scandinavia
@@ -839,8 +834,8 @@ SDNREBSPL	Sudan People’s Liberation Army
 SEA	Southeast Asia
 SEN	Senegal
 SENREBMDF	Movement of Democratic Forces of Casamance
-SEP	Separatist rebels
-SER	Serb
+SEP	Separatist Rebels
+SER	ethnic Serb
 SET	Israeli Settlers
 SFI	Sufi
 SGP	Singapore
@@ -855,6 +850,7 @@ SLE	Sierra Leone
 SLEREBKAM	Kamajor militia
 SLEREBRUF	Revolutionary United Front
 SLN	Yugoslavia’s Republic of Slovenia (d.r.)
+SLV	El Salvador
 SMR	San Marino
 SNL	Sinhalese (ethnic group)
 SOE	Southeast Turkey
@@ -863,13 +859,14 @@ SOM	Somalia
 SOT	Southeast Asia Collective Defense Treaty (SEATO)
 SPL	Sudan People’s Liberation Army
 SPM	Saint Pierre and Miquelon
-SPY	Spy
+SPY	State Intelligence Services
 SRB	Serbia (d.r.)
 SRBKSV	Kosovo (d.r.)
 SRBKSVABN	Kosovar Albanian
 SRBKSVSRB	Kosovar Serb
 SRBVVD	Vojvodina (d.r.)
 SRP	Bosnian Serb Republika Srpska (d.r.)
+SSD	South Sudan
 STP	Sao Tome and Principe
 SUN	Sunni
 SUR	Suriname
@@ -897,7 +894,7 @@ TKM	Turkmenistan
 TMP	East Timor (Timor-Leste)
 TON	Tonga
 TRG	Tuareg (ethnic group)
-TRK	Turk
+TRK	ethnic Turk
 TTO	Trinidad and Tobago
 TUN	Tunisia
 TUR	Turkey
@@ -938,7 +935,7 @@ UGA	Uganda
 UGAREBADF	Allied Democratic Forces
 UGAREBLRA	Lord’s Resistance Army
 UIG	Uighur (Chinese ethnic minority)
-UIS	Unidentified state actors
+UIS	Unidentified State Actors
 UKR	Ukraine
 ULM	United Liberation Front for Democracy
 UNI	National Union for the Total Ind. of Angola (UNITA)
@@ -980,10 +977,10 @@ YOB	Yobe
 YRB	Yoruba
 YUG	Socialist Federal Republic of Yugoslavia (d.r.)
 YUGBSN	Yugoslavia’s Republic of Bosnia (d.r.)
-YUGCTA	Yugoslavia’s Republic of Croatia (d.r.)
+YUGHRV	Yugoslavia’s Republic of Croatia (d.r.)
 YUGKSV	Kosovo (d.r.)
 YUGMCD	Yugoslavia’s Republic of Macedonia (d.r.)
-YUGMTN	Montenegro (d.r.)
+YUGMNE	Montenegro (d.r.)
 YUGSLN	Yugoslavia’s Republic of Slovenia (d.r.)
 YUGSRB	Yugoslavia’s Republic of Serbia (d.r.)
 YUGVVD	Vojvodina (d.r.)

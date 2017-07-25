@@ -59,7 +59,7 @@ WST	“the West”
 African Development Bank IGOAFB
 Arab Bank for Economic Development in Africa IGOABD
 Bank of Central African States (BEAC) IGOBCA
-Common Market for Eastern and Southern Africa IGOCES
+Common Market for Eastern and Southern Africa IGOCEM
 Community of Sahel-Saharan States (CENSAD) IGOCSS
 Eastern and Southern African Trade and Development Bank IGOATD
 Economic and Monetary Union of West Africa (UEMOA) IGOUEM
@@ -302,7 +302,7 @@ FRA France
 FRO Faeroe Islands
 FRY Federal Republic of Yugoslavia
 FRYKSV Kosovo (d.r.)
-FRYMNE Montenegro (d.r.)
+FRYMTN Montenegro (d.r.)
 FRYSRB Serbia (d.r.)
 FRYVVD Vojvodina (d.r.)
 FSM Micronesia
@@ -538,7 +538,7 @@ MOSSUN Sunni
 MOZ Mozambique
 MRT Mauritania
 MSR Montserrat
-MNE Montenegro
+MTN Montenegro
 MTQ Martinique
 MUS Mauritius
 MWI Malawi
@@ -650,21 +650,20 @@ PRY Paraguay
 PSE Palestinian Occupied Territories
 PSEGOVFTA Fatah (d.r.)
 PSEGOVHMS Hamas (d.r.)
-PSEGZA Gaza Strip
+PSEGZS Gaza Strip
 PSEREBAAM Al Aqsa Martyrs Brigade
 PSEREBDFL Democratic Front for the Liberation of Palestine (DFLP)
 PSEREBHMS Hamas (d.r.)
 PSEREBISJ Palestinian Islamic Jihad
 PSEREBPFL People’s Front for the Liberation of Palestine (PFLP)
 PSEWSB West Bank
-PTY	Party
 PYF French Polynesia
 QAT Qatar
 RAD Radical
 REB Rebel
 REF Refugee
 REU Runion
-ROU Romania
+ROM Romania
 RUS Russia
 RUSCNY Chechnya
 RWA Rwanda
@@ -676,7 +675,7 @@ SAS South Asia
 SAU Saudi Arabia
 SCG Serbia and Montenegro (d.r.)
 SCGKSV Kosovo (d.r.)
-SCGMNE Montenegro (d.r.)
+SCGMTN Montenegro (d.r.)
 SCGSRB Serbia (d.r.)
 SCGVVD Vojvodina (d.r.)
 SCN Scandinavia
@@ -785,10 +784,10 @@ YMN North Yemen
 YMS South Yemen
 YUG Socialist Federal Republic of Yugoslavia (d.r.)
 YUGBSN Yugoslavia’s Republic of Bosnia (d.r.)
-YUGHRV Yugoslavia’s Republic of Croatia (d.r.)
+YUGCTA Yugoslavia’s Republic of Croatia (d.r.)
 YUGKSV Kosovo (d.r.)
 YUGMCD Yugoslavia’s Republic of Macedonia (d.r.)
-YUGMNE Montenegro (d.r.)
+YUGMTN Montenegro (d.r.)
 YUGSLN Yugoslavia’s Republic of Slovenia (d.r.)
 YUGSRB Yugoslavia’s Republic of Serbia (d.r.)
 YUGVVD Vojvodina (d.r.)
@@ -935,7 +934,7 @@ Micronesia FSM
 Moldova MDA
 Monaco MCO
 Mongolia MNG
-Montenegro MNE
+Montenegro MTN
 Montserrat MSR
 Morocco MAR
 Mozambique MOZ
@@ -969,7 +968,7 @@ Portugal PRT
 Puerto Rico PRI
 Qatar QAT
 Runion REU
-Romania ROU
+Romania ROM
 Russia RUS
 Rwanda RWA
 Saint Helena SHN
@@ -1094,7 +1093,7 @@ DZAGOVRND	Democratic National Rally
 DZAOPPENN	Ennahda Movement
 PALPLO	Fatah
 PSEGOVFTA	Fatah
-PSEGZA	Gaza Strip
+PSEGZS	Gaza Strip
 PSEREBHMS	Hamas
 PSEGOVHMS	Hamas
 LBNREBHEZ	Hezbullah
@@ -1247,7 +1246,7 @@ Bosnia and Hercegovina BIH
 Federation of Bosnia-Hercegovina BIHBHF
 Republika Srpska BIHSRP
 Serbia SRB
-Montenegro MNE
+Montenegro MTN
 Kosovo SRBKSV
 Vojvodina SRBVVD
 Albanian ABN
@@ -1262,5 +1261,3 @@ Kosovar Albanian SRBKSVABN
 Bosnian Muslim BIHMOS
 Bosnian Serb BIHSER
 Kosovar Serb SRBKSVSRB
-SSD	South Sudan
-SDNSSD	South Sudan
