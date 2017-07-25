@@ -894,7 +894,7 @@ console.log("bivariate plot called");
         .append("circle")
         .attr("cx", function (d,i) { return xScale(data_plot[i].xaxis); } )
         .attr("cy", function (d,i) { return yScale(data_plot[i].yaxis); } )
-        .attr("r", 3)
+        .attr("r", 2)
         .style("fill", "#B71C1C" )
         ;
 
@@ -919,7 +919,7 @@ console.log("bivariate plot called");
         main1.selectAll("circle")
             .attr("cx", function (d,i) { return xScale(data_plot[i].xaxis); } )
             .attr("cy", function (d,i) { return yScale(data_plot[i].yaxis); } )
-            .attr("r", 4)
+            .attr("r", 3)
             .style("fill", "#B71C1C" )
         ;
     }
