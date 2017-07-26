@@ -103,13 +103,13 @@ caret.app <- function(env){
         }
     }
 
-    if(!warning){
-        mysubset <- parseSubset(everything$zsubset)
-        if(is.null(mysubset)){
-            warning <- TRUE
-            result <- list(warning="Problem with subset.")
-        }
-    }
+    # if(!warning){
+    #     mysubset <- parseSubset(everything$zsubset)
+    #     if(is.null(mysubset)){
+    #         warning <- TRUE
+    #         result <- list(warning="Problem with subset.")
+    #     }
+    # }
 
     if(!warning){
         history <- everything$callHistory
@@ -143,7 +143,21 @@ caret.app <- function(env){
         print(setxCall)
 
         tryCatch({
+          ## 1. prepare mydata so that it is identical to the representation of the data in TwoRavens
+          mydata <- executeHistory(data=mydata, history=history)
+          write("mydata <- executeHistory(data=mydata, history=history)",mylogfile,append=TRUE)
 
+          # ## 2. additional subset of the data in the event that a user wants to estimate a model on the subset, but hasn't "selected" on the subset. that is, just brushed the region, does not press "Select", and presses "Estimate"
+          # usedata <- subsetData(data=mydata, sub=mysubset, varnames=myvars, plot=myplot)
+          # usedata <- refactor(usedata) # when data is subset, factors levels do not update, and this causes an error in zelig's setx(). refactor() is a quick fix
+          # write("usedata <- subsetData(data=mydata, sub=mysubset, varnames=myvars, plot=myplot)",mylogfile,append=TRUE)
+          # write("usedata <- refactor(usedata))",mylogfile,append=TRUE)
+
+            c.out <- zelig(formula=myformula, model=mymodel, data=usedata)   # maybe just pass variables being used?
+            almostCall<-paste(mymodel,"( ",deparse(myformula)," )",sep="")
+            write("z.out <- zelig(formula=myformula, model=mymodel, data=usedata)",mylogfile,append=TRUE)
+
+            print(summary(z.out))
         })
     }
 
