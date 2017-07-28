@@ -3181,7 +3181,7 @@ function drawMainGraph() {
 
 	$("#subsetLocationDivR").append('<div align="center"><table id="country_table" border="0" align="center"><tr><th id="country_table_th" class="country_table_odd"></th></tr><tr><td id="country_list" class="country_table_config country_table_even"></td></tr></table></div>');
     $("#country_table_th").append('<label align="right" id="Expand_Collapse_Country_Text" class="hide_label">Collapse</label>');
-    $("#country_table_th").append('<label>List of Selected Countries</label><label style="cursor:pointer"  onclick = "javascript:countryTableAction(\'Expand_Collapse\')"><span id="Exp_Col_Country_Icon" class="glyphicon glyphicon-resize-small btn btn-default"></span></label>');
+    $("#country_table_th").append('<label>Selected Countries</label><label style="cursor:pointer"  onclick = "javascript:countryTableAction(\'Expand_Collapse\')"><span id="Exp_Col_Country_Icon" class="glyphicon glyphicon-resize-small btn btn-default"></span></label>');
 
 	$("#country_list").append("<div style='height:300px; width:220px; overflow-y: scroll;'><table align='center' id='country_list_tab'></table></div>");
 
