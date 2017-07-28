@@ -3266,8 +3266,8 @@ function render(blnIsSubgraph, cid){
 					var rdata = new Object();
 					rdata.rid = rid;
 					rdata.rname = region;
-					rdata.freq = 1;
-					rdata.maxCFreq = d.freq;
+					rdata.freq = parseInt(d.freq);
+					rdata.maxCFreq = parseInt(d.freq);
 					rdata.countries = arr_countries;
 					rdata.country_names = arr_country_names;
 
@@ -3281,7 +3281,7 @@ function render(blnIsSubgraph, cid){
 
 					var currrid = map_location_rid_rname.get(region);
 					var rdata = arr_location_region_data[currrid];
-					var freq = rdata.freq + 1;
+					var freq = rdata.freq + parseInt(d.freq);
 					rdata.freq = freq;
 					rdata.countries.push(d);
 					rdata.country_names.push(d.cname);
