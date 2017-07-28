@@ -3188,7 +3188,7 @@ function drawMainGraph() {
 	mainGraphLabel();
 
 	var svg = d3.select("#main_graph_td").append("svg:svg")
-        .attr("width",  500)
+        .attr("width",  480)
         .attr("height", 350)
 		.attr("id", "main_graph_svg");
 
@@ -3463,7 +3463,7 @@ function constructSubgraph(cid) {
 	subGraphLabel(cid);
 
 	var svg = d3.select("#sub_graph_td_"+cid).append("svg:svg")
-       .attr("width",  500)
+       .attr("width",  480)
        .attr("height", 350)
 	   .attr("id", "sub_graph_td_svg_"+cid);
 
