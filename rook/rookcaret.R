@@ -123,14 +123,14 @@ caret.app <- function(env){
         }
     }
 
-    if(!warning){
-        mynoms <- everything$znom
-        myformula <- buildFormula(dv=mydv, linkagelist=myedges, varnames=NULL, nomvars=mynoms) 
-        if(is.null(myformula)){
-            warning <- TRUE
-            result<-list(warning="Problem constructing formula expression.")
-        }
-    }
+    # if(!warning){
+    #     mynoms <- everything$znom
+    #     myformula <- buildFormula(dv=mydv, linkagelist=myedges, varnames=NULL, nomvars=mynoms) 
+    #     if(is.null(myformula)){
+    #         warning <- TRUE
+    #         result<-list(warning="Problem constructing formula expression.")
+    #     }
+    # }
 
     if(warning){
         print(warning)
@@ -139,7 +139,7 @@ caret.app <- function(env){
 
 
     if(!warning){
-        print(myformula)
+        //print(myformula)
         print(setxCall)
 
         tryCatch({
@@ -153,11 +153,11 @@ caret.app <- function(env){
           # write("usedata <- subsetData(data=mydata, sub=mysubset, varnames=myvars, plot=myplot)",mylogfile,append=TRUE)
           # write("usedata <- refactor(usedata))",mylogfile,append=TRUE)
 
-            c.out <- zelig(formula=myformula, model=mymodel, data=usedata)   # maybe just pass variables being used?
-            almostCall<-paste(mymodel,"( ",deparse(myformula)," )",sep="")
-            write("z.out <- zelig(formula=myformula, model=mymodel, data=usedata)",mylogfile,append=TRUE)
+            #for caret, we should split the data and train it
+            c.model <- train(Species~., data=usedata, method=mymodel)   # maybe just pass variables being used?
+            write("c.model <- train(Species~., data=usedata, method=mymodel)",mylogfile,append=TRUE)
 
-            print(summary(z.out))
+            print(summary(c.model))
         })
     }
 
