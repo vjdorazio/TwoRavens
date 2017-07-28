@@ -1101,35 +1101,33 @@ display: inline;}
 .location_right {
 	width:auto;
 	position:absolute;
-    top:20px;
+    top:11px;
 	left:50%;
 }
 
 .location_left {
-    top:20px;
+    top:11px;
     width:220px;
 }
 
 #svg_graph_table tr:nth-child(odd) {
-    background: cyan;
+    background: #ADADAD;
 }
 
 #svg_graph_table tr:nth-child(even) {
-    background: #c4e3f3;
+    background: #ADADAD;
 }
 
 .country_table_odd {
-    background: cyan;
+    background: #ADADAD;
 }
 
 .country_table_even {
-    background: #c4e3f3;
+    background: #F9F9F9;
 }
 
 .strike_through:hover {
 	text-decoration: line-through;
-	background-color: steelblue;
-	color: white;
 }
 
 /*begin styling for actor*/
