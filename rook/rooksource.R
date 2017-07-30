@@ -113,6 +113,7 @@ if(production){
 
 if(!production){
     R.server$add(app = zelig.app, name = "zeligapp")
+    R.server$add(app = caret.app, name = "caretapp")
     R.server$add(app = subset.app, name="subsetapp")
     R.server$add(app = transform.app, name="transformapp")
     R.server$add(app = data.app, name="dataapp")
