@@ -2632,6 +2632,25 @@ function caretEstimate(btn) {
         .style("display", "block");
 
     }
+
+
+    function estimateFail(btn) {
+        estimateLadda.stop();  // stop spinner
+      estimated=true;
+    }
+    
+    // function selectorSuccess(btn, json) {
+    //     d3.select("#ticker")
+    //     .text("Suggested variables and percent improvement on RMSE: " + json.vars);
+    //    // console.log("selectorSuccess: ", json);
+    // }
+    
+    function selectorFail(btn) {
+        alert("Selector Fail");
+    }
+
+    estimateLadda.start();  // start spinner
+    makeCorsRequest(urlcall,btn, estimateSuccess, estimateFail, solajsonout); 
 }
 
 
