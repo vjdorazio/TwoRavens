@@ -3329,6 +3329,17 @@ function render(blnIsSubgraph, cid){
 				.attr("onclick",  function (d) { mapGraphSVG[d.rid] = null; return "javascript:constructSubgraph('"+d.rid+"')"; })
 				.attr("id", function(d) { return "tg_rect_" + d.rid; });
 
+            g.selectAll(".bar_click")
+                .data(arr_location_region_data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar_click")
+                .attr("height", y.bandwidth())
+                .attr("width", function(d) { return width - x(d.freq); })
+                .attr("x", function (d) { return x(d.freq);})
+                .attr("y", function (d) { return y(d.rname);})
+                .attr("onclick",  function (d) { return "javascript:constructSubgraph('"+d.rid+"')"; });
+
 			g.selectAll(".bar_label")
 				.data(arr_location_region_data)
 				.enter()
@@ -3386,6 +3397,7 @@ function render(blnIsSubgraph, cid){
 			.call(d3.axisBottom(x).ticks(5).tickFormat(function(d) { return parseInt(d); }).tickSizeInner([-height]));
 
 			g.append("g")
+                .attr("id", "y_axis_main")
 			.attr("class", "y axis")
 			.call(d3.axisLeft(y));
 
@@ -3399,12 +3411,23 @@ function render(blnIsSubgraph, cid){
 			.attr("y", function(d) {
 			mapSubGraphIdCname[d.cname] = cid + "_" + d.id;
 			if(mapListCountriesSelected[d.cname] == null) {mapListCountriesSelected[d.cname] = false;}
-			return y(d.cname) +  + (y.bandwidth() - d3.min([y.bandwidth(), MAX_HEIGHT]))/2; })
+			return y(d.cname) +  (y.bandwidth() - d3.min([y.bandwidth(), MAX_HEIGHT]))/2; })
 			.attr("width", function(d) { return x(d.freq); })
 			.attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; })
 			.attr("id", function(d) { return "tg_rect_" + cid + "_" + d.id; })
 			.append("svg:title")
 			.text(function(d) { return d.fullcname; });
+
+            g.selectAll(".bar_click")
+            .data(arr_countries)
+            .enter()
+            .append("rect")
+            .attr("class", "bar_click")
+            .attr("height", d3.min([y.bandwidth(), MAX_HEIGHT]))
+            .attr("width", function(d) { return width - x(d.freq); })
+            .attr("x", function (d) { return x(d.freq);})
+            .attr("y", function (d) { return y(d.cname) +  (y.bandwidth() - d3.min([y.bandwidth(), MAX_HEIGHT]))/2;})
+                .attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; });
 
 			g.selectAll(".bar_label")
 			.data(arr_countries)
