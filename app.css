@@ -1053,6 +1053,13 @@ display: inline;}
 	cursor: pointer;
 }
 
+.bar_click {
+    fill:white;
+    cursor: pointer;
+    opacity: 0;
+}
+
+
 .bar_all_selected {
 	fill: brown;
 	cursor: pointer;
