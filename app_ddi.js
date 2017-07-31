@@ -2470,6 +2470,8 @@ function zPop() {
     }
 }
 
+
+
 function estimate(btn) {
     
     if(production && zparams.zsessionid=="") {
@@ -2477,7 +2479,9 @@ function estimate(btn) {
         return;
     }
 
+    
     zPop();
+    console.log("estimate function after pop()");
     // write links to file & run R CMD
     
     //package the output as JSON
@@ -2494,6 +2498,8 @@ function estimate(btn) {
   
     zparams.allVars = valueKey.slice(10,25); // this is because the URL is too long...
     var jsonout = JSON.stringify(zparams);
+    console.log("jsonout",jsonout);
+
     //var selectorBase = rappURL+"selectorapp?solaJSON=";
     var selectorurlcall = rappURL+"selectorapp"; //.concat(jsonout);
     
@@ -2502,7 +2508,7 @@ function estimate(btn) {
         allResults.push(json);
        // console.log(allResults);
         //console.log("json in: ", json);
-        
+        console.log("estimate function after estimateSuccess()");
         var myparent = document.getElementById("results");
         if(estimated==false) {
             myparent.removeChild(document.getElementById("resultsHolder"));
@@ -2580,6 +2586,54 @@ function estimate(btn) {
 
     
 }
+
+
+//main function for caret model app
+function caretEstimate(btn) {
+    console.log("caretEstimate method called");
+    if (production && zparams.zsessionid == "") {
+        alert("Warning: Data download is not complete. Try again soon.");
+        return;
+    }
+
+    zPop();
+    console.log("caretEstimate zpop: ", zparams);
+
+    zparams.callHistory=callHistory;
+    var jsonout = JSON.stringify(zparams);
+    
+    //var base = rappURL+"caretapp?solaJSON="
+    urlcall = rappURL+"caretapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON="+jsonout;
+    console.log("POST out: ", solajsonout);
+
+    var jsonout = JSON.stringify(zparams);
+    console.log("jsonout",jsonout);
+
+    function caretEstimateSuccess(btn,json) {
+        console.log("caretEstimateSuccess method called");
+        estimateLadda.stop();  // stop spinner
+        allResults.push(json);
+        var json_explore = json;
+
+        var myparent = document.getElementById("results");
+        if(estimated==false) {
+            myparent.removeChild(document.getElementById("resultsHolder"));
+        }
+        
+        estimated=true;
+        d3.select("#results")
+        .style("display", "block");
+        
+        d3.select("#resultsView")
+        .style("display", "block");
+        
+        d3.select("#modelView")
+        .style("display", "block");
+
+    }
+}
+
 
 
 function dataDownload() {
