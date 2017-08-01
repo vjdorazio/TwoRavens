@@ -17,6 +17,7 @@
     <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 
     <script type="text/javascript" src="d3.v3.min.js"></script>
+
     <script type="text/javascript" src="plots.js"></script>
 
 </head>
@@ -242,14 +243,14 @@
             <div id="rightpanelcontent">
                 <div id="rightContentArea" style="overflow:scroll; height:500px; ">
                     <div id="modelView_Container"
-                         style="width: 100%; height: 10%; background-color: white; float: left; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
+                         style="width: 100%; height: auto; background-color: white; float: left; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
                         <div id="modelView"
-                             style="width:100%; height:auto; background-color:white; display:none; float:left;"></div>
+                             style="width:100%; height: 100%; background-color:white; display:none; float:left; overflow: auto;"></div>
                     </div>
 
 
                     <div id="result_left"
-                         style="width: 50%; height: 100%; float:left;background-color: white; display:none; border-right:groove; border-bottom: groove ;overflow:auto; white-space:nowrap; ">
+                         style="width: 50%; height: 90%; float:left;background-color: white; display:none; border-right:groove; border-bottom: groove ;overflow:auto; white-space:nowrap; ">
                         <!--div id="resultsView" class="container" style="width:100%; height: 100%; background-color:white; display:none; float:left; overflow:auto; white-space:nowrap; border-right: groove" -->
 
 
@@ -276,6 +277,9 @@
                     <div id="result_right" style="width: 50%;height: 90%; float: left; ">
                         <div id="resultsView_tabular" class="container1" ;
                              style="width:100%; height: 70%; background-color:white; display:none; float:left; overflow:auto; white-space:nowrap;border-right:groove; border-bottom: groove">
+
+
+
                         </div>
                         <div id="resultsView_statistics" class="container2" ;
                              style="width:100%; height: 30%; background-color:white; display:none; clear:left;  float:right;overflow:auto; white-space:nowrap;border-right: groove; border-bottom: groove;"></div>

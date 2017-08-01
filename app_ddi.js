@@ -711,72 +711,156 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
     });
 
 });
+//Kripanshu Bhargava density plot cross tab
 
-var data_cross=[];
-function crossTabDensityPlot(plotA,plotB,nameA,nameB)
+function crossTabDensityPlot(PlotA,PlotB,plotA_Name,plotB_Name)
 {
+    var data_cross=[];
+
+
+   d3.select("#resultsView_tabular").html("");
+    d3.select("#resultsView_tabular").select("svg_cross").remove();
+    d3.select("#resultsView_tabular").select("area").remove();
+
+
     var nanCount = 0;
     for (var i = 0; i < 1000; i++) {
-        if (isNaN(plotA[i]) || isNaN(plotB[i])) {
+        if (isNaN(PlotA[i]) || isNaN(PlotB[i])) {
             nanCount++;
         } else {
-            var newNumber1 = Math.floor(plotA[i]);
-            var newNumber2 = Math.floor(plotB[i]);
-            data_cross.push({xaxis: newNumber1, yaxis: newNumber2, score:i});
+            var newNumber1 = PlotA[i];
+            var newNumber2 =PlotB[i];
+            data_cross.push({xaxis:i, yaxis: newNumber1, y2axis: newNumber2 });
 
         }
 
 
     }
-    var margin = {top: 20, right: 20, bottom: 40, left: 50},
-        width = 575 - margin.left - margin.right,
-        height = 350 - margin.top - margin.bottom;
+    var min_x = d3.min(data_cross, function(d,i) { return data_cross[i].xaxis; });
+    var max_x = d3.max(data_cross, function(d,i) { return data_cross[i].xaxis; });
+    var avg_x = (max_x - min_x)/10;
+    var min_x2 = d3.min(data_cross, function(d,i) { return data_cross[i].xaxis; });
+    var max_x2 = d3.max(data_cross, function(d,i) { return data_cross[i].xaxis; });
+    var avg_x2 = (max_x2 - min_x2)/10;
+    var min_y = d3.min(data_cross, function(d,i) { return data_cross[i].yaxis; });
+    var max_y = d3.max(data_cross, function(d,i) { return data_cross[i].yaxis; });
+    var avg_y = (max_y - min_y)/10;
+    var min_y2 = d3.min(data_cross, function(d,i) { return data_cross[i].y2axis; });
+    var max_y2= d3.max(data_cross, function(d,i) { return data_cross[i].y2axis; });
+    var avg_y2 = (max_y2 - min_y2)/10;
 
-    var x = d3.scale.linear()
-        .domain([0, d3.max(data_cross, function(d) { return d.score; })])
-        .range([0, width]);
+    var data_tab = data_cross.map(function(d) {
+        return {
+            xAxis: d.xaxis,
+            yAxis: d.yaxis
+        };
+    });
+    var data_tab2 = data_cross.map(function(d) {
+        return {
+            xAxis: d.xaxis,
+            y2Axis: d.y2axis
+        };
+    });
 
-    var y = d3.scale.linear()
-        .domain([0, d3.max(data_cross, function(d) { return d.xaxis; })])
-        .range([height, 0]);
+    var margin_cross = { top: 20, right: 30, bottom: 100, left: 35 },
+        margin_cross2 = { top: 20, right: 8, bottom: 100, left: 300 },
+        width_cross = 300 - margin_cross.left - margin_cross.right,
+        width_cross2 = 320 - margin_cross2.left - margin_cross2.right,
+        height_cross= 250 - margin_cross.top - margin_cross.bottom,
+        height_cross2 = 250 - margin_cross2.top - margin_cross2.bottom;
+var padding_cross =35;
 
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
+    var x_cross = d3.scale.linear().range([0, width_cross]),
+        x_cross2 = d3.scale.linear().range([0, width_cross]),
+        y_cross = d3.scale.linear().range([height_cross, 0]),
+        y_cross2=d3.scale.linear().range([height_cross2,0]);
 
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left");
+    var xAxis1 = d3.svg.axis().scale(x_cross).orient("bottom"),
+        xAxis2 = d3.svg.axis().scale(x_cross2).orient("bottom"),
+        yAxis= d3.svg.axis().scale(y_cross).orient("left"),
+    yAxis2= d3.svg.axis().scale(y_cross2).orient("left");
 
 
     var area = d3.svg.area()
-        .x(function(d) { return x(d.x); })
-        .y0(height)
-        .y1(function(d) { return y(d.y); });
+        .interpolate("monotone")
+        .x(function (d) { return x_cross(d.xAxis); })
+        .y0(height_cross)
+        .y1(function (d) { return y_cross(d.yAxis); });
 
-    var svg = d3.select("#resultsView_tabular").append("svg:svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var area2= d3.svg.area()
+        .interpolate("monotone")
+        .x(function (d) { return x_cross2(d.xAxis); })
+        .y0(height_cross2)
+        .y1(function (d) { return y_cross2(d.y2Axis); });
 
-    svg.append("path")
-        .datum(data_cross)
+
+    var svg_cross = d3.select("#resultsView_tabular").append("svg")
+        .attr("width", width_cross + margin_cross.left + margin_cross.right)
+        .attr("height", height_cross + margin_cross.top + margin_cross.bottom);
+
+
+    var chart1 = svg_cross.append("g")
+        .attr("class", "chart1")
+        .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
+    var chart2 = svg_cross.append("g")
+        .attr("class", "chart2")
+        .attr("transform", "translate(" + margin_cross2.left + "," + margin_cross2.top + ")");
+    x_cross.domain([min_x-avg_x, max_x+avg_x]);
+    x_cross2.domain([min_x2-avg_x2, max_x2+avg_x2]);
+        y_cross.domain([min_y-avg_y, max_y+avg_y]);
+        y_cross2.domain([min_y2-avg_y2, max_y2+avg_y2]);
+       // y2.domain([0,d3.max(data_tab.map(function (d) { return d.y2axis; }))]);
+
+        chart1.append("path")
+        .datum(data_tab)
         .attr("class", "area")
         .attr("d", area);
 
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
 
-    svg.append("g")
+    chart2.append("path")
+        .datum(data_tab2)
+        .attr("class", "area")
+        .attr("d", area2);
+
+    chart1.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height_cross + ")")
+        .call(xAxis1);
+    chart2.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate("+ width_cross2+"," + (height_cross)+ ")")
+        .call(xAxis2);
+
+
+    chart1.append("g")
         .attr("class", "y axis")
         .call(yAxis);
+    chart2.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate("+ width_cross2+",0)")
+        .call(yAxis2);
+
+
+
+    chart1.append("text")
+        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+        .attr("transform", "translate("+ (width_cross/2) +","+(height_cross+padding_cross)+")")  // centre below axis
+        .text(plotA_Name)
+        .style("fill","#424242");
+    chart2.append("text")
+        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+        .attr("transform", "translate("+ (width_cross2+100) +","+(height_cross2+padding_cross)+")")  // centre below axis
+        .text(plotB_Name)
+        .style("fill","#424242");
+
 }
+
+//Kripanshu Bhargava bivariatePlot(Scatter plot)
 
 var data_plot = [];
 function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
+
+
     document.getElementById('scatterplot').style.display = "block";
     document.getElementById('NAcount').style.display = "block";
     d3.select("#scatterplot").html("");
@@ -823,6 +907,7 @@ console.log("bivariate plot called");
     var margin = {top: 20, right: 15, bottom: 40, left: 60}
         , width = 520 - margin.left - margin.right
         , height = 300 - margin.top - margin.bottom;
+    var padding=100;
 
     var min_x = d3.min(data_plot, function(d,i) { return data_plot[i].xaxis; });
     var max_x = d3.max(data_plot, function(d,i) { return data_plot[i].xaxis; });
@@ -897,6 +982,17 @@ console.log("bivariate plot called");
         .attr("r", 2)
         .style("fill", "#B71C1C" )
         ;
+    chart_scatter.append("text")
+        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+        .attr("transform", "translate("+ padding/5 +","+(height/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+        .text(y_Axis_name)
+        .style("fill","#424242");
+
+    chart_scatter.append("text")
+        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+        .attr("transform", "translate("+ (width/2) +","+(height+(padding/2))+")")  // centre below axis
+        .text(x_Axis_name)
+        .style("fill","#424242");
 
     function zoomed() {
         var panX = d3.event.translate[0];
@@ -1047,10 +1143,12 @@ function zoom(d) {
 
     d3.select("#NAcount").text("There are "+ nanCount + " number of NA values in the relation.");
    // document.getElementById('heatchart').style.display = "block";
-    heatmap();
+    heatmap( x_Axis_name, y_Axis_name);
 
 }
-function heatmap() {
+
+//Kripanshu Bhargava bivariatePlot(Heatmap)
+function heatmap( x_Axis_name, y_Axis_name) {
 
 
     d3.select("#heatChart").select("svg").remove();
@@ -1124,7 +1222,7 @@ function heatmap() {
     var margin_heat = {top: 30, right: 10, bottom: 60, left: 60},
         width_heat = 500 - margin_heat.left - margin_heat.right,
         height_heat = 300 - margin_heat.top - margin_heat.bottom;
-
+    var padding=100;
 
     var min_x = d3.min(data_plot, function(d,i) { return data_plot[i].xaxis; });
     var max_x = d3.max(data_plot, function(d,i) { return data_plot[i].xaxis; });
@@ -1214,8 +1312,23 @@ function heatmap() {
             .attr("transform", "rotate(-90)")
             .text("");
 
+    svg_heat.append("text")
+        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+        .attr("transform", "translate(-40,"+(height_heat/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+        .text(y_Axis_name)
+        .style("fill","#424242");
+
+    svg_heat.append("text")
+        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+        .attr("transform", "translate("+ (width_heat/2) +","+(height_heat+padding/4)+")")  // centre below axis
+        .text(x_Axis_name)
+        .style("fill","#424242");
+
 
 }
+
+
+//Kripanshu Bhargava bivariatePlot(linechart)
 function linechart()
 {
     document.getElementById('linechart').style.display = "block";
@@ -3363,7 +3476,7 @@ function explore(btn) {
             myparent.removeChild(document.getElementById("resultsHolder"));
         }
         d3.select("#modelView").html("");
-        d3.select("#resultsView_tabular").html("");
+     //   d3.select("#resultsView_tabular").html("");
         d3.select("#resultsView_statistics").html("");
 
         estimated = true;
@@ -3756,6 +3869,8 @@ function viz_explore(m, json_vizexplore, model_name_set) {
     }
 //console.log(" the x length is : "+ x_axis.length);
     //  console.log(" the x length is : "+ y_axis.length);
+    //document.getElementById('tabular_chart1').style.display = "block";
+    //document.getElementById('tabular_chart2').style.display = "block";
     document.getElementById('scatterplot').style.display = "none";
     bivariatePlot(x_axis, y_axis, get_data[0], get_data[1]);
     crossTabDensityPlot(x_axis,y_axis,get_data[0],get_data[1]);
