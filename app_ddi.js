@@ -2630,6 +2630,44 @@ function caretEstimate(btn) {
         
         d3.select("#modelView")
         .style("display", "block");
+        
+        // programmatic click on Results button
+        $("#btnResults").trigger("click");
+       
+        modelCount = modelCount+1;
+        var model = "Model".concat(modelCount);
+        
+        function modCol() {
+            d3.select("#modelView")
+            .selectAll("p")
+            .style('background-color', hexToRgba(varColor));
+        }
+        
+        modCol();
+        
+        d3.select("#modelView")
+        .insert("p",":first-child") // top stack for results
+        .attr("id",model)
+        .text(model)
+        .style('background-color', hexToRgba(selVarColor))
+        .on("click", function(){
+            var a = this.style.backgroundColor.replace(/\s*/g, "");
+            var b = hexToRgba(selVarColor).replace(/\s*/g, "");
+            if(a.substr(0,17)===b.substr(0,17)) {
+                return; //escapes the function early if the displayed model is clicked
+            }
+            modCol();
+            d3.select(this)
+            .style('background-color', hexToRgba(selVarColor));
+            viz(this.id);
+            });
+        
+        var rCall = [];
+        rCall[0] = json.call;
+        logArray.push("estimate: ".concat(rCall[0]));
+        showLog();
+        
+        viz(model);
 
     }
 
