@@ -794,64 +794,126 @@ var padding_cross =35;
         .y1(function (d) { return y_cross2(d.y2Axis); });
 
 
-    var svg_cross = d3.select("#resultsView_tabular").append("svg")
-        .attr("width", width_cross + margin_cross.left + margin_cross.right)
-        .attr("height", height_cross + margin_cross.top + margin_cross.bottom);
 
 
-    var chart1 = svg_cross.append("g")
-        .attr("class", "chart1")
-        .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
-    var chart2 = svg_cross.append("g")
-        .attr("class", "chart2")
-        .attr("transform", "translate(" + margin_cross2.left + "," + margin_cross2.top + ")");
-    x_cross.domain([min_x-avg_x, max_x+avg_x]);
-    x_cross2.domain([min_x2-avg_x2, max_x2+avg_x2]);
-        y_cross.domain([min_y-avg_y, max_y+avg_y]);
-        y_cross2.domain([min_y2-avg_y2, max_y2+avg_y2]);
-       // y2.domain([0,d3.max(data_tab.map(function (d) { return d.y2axis; }))]);
+     var svg_cross = d3.select("#resultsView_tabular").append("svg")
+            .attr("width", width_cross )
+            .attr("height", height_cross );
 
-        chart1.append("path")
-        .datum(data_tab)
-        .attr("class", "area")
-        .attr("d", area);
+    // make some buttons to drive our zoom
+    d3.select("#resultsView_tabular").append("g")
+        .attr("id","btnDiv")
+        .style('font-size','75%')
+        .style("width","200px")
+        .style("position","absolute")
+        .style("left", 2.2*margin_cross2.left + "px")
+        .style("top","330px")
 
-
-    chart2.append("path")
-        .datum(data_tab2)
-        .attr("class", "area")
-        .attr("d", area2);
-
-    chart1.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height_cross + ")")
-        .call(xAxis1);
-    chart2.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate("+ width_cross2+"," + (height_cross)+ ")")
-        .call(xAxis2);
+    d3.select("#btnDiv")[0][0].innerHTML = [
+        '<h5>Data Selection</h5>',
+        '<p>Enter the number of division of chart based upon density or distance.</p>'
+    ].join('\n')
 
 
-    chart1.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
-    chart2.append("g")
-        .attr("class", "y axis")
-        .attr("transform", "translate("+ width_cross2+",0)")
-        .call(yAxis2);
+    d3.select("#btnDiv")
+        .append("input")
+        .attr({
+            "id": "a",
+            "value": 0
+        }) .attr({
+        "type": "text",
+        "size": 3,
+        "autofocus": "true",
+        "inputmode": "numeric"
+    })
+        .style({
+            "text-align": "center",
+            "display": "inline-block",
+            "margin-right": "10px"
+        });
+
+
+    // style both of the inputs at once
+    // more on HTML5 <input> at https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
+    var btn = d3.select("#btnDiv").append("input").attr("type","button").attr("value","Equidistant").attr("onclick", printIt());
+
+    var btn1 = d3.select("#btnDiv").append("input").attr("type","button").attr("value","Equidensity").style("margin-left","10px").attr("onclick", printIt());
+
+
+    // fill the buttons with the year from the data assigned to them
+    btn.each(function (d) {
+        this.innerText = d;
+    })
+    btn1.each(function (d) {
+        this.innerText = d;
+    })
+
+function printIt() {
+        console.log("divide the data");
+
+}
 
 
 
-    chart1.append("text")
-        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-        .attr("transform", "translate("+ (width_cross/2) +","+(height_cross+padding_cross)+")")  // centre below axis
-        .text(plotA_Name)
-        .style("fill","#424242");
-    chart2.append("text")
-        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-        .attr("transform", "translate("+ (width_cross2+100) +","+(height_cross2+padding_cross)+")")  // centre below axis
-        .text(plotB_Name)
-        .style("fill","#424242");
+        var chart1 = svg_cross.append("g")
+            .attr("class", "chart1")
+            .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
+        var chart2 = svg_cross.append("g")
+            .attr("class", "chart2")
+            .attr("transform", "translate(" + margin_cross2.left + "," + margin_cross2.top + ")");
+
+
+
+        x_cross.domain([min_x-avg_x, max_x+avg_x]);
+        x_cross2.domain([min_x2-avg_x2, max_x2+avg_x2]);
+            y_cross.domain([min_y-avg_y, max_y+avg_y]);
+            y_cross2.domain([min_y2-avg_y2, max_y2+avg_y2]);
+           // y2.domain([0,d3.max(data_tab.map(function (d) { return d.y2axis; }))]);
+
+            chart1.append("path")
+            .datum(data_tab)
+            .attr("class", "area")
+            .attr("d", area);
+
+
+        chart2.append("path")
+            .datum(data_tab2)
+            .attr("class", "area")
+            .attr("d", area2);
+
+     /*   chart1.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height_cross + ")")
+            .call(xAxis1);
+        chart2.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate("+ width_cross2+"," + (height_cross)+ ")")
+            .call(xAxis2);
+
+
+        chart1.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+        chart2.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate("+ width_cross2+",0)")
+            .call(yAxis2);
+
+*/
+
+        chart1.append("text")
+            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+            .attr("transform", "translate("+ (width_cross/2) +","+(height_cross+padding_cross)+")")  // centre below axis
+            .text(plotA_Name)
+            .style("fill","#424242");
+        chart2.append("text")
+            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+            .attr("transform", "translate("+ (width_cross2+100) +","+(height_cross2+padding_cross)+")")  // centre below axis
+            .text(plotB_Name)
+            .style("fill","#424242");
+
+
+
 
 }
 
