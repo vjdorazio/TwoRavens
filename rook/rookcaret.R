@@ -38,10 +38,10 @@ caret.app <- function(env){
             warning <- TRUE
             result<-list(warning="No dependent variable selected.")
         }
-        if(length(mydv) > 1){
-            warning <- TRUE
-            result<-list(warning="Too many dependent variable selected.")
-        }
+        # if(length(mydv) > 1){
+        #     warning <- TRUE
+        #     result<-list(warning="Too many dependent variable selected.")
+        # }
     }
 
     #for model selection
@@ -158,6 +158,9 @@ caret.app <- function(env){
             write("c.model <- train(Species~., data=usedata, method=mymodel)",mylogfile,append=TRUE)
 
             print(summary(c.model))
+            write(result, "myresult.json")
+            response$write(result)
+            response$finish()
         })
     }
 
