@@ -139,7 +139,7 @@ caret.app <- function(env){
 
 
     if(!warning){
-        //print(myformula)
+        #print(myformula)
         print(setxCall)
 
         tryCatch({
