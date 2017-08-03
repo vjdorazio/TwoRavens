@@ -53,13 +53,13 @@ caret.app <- function(env){
         }
     }
     
-    if(!warning){
-        mymodelcount <- everything$zmodelcount
-        if(identical(mymodelcount,"")){
-            warning <- TRUE
-            result<-list(warning="No model count.")
-        }
-    }
+#     if(!warning){
+#         mymodelcount <- everything$zmodelcount
+#         if(identical(mymodelcount,"")){
+#             warning <- TRUE
+#             result<-list(warning="No model count.")
+#         }
+#     }
 
     #other things happened
     if(!warning){
