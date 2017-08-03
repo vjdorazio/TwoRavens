@@ -2605,7 +2605,8 @@ function caretEstimate(btn) {
     //var base = rappURL+"caretapp?solaJSON="
     urlcall = rappURL+"caretapp"; //base.concat(jsonout);
     var solajsonout = "solaJSON="+jsonout;
-    console.log("POST out: ", solajsonout);
+    console.log("urlcall out: ", urlcall);
+    //console.log("POST out: ", solajsonout);
 
     var jsonout = JSON.stringify(zparams);
     console.log("jsonout",jsonout);
@@ -2614,7 +2615,7 @@ function caretEstimate(btn) {
         console.log("caretEstimateSuccess method called");
         estimateLadda.stop();  // stop spinner
         allResults.push(json);
-        var json_explore = json;
+        //var json_explore = json;
 
         var myparent = document.getElementById("results");
         if(estimated==false) {
@@ -2664,7 +2665,7 @@ function caretEstimate(btn) {
         
         var rCall = [];
         rCall[0] = json.call;
-        logArray.push("estimate: ".concat(rCall[0]));
+        logArray.push("caretEstimate: ".concat(rCall[0]));
         showLog();
         
         viz(model);
@@ -2672,9 +2673,9 @@ function caretEstimate(btn) {
     }
 
 
-    function estimateFail(btn) {
+    function caretEstimateFail(btn) {
         estimateLadda.stop();  // stop spinner
-      estimated=true;
+        estimated=true;
     }
     
     // function selectorSuccess(btn, json) {
@@ -2683,12 +2684,12 @@ function caretEstimate(btn) {
     //    // console.log("selectorSuccess: ", json);
     // }
     
-    function selectorFail(btn) {
-        alert("Selector Fail");
-    }
+    // function selectorFail(btn) {
+    //     alert("Selector Fail");
+    // }
 
     estimateLadda.start();  // start spinner
-    makeCorsRequest(urlcall,btn, estimateSuccess, estimateFail, solajsonout); 
+    makeCorsRequest(urlcall, btn, caretEstimateSuccess, caretEstimateFail, solajsonout); 
 }
 
 
@@ -3189,7 +3190,7 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonstring) {
     xhr.onload = function() {
         
       var text = xhr.responseText;
-      //console.log("text ", text);
+      console.log("text ", text);
         
         try {
             var json = JSON.parse(text);   // should wrap in try / catch
