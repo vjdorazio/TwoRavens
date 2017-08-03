@@ -53,13 +53,13 @@ caret.app <- function(env){
         }
     }
     
-#     if(!warning){
-#         mymodelcount <- everything$zmodelcount
-#         if(identical(mymodelcount,"")){
-#             warning <- TRUE
-#             result<-list(warning="No model count.")
-#         }
-#     }
+    if(!warning){
+        mymodelcount <- everything$zmodelcount
+        if(identical(mymodelcount,"")){
+            warning <- TRUE
+            result<-list(warning="No model count.")
+        }
+    }
 
     #other things happened
     if(!warning){
@@ -158,10 +158,11 @@ caret.app <- function(env){
             write("c.model <- train(Species~., data=usedata, method=mymodel)",mylogfile,append=TRUE)
 
             print(summary(c.model))
-            write(result, "myresult.json")
-            response$write(result)
-            response$finish()
+            
         })
     }
 
+    write(result, "myresult.json")
+    response$write(result)
+    response$finish()
 }
