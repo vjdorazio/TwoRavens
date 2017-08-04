@@ -1232,10 +1232,12 @@ div.actorTab button.active {
 	border: 1px solid #ADADAD;
 }
 
-
-
 .actorBottom {
+	margin-top:-2px;
+}
 
+.actorNewGroup {
+	float: right;
 }
 
 .actorHead4 {
@@ -1275,9 +1277,9 @@ div.actorTab button.active {
 }
 
 #editGroupName {
-	display: none;
+	display: inline-block;
 	text-align: center;
-	margin: 0 auto;
+	width: 250px;
 	font-size: 16px;
 	font-weight: 500;
 	line-height: 1.1;
@@ -1287,5 +1289,59 @@ div.actorTab button.active {
 	border-image-width: 0;
 	outline: none;
 	box-shadow: none;
+	background-color: #F9F9F9;
+
+	top:0px;
+}
+
+#deleteGroup {
+	display: inline-block;
+	float: right;
+	border: 0px;
+	height: 17px;
+
+	top:0px;
+}
+
+/*styling for link SVG*/
+#actorLinkSVG {
+  background-color: #FFF;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+path.link {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3px;
+	cursor: pointer;
+}
+
+path.link.dragline {
+  pointer-events: none;
+}
+
+path.link.hidden {
+  stroke-width: 0;
+}
+
+
+circle.node {
+  stroke-width: 1.5px;
+  cursor: pointer;
+}
+
+text {
+  font: 12px sans-serif;
+  pointer-events: none;
+}
+
+text.id {
+  text-anchor: middle;
+  font-weight: bold;
 }
 /*end styling for actor*/
