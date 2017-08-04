@@ -762,24 +762,30 @@ function crossTabDensityPlot(PlotA,PlotB,plotA_Name,plotB_Name)
         };
     });
 
-    var margin_cross = { top: 20, right: 30, bottom: 100, left: 35 },
-        margin_cross2 = { top: 20, right: 8, bottom: 100, left: 300 },
+
+    var margin_cross = { top: 20, right: 30, bottom: 100, left: 30 },
+        margin_cross2 = { top: 20, right: 8, bottom: 100, left: 290 },
         width_cross = 300 - margin_cross.left - margin_cross.right,
-        width_cross2 = 320 - margin_cross2.left - margin_cross2.right,
-        height_cross= 250 - margin_cross.top - margin_cross.bottom,
-        height_cross2 = 250 - margin_cross2.top - margin_cross2.bottom;
-var padding_cross =35;
+        width_cross2 = 300 - margin_cross2.left - margin_cross2.right,
+        height_cross= 240 - margin_cross.top - margin_cross.bottom,
+        height_cross2 = 240 - margin_cross2.top - margin_cross2.bottom;
+    var padding_cross =35;
 
     var x_cross = d3.scale.linear().range([0, width_cross]),
         x_cross2 = d3.scale.linear().range([0, width_cross]),
         y_cross = d3.scale.linear().range([height_cross, 0]),
         y_cross2=d3.scale.linear().range([height_cross2,0]);
 
-    var xAxis1 = d3.svg.axis().scale(x_cross).orient("bottom"),
-        xAxis2 = d3.svg.axis().scale(x_cross2).orient("bottom"),
+    var xAxis1 = d3.svg.axis().scale(x_cross).orient("bottom")
+            .ticks(5),
+        xAxis2 = d3.svg.axis().scale(x_cross2).orient("bottom")
+            .ticks(5),
         yAxis= d3.svg.axis().scale(y_cross).orient("left"),
-    yAxis2= d3.svg.axis().scale(y_cross2).orient("left");
+         yAxis2= d3.svg.axis().scale(y_cross2).orient("left");
 
+    var brush = d3.svg.brush()
+        .x(x_cross2)
+        .on("brush", brushed);
 
     var area = d3.svg.area()
         .interpolate("monotone")
@@ -807,8 +813,14 @@ var padding_cross =35;
         .style("width","200px")
         .style("position","absolute")
         .style("left", 2.2*margin_cross2.left + "px")
-        .style("top","330px")
-
+        .style("top","330px");
+    d3.select("#resultsView_tabular").append("g")
+        .attr("id","btnDiv1")
+        .style('font-size','75%')
+        .style("width","200px")
+        .style("position","absolute")
+        .style("left", 2.6*margin_cross2.left + "px")
+        .style("top","392px");
     d3.select("#btnDiv")[0][0].innerHTML = [
         '<h5>Data Selection</h5>',
         '<p>Enter the number of division of chart based upon density or distance.</p>'
@@ -833,20 +845,27 @@ var padding_cross =35;
         });
 
 
+
     // style both of the inputs at once
     // more on HTML5 <input> at https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
-    var btn = d3.select("#btnDiv").append("input").attr("type","button").attr("value","Equidistant").attr("onclick", printIt());
+    var btns = d3.select("#btnDiv").selectAll("button").data(["EquiDistant"])
+    btns = btns.enter().append("button").style("display","inline-block")
 
-    var btn1 = d3.select("#btnDiv").append("input").attr("type","button").attr("value","Equidensity").style("margin-left","10px").attr("onclick", printIt());
+    // fill the buttons with the year from the data assigned to them
+    btns.each(function (d) {
+        this.innerText = d;
+    });
+    var btns1 = d3.select("#btnDiv1").selectAll("button").data(["EquiMass"])
+    btns1 = btns1.enter().append("button").style("display","inline-block")
+
+    // fill the buttons with the year from the data assigned to them
+    btns1.each(function (d) {
+        this.innerText = d;
+    });
 
 
     // fill the buttons with the year from the data assigned to them
-    btn.each(function (d) {
-        this.innerText = d;
-    })
-    btn1.each(function (d) {
-        this.innerText = d;
-    })
+
 
 function printIt() {
         console.log("divide the data");
@@ -866,8 +885,8 @@ function printIt() {
 
         x_cross.domain([min_x-avg_x, max_x+avg_x]);
         x_cross2.domain([min_x2-avg_x2, max_x2+avg_x2]);
-            y_cross.domain([min_y-avg_y, max_y+avg_y]);
-            y_cross2.domain([min_y2-avg_y2, max_y2+avg_y2]);
+            y_cross.domain([min_y, max_y+avg_y]);
+            y_cross2.domain([min_y2, max_y2+avg_y2]);
            // y2.domain([0,d3.max(data_tab.map(function (d) { return d.y2axis; }))]);
 
             chart1.append("path")
@@ -881,25 +900,25 @@ function printIt() {
             .attr("class", "area")
             .attr("d", area2);
 
-     /*   chart1.append("g")
+       chart1.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height_cross + ")")
             .call(xAxis1);
         chart2.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate("+ width_cross2+"," + (height_cross)+ ")")
+            .attr("transform", "translate("+ (width_cross2)+"," + (height_cross)+ ")")
             .call(xAxis2);
+    /*
 
+            chart1.append("g")
+                .attr("class", "y axis")
+                .call(yAxis);
+            chart2.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate("+ width_cross2+",0)")
+                .call(yAxis2);
 
-        chart1.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
-        chart2.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate("+ width_cross2+",0)")
-            .call(yAxis2);
-
-*/
+    */
 
         chart1.append("text")
             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
@@ -913,6 +932,63 @@ function printIt() {
             .style("fill","#424242");
 
 
+
+    // call drawBrush once on load with the default value
+    var zoomA = d3.select("input#a")[0][0].value;
+
+    drawBrush(zoomA);
+
+    // update the extent and call drawBrush again
+    window.setTimeout(function() {
+        d3.select("input#a")[0][0].value = .2;
+
+        var zoomA = d3.select("input#a")[0][0].value;
+
+        drawBrush(zoomA)
+    }, 2500);
+
+    btns.on("click", function(){
+        zoomA = d3.select("input#a")[0][0].value; // the d3 selection returns a DOM element wrapped in two arrays, hence the [0][0]
+        console.log("zoomA", zoomA)
+
+        drawBrush(zoomA);
+    });
+    // update the extent and call drawBrush again
+
+
+
+
+    function drawBrush(a, b) {
+        // define our brush extent
+
+        // note that x0 and x1 refer to the lower and upper bound of the brush extent
+        // while x2 refers to the scale for the second x-axis, for the context or brush area.
+        // unfortunate variable naming :-/
+        var x0 = x_cross.invert(a*width_cross)
+        var x1 = x_cross.invert(b*width_cross)
+        console.log("x0", x0)
+        console.log("x1", x1)
+        brush.extent([x0, x1])
+
+        // now draw the brush to match our extent
+        // use transition to slow it down so we can see what is happening
+        // set transition duration to 0 to draw right away
+        brush(d3.select(".brush").transition().duration(500));
+
+        // now fire the brushstart, brushmove, and brushend events
+        // set transition the delay and duration to 0 to draw right away
+        brush.event(d3.select(".brush").transition().delay(1000).duration(500))
+
+    }
+
+
+
+
+    function brushed() {
+    x.domain(brush.empty() ? x_cross.domain() : brush.extent());
+    focus.select(".area").attr("d", area);
+    focus.select(".x.axis").call(xAxis1);
+}
 
 
 }
