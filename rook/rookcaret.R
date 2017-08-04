@@ -36,7 +36,7 @@ caret.app <- function(env){
         mydv <- everything$zdv
         if(length(mydv) == 0){
             warning <- TRUE
-            result<-list(warning="No dependent variable selected.")
+            result<-list(warning="No relative variable selected.")
         }
         # if(length(mydv) > 1){
         #     warning <- TRUE
@@ -162,7 +162,7 @@ caret.app <- function(env){
         })
     }
 
-    write(result, "myresult.json")
+    write(result, "output/myresult.json")
     response$write(result)
     response$finish()
 }
