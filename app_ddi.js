@@ -784,8 +784,11 @@ function crossTabDensityPlot(PlotA,PlotB,plotA_Name,plotB_Name)
          yAxis2= d3.svg.axis().scale(y_cross2).orient("left");
 
     var brush = d3.svg.brush()
-        .x(x_cross2)
+        .x(x_cross)
         .on("brush", brushed);
+    var brush1 = d3.svg.brush()
+        .x(x_cross2)
+        .on("brush", brushed1);
 
     var area = d3.svg.area()
         .interpolate("monotone")
@@ -897,7 +900,7 @@ function printIt() {
 
         chart2.append("path")
             .datum(data_tab2)
-            .attr("class", "area")
+            .attr("class", "area2")
             .attr("d", area2);
 
        chart1.append("g")
@@ -919,7 +922,9 @@ function printIt() {
                 .call(yAxis2);
 
     */
-
+    var zoomA = d3.select("input#a")[0][0].value;
+    drawBrush1(zoomA, 90);
+    drawBrush(zoomA, 90);
         chart1.append("text")
             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
             .attr("transform", "translate("+ (width_cross/2) +","+(height_cross+padding_cross)+")")  // centre below axis
@@ -931,31 +936,32 @@ function printIt() {
             .text(plotB_Name)
             .style("fill","#424242");
 
-
-
-    // call drawBrush once on load with the default value
-    var zoomA = d3.select("input#a")[0][0].value;
-
-    drawBrush(zoomA);
-
-    // update the extent and call drawBrush again
-    window.setTimeout(function() {
-        d3.select("input#a")[0][0].value = .2;
-
-        var zoomA = d3.select("input#a")[0][0].value;
-
-        drawBrush(zoomA)
-    }, 2500);
+    chart1.append("g")
+        .attr("class", "x brush")
+        .call(brush)
+        .selectAll("rect")
+        .attr("y", 0.1)
+        .attr("height", height_cross );
+    chart2.append("g")
+        .attr("class", "x brush1")
+        .call(brush1)
+        .selectAll("rect")
+        .attr("y", 0.1)
+        .attr("height", height_cross2 );
 
     btns.on("click", function(){
         zoomA = d3.select("input#a")[0][0].value; // the d3 selection returns a DOM element wrapped in two arrays, hence the [0][0]
         console.log("zoomA", zoomA)
 
-        drawBrush(zoomA);
+        drawBrush(zoomA, 90);
     });
-    // update the extent and call drawBrush again
 
+    btns1.on("click", function(){
+        zoomA = d3.select("input#a")[0][0].value; // the d3 selection returns a DOM element wrapped in two arrays, hence the [0][0]
+        console.log("zoomA", zoomA)
 
+        drawBrush1(zoomA, 90);
+    });
 
 
     function drawBrush(a, b) {
@@ -964,8 +970,8 @@ function printIt() {
         // note that x0 and x1 refer to the lower and upper bound of the brush extent
         // while x2 refers to the scale for the second x-axis, for the context or brush area.
         // unfortunate variable naming :-/
-        var x0 = x_cross.invert(a*width_cross)
-        var x1 = x_cross.invert(b*width_cross)
+        var x0 = x_cross.invert(a)
+        var x1 = x_cross.invert(b)
         console.log("x0", x0)
         console.log("x1", x1)
         brush.extent([x0, x1])
@@ -977,18 +983,48 @@ function printIt() {
 
         // now fire the brushstart, brushmove, and brushend events
         // set transition the delay and duration to 0 to draw right away
-        brush.event(d3.select(".brush").transition().delay(1000).duration(500))
+
+
+    }
+
+    function drawBrush1(a, b) {
+        // define our brush extent
+
+        // note that x0 and x1 refer to the lower and upper bound of the brush extent
+        // while x2 refers to the scale for the second x-axis, for the context or brush area.
+        // unfortunate variable naming :-/
+        var x0 = x_cross2.invert(a)
+        var x1 = x_cross2.invert(b)
+        console.log("x0", x0)
+        console.log("x1", x1)
+        brush1.extent([x0, x1])
+
+        // now draw the brush to match our extent
+        // use transition to slow it down so we can see what is happening
+        // set transition duration to 0 to draw right away
+        brush1(d3.select(".brush").transition().duration(500));
+
+        // now fire the brushstart, brushmove, and brushend events
+        // set transition the delay and duration to 0 to draw right away
+
 
     }
 
 
 
-
     function brushed() {
-    x.domain(brush.empty() ? x_cross.domain() : brush.extent());
-    focus.select(".area").attr("d", area);
-    focus.select(".x.axis").call(xAxis1);
-}
+        x_cross.domain(brush.empty() ? x_cross.domain()-padding_cross : brush.extent());
+        chart1.select(".area").attr("d", area);
+        chart1.select(".x_axis1").call(xAxis1);
+    }
+
+
+    function brushed1() {
+        x_cross2.domain(brush1.empty() ? x_cross2.domain()-padding_cross : brush1.extent());
+        chart2.select(".area2").attr("d", area2);
+        chart2.select(".x_axis2").call(xAxis2);
+    }
+
 
 
 }

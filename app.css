@@ -480,13 +480,52 @@ div#linechart .area{
 
 div#resultsView_tabular .line {
     fill: none;
-    stroke: steelblue;
+    stroke: #E53935;
     stroke-width: 2px;
 }
 
 div#resultsView_tabular .area {
     fill:#E53935;
 }
+div#resultsView_tabular  .path {
+    fill: #EF5350;
+    fill-opacity: .9;
+
+}
+div#resultsView_tabular  .area2 {
+    fill: #EF5350;
+    fill-opacity: .9;
+
+}
+
+div#resultsView_tabular  .axis1 path,
+div#resultsView_tabular  .axis1 line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+div#resultsView_tabular  .axis2 path,
+div#resultsView_tabular  .axis2 line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+div#resultsView_tabular  .brush .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+}
+div#resultsView_tabular  .brush1 .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+}
+
+div#resultsView_tabular  #btnDiv {
+    fill: #fff;
+}
+
 
 
 
