@@ -102,10 +102,16 @@ var taggedColor = '#f5f5f5';    //d3.rgb("whitesmoke");
 var d3Color = '#1f77b4';  // d3's default blue
 var grayColor = '#c0c0c0';
 
-var lefttab = "tab1"; //global for current tab in left panel
 var subsetSelection = "";
 var selectedVariables = new Set();
 
+// localStorage.removeItem('selectedVariables');
+
+// Create the rightpanel data tree
+if (localStorage.getItem("selectedVariables") !== null) {
+    // If the user has already submitted a query, restore the previous query from local data
+    selectedVariables = new Set(JSON.parse(localStorage.getItem('selectedVariables')));
+}
 var righttab = "btnModels"; // global for current tab in right panel
 
 var zparams = { zdata:[], zedges:[], ztime:[], znom:[], zcross:[], zmodel:"", zvars:[], zdv:[], zdataurl:"", zsubset:[], zsetx:[], zmodelcount:0, zplot:[], zsessionid:"", zdatacite:"", zmetadataurl:"", zusername:""};
@@ -543,44 +549,56 @@ function scaffolding(callback) {
 
 //alert("scaffoldingflag"+flag);
 
-eventlist=new Array(20)
-    .join().split(',')
-    .map(function(item, index){ return ++index;})
+    eventlist = new Array(20)
+        .join().split(',')
+        .map(function (item, index) {
+            return ++index;
+        });
 
     // console.log(eventlist);
     //populating event type
-		d3.select("#tab5").selectAll("p")
-    .data(eventlist)
-    .enter()
-    .append("p")
-    // .attr("id",function(d){
-    //     return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
-    //     }) // perhapse ensure this id is unique by adding '_' to the front?
-    .text(function(d){return d;})
-    .style('background-color',function(d) {
-         //if(findNodeIndex(d) > 2) {return varColor;}
-         //else {
-                return hexToRgba(selVarColor);
-               })
-    .attr("data-container", "body")
-    .attr("data-toggle", "popover")
-    .attr("data-trigger", "hover")
-    .attr("data-placement", "center")
-    .attr("data-html", "true")
-    .attr("onmouseover", "$(this).popover('toggle');")
-    .attr("onmouseout", "$(this).popover('toggle');")
-    .attr("data-original-title", "Summary Statistics");
+    d3.select("#tab5").selectAll("p")
+        .data(eventlist)
+        .enter()
+        .append("p")
+        // .attr("id",function(d){
+        //     return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
+        //     }) // perhapse ensure this id is unique by adding '_' to the front?
+        .text(function (d) {
+            return d;
+        })
+        .style('background-color', function (d) {
+            //if(findNodeIndex(d) > 2) {return varColor;}
+            //else {
+            return hexToRgba(selVarColor);
+        })
+        .attr("data-container", "body")
+        .attr("data-toggle", "popover")
+        .attr("data-trigger", "hover")
+        .attr("data-placement", "center")
+        .attr("data-html", "true")
+        .attr("onmouseover", "$(this).popover('toggle');")
+        .attr("onmouseout", "$(this).popover('toggle');")
+        .attr("data-original-title", "Summary Statistics");
 
     // console.log(valueKey);
     d3.select("#variableList").selectAll("p") 			//do something with this..
-		.data(valueKey)
-		.enter()
-		.append("p")
-		.attr("id",function(d){
-			  return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
-			  }) // perhapse ensure this id is unique by adding '_' to the front?
-		.text(function(d){return d;})
-		.style('background-color', hexToRgba(varColor))
+        .data(valueKey)
+        .enter()
+        .append("p")
+        .attr("id", function (d) {
+            return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
+        }) // perhapse ensure this id is unique by adding '_' to the front?
+        .text(function (d) {
+            return d;
+        })
+        .style('background-color', function () {
+            if (selectedVariables.has(d3.select(this).text())) {
+                return hexToRgba(selVarColor)
+            } else {
+                return hexToRgba(varColor)
+            }
+        })
         .attr("data-container", "body")
         .attr("data-toggle", "popover")
         .attr("data-trigger", "hover")
@@ -590,9 +608,9 @@ eventlist=new Array(20)
         .attr("onmouseover", "$(this).popover('toggle');")
         .attr("onmouseout", "$(this).popover('toggle');")
         .attr("data-original-title", "Summary Statistics")
-        .on("click", function (){
+        .on("click", function () {
             var variableName = d3.select(this).text();
-            var currentColor = d3.select(this).style('background-color') == hexToRgba(varColor) ? hexToRgba(selVarColor)  : hexToRgba(varColor) ;
+            var currentColor = d3.select(this).style('background-color') == hexToRgba(varColor) ? hexToRgba(selVarColor) : hexToRgba(varColor);
 
             if (currentColor === hexToRgba(selVarColor)) {
                 selectedVariables.add(variableName);
@@ -603,6 +621,7 @@ eventlist=new Array(20)
             }
 
             d3.select(this).style("background-color", currentColor);
+            // This updates the listing in the right panel
             reloadVariables();
         });
 
@@ -805,56 +824,78 @@ $("#searchvar").on("keyup", function search(e) {
 
 });
 
-	function updatedata(value,flag)
-	{
-	var clr='#000000' ;
+function updatedata(value, flag) {
+    var clr = '#000000';
 
-	var nodename=[];
-	var bordercol='#000000';
-	var borderstyle='solid';
-	for(var i=0;i<nodes.length;i++)
-	{
-		nodename[i]=nodes[i].name;
-	}
+    var nodename = [];
+    var bordercol = '#000000';
+    var borderstyle = 'solid';
+    for (var i = 0; i < nodes.length; i++) {
+        nodename[i] = nodes[i].name;
+    }
 
-	d3.select("#variableList").selectAll("p").data(valueKey).remove();
+    d3.select("#variableList").selectAll("p").data(valueKey).remove();
 
-	d3.select("#variableList").selectAll("p")
-		//do something with this..
+    d3.select("#variableList").selectAll("p")
+    //do something with this..
 
-		.data(value)
-		.enter()
-		.append("p")
-		.attr("id",function(d){
-			  return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
-			  }) // perhapse ensure this id is unique by adding '_' to the front?
-		.text(function(d){return d;})
-		.style('background-color',function(d) {
-			  if($.inArray(findNode(d).name,nodename)==-1) {return varColor;}
+        .data(value)
+        .enter()
+        .append("p")
+        .attr("id", function (d) {
+            return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
+        }) // perhapse ensure this id is unique by adding '_' to the front?
+        .text(function (d) {
+            return d;
+        })
+        .style('background-color', function (d) {
+            if (selectedVariables.has(d3.select(this).text())) {
+                return hexToRgba(selVarColor)
+            } else {
+                return hexToRgba(varColor)
+            }
+        }).style('border-style', function (d) {
+        if ($.inArray(findNodeIndex(d), srchid) != -1 && flag == 1) {
+            return borderstyle;
+        }
+        })
+        .style('border-color', function (d) {
+            if ($.inArray(findNodeIndex(d), srchid) != -1 && flag == 1) {
+                return bordercol;
+            }
+        })
+        .attr("data-container", "body")
+        .attr("data-toggle", "popover")
+        .attr("data-trigger", "hover")
+        .attr("data-placement", "right")
+        .attr("data-html", "true")
+        .attr("onmouseover", "$(this).popover('toggle');")
+        .attr("onmouseout", "$(this).popover('toggle');")
+        .attr("data-original-title", "Summary Statistics")
+        .on("click", function () {
+            var variableName = d3.select(this).text();
+            var currentColor = d3.select(this).style('background-color') == hexToRgba(varColor) ? hexToRgba(selVarColor) : hexToRgba(varColor);
 
-			   else {return hexToRgba(selVarColor);}
-			   }).style('border-style',function(d){
-				   if($.inArray(findNodeIndex(d),srchid)!=-1 && flag==1){return borderstyle;}
-			   })
-			   .style('border-color',function(d){
-				   if($.inArray(findNodeIndex(d),srchid)!=-1 && flag==1){return bordercol;}
-			   })
-    .attr("data-container", "body")
-    .attr("data-toggle", "popover")
-    .attr("data-trigger", "hover")
-    .attr("data-placement", "right")
-    .attr("data-html", "true")
-    .attr("onmouseover", "$(this).popover('toggle');")
-    .attr("onmouseout", "$(this).popover('toggle');")
-    .attr("data-original-title", "Summary Statistics");
+            if (currentColor === hexToRgba(selVarColor)) {
+                selectedVariables.add(variableName);
+            } else {
+                if (selectedVariables.has(variableName)) {
+                    selectedVariables.delete(variableName);
+                }
+            }
+
+            d3.select(this).style("background-color", currentColor);
+            // This updates the listing in the right panel
+            reloadVariables();
+        });
 
 	fakeClick();
 
 	$("#tab1").children().popover('hide');
 	populatePopover();
 
-	addlistener(nodes);
-
+    // I commented this out... Michael Shoemate (Shoeboxam)
+    // addlistener(nodes);
 
 	}
 
@@ -968,98 +1009,97 @@ makeCorsRequest(urlcall, btn, writesuccess, writefail, solajsonout);
             mousedown_link = null;
         }
 
-	//ROHIT BHATTACHARJEE ad listener function
-	function addlistener(nodes){
-	d3.select("#variableList").selectAll("p")
-    .on("mouseover", function(d) {
+//ROHIT BHATTACHARJEE ad listener function
+function addlistener(nodes){
+    d3.select("#variableList").selectAll("p")
+        .on("mouseover", function(d) {
 
-		// REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
-        $("body div.popover")
-        .addClass("variables");
-        $("body div.popover div.popover-content")
-        .addClass("form-horizontal");
-         })
-    .on("mouseout", function() {
+            // REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
+            $("body div.popover")
+                .addClass("variables");
+            $("body div.popover div.popover-content")
+                .addClass("form-horizontal");
+        })
+        .on("mouseout", function() {
 
-										//Remove the tooltip
-											//d3.select("#tooltip").style("display", "none");
+            //Remove the tooltip
+            //d3.select("#tooltip").style("display", "none");
         })
 
 
-    .on("click", function varClick(){
-        if(allNodes[findNodeIndex(this.id)].grayout) {return null;}
+        .on("click", function varClick(){
+            if(allNodes[findNodeIndex(this.id)].grayout) {return null;}
 
-        d3.select(this)
-        .style('background-color',function(d) {
-               var myText = d3.select(this).text();
-               var myColor = d3.select(this).style('background-color');
-               var mySC = allNodes[findNodeIndex(myText)].strokeColor;
-               var myNode = allNodes[findNodeIndex(this.id)];
+            d3.select(this)
+                .style('background-color',function(d) {
+                    var myText = d3.select(this).text();
+                    var myColor = d3.select(this).style('background-color');
+                    var mySC = allNodes[findNodeIndex(myText)].strokeColor;
+                    var myNode = allNodes[findNodeIndex(this.id)];
 
-               	//console.log("inside SC wala if");
-               //	SC=timeColor;
+                    //console.log("inside SC wala if");
+                    //   SC=timeColor;
 
-               zparams.zvars = []; //empty the zvars array
-               if(d3.rgb(myColor).toString() === varColor.toString()) {	// we are adding a var
+                    zparams.zvars = []; //empty the zvars array
+                    if(d3.rgb(myColor).toString() === varColor.toString()) { // we are adding a var
 
-                if(nodes.length==0) {
-                    nodes.push(findNode(myText));
-                    nodes[0].reflexive=true;
-                }
+                        if(nodes.length==0) {
+                            nodes.push(findNode(myText));
+                            nodes[0].reflexive=true;
+                        }
 
-                else {nodes.push(findNode(myText));}
+                        else {nodes.push(findNode(myText));}
 
-               if(myNode.time==="yes") {
-                    tagColors(myNode, timeColor);
-                    return hexToRgba(timeColor);
-               }
-               else if(myNode.nature==="nominal") {
-                    tagColors(myNode, nomColor);
-                    return hexToRgba(nomColor);
-               }
-               else {
-                    return hexToRgba(selVarColor);
-               }
+                        if(myNode.time==="yes") {
+                            tagColors(myNode, timeColor);
+                            return hexToRgba(timeColor);
+                        }
+                        else if(myNode.nature==="nominal") {
+                            tagColors(myNode, nomColor);
+                            return hexToRgba(nomColor);
+                        }
+                        else {
+                            return hexToRgba(selVarColor);
+                        }
 
-               }
-               else { // dropping a variable
+                    }
+                    else { // dropping a variable
 
-                    nodes.splice(findNode(myText)["index"], 1);
-                    spliceLinksForNode(findNode(myText));
+                        nodes.splice(findNode(myText)["index"], 1);
+                        spliceLinksForNode(findNode(myText));
 
-                if(mySC==dvColor) {
-                    var dvIndex = zparams.zdv.indexOf(myText);
-                    if (dvIndex > -1) { zparams.zdv.splice(dvIndex, 1); }
-                    //zparams.zdv="";
-                }
-                else if(mySC==csColor) {
-                    var csIndex = zparams.zcross.indexOf(myText);
-                    if (csIndex > -1) { zparams.zcross.splice(csIndex, 1); }
-                }
-                else if(mySC==timeColor) {
-                	//console.log("entering some if");
-                    var timeIndex = zparams.ztime.indexOf(myText);
-                    //console.log("Timeindex=",timeIndex);
-                    if (timeIndex > -1) { zparams.ztime.splice(timeIndex, 1); }
-                }
-               else if(mySC==nomColor) {
-                    var nomIndex = zparams.znom.indexOf(myText);
-                    if (nomIndex > -1) { zparams.znom.splice(dvIndex, 1); }
-               }
+                        if(mySC==dvColor) {
+                            var dvIndex = zparams.zdv.indexOf(myText);
+                            if (dvIndex > -1) { zparams.zdv.splice(dvIndex, 1); }
+                            //zparams.zdv="";
+                        }
+                        else if(mySC==csColor) {
+                            var csIndex = zparams.zcross.indexOf(myText);
+                            if (csIndex > -1) { zparams.zcross.splice(csIndex, 1); }
+                        }
+                        else if(mySC==timeColor) {
+                            //console.log("entering some if");
+                            var timeIndex = zparams.ztime.indexOf(myText);
+                            //console.log("Timeindex=",timeIndex);
+                            if (timeIndex > -1) { zparams.ztime.splice(timeIndex, 1); }
+                        }
+                        else if(mySC==nomColor) {
+                            var nomIndex = zparams.znom.indexOf(myText);
+                            if (nomIndex > -1) { zparams.znom.splice(dvIndex, 1); }
+                        }
 
-               // nodeReset(allNodes[findNodeIndex(myText)]);
-                borderState();
-               legend();
-                return varColor;
-               }
-               });
+                        // nodeReset(allNodes[findNodeIndex(myText)]);
+                        borderState();
+                        legend();
+                        return varColor;
+                    }
+                });
 
-        panelPlots();
-        restart();
+            panelPlots();
+            restart();
         });
-	}
-		//console.log("Search ID at start: "+srchid);
-
+}
+//console.log("Search ID at start: "+srchid);
 
 // returns id
 var findNodeIndex = function(nodeName) {
@@ -1973,7 +2013,6 @@ function tabLeft(tab) {
 
     }//end of switch
 
-    console.log("Tab:"+tab);
     document.getElementById(tab).style.display = 'block';
 }
 

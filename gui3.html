@@ -107,7 +107,14 @@
             <h3 class="panel-title">Query Summary</h3>
         </div>
 
-        <div id="queryTree" style="width:232px;height:calc(100% - 78px);overflow-y:auto">
+        <div id="queryVariables" style="margin-left:5px;width:232px;height:calc(50% - 39px);overflow-y:auto">
+            <h4 class="panel-title">Variables</h4>
+            <div id="variableTree" style="margin-left:10px;width:calc(100% - 15px);height:calc(100% - 19px);overflow-y:auto"></div>
+        </div>
+
+        <div id="querySubsets" style="width:232px;height:calc(50% - 39px);">
+            <h4 class="panel-title" style="margin-left:5px;">Subsets</h4>
+            <div id="subsetTree" style="height:calc(100% - 19px);overflow-y:auto"></div>
         </div>
         <div id="rightpanelButtonBar" style="width:232px;position:absolute;bottom:5px">
             <button id="buttonAddGroup" class="btn btn-default ladda-button" data-spinner-color="#000000"
@@ -445,6 +452,41 @@ function closeRightPanel() {
 //  console.log("ddiurl: "+ddiurl);
 //  console.log("dataurl: "+dataurl);
 //  console.log("Username:"+username);
+
+	//switches tabs in actor subset
+	function actorTabSwitch(origin, tab) {
+		switch(origin) {
+			case "sourceTabBtn":
+//				console.log("switching to source");
+				document.getElementById("targetDiv").style.display = "none";
+				$("#targetTabBtn").removeClass("active").addClass("btn-default");
+				$("#sourceTabBtn").removeClass("btn-default").addClass("active");
+				break;
+			default:
+//				console.log("switching to target");
+				document.getElementById("sourceDiv").style.display = "none";
+				$("#sourceTabBtn").removeClass("active").addClass("btn-default");
+				$("#targetTabBtn").removeClass("btn-default").addClass("active");
+				break;
+		}
+
+		document.getElementById(tab).style.display = "inline-block";
+	}
+
+	//expands divs with filters
+	$(".filterExpand").click(function() {
+		if (this.value == "expand") {
+			this.value = "collapse";
+			$(this).css("background-image", "url(collapse.png)");
+			$(this).next().next("div.filterContainer").show("fast");
+		}
+		else {
+			this.value = "expand";
+			$(this).css("background-image", "url(expand.png)");
+			$(this).next().next("div.filterContainer").hide("fast");
+		}
+	});
+
 </script>
 
     <script src="app_ddi_eventdata.js"></script>

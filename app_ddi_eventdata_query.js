@@ -12,35 +12,22 @@
 // }
 
 // Delete stored tree (debug)
-localStorage.removeItem('treeData');
+// localStorage.removeItem('selectedVariables');
+// localStorage.removeItem('subsetData');
+
+var subsetData = [];
+var variableData = [];
+var nodeId = 2;
+var groupId = 1;
 
 // Create the rightpanel data tree
-if (localStorage.getItem("treeData") !== null) {
+if (localStorage.getItem("subsetData") !== null) {
     // If the user has already submitted a query, restore the previous query from local data
-    var data = JSON.parse(localStorage.getItem('treeData'));
-    var nodeId = localStorage.getItem('nodeId');
-    var groupId = localStorage.getItem('groupId');
-} else {
-    // Otherwise, start a new tree
-    var data = [
-        // All variables are stored as children of this node
-        {
-            id: '0',
-            name: 'Variables',
-            cancellable: false,
-            show_op: false
-        },
-        // All subsets are stored as children of this node
-        {
-            id: '1',
-            name: 'Subsets',
-            cancellable: false,
-            show_op: false
-        }
-    ];
-    var nodeId = 2;
-    var groupId = 1;
+    subsetData = JSON.parse(localStorage.getItem('subsetData'));
+    nodeId = localStorage.getItem('nodeId');
+    groupId = localStorage.getItem('groupId');
 }
+
 
 // Define negation toggle, logic dropdown and delete button, as well as their callbacks
 function buttonNegate(id, state) {
@@ -54,14 +41,13 @@ function buttonNegate(id, state) {
 }
 
 function callbackNegate(id, bool) {
-    var node = $('#queryTree').tree('getNodeById', id);
+    var node = $('#subsetTree').tree('getNodeById', id);
     node.negate = bool;
 
-    // TODO: There should be a more efficient way to update this data
-    data = JSON.parse($('#queryTree').tree('toJson'));
-    var qtree = $('#queryTree');
+    subsetData = JSON.parse($('#subsetTree').tree('toJson'));
+    var qtree = $('#subsetTree');
     var state = qtree.tree('getState');
-    qtree.tree('loadData', data, 0);
+    qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
 }
 
@@ -77,14 +63,14 @@ function buttonLogic(id, state) {
 }
 
 function callbackLogic(id, operand) {
-    var node = $('#queryTree').tree('getNodeById', id);
+    var node = $('#subsetTree').tree('getNodeById', id);
     node.operation = operand;
 
-    // TODO: There should be a more efficient way to update this data
-    data = JSON.parse($('#queryTree').tree('toJson'));
-    var qtree = $('#queryTree');
+    // Redraw tree
+    subsetData = JSON.parse($('#subsetTree').tree('toJson'));
+    var qtree = $('#subsetTree');
     var state = qtree.tree('getState');
-    qtree.tree('loadData', data, 0);
+    qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
 }
 
@@ -93,22 +79,60 @@ function buttonDelete(id) {
 }
 
 function callbackDelete(id) {
-    var node = $('#queryTree').tree('getNodeById', id);
+    var node = $('#subsetTree').tree('getNodeById', id);
 
     if (node.children) {
         for (var i = node.children.length - 1; i >= 0; i--) {
-            $('#queryTree').tree('removeNode', node.children[i])
+            $('#subsetTree').tree('removeNode', node.children[i])
         }
     }
-    $('#queryTree').tree('removeNode', node);
-    // TODO: There should be a more efficient way to update this data
-    data = JSON.parse($('#queryTree').tree('toJson'))
+    $('#subsetTree').tree('removeNode', node);
+
+    subsetData = JSON.parse($('#subsetTree').tree('toJson'));
+    if (subsetData.length !== 0) {
+        subsetData[0]['show_op'] = false;
+    }
+    var qtree = $('#subsetTree');
+    var state = qtree.tree('getState');
+    qtree.tree('loadData', subsetData, 0);
+    qtree.tree('setState', state);
 }
+
+// Variables menu
+$(function () {
+    $('#variableTree').tree({
+        data: variableData,
+        saveState: true,
+        dragAndDrop: false,
+        autoOpen: true,
+        selectable: false
+    });
+});
+
+// Updates the rightpanel variables menu
+function reloadVariables() {
+    variableData.length = 0;
+    selectedVariables.forEach(function(element){
+        variableData.push({
+            name: element,
+            cancellable: false,
+            show_op: false
+        })
+    });
+
+    var qtree = $('#variableTree');
+    var state = qtree.tree('getState');
+    qtree.tree('loadData', variableData, 0);
+    qtree.tree('setState', state);
+}
+
+// Load stored variables into the rightpanel tree on initial page load
+reloadVariables();
 
 // Create the query tree
 $(function () {
-    $('#queryTree').tree({
-        data: data,
+    $('#subsetTree').tree({
+        data: subsetData,
         saveState: true,
         dragAndDrop: true,
         autoOpen: true,
@@ -133,21 +157,13 @@ $(function () {
         },
         onCanMove: function (node) {
             // Subset and Group may be moved
-            if (node.name.indexOf('Subset') !== -1 || node.name.indexOf('Group') !== -1) {
-                // Catches the case for the root subsets node, which cannot be moved
-                return (node.name.indexOf('Subsets') === -1);
-            }
+            return (node.name.indexOf('Subset') !== -1 || node.name.indexOf('Group') !== -1);
         },
         onCanMoveTo: function (moved_node, target_node, position) {
-            // Nodes may not be moved outside of the root group
-            if (target_node.getLevel() === 1 && target_node.name.indexOf('Subsets') === -1) {
-                return false;
-            }
             // Rules may be moved next to another rule or grouping
-            if (position == 'after' && (target_node.name.indexOf('Subsets') !== -1 || target_node.name.indexOf('Group') !== -1)) {
+            if (position == 'after' && (target_node.name.indexOf('Subset') !== -1 || target_node.name.indexOf('Group') !== -1)) {
                 return true;
             }
-
             // Rules may be moved inside a group or root
             if ((position === 'inside') && (target_node.name.indexOf('Subsets') !== -1 || target_node.name.indexOf('Group') !== -1)) {
                 return true;
@@ -157,44 +173,56 @@ $(function () {
     });
 });
 
-$('#queryTree').on(
+$('#subsetTree').on(
     'tree.move',
     function (event) {
         event.preventDefault();
-        event.move_info.moved_node.parent['children'][0]['show_op'] = false;
-        event.move_info.target_node['children'][0]['show_op'] = false;
-        // event.move_info.target_node.parent['children'][0]['show_op'] = true;
         event.move_info.do_move();
 
         // Save changes when an element is moved
-        data = JSON.parse($('#queryTree').tree('toJson'))
+        subsetData = JSON.parse($('#subsetTree').tree('toJson'));
+
+        subsetData = hide_first(subsetData);
+        var qtree = $('#subsetTree');
+        var state = qtree.tree('getState');
+        qtree.tree('loadData', subsetData, 0);
+        qtree.tree('setState', state);
     }
 );
 
-$('#queryTree').on(
+function hide_first(data){
+    for (var i = 0; i < data.length; i++) {
+        data[i]['show_op'] = i !== 0;
+        if (data[i]['name'].indexOf('Group') !== -1){
+            data[i]['children'] = hide_first(data[i]['children']);
+        }
+    }
+    return data;
+}
+
+$('#subsetTree').on(
     'tree.click',
     function (event) {
         // TODO: Break if click occurred over one of the bootstrap buttons
         if (event.node.hasChildren()) {
-            $('#queryTree').tree('toggle', event.node);
+            $('#subsetTree').tree('toggle', event.node);
         }
     }
 );
 
 function addGroup() {
-    // If no children in root, create an empty list and reset the group id.
-    if (!('children' in data[1])) {
-        data[1]['children'] = [];
-        groupId = 1;
-    }
-
     var movedChildren = [];
     var removeIds = [];
 
-    // Make list of children to be moved
-    for (var child_id in data[1]['children']) {
-        var child = data[1]['children'][child_id];
+    if (subsetData.length === 0) {
+        groupId = 1
+    }
 
+    // Make list of children to be moved
+    for (var child_id in subsetData) {
+        var child = subsetData[child_id];
+
+        // Don't put groups inside groups! Only a drag can do that.
         if (child.name.indexOf('Subset') !== -1) {
             movedChildren.push(child);
             removeIds.push(child_id);
@@ -206,24 +234,24 @@ function addGroup() {
 
     // Delete elements from root directory that are moved
     for (var i = removeIds.length - 1; i >= 0; i--) {
-        data[1]['children'].splice(removeIds[i], 1);
+        subsetData.splice(removeIds[i], 1);
     }
-    console.log(data[1]['children'].length)
-    data[1]['children'].push(
+
+    subsetData.push(
         {
             id: String(nodeId++),
             name: 'Group ' + String(groupId++),
             operation: 'and',
             children: movedChildren,
-            show_op: data[1]['children'].length - 1 === 0
+            show_op: subsetData.length > 0
         });
 
-    $('#queryTree').tree('loadData', data);
+    $('#subsetTree').tree('loadData', subsetData);
 
 
-    var qtree = $('#queryTree');
+    var qtree = $('#subsetTree');
     var state = qtree.tree('getState');
-    qtree.tree('loadData', data, 0);
+    qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
     qtree.tree('openNode', qtree.tree('getNodeById', nodeId - 1), true);
 }
@@ -232,44 +260,20 @@ function addRule() {
     // Index zero is root node. Add subset pref to nodes
     if (subsetSelection !== "") {
         var preferences = getSubsetPreferences();
-        if (Object.keys(preferences).length === 0) {
-            return
-        }
 
-        if (!('children' in data[1])) {
-            data[1]['children'] = [];
-        }
-        if (data[1]['children'].length === 0) {
+        if (subsetData.length === 0) {
             preferences['show_op'] = false;
         }
 
-        data[1]['children'].push(preferences);
+        subsetData.push(preferences);
 
-        var qtree = $('#queryTree');
+        var qtree = $('#subsetTree');
         var state = qtree.tree('getState');
-        qtree.tree('loadData', data, 0);
+        qtree.tree('loadData', subsetData, 0);
         qtree.tree('setState', state);
         qtree.tree('closeNode', qtree.tree('getNodeById', preferences['id']), false);
         qtree.tree('openNode', qtree.tree('getNodeById', 1), true);
     }
-}
-
-// Useful for updating the rightpanel with the variable list when a variable is selected
-function reloadVariables() {
-    data[0]['children'] = [];
-    selectedVariables.forEach(function(element){
-        data[0]['children'].push({
-            id: String(nodeId++),
-            name: element,
-            cancellable: false
-        })
-    });
-
-    var qtree = $('#queryTree');
-    var state = qtree.tree('getState');
-    qtree.tree('loadData', data, 0);
-    qtree.tree('setState', state);
-    qtree.tree('openNode', qtree.tree('getNodeById', 0), true);
 }
 
 /**
@@ -363,12 +367,14 @@ function getSubsetPreferences() {
  */
 function buildQuery() {
     // Store the state of the tree in local data
-    var tree_json = $('#queryTree').tree('toJson');
-    localStorage.setItem('treeData', tree_json);
+    localStorage.setItem('selectedVariables', JSON.stringify([...selectedVariables]));
+
+    var subsetjson = $('#subsetTree').tree('toJson');
+    localStorage.setItem('subsetData', subsetjson);
     localStorage.setItem('nodeId', nodeId);
     localStorage.setItem('groupId', groupId);
 
-    var query = processNode(data[1]);
+    var query = processNode(subsetData[1]);
     console.log(JSON.stringify(query, null, '  '));
 
     return JSON.stringify(query);
