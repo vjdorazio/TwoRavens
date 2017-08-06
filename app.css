@@ -195,7 +195,10 @@ table tr td{
 #rightpanel #rightContentArea div.active {display:block;}
 
 #rightpanel.closepanel {width:1px;}
-#rightpanel.closepanel #rightpaneltitle, #rightpanel.closepanel #queryTree, #rightpanel.closepanel #rightpanelButtonBar {display:none;}
+#rightpanel.closepanel #rightpaneltitle,
+#rightpanel.closepanel #queryVariables,
+#rightpanel.closepanel #querySubsets,
+#rightpanel.closepanel #rightpanelButtonBar {display:none;}
 
 
 div.sidepanel div.panelbar {
