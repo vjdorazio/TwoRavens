@@ -56,8 +56,8 @@ function buttonLogic(id, state) {
     logDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" style="float:left;margin:0;padding:0;width:45px;min-width:45px">' +
         '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;and&quot;)">and</a></li>' +
         '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;or&quot;)">or</a></li>' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;nand&quot;)">nand</a></li>' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;nor&quot;)">nor</a></li>' +
+        // '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;nand&quot;)">nand</a></li>' +
+        // '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;nor&quot;)">nor</a></li>' +
         '</ul></div> ';
     return logDropdown
 }
@@ -327,13 +327,17 @@ function getSubsetPreferences() {
         };
 
         // Add each country to the parent node as another rule
+        var first = true;
         for (var country in mapListCountriesSelected) {
             if (mapListCountriesSelected[country]) {
                 subset['children'].push({
                     id: String(nodeId++),
                     name: country,
-                    show_op: false
+                    show_op: !first,
+                    operation: 'and',
+                    type: 'country'
                 });
+                first = false;
             }
         }
         // Don't add a rule and ignore the stage if no countries are selected
@@ -362,96 +366,130 @@ function getSubsetPreferences() {
 }
 
 /**
- * Structures the data variable as a mongoDB CRUD query
+ * Structures rightpanel user preferences as a mongoDB CRUD query
  * @returns String
  */
 function buildQuery() {
-    // Store the state of the tree in local data
     localStorage.setItem('selectedVariables', JSON.stringify([...selectedVariables]));
 
+    // Store the state of the tree in local data
     var subsetjson = $('#subsetTree').tree('toJson');
     localStorage.setItem('subsetData', subsetjson);
     localStorage.setItem('nodeId', nodeId);
     localStorage.setItem('groupId', groupId);
 
-    var query = processNode(subsetData[1]);
+    var query = processGroup({'children': subsetData});
     console.log(JSON.stringify(query, null, '  '));
 
     return JSON.stringify(query);
 
-    // Return a mongoDB query for a group data structure
-    function processNode(node) {
-        var node_query = {};
+    // First construct a boolean expression tree via operator precedence between group siblings
+    // Then build query for each node and pass up the tree
 
-        var operator = '$' + node['operation'];
-        node_query[operator] = [];
-        for (var child_id in node.children) {
-            var child = node.children[child_id];
+    function processNode(node){
+        // Check if child node is a group
+        if ('children' in node && node.children.length !== 0) {
 
-            // Check if child node is a group
-            if ('children' in child && child.children.length !== 0) {
-
-                if (child.name.indexOf('Group') !== -1) {
-                    // Recursively process subgroups
-                    node_query[operator].push(processNode(child));
-                } else {
-                    // Explicitly process rules
-                    node_query[operator].push(processRule(child));
-                }
+            if (node.name.indexOf('Group') !== -1) {
+                // Recursively process subgroups
+                return processGroup(node);
+            } else {
+                // Explicitly process rules
+                return processRule(node);
             }
         }
-        return node_query;
+
+    }
+
+    // Group precedence parser
+    function processGroup(group) {
+
+        // all rules are 'or'ed together
+        var group_query = {'$or': []};
+
+        // strings of rules conjuncted by 'and' operators are clotted in semigroups that act together as one rule
+        var semigroup = {'$and': []};
+
+        for (var child_id = 0; child_id < group.children.length - 1; child_id++) {
+            var op_self = group.children[child_id]['operation'];
+            var op_next = group.children[child_id + 1]['operation'];
+
+            // Clot together and operators
+            if (op_self === 'and' || op_next === 'and') {
+                semigroup['$and'].push(processNode(group.children[child_id]));
+                if (op_next === 'or') {
+                    group_query.push(semigroup);
+                    semigroup['$and'] = [];
+                }
+            }
+
+            // If not part of an 'and' clot, simply add to the query
+            if (op_self === 'or' && op_next === 'or') {
+                group_query['$or'].push(processNode(group.children[child_id]));
+            }
+        }
+
+        // Process final sibling
+        if (group.children[group.children.length - 1]['operation'] === 'and') {
+            semigroup['$and'].push(processNode(group.children[child_id]));
+            group_query['$or'].push(semigroup)
+
+        } else {
+            group_query['$or'].push(processNode(group.children[child_id]));
+        }
+
+        // Collapse unnecessary conjunctors
+        if (group_query['$or'].length === 1) {
+            group_query = group_query['$or'][0]
+        }
+        if ('$and' in group_query && group_query['$and'].length === 1) {
+            group_query = group_query['$and'][0]
+        }
+
+        return group_query;
     }
 
     // Return a mongoDB query for a rule data structure
     function processRule(rule) {
         var rule_query = {};
 
-        switch (rule.name) {
-            case 'Date Subset':
-                var rule_query_inner = {};
-                for (var child_id in rule.children) {
-                    var child = rule.children[child_id];
-                    if ('fromDate' in child) {
-                        rule_query_inner['$gte'] = child.fromDate;
-                    }
-                    if ('toDate' in child) {
-                        rule_query_inner['$lte'] = child.toDate;
-                    }
+        if (rule.name === 'Date Subset') {
+            var rule_query_inner = {};
+            for (var child_id in rule.children) {
+                var child = rule.children[child_id];
+                if ('fromDate' in child) {
+                    rule_query_inner['$gte'] = child.fromDate;
                 }
-                // Wrap with conjunction operator if specified.
-                if ('operation' in rule) {
-                    rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
+                if ('toDate' in child) {
+                    rule_query_inner['$lte'] = child.toDate;
                 }
-                rule_query['date8'] = rule_query_inner;
-                break;
+            }
+            // Wrap with conjunction operator if specified.
+            if ('operation' in rule) {
+                rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
+            }
+            rule_query['date8'] = rule_query_inner;
+        }
 
-            case 'Location Subset':
-                var rule_query_inner = [];
-                for (var child_id in rule.children) {
-                    var child = rule.children[child_id];
+        if (rule.name === 'Location Subset'){
+            rule_query_inner = processGroup(rule);
+            var rule_query_inner = [];
+            for (var child_id in rule.children) {
+                rule_query_inner.push(rule.children[child_id].name)
+            }
 
-                    if ('negate' in child && child.negate) {
-                        // Wrap in negation if set
-                        rule_query_inner.push({'$not': child.name})
-                    } else {
-                        rule_query_inner.push(child.name)
-                    }
-                }
+            // Wrap with conjunction operator if specified.
+            if ('operation' in rule) {
+                rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
+            }
 
-                // Wrap with conjunction operator if specified.
-                if ('operation' in rule) {
-                    rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
-                }
+            rule_query['countrycode'] = rule_query_inner;
+        }
 
-                rule_query['countrycode'] = rule_query_inner;
-                break;
-
-            case 'Action Subset':
-                break;
-
-            case 'Actor Subset':
-                break;
+        // Individual countries are themselves considered rules.
+        // The code is structured this way to be able to use the group precedence parser on the country list
+        if ('type' in rule && rule.type === 'country') {
+            return rule.name;
         }
 
         return rule_query;
