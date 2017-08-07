@@ -387,18 +387,13 @@ function buildQuery() {
     // Then build query for each node and pass up the tree
 
     function processNode(node){
-        // Check if child node is a group
-        if ('children' in node && node.children.length !== 0) {
-
-            if (node.name.indexOf('Group') !== -1) {
-                // Recursively process subgroups
-                return processGroup(node);
-            } else {
-                // Explicitly process rules
-                return processRule(node);
-            }
+        if (node.name.indexOf('Group') !== -1 && 'children' in node && node.children.length !== 0) {
+            // Recursively process subgroups
+            return processGroup(node);
+        } else {
+            // Explicitly process rules
+            return processRule(node);
         }
-
     }
 
     // Group precedence parser
@@ -408,7 +403,7 @@ function buildQuery() {
         var group_query = {'$or': []};
 
         // strings of rules conjuncted by 'and' operators are clotted in semigroups that act together as one rule
-        var semigroup = {'$and': []};
+        var semigroup = [];
 
         for (var child_id = 0; child_id < group.children.length - 1; child_id++) {
             var op_self = group.children[child_id]['operation'];
@@ -416,10 +411,10 @@ function buildQuery() {
 
             // Clot together and operators
             if (op_self === 'and' || op_next === 'and') {
-                semigroup['$and'].push(processNode(group.children[child_id]));
+                semigroup.push(processNode(group.children[child_id]));
                 if (op_next === 'or') {
-                    group_query.push(semigroup);
-                    semigroup['$and'] = [];
+                    group_query['$or'].push({'$and': semigroup.slice()});
+                    semigroup = [];
                 }
             }
 
@@ -431,8 +426,8 @@ function buildQuery() {
 
         // Process final sibling
         if (group.children[group.children.length - 1]['operation'] === 'and') {
-            semigroup['$and'].push(processNode(group.children[child_id]));
-            group_query['$or'].push(semigroup)
+            semigroup.push(processNode(group.children[child_id]));
+            group_query['$or'].push({'$and': semigroup.slice()})
 
         } else {
             group_query['$or'].push(processNode(group.children[child_id]));
@@ -472,18 +467,7 @@ function buildQuery() {
         }
 
         if (rule.name === 'Location Subset'){
-            rule_query_inner = processGroup(rule);
-            var rule_query_inner = [];
-            for (var child_id in rule.children) {
-                rule_query_inner.push(rule.children[child_id].name)
-            }
-
-            // Wrap with conjunction operator if specified.
-            if ('operation' in rule) {
-                rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
-            }
-
-            rule_query['countrycode'] = rule_query_inner;
+            rule_query['countrycode'] = processGroup(rule);
         }
 
         // Individual countries are themselves considered rules.
