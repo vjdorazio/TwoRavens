@@ -1,11 +1,12 @@
 // Right panel of subsetting menu
 
 
-// This is the data node format
+// This is the subset node format
 // {
 //     id: String(nodeId++),    // Node number with post-increment
 //     name: '[title]',         // 'Subsets', 'Group #', '[Selection] Subset' or tag name
-//     operation: 'and',        // If exists, have a logical drop down
+//     show_op: true,           // If true, show operation menu element
+//     operation: 'and',        // Stores preference of operation menu element
 //     children: [],            // If children exist
 //     negate: false,           // If exists, have a negation button
 //     cancellable: false       // If exists and false, disable the delete button
@@ -15,8 +16,12 @@
 // localStorage.removeItem('selectedVariables');
 // localStorage.removeItem('subsetData');
 
-var subsetData = [];
+var submitLadda = Ladda.create(document.getElementById("buttonSubmitQuery"));
+
+// selectedVariables is persistent, variableData is only used to render into the gui
 var variableData = [];
+
+var subsetData = [];
 var nodeId = 2;
 var groupId = 1;
 
@@ -378,22 +383,59 @@ function getSubsetPreferences() {
 }
 
 /**
- * Structures rightpanel user preferences as a mongoDB CRUD query
- * @returns String
+ * Makes web request for rightpanel preferences
  */
-function buildQuery() {
-    localStorage.setItem('selectedVariables', JSON.stringify([...selectedVariables]));
+function submitQuery() {
+    submitLadda.start();
 
-    // Store the state of the tree in local data
-    var subsetjson = $('#subsetTree').tree('toJson');
-    localStorage.setItem('subsetData', subsetjson);
+    // Store user preferences in local data
+    localStorage.setItem('selectedVariables', JSON.stringify([...selectedVariables]));
+    localStorage.setItem('subsetData', $('#subsetTree').tree('toJson'));
     localStorage.setItem('nodeId', nodeId);
     localStorage.setItem('groupId', groupId);
 
-    var query = processGroup({'children': subsetData});
-    console.log(JSON.stringify(query, null, '  '));
+    var variableQuery = buildVariables();
+    var subsetQuery = buildSubset();
 
-    return JSON.stringify(query);
+    console.log(JSON.stringify(subsetQuery, null, '  '));
+    console.log(JSON.stringify(variableQuery, null, '  '));
+
+    var queryjson = JSON.stringify([subsetQuery, variableQuery])
+
+    function downloadSuccess(btn, json) {
+
+        if (json["nrws"] === 0) {
+            alert("No records found");
+        }
+        else {
+            alert(json["nrws"] + " records found");
+        }
+    }
+    function downloadFail(btn) {
+        btn.stop();
+    }
+
+    var urlcall = rappURL + "queryapp";
+    var solajsonout = "solaJSON=" + queryjson;
+
+    makeCorsRequest(urlcall, submitLadda, downloadSuccess, downloadFail, solajsonout);
+}
+
+// Construct mongoDB projection (subsets columns)
+function buildVariables(){
+    var fieldQuery = {};
+    // I'm finding that browser support for the set is spotty, so I spread the set into a list before iterating
+    var variableList = [...selectedVariables];
+    for (var idx in variableList) {
+        fieldQuery[variableList[idx]] = 1;
+    }
+    return fieldQuery;
+}
+
+// Construct mongoDB filter (subsets rows)
+function buildSubset(){
+
+    var subsetQuery = processGroup({'children': subsetData});
 
     // First construct a boolean expression tree via operator precedence between group siblings
     // Then build query for each node and pass up the tree
@@ -505,4 +547,5 @@ function buildQuery() {
         }
         return temp;
     }
+    return subsetQuery;
 }

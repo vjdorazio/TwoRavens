@@ -114,7 +114,25 @@ if (localStorage.getItem("selectedVariables") !== null) {
 }
 var righttab = "btnModels"; // global for current tab in right panel
 
-var zparams = { zdata:[], zedges:[], ztime:[], znom:[], zcross:[], zmodel:"", zvars:[], zdv:[], zdataurl:"", zsubset:[], zsetx:[], zmodelcount:0, zplot:[], zsessionid:"", zdatacite:"", zmetadataurl:"", zusername:""};
+var zparams = {
+    zdata: [],
+    zedges: [],
+    ztime: [],
+    znom: [],
+    zcross: [],
+    zmodel: "",
+    zvars: [],
+    zdv: [],
+    zdataurl: "",
+    zsubset: [],
+    zsetx: [],
+    zmodelcount: 0,
+    zplot: [],
+    zsessionid: "",
+    zdatacite: "",
+    zmetadataurl: "",
+    zusername: ""
+};
 
 
 // Radius of circle
@@ -191,21 +209,21 @@ var trans = []; //var list for each space contain variables in original data plu
 
 // collapsable user log
 $('#collapseLog').on('shown.bs.collapse', function () {
-                     d3.select("#collapseLog div.panel-body").selectAll("p")
-                     .data(logArray)
-                     .enter()
-                     .append("p")
-                     .text(function(d){
-                           return d;
-                           });
-                     //$("#logicon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
-                     });
+    d3.select("#collapseLog div.panel-body").selectAll("p")
+        .data(logArray)
+        .enter()
+        .append("p")
+        .text(function (d) {
+            return d;
+        });
+    //$("#logicon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+});
 
 $('#collapseLog').on('hidden.bs.collapse', function () {
-                     d3.select("#collapseLog div.panel-body").selectAll("p")
-                     .remove();
-                     //$("#logicon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
-                     });
+    d3.select("#collapseLog div.panel-body").selectAll("p")
+        .remove();
+    //$("#logicon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+});
 
 
 // text for the about box
@@ -329,138 +347,159 @@ function findValue(json, key) {
 
 
 // this is the function and callback routine that loads all external data: metadata (DVN's ddi), preprocessed (for plotting distributions), and zeligmodels (produced by Zelig) and initiates the data download to the server
- readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
-               //console.log(UrlExists(metadataurl));
+readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
+    //console.log(UrlExists(metadataurl));
 
 
-               	//if(UrlExists(metadataurl)){
-                //d3.xml(metadataurl, "application/xml", function(xml) {
+    //if(UrlExists(metadataurl)){
+    //d3.xml(metadataurl, "application/xml", function(xml) {
 
- 				//				  d3.json(url, function(error, json) {
-                d3.json(url,function(json){
+    //				  d3.json(url, function(error, json) {
+    d3.json(url, function (json) {
 
-                   var jsondata=json;
-                    // console.log(jsondata);
-                     //console.log("Findvalue: ",findValue(jsondata,"fileName"));
-                     //  var vars = xml.documentElement.getElementsByTagName("var");
-                       var vars=jsondata.variables;
- 					  //console.log("value of vars");
-               //        console.log(vars);
-                      // var temp = xml.documentElement.getElementsByTagName("fileName");
-                       var temp = findValue(jsondata,"fileName");
-                 //      console.log("value of temp");
-                   //    console.log(temp);
-                     //
-                       zparams.zdata = temp;//[0].childNodes[0].nodeValue;
-                     //  console.log("value of zdata: ",zparams.zdata);
-                       // function to clean the citation so that the POST is valid json
-                       function cleanstring(s) {
-                         s=s.replace(/\&/g, "and");
-                         s=s.replace(/\;/g, ",");
-                         s=s.replace(/\%/g, "-");
-                         return s;
-                      }
+         var jsondata = json;
+         // console.log(jsondata);
+         //console.log("Findvalue: ",findValue(jsondata,"fileName"));
+         //  var vars = xml.documentElement.getElementsByTagName("var");
+         var vars = jsondata.variables;
+         //console.log("value of vars");
+         //        console.log(vars);
+         // var temp = xml.documentElement.getElementsByTagName("fileName");
+         var temp = findValue(jsondata, "fileName");
+         //      console.log("value of temp");
+         //    console.log(temp);
+         //
+         zparams.zdata = temp;//[0].childNodes[0].nodeValue;
+         //  console.log("value of zdata: ",zparams.zdata);
+         // function to clean the citation so that the POST is valid json
+         function cleanstring(s) {
+             s = s.replace(/\&/g, "and");
+             s = s.replace(/\;/g, ",");
+             s = s.replace(/\%/g, "-");
+             return s;
+         }
 
-                      // var cite = xml.documentElement.getElementsByTagName("biblCit");
-                       var cite=findValue(jsondata,"biblCit");
-                       zparams.zdatacite=cite;//[0].childNodes[0].nodeValue;
-                      // console.log("value of zdatacite: ",zparams.zdatacite);
-                       if(zparams.zdatacite!== undefined){
-                         zparams.zdatacite=cleanstring(zparams.zdatacite);
-                       }
-                       //console.log("value of zdatacite: ",zparams.zdatacite);
-                       //
+         // var cite = xml.documentElement.getElementsByTagName("biblCit");
+         var cite = findValue(jsondata, "biblCit");
+         zparams.zdatacite = cite;//[0].childNodes[0].nodeValue;
+         // console.log("value of zdatacite: ",zparams.zdatacite);
+         if (zparams.zdatacite !== undefined) {
+             zparams.zdatacite = cleanstring(zparams.zdatacite);
+         }
+         //console.log("value of zdatacite: ",zparams.zdatacite);
+         //
 
-                       // dataset name trimmed to 12 chars
-                       var dataname = zparams.zdata.replace( /\.(.*)/, "") ;  // regular expression to drop any file extension
-                       // Put dataset name, from meta-data, into top panel
-                       d3.select("#dataName")
-                       .html(dataname);
+         // dataset name trimmed to 12 chars
+         var dataname = zparams.zdata.replace(/\.(.*)/, "");  // regular expression to drop any file extension
+         // Put dataset name, from meta-data, into top panel
+         d3.select("#dataName")
+             .html(dataname);
 
-                       $('#cite div.panel-body').text(zparams.zdatacite);
+         $('#cite div.panel-body').text(zparams.zdatacite);
 
-                       // Put dataset name, from meta-data, into page title
-                       d3.select("title").html("TwoRavens " +dataname)
-                       //d3.select("#title").html("blah");
+         // Put dataset name, from meta-data, into page title
+         d3.select("title").html("TwoRavens " + dataname)
+         //d3.select("#title").html("blah");
 
-                       // temporary values for hold that correspond to histogram bins
-                       hold = [.6, .2, .9, .8, .1, .3, .4];
-                       var myvalues = [0, 0, 0, 0, 0];
-                        //console.log("length: ",vars.length);
-                       // console.log(vars);
+         // temporary values for hold that correspond to histogram bins
+         hold = [.6, .2, .9, .8, .1, .3, .4];
+         var myvalues = [0, 0, 0, 0, 0];
+         //console.log("length: ",vars.length);
+         // console.log(vars);
 
- 						//var tmp=vars.ccode;
- 						//console.log("tmp= ",tmp);
- 						var i=0;
- 										for(var key in vars) {
- 										//	console.log(vars[key]);
- 							                //p[key] = jsondata["variables"][key];
- 							                valueKey[i]=key;
+         //var tmp=vars.ccode;
+         //console.log("tmp= ",tmp);
+         var i = 0;
+         for (var key in vars) {
+             //	console.log(vars[key]);
+             //p[key] = jsondata["variables"][key];
+             valueKey[i] = key;
 
- 							                if(vars[key].labl.length===0){lablArray[i]="no label";}
- 							                else{lablArray[i]=vars[key].labl;}
-
-
- 							                i++;
-
- 							            }
- 							            //console.log("test=",ccode.labl.);
- 					//console.log("lablArray=",lablArray);
+             if (vars[key].labl.length === 0) {
+                 lablArray[i] = "no label";
+             }
+             else {
+                 lablArray[i] = vars[key].labl;
+             }
 
 
-                       for (i=0;i<valueKey.length;i++) {
+             i++;
+
+         }
+         //console.log("test=",ccode.labl.);
+         //console.log("lablArray=",lablArray);
 
 
-                       //valueKey[i] = vars[i].attributes.name.nodeValue;
+         for (i = 0; i < valueKey.length; i++) {
 
-                       //if(vars[i].getElementsByTagName("labl").length === 0) {lablArray[i]="no label";}
-                       //else {lablArray[i] = vars[i].getElementsByTagName("labl")[0].childNodes[0].nodeValue;}
 
-                     //  var datasetcount = d3.layout.histogram()
-                     //  .bins(barnumber).frequency(false)
-                     //  (myvalues);
+             //valueKey[i] = vars[i].attributes.name.nodeValue;
 
-                       // this creates an object to be pushed to allNodes. this contains all the preprocessed data we have for the variable, as well as UI data pertinent to that variable, such as setx values (if the user has selected them) and pebble coordinates
-                       var obj1 = {id:i, reflexive: false, "name": valueKey[i], "labl": lablArray[i], data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false};
+             //if(vars[i].getElementsByTagName("labl").length === 0) {lablArray[i]="no label";}
+             //else {lablArray[i] = vars[i].getElementsByTagName("labl")[0].childNodes[0].nodeValue;}
 
-                       jQuery.extend(true, obj1, preprocess[valueKey[i]]);
-                       allNodesColors(obj1);
+             //  var datasetcount = d3.layout.histogram()
+             //  .bins(barnumber).frequency(false)
+             //  (myvalues);
 
-                       // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
-                       allNodes.push(obj1);
+             // this creates an object to be pushed to allNodes. this contains all the preprocessed data we have for the variable, as well as UI data pertinent to that variable, such as setx values (if the user has selected them) and pebble coordinates
+             var obj1 = {
+                 id: i,
+                 reflexive: false,
+                 "name": valueKey[i],
+                 "labl": lablArray[i],
+                 data: [5, 15, 20, 0, 5, 15, 20],
+                 count: hold,
+                 "nodeCol": colors(i),
+                 "baseCol": colors(i),
+                 "strokeColor": selVarColor,
+                 "strokeWidth": "1",
+                 "subsetplot": false,
+                 "subsetrange": ["", ""],
+                 "setxplot": false,
+                 "setxvals": ["", ""],
+                 "grayout": false
+             };
 
-                       };
+             jQuery.extend(true, obj1, preprocess[valueKey[i]]);
+             allNodesColors(obj1);
 
-                       //console.log("allNodes: ", allNodes);
-                       // Reading the zelig models and populating the model list in the right panel.
-                       d3.json("data/zelig5models.json", function(error, json) {
-                               if (error) return console.warn(error);
-                               var jsondata = json;
+             // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
+             allNodes.push(obj1);
 
-                               //console.log("zelig models json: ", jsondata);
-                               for(var key in jsondata.zelig5models) {
-                               if(jsondata.zelig5models.hasOwnProperty(key)) {
-                               mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
-                               }
-                               }
+         }
+         ;
 
-                               d3.json("data/zelig5choicemodels.json", function(error, json) {
-                                       if (error) return console.warn(error);
-                                       var jsondata = json;
-                                       //console.log("zelig choice models json: ", jsondata);
-                                       for(var key in jsondata.zelig5choicemodels) {
-                                       if(jsondata.zelig5choicemodels.hasOwnProperty(key)) {
-                                       mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
-                                       }
-                                       }
+         //console.log("allNodes: ", allNodes);
+         // Reading the zelig models and populating the model list in the right panel.
+         d3.json("data/zelig5models.json", function (error, json) {
+             if (error) return console.warn(error);
+             var jsondata = json;
 
-                                       scaffolding();
-                       //                dataDownload();
-                                       });
-                               });
-                       });
+             //console.log("zelig models json: ", jsondata);
+             for (var key in jsondata.zelig5models) {
+                 if (jsondata.zelig5models.hasOwnProperty(key)) {
+                     mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
+                 }
+             }
 
-                });
+             d3.json("data/zelig5choicemodels.json", function (error, json) {
+                 if (error) return console.warn(error);
+                 var jsondata = json;
+                 //console.log("zelig choice models json: ", jsondata);
+                 for (var key in jsondata.zelig5choicemodels) {
+                     if (jsondata.zelig5choicemodels.hasOwnProperty(key)) {
+                         mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
+                     }
+                 }
+
+                 scaffolding();
+                 //                dataDownload();
+             });
+         });
+     });
+
+ });
 
 
 ////////////////////////////////////////////
@@ -857,7 +896,7 @@ function updatedata(value, flag) {
         if ($.inArray(findNodeIndex(d), srchid) != -1 && flag == 1) {
             return borderstyle;
         }
-        })
+    })
         .style('border-color', function (d) {
             if ($.inArray(findNodeIndex(d), srchid) != -1 && flag == 1) {
                 return bordercol;
@@ -888,15 +927,15 @@ function updatedata(value, flag) {
             reloadVariables();
         });
 
-	fakeClick();
+    fakeClick();
 
-	$("#tab1").children().popover('hide');
-	populatePopover();
+    $("#tab1").children().popover('hide');
+    populatePopover();
 
     // I commented this out... Michael Shoemate (Shoeboxam)
     // addlistener(nodes);
 
-	}
+}
 
 //
 //
@@ -917,68 +956,59 @@ function updatedata(value, flag) {
 // var force;
 
 
+$(document).ready(function () {
+    $("#btnSave").hide();
+});
 
 
+//Write to JSON Function, to write new metadata file after the user has tagged a variable as a time variable
+function writetojson(btn) {
 
-        $(document).ready(function(){
-
-        		$("#btnSave").hide();
-        });
-
-
-
-
-  //Write to JSON Function, to write new metadata file after the user has tagged a variable as a time variable
-	function writetojson(btn){
-
-		//var jsonallnodes=JSON.stringify(allNodes);
+    //var jsonallnodes=JSON.stringify(allNodes);
 
     var outtypes = [];
-    for(var j=0; j < allNodes.length; j++) {
-        outtypes.push({varnamesTypes:allNodes[j].name, nature:allNodes[j].nature, numchar:allNodes[j].numchar, binary:allNodes[j].binary, interval:allNodes[j].interval,time:allNodes[j].time});
+    for (var j = 0; j < allNodes.length; j++) {
+        outtypes.push({
+            varnamesTypes: allNodes[j].name,
+            nature: allNodes[j].nature,
+            numchar: allNodes[j].numchar,
+            binary: allNodes[j].binary,
+            interval: allNodes[j].interval,
+            time: allNodes[j].time
+        });
     }
 
-   // console.log("Outtypes:"+outtypes);
-		writeout={outtypes:outtypes}
-				writeoutjson=JSON.stringify(writeout);
-				//console.log(jsonallnodes);
-				urlcall = rappURL+"writeapp";
+    // console.log("Outtypes:"+outtypes);
+    writeout = {outtypes: outtypes}
+    writeoutjson = JSON.stringify(writeout);
+    //console.log(jsonallnodes);
+    urlcall = rappURL + "writeapp";
 
-				//base.concat(jsonout);
-    	function cleanstring(s) {
-                        s=s.replace(/\&/g, "and");
-                        s=s.replace(/\;/g, ",");
-                        s=s.replace(/\%/g, "-");
-                        return s;
-                      }
-                      var properjson=cleanstring(writeoutjson);
+    //base.concat(jsonout);
+    function cleanstring(s) {
+        s = s.replace(/\&/g, "and");
+        s = s.replace(/\;/g, ",");
+        s = s.replace(/\%/g, "-");
+        return s;
+    }
 
-    var solajsonout = "solaJSON="+properjson;
-//console.log(properjson);
+    var properjson = cleanstring(writeoutjson);
 
-function writesuccess(btn,json){
+    var solajsonout = "solaJSON=" + properjson;
+    //console.log(properjson);
 
-	selectLadda.stop();
+    function writesuccess(btn, json) {
+        selectLadda.stop();
+        $('#btnSave').hide();
+    }
 
-      $('#btnSave').hide();
+    function writefail(btn) {
+        selectLadda.stop();
 
+    }
 
-
-
-}
-
-function writefail(btn)
-{
-	selectLadda.stop();
-
-}
-
-selectLadda.start();
-
-
-makeCorsRequest(urlcall, btn, writesuccess, writefail, solajsonout);
-
-
+    selectLadda.start();
+    makeCorsRequest(urlcall, btn, writesuccess, writefail, solajsonout);
 }
 //end of write to json
 
@@ -1179,7 +1209,7 @@ function zPop() {
 
 function estimate(btn) {
 
-    if(production && zparams.zsessionid=="") {
+    if (production && zparams.zsessionid == "") {
         alert("Warning: Data download is not complete. Try again soon.");
         return;
     }
@@ -1189,73 +1219,73 @@ function estimate(btn) {
 
     //package the output as JSON
     // add call history and package the zparams object as JSON
-    zparams.callHistory=callHistory;
+    zparams.callHistory = callHistory;
     var jsonout = JSON.stringify(zparams);
 
     //var base = rappURL+"zeligapp?solaJSON="
-    urlcall = rappURL+"zeligapp"; //base.concat(jsonout);
-    var solajsonout = "solaJSON="+jsonout;
+    urlcall = rappURL + "zeligapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON=" + jsonout;
     //console.log("urlcall out: ", urlcall);
     //console.log("POST out: ", solajsonout);
 
 
-    zparams.allVars = valueKey.slice(10,25); // this is because the URL is too long...
+    zparams.allVars = valueKey.slice(10, 25); // this is because the URL is too long...
     var jsonout = JSON.stringify(zparams);
     //var selectorBase = rappURL+"selectorapp?solaJSON=";
-    var selectorurlcall = rappURL+"selectorapp"; //.concat(jsonout);
+    var selectorurlcall = rappURL + "selectorapp"; //.concat(jsonout);
 
-    function estimateSuccess(btn,json) {
+    function estimateSuccess(btn, json) {
         estimateLadda.stop();  // stop spinner
         allResults.push(json);
-       // console.log(allResults);
+        // console.log(allResults);
         //console.log("json in: ", json);
 
         var myparent = document.getElementById("results");
-        if(estimated==false) {
+        if (estimated == false) {
             myparent.removeChild(document.getElementById("resultsHolder"));
         }
 
-        estimated=true;
+        estimated = true;
         d3.select("#results")
-        .style("display", "block");
+            .style("display", "block");
 
         d3.select("#resultsView")
-        .style("display", "block");
+            .style("display", "block");
 
         d3.select("#modelView")
-        .style("display", "block");
+            .style("display", "block");
 
 
         // programmatic click on Results button
         $("#btnResults").trigger("click");
 
 
-        modelCount = modelCount+1;
+        modelCount = modelCount + 1;
         var model = "Model".concat(modelCount);
 
         function modCol() {
             d3.select("#modelView")
-            .selectAll("p")
-            .style('background-color', hexToRgba(varColor));
+                .selectAll("p")
+                .style('background-color', hexToRgba(varColor));
         }
 
         modCol();
 
         d3.select("#modelView")
-        .insert("p",":first-child") // top stack for results
-        .attr("id",model)
-        .text(model)
-        .style('background-color', hexToRgba(selVarColor))
-        .on("click", function(){
-            var a = this.style.backgroundColor.replace(/\s*/g, "");
-            var b = hexToRgba(selVarColor).replace(/\s*/g, "");
-            if(a.substr(0,17)===b.substr(0,17)) {
-                return; //escapes the function early if the displayed model is clicked
-            }
-            modCol();
-            d3.select(this)
-            .style('background-color', hexToRgba(selVarColor));
-            viz(this.id);
+            .insert("p", ":first-child") // top stack for results
+            .attr("id", model)
+            .text(model)
+            .style('background-color', hexToRgba(selVarColor))
+            .on("click", function () {
+                var a = this.style.backgroundColor.replace(/\s*/g, "");
+                var b = hexToRgba(selVarColor).replace(/\s*/g, "");
+                if (a.substr(0, 17) === b.substr(0, 17)) {
+                    return; //escapes the function early if the displayed model is clicked
+                }
+                modCol();
+                d3.select(this)
+                    .style('background-color', hexToRgba(selVarColor));
+                viz(this.id);
             });
 
         var rCall = [];
@@ -1268,13 +1298,13 @@ function estimate(btn) {
 
     function estimateFail(btn) {
         estimateLadda.stop();  // stop spinner
-      estimated=true;
+        estimated = true;
     }
 
     function selectorSuccess(btn, json) {
         d3.select("#ticker")
-        .text("Suggested variables and percent improvement on RMSE: " + json.vars);
-       // console.log("selectorSuccess: ", json);
+            .text("Suggested variables and percent improvement on RMSE: " + json.vars);
+        // console.log("selectorSuccess: ", json);
     }
 
     function selectorFail(btn) {
@@ -1282,7 +1312,7 @@ function estimate(btn) {
     }
 
     estimateLadda.start();  // start spinner
-    makeCorsRequest(urlcall,btn, estimateSuccess, estimateFail, solajsonout);
+    makeCorsRequest(urlcall, btn, estimateSuccess, estimateFail, solajsonout);
     //makeCorsRequest(selectorurlcall, btn, selectorSuccess, selectorFail, solajsonout);
 
 
@@ -1296,29 +1326,29 @@ function dataDownload() {
     //package the output as JSON
     // add call history and package the zparams object as JSON
     //console.log("inside datadownload, zparams= ",zparams);
-    zparams.zmetadataurl=metadataurl;
-    zparams.zusername=username;
+    zparams.zmetadataurl = metadataurl;
+    zparams.zusername = username;
     var jsonout = JSON.stringify(zparams);
-    var btn="nobutton";
+    var btn = "nobutton";
 
     //var base = rappURL+"zeligapp?solaJSON="
-    urlcall = rappURL+"dataapp"; //base.concat(jsonout);
-    var solajsonout = "solaJSON="+jsonout;
+    urlcall = rappURL + "dataapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON=" + jsonout;
     //console.log("urlcall out: ", urlcall);
-   // console.log("POST out: ", solajsonout);
+    // console.log("POST out: ", solajsonout);
 
     function downloadSuccess(btn, json) {
         //console.log("dataDownload json in: ", json);
-        zparams.zsessionid=json.sessionid[0];
+        zparams.zsessionid = json.sessionid[0];
 
         // set the link URL
-        if(production){
-            var logURL=rappURL+"log_dir/log_"+zparams.zsessionid+".txt";
-            document.getElementById("logID").href=logURL;
+        if (production) {
+            var logURL = rappURL + "log_dir/log_" + zparams.zsessionid + ".txt";
+            document.getElementById("logID").href = logURL;
         }
-        else{
-            var logURL="rook/log_"+zparams.zsessionid+".txt";
-            document.getElementById("logID").href=logURL;
+        else {
+            var logURL = "rook/log_" + zparams.zsessionid + ".txt";
+            document.getElementById("logID").href = logURL;
         }
 
     }
@@ -1327,7 +1357,7 @@ function dataDownload() {
         console.log("Data have not been downloaded");
     }
 
-    makeCorsRequest(urlcall,btn, downloadSuccess, downloadFail, solajsonout);
+    makeCorsRequest(urlcall, btn, downloadSuccess, downloadFail, solajsonout);
 }
 
 
@@ -1511,49 +1541,56 @@ function transform(n,t, typeTransform) {
 
 
     //package the output as JSON
-    var transformstuff = {zdataurl:dataurl, zvars:n, zsessionid:zparams.zsessionid, transform:t, callHistory:callHistory, typeTransform:typeTransform, typeStuff:outtypes};
+    var transformstuff = {
+        zdataurl: dataurl,
+        zvars: n,
+        zsessionid: zparams.zsessionid,
+        transform: t,
+        callHistory: callHistory,
+        typeTransform: typeTransform,
+        typeStuff: outtypes
+    };
     var jsonout = JSON.stringify(transformstuff);
     //var base = rappURL+"transformapp?solaJSON="
 
-    urlcall = rappURL+"transformapp"; //base.concat(jsonout);
-    var solajsonout = "solaJSON="+jsonout;
+    urlcall = rappURL + "transformapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON=" + jsonout;
     //console.log("urlcall out: ", urlcall);
     //console.log("POST out: ", solajsonout);
-
 
 
     function transformSuccess(btn, json) {
         estimateLadda.stop();
         //console.log("json in: ", json);
 
-        if(json.typeTransform[0]) {
+        if (json.typeTransform[0]) {
 
-            d3.json(json.url, function(error, json) {
-                        if (error) return console.warn(error);
-                        var jsondata = json;
-                    	var vars=jsondata["variables"];
+            d3.json(json.url, function (error, json) {
+                if (error) return console.warn(error);
+                var jsondata = json;
+                var vars = jsondata["variables"];
 
-                        for(var key in vars) {
-                            var myIndex = findNodeIndex(key);
-                            jQuery.extend(true, allNodes[myIndex], jsondata.variables[key]);
+                for (var key in vars) {
+                    var myIndex = findNodeIndex(key);
+                    jQuery.extend(true, allNodes[myIndex], jsondata.variables[key]);
 
-                            if(allNodes[myIndex].plottype === "continuous") {
-                                densityNode(allNodes[myIndex]);
-                            }
-                            else if (allNodes[myIndex].plottype === "bar") {
-                                barsNode(allNodes[myIndex]);
-                            }
-                        }
+                    if (allNodes[myIndex].plottype === "continuous") {
+                        densityNode(allNodes[myIndex]);
+                    }
+                    else if (allNodes[myIndex].plottype === "bar") {
+                        barsNode(allNodes[myIndex]);
+                    }
+                }
 
-                        fakeClick();
-                        populatePopover();
-                        panelPlots();
-                    //console.log(allNodes[myIndex]);
-                    });
+                fakeClick();
+                populatePopover();
+                panelPlots();
+                //console.log(allNodes[myIndex]);
+            });
         }
         else {
 
-            callHistory.push({func:"transform", zvars:n, transform:t});
+            callHistory.push({func: "transform", zvars: n, transform: t});
 
             var subseted = false;
             var rCall = [];
@@ -1561,20 +1598,40 @@ function transform(n,t, typeTransform) {
             var newVar = rCall[0][0];
             trans.push(newVar);
 
-            d3.json(json.url, function(error, json) {
-                    if (error) return console.warn(error);
-                    var jsondata = json;
-                    //var jsondata = json;
-                    var vars=jsondata["variables"];
-                    for(var key in vars) {
-                        var myIndex = findNodeIndex(key);
-                    if(typeof myIndex !== "undefined") {
+            d3.json(json.url, function (error, json) {
+                if (error) return console.warn(error);
+                var jsondata = json;
+                //var jsondata = json;
+                var vars = jsondata["variables"];
+                for (var key in vars) {
+                    var myIndex = findNodeIndex(key);
+                    if (typeof myIndex !== "undefined") {
                         alert("Invalid transformation: this variable name already exists.");
                         return;
                     }
                     // add transformed variable to the current space
                     var i = allNodes.length;
-                    var obj1 = {id:i, reflexive: false, "name": key, "labl": "transformlabel", data: [5,15,20,0,5,15,20], count: [.6, .2, .9, .8, .1, .3, .4], "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false, "defaultInterval":jsondata.variables[key]["interval"], "defaultNumchar":jsondata.variables[key]["numchar"], "defaultNature":jsondata.variables[key]["nature"], "defaultBinary":jsondata.variables[key]["binary"]};
+                    var obj1 = {
+                        id: i,
+                        reflexive: false,
+                        "name": key,
+                        "labl": "transformlabel",
+                        data: [5, 15, 20, 0, 5, 15, 20],
+                        count: [.6, .2, .9, .8, .1, .3, .4],
+                        "nodeCol": colors(i),
+                        "baseCol": colors(i),
+                        "strokeColor": selVarColor,
+                        "strokeWidth": "1",
+                        "subsetplot": false,
+                        "subsetrange": ["", ""],
+                        "setxplot": false,
+                        "setxvals": ["", ""],
+                        "grayout": false,
+                        "defaultInterval": jsondata.variables[key]["interval"],
+                        "defaultNumchar": jsondata.variables[key]["numchar"],
+                        "defaultNature": jsondata.variables[key]["nature"],
+                        "defaultBinary": jsondata.variables[key]["binary"]
+                    };
 
                     jQuery.extend(true, obj1, jsondata.variables[key]);
                     allNodes.push(obj1);
@@ -1585,81 +1642,81 @@ function transform(n,t, typeTransform) {
                     fakeClick();
                     panelPlots();
 
-                    if(allNodes[i].plottype === "continuous") {
+                    if (allNodes[i].plottype === "continuous") {
                         densityNode(allNodes[i]);
                     }
-                        else if (allNodes[i].plottype === "bar") {
+                    else if (allNodes[i].plottype === "bar") {
                         barsNode(allNodes[i]);
-                        }
-                    }//for
+                    }
+                }//for
 
 
-                    });
+            });
 
             // update the log
             logArray.push("transform: ".concat(rCall[0]));
             showLog();
 
             /*
-                    // NOTE: below is the carousel portion that needs to be revised as of May 29 2015
+             // NOTE: below is the carousel portion that needs to be revised as of May 29 2015
 
-            // add transformed variable to all spaces
-            // check if myspace callHistory contains a subset
-            for(var k0=0; k0<callHistory.length; k0++) {
-                if(callHistory[k0].func==="subset") {
-                    var subseted = true;
-                }
-            }
+             // add transformed variable to all spaces
+             // check if myspace callHistory contains a subset
+             for(var k0=0; k0<callHistory.length; k0++) {
+             if(callHistory[k0].func==="subset") {
+             var subseted = true;
+             }
+             }
 
-        loopJ:
-            for(var j in spaces) {
-                if(j===myspace) {continue;}
-                var i = spaces[j].allNodes.length;
-                if(subseted===true) { // myspace has been subseted
-                    offspaceTransform(j);
-                    continue loopJ;
-                }
-            loopK:
-                for(var k=0; k<spaces[j].callHistory.length; k++) { // gets here if myspace has not been subseted
-                    if(spaces[j].callHistory[k].func==="subset") { // check if space j has been subseted
-                        offspaceTransform(j);
-                        continue loopJ;
-                    }
-                }
-                // if there is a subset in the callHistory of the current space, transformation is different
-                function offspaceTransform(j) {
-                    transformstuff = {zdataurl:dataurl, zvars:n, zsessionid:zparams.zsessionid, transform:t, callHistory:spaces[j].callHistory};
-                    var jsonout = JSON.stringify(transformstuff);
-                    //var base = rappURL+"transformapp?solaJSON="
-                    urlcall = rappURL+"transformapp"; //base.concat(jsonout);
-                    var solajsonout = "solaJSON="+jsonout;
-                    console.log("urlcall out: ", urlcall);
-                    console.log("POST out: ", solajsonout);
+             loopJ:
+             for(var j in spaces) {
+             if(j===myspace) {continue;}
+             var i = spaces[j].allNodes.length;
+             if(subseted===true) { // myspace has been subseted
+             offspaceTransform(j);
+             continue loopJ;
+             }
+             loopK:
+             for(var k=0; k<spaces[j].callHistory.length; k++) { // gets here if myspace has not been subseted
+             if(spaces[j].callHistory[k].func==="subset") { // check if space j has been subseted
+             offspaceTransform(j);
+             continue loopJ;
+             }
+             }
+             // if there is a subset in the callHistory of the current space, transformation is different
+             function offspaceTransform(j) {
+             transformstuff = {zdataurl:dataurl, zvars:n, zsessionid:zparams.zsessionid, transform:t, callHistory:spaces[j].callHistory};
+             var jsonout = JSON.stringify(transformstuff);
+             //var base = rappURL+"transformapp?solaJSON="
+             urlcall = rappURL+"transformapp"; //base.concat(jsonout);
+             var solajsonout = "solaJSON="+jsonout;
+             console.log("urlcall out: ", urlcall);
+             console.log("POST out: ", solajsonout);
 
 
-                    function offspaceSuccess(btn, json) {
-                        spaces[j].callHistory.push({func:"transform", zvars:n, transform:t});
-                        spaces[j].logArray.push("transform: ".concat(rCall[0]));
-                        readPreprocess(json.url, p=spaces[j].preprocess, v=newVar, callback=null);
+             function offspaceSuccess(btn, json) {
+             spaces[j].callHistory.push({func:"transform", zvars:n, transform:t});
+             spaces[j].logArray.push("transform: ".concat(rCall[0]));
+             readPreprocess(json.url, p=spaces[j].preprocess, v=newVar, callback=null);
 
-                        spaces[j].allNodes.push({id:i, reflexive: false, "name": rCall[0][0], "labl": "transformlabel", data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "interval":json.types.interval[0], "numchar":json.types.numchar[0], "nature":json.types.nature[0], "binary":json.types.binary[0], "defaultInterval":json.types.interval[0], "defaultNumchar":json.types.numchar[0], "defaultNature":json.types.nature[0], "defaultBinary":json.types.binary[0], "min":json.sumStats.min[0], "median":json.sumStats.median[0], "sd":json.sumStats.sd[0], "mode":(json.sumStats.mode[0]).toString(), "freqmode":json.sumStats.freqmode[0],"fewest":(json.sumStats.fewest[0]).toString(), "freqfewest":json.sumStats.freqfewest[0], "mid":(json.sumStats.mid[0]).toString(), "freqmid":json.sumStats.freqmid[0], "uniques":json.sumStats.uniques[0], "herfindahl":json.sumStats.herfindahl[0],
-                        "valid":json.sumStats.valid[0], "mean":json.sumStats.mean[0], "max":json.sumStats.max[0], "invalid":json.sumStats.invalid[0], "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false});
-                    }
-                    function offspaceFail(btn) {
-                        alert("transform fail");
-                    }
-                    makeCorsRequest(urlcall,btn, offspaceSuccess, offspaceFail, solajsonout);
-                }
+             spaces[j].allNodes.push({id:i, reflexive: false, "name": rCall[0][0], "labl": "transformlabel", data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "interval":json.types.interval[0], "numchar":json.types.numchar[0], "nature":json.types.nature[0], "binary":json.types.binary[0], "defaultInterval":json.types.interval[0], "defaultNumchar":json.types.numchar[0], "defaultNature":json.types.nature[0], "defaultBinary":json.types.binary[0], "min":json.sumStats.min[0], "median":json.sumStats.median[0], "sd":json.sumStats.sd[0], "mode":(json.sumStats.mode[0]).toString(), "freqmode":json.sumStats.freqmode[0],"fewest":(json.sumStats.fewest[0]).toString(), "freqfewest":json.sumStats.freqfewest[0], "mid":(json.sumStats.mid[0]).toString(), "freqmid":json.sumStats.freqmid[0], "uniques":json.sumStats.uniques[0], "herfindahl":json.sumStats.herfindahl[0],
+             "valid":json.sumStats.valid[0], "mean":json.sumStats.mean[0], "max":json.sumStats.max[0], "invalid":json.sumStats.invalid[0], "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false});
+             }
+             function offspaceFail(btn) {
+             alert("transform fail");
+             }
+             makeCorsRequest(urlcall,btn, offspaceSuccess, offspaceFail, solajsonout);
+             }
 
-                // if myspace and space j have not been subseted, append the same transformation
-                spaces[j].callHistory.push({func:"transform", zvars:n, transform:t});
-                spaces[j].logArray.push("transform: ".concat(rCall[0]));
+             // if myspace and space j have not been subseted, append the same transformation
+             spaces[j].callHistory.push({func:"transform", zvars:n, transform:t});
+             spaces[j].logArray.push("transform: ".concat(rCall[0]));
 
-                spaces[j].allNodes.push({id:i, reflexive: false, "name": rCall[0][0], "labl": "transformlabel", data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "interval":json.types.interval[0], "numchar":json.types.numchar[0], "nature":json.types.nature[0], "binary":json.types.binary[0], "defaultInterval":json.types.interval[0], "defaultNumchar":json.types.numchar[0], "defaultNature":json.types.nature[0], "defaultBinary":json.types.binary[0], "min":json.sumStats.min[0], "median":json.sumStats.median[0], "sd":json.sumStats.sd[0], "mode":(json.sumStats.mode[0]).toString(), "freqmode":json.sumStats.freqmode[0],"fewest":(json.sumStats.fewest[0]).toString(), "freqfewest":json.sumStats.freqfewest[0], "mid":(json.sumStats.mid[0]).toString(), "freqmid":json.sumStats.freqmid[0], "uniques":json.sumStats.uniques[0], "herfindahl":json.sumStats.herfindahl[0],
-                "valid":json.sumStats.valid[0], "mean":json.sumStats.mean[0], "max":json.sumStats.max[0], "invalid":json.sumStats.invalid[0], "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false});
+             spaces[j].allNodes.push({id:i, reflexive: false, "name": rCall[0][0], "labl": "transformlabel", data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "interval":json.types.interval[0], "numchar":json.types.numchar[0], "nature":json.types.nature[0], "binary":json.types.binary[0], "defaultInterval":json.types.interval[0], "defaultNumchar":json.types.numchar[0], "defaultNature":json.types.nature[0], "defaultBinary":json.types.binary[0], "min":json.sumStats.min[0], "median":json.sumStats.median[0], "sd":json.sumStats.sd[0], "mode":(json.sumStats.mode[0]).toString(), "freqmode":json.sumStats.freqmode[0],"fewest":(json.sumStats.fewest[0]).toString(), "freqfewest":json.sumStats.freqfewest[0], "mid":(json.sumStats.mid[0]).toString(), "freqmid":json.sumStats.freqmid[0], "uniques":json.sumStats.uniques[0], "herfindahl":json.sumStats.herfindahl[0],
+             "valid":json.sumStats.valid[0], "mean":json.sumStats.mean[0], "max":json.sumStats.max[0], "invalid":json.sumStats.invalid[0], "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false});
 
-                readPreprocess(json.url, p=spaces[j].preprocess, v=newVar, callback=null);
-            }   */
+             readPreprocess(json.url, p=spaces[j].preprocess, v=newVar, callback=null);
+             }   */
         }
     }
 
@@ -1669,7 +1726,7 @@ function transform(n,t, typeTransform) {
     }
 
     estimateLadda.start();  // start spinner
-    makeCorsRequest(urlcall,btn, transformSuccess, transformFail, solajsonout);
+    makeCorsRequest(urlcall, btn, transformSuccess, transformFail, solajsonout);
 
 }
 
@@ -2487,10 +2544,10 @@ function nodeReset (n) {
 
 function subsetSelect(btn) {
     if (dataurl) {
-	zparams.zdataurl = dataurl;
+        zparams.zdataurl = dataurl;
     }
 
-    if(production && zparams.zsessionid=="") {
+    if (production && zparams.zsessionid == "") {
         alert("Warning: Data download is not complete. Try again soon.");
         return;
     }
@@ -2501,43 +2558,60 @@ function subsetSelect(btn) {
     var subsetEmpty = true;
 
     // is this the same as zPop()?
-    for(var j =0; j < nodes.length; j++ ) { //populate zvars and zsubset arrays
+    for (var j = 0; j < nodes.length; j++) { //populate zvars and zsubset arrays
         zparams.zvars.push(nodes[j].name);
         var temp = nodes[j].id;
         zparams.zsubset[j] = allNodes[temp].subsetrange;
-        if(zparams.zsubset[j].length>0) {
-            if(zparams.zsubset[j][0]!="") {
+        if (zparams.zsubset[j].length > 0) {
+            if (zparams.zsubset[j][0] != "") {
                 zparams.zsubset[j][0] = Number(zparams.zsubset[j][0]);
             }
-            if(zparams.zsubset[j][1]!="") {
+            if (zparams.zsubset[j][1] != "") {
                 zparams.zsubset[j][1] = Number(zparams.zsubset[j][1]);
             }
         }
         zparams.zplot.push(allNodes[temp].plottype);
-        if(zparams.zsubset[j][1] != "") {subsetEmpty=false;} //only need to check one
+        if (zparams.zsubset[j][1] != "") {
+            subsetEmpty = false;
+        } //only need to check one
     }
 
-    if(subsetEmpty==true) {
+    if (subsetEmpty == true) {
         alert("Warning: No new subset selected.");
         return;
     }
 
     var outtypes = [];
-    for(var j=0; j < allNodes.length; j++) {
-        outtypes.push({varnamesTypes:allNodes[j].name, nature:allNodes[j].nature, numchar:allNodes[j].numchar, binary:allNodes[j].binary, interval:allNodes[j].interval,time:allNodes[j].time});
+    for (var j = 0; j < allNodes.length; j++) {
+        outtypes.push({
+            varnamesTypes: allNodes[j].name,
+            nature: allNodes[j].nature,
+            numchar: allNodes[j].numchar,
+            binary: allNodes[j].binary,
+            interval: allNodes[j].interval,
+            time: allNodes[j].time
+        });
     }
 
-    var subsetstuff = {zdataurl:zparams.zdataurl, zvars:zparams.zvars, zsubset:zparams.zsubset, zsessionid:zparams.zsessionid, zplot:zparams.zplot, callHistory:callHistory, typeStuff:outtypes};
+    var subsetstuff = {
+        zdataurl: zparams.zdataurl,
+        zvars: zparams.zvars,
+        zsubset: zparams.zsubset,
+        zsessionid: zparams.zsessionid,
+        zplot: zparams.zplot,
+        callHistory: callHistory,
+        typeStuff: outtypes
+    };
 
     var jsonout = JSON.stringify(subsetstuff);
     //var base = rappURL+"subsetapp?solaJSON="
-    urlcall = rappURL+"subsetapp"; //base.concat(jsonout);
-    var solajsonout = "solaJSON="+jsonout;
+    var urlcall = rappURL + "subsetapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON=" + jsonout;
 
     console.log("POST out: ", solajsonout);
 
 
-    function subsetSelectSuccess(btn,json) {
+    function subsetSelectSuccess(btn, json) {
         console.log(json);
         selectLadda.stop(); // stop motion
         $("#btnVariables").trigger("click"); // programmatic clicks
@@ -2559,7 +2633,15 @@ function subsetSelect(btn) {
         var myLog = jQuery.extend(true, [], logArray);
         var myHistory = jQuery.extend(true, [], callHistory);
 
-        spaces[myspace] = {"allNodes":myNodes, "zparams":myParams, "trans":myTrans, "force":myForce, "preprocess":myPreprocess, "logArray":myLog, "callHistory":myHistory};
+        spaces[myspace] = {
+            "allNodes": myNodes,
+            "zparams": myParams,
+            "trans": myTrans,
+            "force": myForce,
+            "preprocess": myPreprocess,
+            "logArray": myLog,
+            "callHistory": myHistory
+        };
 
         // remove pre-subset svg
         var selectMe = "#m".concat(myspace);
@@ -2567,22 +2649,27 @@ function subsetSelect(btn) {
         selectMe = "#whitespace".concat(myspace);
         d3.select(selectMe).remove();
 
-       // selectMe = "navdot".concat(myspace);
-       // var mynavdot = document.getElementById(selectMe);
-       // mynavdot.removeAttribute("class");
+        // selectMe = "navdot".concat(myspace);
+        // var mynavdot = document.getElementById(selectMe);
+        // mynavdot.removeAttribute("class");
 
         myspace = spaces.length;
-        callHistory.push({func:"subset", zvars:jQuery.extend(true, [],zparams.zvars), zsubset:jQuery.extend(true, [],zparams.zsubset), zplot:jQuery.extend(true, [],zparams.zplot)});
+        callHistory.push({
+            func: "subset",
+            zvars: jQuery.extend(true, [], zparams.zvars),
+            zsubset: jQuery.extend(true, [], zparams.zsubset),
+            zplot: jQuery.extend(true, [], zparams.zplot)
+        });
 
 
-      //  selectMe = "navdot".concat(myspace-1);
-      //  mynavdot = document.getElementById(selectMe);
+        //  selectMe = "navdot".concat(myspace-1);
+        //  mynavdot = document.getElementById(selectMe);
 
-     //   var newnavdot = document.createElement("li");
-     //   newnavdot.setAttribute("class", "active");
-    //    selectMe = "navdot".concat(myspace);
-    //    newnavdot.setAttribute("id", selectMe);
-    //    mynavdot.parentNode.insertBefore(newnavdot, mynavdot.nextSibling);
+        //   var newnavdot = document.createElement("li");
+        //   newnavdot.setAttribute("class", "active");
+        //    selectMe = "navdot".concat(myspace);
+        //    newnavdot.setAttribute("id", selectMe);
+        //    mynavdot.parentNode.insertBefore(newnavdot, mynavdot.nextSibling);
 
 
         // this is to be used to gray out and remove listeners for variables that have been subsetted out of the data
@@ -2590,12 +2677,12 @@ function subsetSelect(btn) {
             // if in nodes, remove
             // gray out in left panel
             // make unclickable in left panel
-            for(var i=0; i < v.length; i++) {
-                var selectMe=v[i].replace(/\W/g, "_");
-                document.getElementById(selectMe).style.color=hexToRgba(grayColor);
+            for (var i = 0; i < v.length; i++) {
+                var selectMe = v[i].replace(/\W/g, "_");
+                document.getElementById(selectMe).style.color = hexToRgba(grayColor);
                 selectMe = "p#".concat(selectMe);
                 d3.select(selectMe)
-                .on("click", null);
+                    .on("click", null);
             }
         }
 
@@ -2604,55 +2691,55 @@ function subsetSelect(btn) {
         reWriteLog();
 
         d3.select("#innercarousel")
-        .append('div')
-        .attr('class', 'item active')
-        .attr('id', function(){
-              return "m".concat(myspace.toString());
-              })
-        .append('svg')
-        .attr('id', 'whitespace');
+            .append('div')
+            .attr('class', 'item active')
+            .attr('id', function () {
+                return "m".concat(myspace.toString());
+            })
+            .append('svg')
+            .attr('id', 'whitespace');
         svg = d3.select("#whitespace");
 
 
-        d3.json(json.url, function(error, json) {
-                if (error) return console.warn(error);
-                var jsondata = json;
-                var vars=jsondata["variables"];
+        d3.json(json.url, function (error, json) {
+            if (error) return console.warn(error);
+            var jsondata = json;
+            var vars = jsondata["variables"];
 
-               // console.log(jsondata);
-                for(var key in jsondata["variables"]) {
+            // console.log(jsondata);
+            for (var key in jsondata["variables"]) {
 
-                    var myIndex = findNodeIndex(key);
-                	//console.log("Key Value:"+key);
-                	//console.log("My index:"+myIndex);
-                	//console.log("Node Index"+findNodeIndex(key));
-                    allNodes[myIndex].plotx=undefined;
-                    allNodes[myIndex].ploty=undefined;
-                    allNodes[myIndex].plotvalues=undefined;
-                    allNodes[myIndex].plottype="";
-                    //allNodes[myIndex].plotx=null;
-                    //allNodes[myIndex].ploty=null;
-                    //allNodes[myIndex].plotvalues=null;
-                    //allNodes[myIndex].plottype="";
+                var myIndex = findNodeIndex(key);
+                //console.log("Key Value:"+key);
+                //console.log("My index:"+myIndex);
+                //console.log("Node Index"+findNodeIndex(key));
+                allNodes[myIndex].plotx = undefined;
+                allNodes[myIndex].ploty = undefined;
+                allNodes[myIndex].plotvalues = undefined;
+                allNodes[myIndex].plottype = "";
+                //allNodes[myIndex].plotx=null;
+                //allNodes[myIndex].ploty=null;
+                //allNodes[myIndex].plotvalues=null;
+                //allNodes[myIndex].plottype="";
 
-                    jQuery.extend(true, allNodes[myIndex], jsondata.variables[key]);
-                    allNodes[myIndex].subsetplot=false;
-                    allNodes[myIndex].subsetrange=["",""];
-                    allNodes[myIndex].setxplot=false;
-                    allNodes[myIndex].setxvals=["",""];
+                jQuery.extend(true, allNodes[myIndex], jsondata.variables[key]);
+                allNodes[myIndex].subsetplot = false;
+                allNodes[myIndex].subsetrange = ["", ""];
+                allNodes[myIndex].setxplot = false;
+                allNodes[myIndex].setxvals = ["", ""];
 
-                    if(allNodes[myIndex].valid==0) {
-                        grayOuts.push(allNodes[myIndex].name);
-                        allNodes[myIndex].grayout=true;
-                    }
+                if (allNodes[myIndex].valid == 0) {
+                    grayOuts.push(allNodes[myIndex].name);
+                    allNodes[myIndex].grayout = true;
                 }
+            }
 
-                rePlot();
-                populatePopover();
-                layout(v="add");
+            rePlot();
+            populatePopover();
+            layout(v = "add");
 
-                });
-  //  console.log("vaalue of all nodes after subset:",allNodes);
+        });
+        //  console.log("vaalue of all nodes after subset:",allNodes);
         varOut(grayOuts);
     }
 
@@ -2662,7 +2749,7 @@ function subsetSelect(btn) {
     }
 
     selectLadda.start(); //start button motion
-    makeCorsRequest(urlcall,btn, subsetSelectSuccess, subsetSelectFail, solajsonout);
+    makeCorsRequest(urlcall, btn, subsetSelectSuccess, subsetSelectFail, solajsonout);
 
 }
 
@@ -3464,9 +3551,9 @@ function capitalizeFirst(str) {
  * Draw the main graph
  *
  **/
- 
-function drawMainGraph() {	
-	
+
+function drawMainGraph() {
+
 
 	$("#subsetLocation").append('<div class="container"><div id="subsetLocation_panel" class="row"></div></div>');
 
