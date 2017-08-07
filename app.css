@@ -1240,6 +1240,10 @@ div.actorTab button.active {
 	float: right;
 }
 
+.actorShowSelected {
+	display: inline-block;
+}
+
 .actorHead4 {
 	margin-bottom: 0px;
 	display: inline-block;
@@ -1265,7 +1269,7 @@ div.actorTab button.active {
 	display: none;
 }
 
-.actorChk {
+.sourceChk, .targetChk, .actorChk {
 	display: inline-block;
 	vertical-align: text-bottom;
 	margin: 1px 5px 0px 5px !important;

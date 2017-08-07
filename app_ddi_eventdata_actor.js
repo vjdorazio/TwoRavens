@@ -14,7 +14,7 @@ $(document).ready(function() {
 	});
 
 	//enable hover text for bottom buttons
-	$(".actorBottom, .clearActorBtn, #deleteGroup").tooltip({container: "body"});
+	$(".actorBottom, .clearActorBtn, #deleteGroup, .actorShowSelectedLbl").tooltip({container: "body"});
 });
 
 var sourceFilterChecked = [];
@@ -48,12 +48,14 @@ var actorOrder = ["Full", "Entity", "Role", "Attr"];
 	//~ this.actorID = actorID;
 //~ }
 
-function nodeObj(name, group, color, actorType) {
+
+function nodeObj(name, group, groupIndices, color, actorType, actorID) {
 	this.name = name;
 	this.group = group;
+	this.groupIndices = groupIndices;
 	this.nodeCol = color;
 	this.actor = actorType;
-	//~ this.actorID = actorID;
+	this.actorID = actorID;
 }
 
 function linkObj(source, target){
@@ -78,6 +80,9 @@ var currentTab = "source";
 var sourceCurrentNode = null;
 var targetCurrentNode = null;
 var currentSize = 0;
+var sourceSize = 0;
+var targetSize = 0;
+var changeID = 0;
 
 //begin force definitions
 var svg = d3.select("#actorLinkSVG");
@@ -157,7 +162,7 @@ function dragstart(d, i) {
 	d3.select(this).moveToBack();
 	console.log("drag started for: " + d.name);
 	//~ console.log(this);	//note "this" refers to the HTML section for the node
-	d3.event.sourceEvent.stopPropagation();		//allows node below to trigger mouseover
+	//~ d3.event.sourceEvent.stopPropagation();		//allows node below to trigger mouseover
 }
 
 function dragmove(d, i) {
@@ -170,11 +175,48 @@ function dragend(d, i) {
 	//~ d.fixed = true; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
 	//merge dragSel and dragTarg
 	if (dragTarget){
-		console.log("merging: " + dragSelect.name + " -> " + dragTarget.name);
-		console.log("respective id: " + dragSelect.actorID + "	" + dragTarget.actorID);
+		//~ console.log("merging: " + dragSelect.name + " -> " + dragTarget.name);
+		//~ console.log("respective id: " + dragSelect.actorID + "	" + dragTarget.actorID);
 		d3.select(dragTargetHTML).transition().attr("r", allR);
 
-		
+		//merge dragSel group to dragTarg group
+		for (var x = 0; x < dragSelect.group.length; x ++) {
+			if (dragTarget.group.indexOf(dragSelect.group[x]) < 0) {
+				dragTarget.group.push(dragSelect.group[x]);
+				dragTarget.groupIndices.push(dragSelect.groupIndices[x]);
+				//update checks
+				//~ $("." + dragSelect.actor + "Chk[value=" + dragSelect.group[x] + "]").prop("checked", "true");
+			}
+		}
+
+		for (var x = 0; x < dragTarget.groupIndices.length; x ++)
+			$("#" + dragTarget.groupIndices[x]).prop("checked", "true");
+
+		//merge dragSel links to dragTarg
+		for (var x = 0; x < links.length;x ++) {
+			if (links[x].source == dragSelect)
+				links[x].source = dragTarget;
+			else if (links[x].target == dragSelect)
+				links[x].target = dragTarget;
+		}
+
+		nodes.splice(nodes.indexOf(dragSelect), 1);
+		//~ console.log("new nodes:");
+		//~ for (var x = 0; x < nodes.length; x++)
+			//~ console.log(nodes[x]);
+
+		//~ console.log(dragTarget.group);
+//~ console.log("_____________________________");
+
+		dragTarget.actorID = changeID;
+		changeID ++;
+		//now set gui to show dragTarget data			!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		window[currentTab + "CurrentNode"] = dragTarget;
+		//~ console.log(window[currentTab + "CurrentNode"]);
+		updateGroupName(window[currentTab + "CurrentNode"].name);
+		$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
+
+		$("#" + currentTab + "ShowSelected").trigger("click");
 		
 		updateAll();
 	}
@@ -184,7 +226,8 @@ function dragend(d, i) {
 	dragTargetHTML = null;
 	console.log("drag ended for: " + d.name);
 	tick();
-	force.resume();
+	//~ force.resume();
+	force.start();
 }
 
 function updateSVG(){
@@ -212,13 +255,32 @@ function updateSVG(){
 	// remove old links
 	linkGroup.exit().remove();
 
-	nodeGroup = nodeGroup.data(nodes, function(d){return d.index;});
+	//~ console.log("update svg nodes");
+	//~ for (var x = 0; x < nodes.length; x ++)
+		//~ console.log(nodes[x]);
+	//~ console.log("_____________________________");
+
+	nodeGroup = nodeGroup.data(nodes, function(d){return d.actorID;});		//this is good for name changes but not good for deleting nodes
 	
 	var innerNode = nodeGroup.enter().append("g").attr("id", function(d){return d.name + "Group";}).call(node_drag);
 	innerNode.append("circle").attr("class", "node").attr("r", allR).style('fill', function(d){return d.nodeCol;}).style('opacity', "0.5").style('stroke', pebbleBorderColor).style("pointer-events", "all")
 	.on("click", function(d){
-		//~ console.log("clicked on innerNode");
+		console.log("clicked on innerNode");
 		//~ console.log(d);
+		if (window[currentTab + "CurrentNode"] !== d) {
+			console.log("different");
+
+			$("#" + d.actor + "TabBtn").trigger("click");
+			window[currentTab + "CurrentNode"] = d;
+			updateGroupName(d.name);
+			//update gui
+			$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
+			$("." + currentTab + "Chk:checked").prop("checked", false);
+			for (var x = 0; x < d.groupIndices.length; x ++)
+				$("#" + d.groupIndices[x]).prop("checked", true);
+			console.log(window[currentTab + "CurrentNode"]);
+			$("#" + currentTab + "ShowSelected").trigger("click");
+		}
 	})
 	.on("contextmenu", function(d){
 		d3.event.preventDefault();
@@ -321,7 +383,9 @@ function updateSVG(){
 	//~ console.log(svg.selectAll("text")[0]);
 
 	nodeGroup.exit().remove();
-	
+
+	//update all text nodes to match new name			//maybe remove this, redundant hopefully
+	//~ console.log("updating text");
 	svg.selectAll("text").text(function(d) {
 		//~ console.log(d);
 		return d.name;
@@ -419,9 +483,14 @@ $(document).ready(function() {
 	$("#editGroupName").ready(function() {
 		//~ var defaultGroupName = sourceGroups[sourceCurrentGroupNum].title;
 		//~ updateGroupName(defaultGroupName);
-		nodes.push(new nodeObj("Source Group 0", [], colors(currentSize), "source"));
+		nodes.push(new nodeObj("Source Group 0", [], [], colors(currentSize), "source", changeID));
 		currentSize ++;
-		nodes.push(new nodeObj("Target Group 0", [], colors(currentSize), "target"));
+		sourceSize ++;
+		changeID ++;
+		nodes.push(new nodeObj("Target Group 0", [], [], colors(currentSize), "target", changeID));
+		currentSize ++;
+		targetSize ++;
+		changeID ++;
 		sourceCurrentNode = nodes[0];
 		targetCurrentNode = nodes[1];
 	});
@@ -596,7 +665,13 @@ window.onload = function(){
 		chkbox.name = type + order + "Check";
 		chkbox.id = type + order + "Check" + x;
 		chkbox.value = value;
-		chkbox.className = "actorChk";
+		if (order != "Full") {
+			chkbox.className = "actorChk";
+		}
+		else {
+			chkbox.className = type + "Chk";
+		}
+		
 		if (chkSwitch) {
 			chkbox.onchange = function(){actorFilterChanged(this);};
 		}
@@ -655,6 +730,7 @@ window.onload = function(){
 function actorSelectChanged(element) {
 	element.checked = !!(element.checked);
 	console.log("actor check");
+	console.log(element);
 	//add into group
 	//if checked
 	//	if source then add into actorConnections[curGroupNum]
@@ -668,8 +744,10 @@ function actorSelectChanged(element) {
 			//~ window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.push(element.value);
 		//~ }
 		//~ console.log(window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]]);
-		if (window[currentTab + "CurrentNode"].group.indexOf(element.value < 0))
+		if (window[currentTab + "CurrentNode"].group.indexOf(element.value < 0)) {		//perhaps change to a set
 			window[currentTab + "CurrentNode"].group.push(element.value);
+			window[currentTab + "CurrentNode"].groupIndices.push(element.id);
+		}
 	}
 	else {
 		//~ var index = window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.indexOf(element.value);
@@ -677,8 +755,10 @@ function actorSelectChanged(element) {
 			//~ window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.splice(index, 1);
 		//~ }
 		var index = window[currentTab + "CurrentNode"].group.indexOf(element.value);
-		if (index > -1)
+		if (index > -1) {
 			window[currentTab + "CurrentNode"].group.splice(index, 1);
+			window[currentTab + "CurrentNode"].groupIndices.splice(index, 1);
+		}
 	}
 	//~ console.log("Title: " + window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].title);
 	//~ console.log("Contents: " + window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes);
@@ -686,11 +766,13 @@ function actorSelectChanged(element) {
 	console.log(window[currentTab + "CurrentNode"]);
 }
 
-//when checkbox checked, add or remove filter
+//when filter checkbox checked, add or remove filter
 function actorFilterChanged(element) {
 	element.checked = !!(element.checked);
 	var ending = getActorEnding(element);
 	if (element.checked) {
+		$("#" + currentTab + "ShowSelected").prop("checked", false);
+		
 		if (ending == "orga" || ending == "coun") {
 			window[currentTab + "EntityChecked"].push(element.value + ending);
 			switch(ending) {
@@ -784,6 +866,12 @@ function removeEnding(str) {
 
 //clears search and filter selections
 $(".clearActorBtn").click(function(event) {
+	clearChecks();
+	actorSearch(currentTab);
+});
+
+//performs clearing of all filter checks
+function clearChecks() {
 	document.getElementById(currentTab + "Search").value = "";
 	$("#" + currentTab + "Filter :checkbox").prop("checked", false);
 	window[currentTab + "FilterChecked"].length = 0;
@@ -792,8 +880,7 @@ $(".clearActorBtn").click(function(event) {
 	$("#" + currentTab + "OrgAllCheck").prop("checked", false).prop("indeterminate", false);
 	window[currentTab + "CountrySelect"] = 0;
 	$("#" + currentTab + "CountryAllCheck").prop("checked", false).prop("indeterminate", false);
-	actorSearch(currentTab);
-});
+}
 
 //clear search box when reloading page
 $(".actorSearch").ready(function() {
@@ -804,6 +891,39 @@ $(".actorSearch").ready(function() {
 $(".actorSearch").on("keyup", function(event) {
 	actorSearch(currentTab);
 });
+
+//on load of page, keep unchecked
+$(".actorShowSelected").ready(function() {
+	$(".actorShowSelected").prop("checked", false);
+});
+
+//called when showing only selected elements, element is the checkbox calling the function
+function showSelected(element) {
+	if (element.checked) {
+		currentScreen.length = 0;
+		clearChecks();
+
+		$("#" + element.id).prop("checked", true);
+	
+		$("." + currentTab + "Chk").each(function(i, element) {
+			if (element.checked) {
+				//~ console.log(element.id);
+				currentScreen.push(i);
+				$("#" + element.id).css("display", "inline-block")
+				//~ $("label[for='" + element.id + "']").css("display", "inline-block");
+				$("#" + element.id).next().css("display", "inline-block");
+			}
+			else {
+				$("#" + element.id).css("display", "none");
+				//~ $("label[for='" + element.id + "']").css("display", "none");
+				$("#" + element.id).next().css("display", "none");
+			}
+		});
+		//~ console.log("done");
+	}
+	else
+		$("#clearAll" + capitalizeFirst(currentTab) + "s").click();		//later implement to restore previous view?
+}
 
 //on load of page, keep unchecked
 $(".allCheck").ready(function() {
@@ -859,8 +979,10 @@ $(".actorSelectAll").click(function(event) {
 		//~ if (window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.indexOf(window[currentTab + "FullList"][currentScreen[x]]) < 0) {
 			//~ window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.push(window[currentTab + "FullList"][currentScreen[x]]);
 		//~ }
-		if (window[currentTab + "CurrentNode"].group.indexOf(window[currentTab + "FullList"][currentScreen[x]]) < 0)
+		if (window[currentTab + "CurrentNode"].group.indexOf(window[currentTab + "FullList"][currentScreen[x]]) < 0) {
 			window[currentTab + "CurrentNode"].group.push(window[currentTab + "FullList"][currentScreen[x]]);
+			window[currentTab + "CurrentNode"].groupIndices.push(currentTab + "FullCheck" + currentScreen[x]);
+		}
 		$("#" + currentTab + "FullCheck" + currentScreen[x]).prop("checked", true);
 	}
 	//~ console.log(window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]]);
@@ -870,6 +992,11 @@ $(".actorSelectAll").click(function(event) {
 //clears all of the current matched items from the current selection
 $(".actorClearAll").click(function(event) {
 	//~ console.log("in clear all");
+	if ($("#" + currentTab + "ShowSelected").prop("checked")) {
+		$("#" + currentTab + "ShowSelected").prop("checked", false);
+		$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
+	}
+	
 	for (var x = 0; x < currentScreen.length; x++) {
 		//~ index = window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.indexOf(window[currentTab + "FullList"][currentScreen[x]]);
 		//~ if (index > -1) {
@@ -879,6 +1006,7 @@ $(".actorClearAll").click(function(event) {
 		index = window[currentTab + "CurrentNode"].group.indexOf(window[currentTab + "FullList"][currentScreen[x]]);
 		if (index > -1) {
 			window[currentTab + "CurrentNode"].group.splice(index, 1);
+			window[currentTab + "CurrentNode"].groupIndices.splice(index, 1);
 			$("#" + currentTab + "FullCheck" + currentScreen[x]).prop("checked", false);
 		}
 	}
@@ -886,11 +1014,20 @@ $(".actorClearAll").click(function(event) {
 	//~ console.log(window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes);
 });
 
+//adds a new group for source/actor
 $(".actorNewGroup").click(function(event) {
-	currentSize ++;		//not good for creating new node number because shared with targets
-	nodes.push(new nodeObj(capitalizeFirst(currentTab) + " Group " + currentSize, [], colors(currentSize), currentTab));
+	//~ currentSize ++;		//not good for creating new node number because shared with targets
+	nodes.push(new nodeObj(capitalizeFirst(currentTab) + " Group " + window[currentTab + "Size"], [], [], colors(currentSize), currentTab, changeID));
+	window[currentTab + "Size"] ++;
+	currentSize ++;
+	changeID ++;
+	
 	window[currentTab + "CurrentNode"] = nodes[nodes.length - 1];
 	updateGroupName(window[currentTab + "CurrentNode"].name);
+	//update gui
+	$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
+	$("." + currentTab + "Chk:checked").prop("checked", false);
+	//update svg
 	updateAll();
 });
 

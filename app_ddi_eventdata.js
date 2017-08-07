@@ -3038,30 +3038,27 @@ var actorDisplayed = false;
 
 function d3actor() {
 	if (!actorDisplayed) {
-		//update display variables
-		//~ svg = d3.select("#actorLinkSVG");
+		$(document).ready(function() {
+			//update display variables
 
+			width = svg.node().getBoundingClientRect().width;
+			height = svg.node().getBoundingClientRect().height;
 
-		width = svg.node().getBoundingClientRect().width;
-		height = svg.node().getBoundingClientRect().height;
+			console.log(width + " " + height);
 
-		console.log(width + " " + height);
+			boundaryLeft = Math.floor(width/2) - 20;
+			boundaryRight = Math.ceil(width/2) + 20;
 
-		boundaryLeft = Math.floor(width/2) - 20;
-		boundaryRight = Math.ceil(width/2) + 20;
-
-		svg.append("path").attr("d", function() {
-			return "M" + width/2 + "," + 0 + "V" + height;
-		}).attr("stroke", "black");
-console.log("force in general");
-		//~ force = d3.layout.force().nodes(nodes).links(links).size([width, height]).linkDistance(150).charge(-600).start();
-		force.stop();
-		force = force.size([width, height]).start();
-		updateAll();
-		actorDisplayed = true;
+			svg.append("path").attr("d", function() {
+				return "M" + width/2 + "," + 0 + "V" + height;
+			}).attr("stroke", "black");
+			
+			force.stop();
+			force = force.size([width, height]).start();
+			updateAll();
+			actorDisplayed = true;
+		});
 	}
-		
-		
 }
 //actor code moved to app_ddi_eventdata_actor.js
 

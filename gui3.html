@@ -185,6 +185,9 @@
 							<button id="clearAllSources" type="button" data-toggle="tooltip" class="clearActorBtn" title="Clears search text and filters">Clear All Filters</button>
 							
 							<div id="sourceFilter" class="actorFilterList">
+								<label title="Show selected sources" data-toggle="tooltip" class="actorShowSelectedLbl actorChkLbl"><input class="actorChk actorShowSelected" name="sourceShowSelected" id="sourceShowSelected" type="checkbox" value="show" onchange="showSelected(this)">Show Selected</label>
+								<div class="seperator"></div>
+								
 								<!--dynamically add checks for filters at load-->
 								<button id="entitySourceExpand" class="filterExpand" value="expand"></button>
 								<label id="entitySources" class="actorHead4" for="entitySourceExpand"><b>Entity</b></label>
@@ -234,6 +237,9 @@
 							<button id="clearAllTargets" type="button" data-toggle="tooltip" class="clearActorBtn" title="Clears search text and filters">Clear All Filters</button>
 							
 							<div id="targetFilter" class="actorFilterList">
+								<label title="Show selected targets" data-toggle="tooltip" class="actorShowSelectedLbl actorChkLbl"><input class="actorChk actorShowSelected" name="targetShowSelected" id="targetShowSelected" type="checkbox" value="show" onchange="showSelected(this)">Show Selected</label>
+								<div class="seperator"></div>
+								
 								<!--dynamically add checks for filters at load-->
 								<button id="entityTargetExpand" class="filterExpand" value="expand"></button>
 								<label id="entityTargets" class="actorHead4" for="entityTargetExpand"><b>Entity</b></label>
