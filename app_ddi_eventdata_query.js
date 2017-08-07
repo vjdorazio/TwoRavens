@@ -51,18 +51,24 @@ function callbackNegate(id, bool) {
     qtree.tree('setState', state);
 }
 
-function buttonLogic(id, state) {
-    var logDropdown = ' <div class="dropdown" style="display:inline"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
-    logDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" style="float:left;margin:0;padding:0;width:45px;min-width:45px">' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;and&quot;)">and</a></li>' +
-        '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;or&quot;)">or</a></li>' +
-        // '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackLogic(' + id + ', &quot;nand&quot;)">nand</a></li>' +
-        // '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackLogic(' + id + ', &quot;nor&quot;)">nor</a></li>' +
-        '</ul></div> ';
-    return logDropdown
+function buttonOperator(id, state) {
+    if (state === 'and') {
+        return '<button class="btn btn-default btn-xs active" style="width:35px" type="button" data-toggle="button" aria-pressed="true" onclick="callbackOperator(' + id + ', &quot;or&quot;)">and</button> '
+    } else {
+        return '<button class="btn btn-default btn-xs active" style="width:35px" type="button" data-toggle="button" aria-pressed="true" onclick="callbackOperator(' + id + ', &quot;and&quot;)">or</button> '
+    }
+
+    // To enable nand and nor, comment above and uncomment below. Please mind; the query builder does not support nand/nor
+    // var logDropdown = ' <div class="dropdown" style="display:inline"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
+    // logDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" style="float:left;margin:0;padding:0;width:45px;min-width:45px">' +
+    //     '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackOperator(' + id + ', &quot;and&quot;)">and</a></li>' +
+    //     '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackOperator(' + id + ', &quot;or&quot;)">or</a></li>' +
+    //     '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackOperator(' + id + ', &quot;nand&quot;)">nand</a></li>' +
+    //     '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackOperator(' + id + ', &quot;nor&quot;)">nor</a></li>' +
+    //     '</ul></div> ';
 }
 
-function callbackLogic(id, operand) {
+function callbackOperator(id, operand) {
     var node = $('#subsetTree').tree('getNodeById', id);
     node.operation = operand;
 
@@ -89,9 +95,8 @@ function callbackDelete(id) {
     $('#subsetTree').tree('removeNode', node);
 
     subsetData = JSON.parse($('#subsetTree').tree('toJson'));
-    if (subsetData.length !== 0) {
-        subsetData[0]['show_op'] = false;
-    }
+    subsetData = hide_first(subsetData);
+
     var qtree = $('#subsetTree');
     var state = qtree.tree('getState');
     qtree.tree('loadData', subsetData, 0);
@@ -126,7 +131,7 @@ function reloadVariables() {
     qtree.tree('setState', state);
 }
 
-// Load stored variables into the rightpanel tree on initial page load
+// Load stored variables into the rightpanel variable tree on initial page load
 reloadVariables();
 
 // Create the query tree
@@ -142,7 +147,7 @@ $(function () {
         onCreateLi: function (node, $li) {
 
             if (!('show_op' in node) || ('show_op' in node && node.show_op)) {
-                $li.find('.jqtree-element').prepend(buttonLogic(node.id, node.operation));
+                $li.find('.jqtree-element').prepend(buttonOperator(node.id, node.operation));
             }
             if ('negate' in node) {
                 $li.find('.jqtree-element').prepend(buttonNegate(node.id, node.negate));
@@ -157,9 +162,14 @@ $(function () {
         },
         onCanMove: function (node) {
             // Subset and Group may be moved
-            return (node.name.indexOf('Subset') !== -1 || node.name.indexOf('Group') !== -1);
+            var is_country = ('type' in node && node.type === 'country');
+            return (node.name.indexOf('Subset') !== -1 || node.name.indexOf('Group') !== -1 || is_country);
         },
         onCanMoveTo: function (moved_node, target_node, position) {
+            // Countries can be moved to child of location subset group
+            if ('type' in moved_node && moved_node.type === 'country') {
+                return position === 'after' && target_node.parent.name === 'Location Subset';
+            }
             // Rules may be moved next to another rule or grouping
             if (position == 'after' && (target_node.name.indexOf('Subset') !== -1 || target_node.name.indexOf('Group') !== -1)) {
                 return true;
@@ -193,7 +203,7 @@ $('#subsetTree').on(
 function hide_first(data){
     for (var i = 0; i < data.length; i++) {
         data[i]['show_op'] = i !== 0;
-        if (data[i]['name'].indexOf('Group') !== -1){
+        if (data[i]['name'].indexOf('Date Subset') === -1 && 'children' in data[i]){
             data[i]['children'] = hide_first(data[i]['children']);
         }
     }
@@ -350,6 +360,7 @@ function getSubsetPreferences() {
 
     if (subsetSelection == 'Action') {
         return {
+            id: String(nodeId++),
             name: 'Action Subset',
             operation: 'and',
             children: []
@@ -358,6 +369,7 @@ function getSubsetPreferences() {
     if (subsetSelection == 'Actor') {
         // TODO: Retrieve actor preferences from actor panel
         return {
+            id: String(nodeId++),
             name: 'Actor Subset',
             operation: 'and',
             children: []
