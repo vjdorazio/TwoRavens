@@ -189,6 +189,7 @@ function dragend(d, i) {
 			}
 		}
 
+		//update checks
 		for (var x = 0; x < dragTarget.groupIndices.length; x ++)
 			$("#" + dragTarget.groupIndices[x]).prop("checked", "true");
 
@@ -211,7 +212,8 @@ function dragend(d, i) {
 		dragTarget.actorID = changeID;
 		changeID ++;
 		//now set gui to show dragTarget data			!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		window[currentTab + "CurrentNode"] = dragTarget;
+		window[dragTarget.actor + "CurrentNode"] = dragTarget;
+		$("#" + dragTarget.actor + "TabBtn").trigger("click");
 		//~ console.log(window[currentTab + "CurrentNode"]);
 		updateGroupName(window[currentTab + "CurrentNode"].name);
 		$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
@@ -263,7 +265,7 @@ function updateSVG(){
 	nodeGroup = nodeGroup.data(nodes, function(d){return d.actorID;});		//this is good for name changes but not good for deleting nodes
 	
 	var innerNode = nodeGroup.enter().append("g").attr("id", function(d){return d.name + "Group";}).call(node_drag);
-	innerNode.append("circle").attr("class", "node").attr("r", allR).style('fill', function(d){return d.nodeCol;}).style('opacity', "0.5").style('stroke', pebbleBorderColor).style("pointer-events", "all")
+	innerNode.append("circle").attr("class", "actorNode").attr("r", allR).style('fill', function(d){return d.nodeCol;}).style('opacity', "0.5").style('stroke', pebbleBorderColor).style("pointer-events", "all")
 	.on("click", function(d){
 		console.log("clicked on innerNode");
 		//~ console.log(d);
@@ -334,6 +336,8 @@ function updateSVG(){
 	})
 	;
 
+	console.log(window[currentTab + "CurrentNode"]);
+
 	function createLink(d) {
 		if (d3.event.which == 3) {
 			//~ console.log("detected mouse up on right click");
@@ -390,6 +394,8 @@ function updateSVG(){
 		//~ console.log(d);
 		return d.name;
 	});
+
+	
 }
 
 function tick(e) {
@@ -410,6 +416,40 @@ function tick(e) {
 		if (d.actor == "target" && d.x < boundaryRight)
 			d.x = boundaryRight;
 		return "translate(" + d.x + "," + d.y + ")";
+	});
+
+	//~ nodeGroup.style("stroke", function(d) {
+		//~ if (window[currentTab + "CurrentNode"] == d)
+			//~ return "black";
+		//~ else
+			//~ return pebbleBorderColor;
+	//~ });
+	//~ $(".actorNode").each(function(index, element) {
+		//~ console.log($(element).parent()[0]);
+		//~ console.log(window[currentTab + "CurrentNode"].name);
+		//~ if ($(element).parent()[0] == window[currentTab + "CurrentNode"].name)
+			//~ $(element).css("stroke", "1px solid black");
+		//~ else
+			//~ $(element).css("stroke", pebbleBorderColor);
+	//~ });
+
+	svg.selectAll("circle").style("stroke", function(d) {
+		//~ console.log("updating style?");
+		//~ console.log(d);
+		//~ console.log(window[currentTab + "CurrentNode"]);
+		if (d == window[currentTab + "CurrentNode"]) {
+			//~ console.log("matched");
+			return "#000000";
+		}
+		else {
+			//~ console.log("no match");
+			return pebbleBorderColor;
+		}
+	}).style("stroke-width", function(d) {
+		if (d == window[currentTab + "CurrentNode"])
+			return 3;
+		else
+			return 1;
 	});
 
 	linkGroup.attr('d', function(d){
