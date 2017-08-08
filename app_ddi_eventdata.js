@@ -3050,11 +3050,13 @@ var d3loc_draw = false;
 function d3loc() {
 	if(!d3loc_draw) {
 		d3loc_draw = true;
-		drawMainGraph();
+		drawMainGraphLocation();
 	}
 }
 
 function d3action() {
+
+    drawMainGraphAction();
 }
 
 
@@ -3422,11 +3424,11 @@ function capitalizeFirst(str) {
 
 
 /**
- * Draw the main graph
+ * Draw the main graph for Location
  *
  **/
  
-function drawMainGraph() {	
+function drawMainGraphLocation() {
 	
 
 	$("#subsetLocation").append('<div class="container"><div id="subsetLocation_panel" class="row"></div></div>');
@@ -3454,6 +3456,171 @@ function drawMainGraph() {
 	render(false, 0);
 }
 
+
+/**
+ * Draw the main graph for Action
+ *
+ **/
+
+function drawMainGraphAction() {
+
+
+    $("#subsetAction").append('<div class="container"><div id="subsetAction_panel" class="row"></div></div>');
+
+    $("#subsetAction_panel").append("<div class='col-xs-4 location_left' id='subsetActionDivL'></div>");
+    $("#subsetAction_panel").append("<div class='col-xs-4 location_right'><div class='affix' id='subsetActionDivR'></div></div>");
+
+    $("#subsetActionDivL").append("<table id='svg_graph_table_action' border='0' align='center'><tr><td id='main_graph_action_td' class='graph_config'></td></tr></table>");
+
+    //mainGraphLabel();
+
+    var svg = d3.select("#main_graph_action_td").append("svg:svg")
+        .attr("width",  480)
+        .attr("height", 350)
+        .attr("id", "main_graph_action_svg");
+
+    console.log("Rendering Main Graph...");
+
+    var maxDomainX = 1;
+    var svg = d3.select("#main_graph_action_svg");
+    var margin = {top: 20, right: 20, bottom: 30, left: 135},
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom;
+
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleBand().range([height, 0]);
+
+    var map_action_lookup = [];
+    var arr_action_data = [];
+
+    d3.csv("data/Action.csv",
+
+        function(data) {
+
+        var maxDomainX = 1;
+        data.forEach(function (d) {
+
+            var PentaClass = d.PentaClass + "";
+
+            if (map_action_lookup[PentaClass] != null) {
+
+                var count = map_action_lookup[PentaClass] + 1;
+                map_action_lookup[PentaClass] = count;
+
+                if (count > maxDomainX) {
+                    maxDomainX = count;
+                }
+            }
+            else {
+
+                map_action_lookup[PentaClass] = 1;
+            }
+        });
+
+        var rid = 0;
+        for (var key in map_action_lookup) {
+
+            var data = new Object();
+            data.rid = rid;
+            data.PentaClass = key;
+            data.freq = map_action_lookup[key];
+
+            arr_action_data[rid] = data;
+            rid++;
+        }
+
+
+        x.domain([0, maxDomainX]);
+        y.domain(arr_action_data.map(function (d) {
+            return d.PentaClass;
+        })).padding(0.1);
+
+        var g = svg.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        g.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x).ticks(5).tickFormat(function (d) {
+                return parseInt(d);
+            }).tickSizeInner([-height]));
+
+        g.append("g")
+            .attr("class", "y axis")
+            .call(d3.axisLeft(y));
+
+
+        g.selectAll(".bar")
+            .data(arr_action_data)
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", 0)
+            .attr("height", y.bandwidth())
+            .attr("y", function (d) {
+                return y(d.PentaClass);
+            })
+            .attr("width", function (d) {
+                return x(d.freq);
+            })
+            .attr("onclick", function (d) {
+                mapGraphSVG[d.rid] = null;
+                return "alert('" + d.rid + "')";
+            })
+            .attr("id", function (d) {
+                return "ac_tg_rect_" + d.rid;
+            });
+
+        g.selectAll(".bar_click")
+            .data(arr_action_data)
+            .enter()
+            .append("rect")
+            .attr("class", "bar_click")
+            .attr("height", y.bandwidth())
+            .attr("width", function (d) {
+                return width - x(d.freq);
+            })
+            .attr("x", function (d) {
+                return x(d.freq);
+            })
+            .attr("y", function (d) {
+                return y(d.PentaClass);
+            })
+            .attr("onclick", function (d) {
+                return "alert('" + d.rid + "')";
+            });
+
+        g.selectAll(".bar_label")
+            .data(arr_action_data)
+            .enter()
+            .append("text")
+            .attr("class", "bar_label")
+            .attr("x", function (d) {
+                return x(d.freq) + 5;
+            })
+            .attr("y", function (d) {
+                return y(d.PentaClass) + y.bandwidth() / 2 + 4;
+            })
+            .text(function (d) {
+                return "" + d.freq;
+            });
+
+        g.append("text")
+            .attr("text-anchor", "middle")
+            .attr("transform", "translate(" + (-115) + "," + (height / 2) + ")rotate(-90)")
+            .attr("class", "graph_axis_label")
+            .text("PentaClass");
+
+
+        g.append("text")
+            .attr("text-anchor", "middle")
+            .attr("transform", "translate(" + (width / 2) + "," + (height + 30) + ")")
+            .attr("class", "graph_axis_label")
+            .text("Frequency");
+
+    });
+
+}
 
 /**
  * render to render/draw the main/sub graph with the data provided in form of array of Objects
@@ -4126,3 +4293,26 @@ function getMapLocationLookup() {
 		});
 	});
 }
+
+
+function getMapActionLookup() {
+
+    d3.csv("data/Action.csv", function(data) {
+
+        data.forEach(function(d) {
+
+            if(map_action_lookup.has(d.PentaClass)) {
+
+                var count = map_action_lookup.get(d.PentaClass) + 1;
+                map_action_lookup.set(d.PentaClass, count);
+            }
+            else {
+
+                map_action_lookup.set(d.PentaClass, 1);
+            }
+        });
+    });
+
+}
+
+
