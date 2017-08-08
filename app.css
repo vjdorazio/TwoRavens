@@ -498,14 +498,14 @@ div#resultsView_tabular  .area2 {
 
 }
 
-div#resultsView_tabular  .axis1 path,
-div#resultsView_tabular  .axis1 line {
+div#resultsView_tabular  .x axis path,
+div#resultsView_tabular  .x axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
 }
-div#resultsView_tabular  .axis2 path,
-div#resultsView_tabular  .axis2 line {
+div#resultsView_tabular  .x axis2 path,
+div#resultsView_tabular  .x axis2 line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
