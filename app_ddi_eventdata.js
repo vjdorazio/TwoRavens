@@ -3033,28 +3033,23 @@ function d3action() {
 }
 
 var actorDisplayed = false;
-
-//~ var force;
-
 function d3actor() {
 	if (!actorDisplayed) {
 		$(document).ready(function() {
 			//update display variables
 
-			width = svg.node().getBoundingClientRect().width;
-			height = svg.node().getBoundingClientRect().height;
+			actorWidth = actorSVG.node().getBoundingClientRect().width;
+			actorHeight = actorSVG.node().getBoundingClientRect().height;
 
-			console.log(width + " " + height);
+			boundaryLeft = Math.floor(actorWidth/2) - 20;
+			boundaryRight = Math.ceil(actorHeight/2) + 20;
 
-			boundaryLeft = Math.floor(width/2) - 20;
-			boundaryRight = Math.ceil(width/2) + 20;
-
-			svg.append("path").attr("d", function() {
-				return "M" + width/2 + "," + 0 + "V" + height;
+			actorSVG.append("path").attr("d", function() {
+				return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;
 			}).attr("stroke", "black");
 			
-			force.stop();
-			force = force.size([width, height]).start();
+			actorForce.stop();
+			actorForce = actorForce.size([actorWidth, actorHeight]).start();
 			updateAll();
 			actorDisplayed = true;
 		});

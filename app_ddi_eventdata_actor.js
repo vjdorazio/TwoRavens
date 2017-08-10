@@ -1,3 +1,4 @@
+//some preperation and activation for gui display
 $(document).ready(function() {
 	//expands divs with filters
 	$(".filterExpand").click(function() {
@@ -13,107 +14,83 @@ $(document).ready(function() {
 		}
 	});
 
-	//enable hover text for bottom buttons
+	//enable jquery hover text for various gui elements
 	$(".actorBottom, .clearActorBtn, #deleteGroup, .actorShowSelectedLbl").tooltip({container: "body"});
 });
 
-var sourceFilterChecked = [];
-var sourceEntityChecked = [];
+var sourceFilterChecked = [];	//list of filters excluding entities under source that are checked
+var sourceEntityChecked = [];	//list of entities under source that are checked
 var targetFilterChecked = [];
 var targetEntityChecked = [];
 
-var sourceFullList = [];
-var targetFullList= [];
+var sourceFullList = [];	//list of all sources
+var targetFullList = [];	//list of all targets
 
 var orgs = ["IGO", "IMG", "MNC", "NGO"]		//hard coded organizations to remove from entities list; hopefully temporary
 
-var sourceOrgLength = orgs.length, sourceCountryLength;
+var sourceOrgLength = orgs.length, sourceCountryLength;		//variables to keep track number of entities checked to display all checked
 var sourceOrgSelect = 0, sourceCountrySelect = 0;
 
 var targetOrgLength = orgs.length, targetCountryLength;
 var targetOrgSelect = 0, targetCountrySelect = 0;
 
-var actorType = ["source", "target"];
+var actorType = ["source", "target"];		//these arrays are to help loop through actor loading
 var actorOrder = ["Full", "Entity", "Role", "Attr"];
 
-//~ function group(name, subcategories) {		//rework this; define a group as title and subcategories
-	//~ this.title = name;
-	//~ this.nodes = subcategories;
-//~ }
-
-//~ function nodeObj(name, color, actorType, actorID) {
-	//~ this.name = name;
-	//~ this.nodeCol = color;
-	//~ this.actor = actorType;
-	//~ this.actorID = actorID;
-//~ }
-
-
+//definition of a node
 function nodeObj(name, group, groupIndices, color, actorType, actorID) {
 	this.name = name;
 	this.group = group;
 	this.groupIndices = groupIndices;
 	this.nodeCol = color;
 	this.actor = actorType;
-	this.actorID = actorID;
+	this.actorID = actorID;				//this is to keep track of any changes that may have happened in the node
 }
 
+//definition of a link
 function linkObj(source, target){
 	this.source = source;
 	this.target = target;
 }
 
-//~ var sourceCurrentGroupNum = 0;					//the current source group user is on
-//~ var sourceGroups = [new group("Source Group 0", [])];		//the corresponding source group
-//~ var targetCurrentGroupNum = 0;
-//~ var targetGroups = [new group("Target Group 0", [])];
+var actorNodes = [];
+var actorLinks = [];
 
-var nodes = [];
-//~ nodes.push(new nodeObj("source0RIPoverflow", colors(0), "source", 0));
-//~ nodes.push(new nodeObj("anotherSource", colors(1), "source", 1));
-//~ nodes.push(new nodeObj("target0", colors(2), "target", 0));
-var links = [];
-
-var currentScreen = [];						//the currently viewed items
+var currentScreen = [];					//the currently viewed items
 var currentTab = "source";
 
-var sourceCurrentNode = null;
+var sourceCurrentNode = null;			//current source node that is selected
 var targetCurrentNode = null;
-var currentSize = 0;
-var sourceSize = 0;
+var currentSize = 0;					//total number of nodes
+var sourceSize = 0;						//total number of source nodes
 var targetSize = 0;
-var changeID = 0;
+var changeID = 0;						//number that is updated whenever a node is added/changed, set to actorID
 
 //begin force definitions
-var svg = d3.select("#actorLinkSVG");
+var actorSVG = d3.select("#actorLinkSVG");
 
-var width = svg.node().getBoundingClientRect().width;		//not yet set so defaults to 0
-var height = svg.node().getBoundingClientRect().height;
+var actorWidth = actorSVG.node().getBoundingClientRect().width;		//not yet set since window has not yet been displayed; defaults to 0
+var actorHeight = actorSVG.node().getBoundingClientRect().height;	//this code is here to remind what is under app_ddi_eventdata.js
 
 
-var boundaryLeft = Math.floor(width/2) - 20;
-var boundaryRight = Math.ceil(width/2) + 20;
+var boundaryLeft = Math.floor(actorWidth/2) - 20;		//max x coordinate source nodes can move
+var boundaryRight = Math.ceil(actorWidth/2) + 20;		//max x coordinate target nodes can move
 
-var allR = 40;
-var padding = 5;
-var colors = d3.scale.category20();
+var actorNodeR = 40;									//various definitions for node display
+var actorPadding = 5;
+var actorColors = d3.scale.category20();
 var pebbleBorderColor = '#fa8072';
 
-var force = d3.layout.force().nodes(nodes).links(links).size([width, height]).linkDistance(150).charge(-600).start();
+var actorForce = d3.layout.force().nodes(actorNodes).links(actorLinks).size([actorWidth, actorHeight]).linkDistance(150).charge(-600).start();		//defines the force layout
 
-var node_drag = d3.behavior.drag().on("dragstart", dragstart).on("drag", dragmove).on("dragend", dragend);
+var node_drag = d3.behavior.drag().on("dragstart", dragstart).on("drag", dragmove).on("dragend", dragend);		//defines the drag
 
-var dragStarted = false;
-var dragSelect = null;
-var dragTarget = null;
-var dragTargetHTML = null;
+var dragStarted = false;		//determines if dragging
+var dragSelect = null;			//node that has started the drag
+var dragTarget = null;			//node that is under the dragged node
+var dragTargetHTML = null;		//html for dragTarget
 
-d3.selection.prototype.moveToFront = function() {
-	return this.each(function(){
-		this.parentNode.appendChild(this);
-	});
-};
-
+//moves node to back of HTML index in order to allow mouseover detection
 d3.selection.prototype.moveToBack = function() {
 	return this.each(function() {
 		var firstChild = this.parentNode.firstChild;
@@ -124,97 +101,83 @@ d3.selection.prototype.moveToBack = function() {
 };
 
 //define arrow markers
-svg.append('svg:defs').append('svg:marker').attr('id', 'end-arrow').attr('viewBox', '0 -5 10 10').attr('refX', 6).attr('markerWidth', 3).attr('markerHeight', 3).attr('orient', 'auto').append('svg:path').attr('d', 'M0,-5L10,0L0,5').style('fill', '#000');
+actorSVG.append('svg:defs').append('svg:marker').attr('id', 'end-arrow').attr('viewBox', '0 -5 10 10').attr('refX', 6).attr('markerWidth', 3).attr('markerHeight', 3).attr('orient', 'auto').append('svg:path').attr('d', 'M0,-5L10,0L0,5').style('fill', '#000');
 
-svg.append('svg:defs').append('svg:marker').attr('id', 'start-arrow').attr('viewBox', '0 -5 10 10').attr('refX', 4).attr('markerWidth', 3).attr('markerHeight', 3).attr('orient', 'auto').append('svg:path').attr('d', 'M10,-5L0,0L10,5').style('fill', '#000');
+actorSVG.append('svg:defs').append('svg:marker').attr('id', 'start-arrow').attr('viewBox', '0 -5 10 10').attr('refX', 4).attr('markerWidth', 3).attr('markerHeight', 3).attr('orient', 'auto').append('svg:path').attr('d', 'M10,-5L0,0L10,5').style('fill', '#000');
 
-svg.on("mouseup", function(d){
-	//~ console.log("mouse up on the SVG");
+//define SVG mouse actions
+actorSVG.on("mouseup", function(d){			//cancel draw line
 	lineMouseup();
-}).on("mousedown", function(d){
-	//~ console.log("mouse down on the SVG")
-}).on("click", function(d){
-	//~ console.log("click on the SVG");
-}).on("contextmenu", function(d){
+}).on("contextmenu", function(d){		//prevent right click on svg
 	d3.event.preventDefault();
-	//~ console.log("right click on the SVG")
 });
 
-var linkGroup = svg.append("svg:g").attr("class", "allLinksGroup").selectAll("path");
+//all links in SVG
+var linkGroup = actorSVG.append("svg:g").attr("class", "allLinksGroup").selectAll("path");
 
-var nodeGroup = svg.append("svg:g").attr("class", "allNodesGroup").selectAll("g");	//must define outside
+//all nodes in SVG
+var nodeGroup = actorSVG.append("svg:g").attr("class", "allNodesGroup").selectAll("g");
 
-var drag_line = svg.append('svg:path').attr('class', 'link dragline hidden').attr('d', 'M0,0L0,0');
+//draw the drag line last to show it over the nodes when dragging
+var drag_line = actorSVG.append('svg:path').attr('class', 'link dragline hidden').attr('d', 'M0,0L0,0');
 
-var originNode = null;
-var destNode = null;
+var originNode = null;				//node that is the start of drag link line
+var destNode = null;				//node that is the end of the drag link line
 
-updateSVG();
+updateSVG();						//updates SVG elements
 
-force.on("tick", tick);
+actorForce.on("tick", tick);		//custom tick function
 
 //end force definitions, begin force functions
 
+//function called at start of drag
 function dragstart(d, i) {
-	force.stop(); // stops the force auto positioning before you start dragging
+	actorForce.stop();		// stops the force auto positioning before you start dragging
 	dragStarted = true;
 	dragSelect = d;
 	d3.select(this).moveToBack();
-	console.log("drag started for: " + d.name);
-	//~ console.log(this);	//note "this" refers to the HTML section for the node
-	//~ d3.event.sourceEvent.stopPropagation();		//allows node below to trigger mouseover
 }
 
+//function called while dragging, binds (x, y) within SVG and boundaries
 function dragmove(d, i) {
-	d.x = Math.max(allR, Math.min(width - allR, d3.event.x));
-	d.y = Math.max(allR, Math.min(height - allR, d3.event.y));
-	tick(); // this is the key to make it work together with updating both px,py,x,y on d !
+	d.x = Math.max(actorNodeR, Math.min(actorWidth - actorNodeR, d3.event.x));
+	d.y = Math.max(actorNodeR, Math.min(actorHeight - actorNodeR, d3.event.y));
+	tick();
 }
 
+//function called at end of drag, merges dragSelect and dragTarget if dragTarget exists
 function dragend(d, i) {
-	//~ d.fixed = true; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
 	//merge dragSel and dragTarg
 	if (dragTarget){
-		//~ console.log("merging: " + dragSelect.name + " -> " + dragTarget.name);
-		//~ console.log("respective id: " + dragSelect.actorID + "	" + dragTarget.actorID);
-		d3.select(dragTargetHTML).transition().attr("r", allR);
+		d3.select(dragTargetHTML).transition().attr("r", actorNodeR);		//transition back to normal size
 
-		//merge dragSel group to dragTarg group
+		//merge dragSel.group to dragTarg.group
 		for (var x = 0; x < dragSelect.group.length; x ++) {
 			if (dragTarget.group.indexOf(dragSelect.group[x]) < 0) {
 				dragTarget.group.push(dragSelect.group[x]);
 				dragTarget.groupIndices.push(dragSelect.groupIndices[x]);
-				//update checks
-				//~ $("." + dragSelect.actor + "Chk[value=" + dragSelect.group[x] + "]").prop("checked", "true");
 			}
 		}
 
-		//update checks
+		//update checks in actor selection
 		for (var x = 0; x < dragTarget.groupIndices.length; x ++)
 			$("#" + dragTarget.groupIndices[x]).prop("checked", "true");
 
 		//merge dragSel links to dragTarg
-		for (var x = 0; x < links.length;x ++) {
-			if (links[x].source == dragSelect)
-				links[x].source = dragTarget;
-			else if (links[x].target == dragSelect)
-				links[x].target = dragTarget;
+		for (var x = 0; x < actorLinks.length;x ++) {
+			if (actorLinks[x].source == dragSelect)
+				actorLinks[x].source = dragTarget;
+			else if (actorLinks[x].target == dragSelect)
+				actorLinks[x].target = dragTarget;
 		}
 
-		nodes.splice(nodes.indexOf(dragSelect), 1);
-		//~ console.log("new nodes:");
-		//~ for (var x = 0; x < nodes.length; x++)
-			//~ console.log(nodes[x]);
-
-		//~ console.log(dragTarget.group);
-//~ console.log("_____________________________");
+		actorNodes.splice(actorNodes.indexOf(dragSelect), 1);		//remove the old node
 
 		dragTarget.actorID = changeID;
-		changeID ++;
-		//now set gui to show dragTarget data			!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		changeID ++;												//update actorID so SVG can update
+		//now set gui to show dragTarget data
 		window[dragTarget.actor + "CurrentNode"] = dragTarget;
 		$("#" + dragTarget.actor + "TabBtn").trigger("click");
-		//~ console.log(window[currentTab + "CurrentNode"]);
 		updateGroupName(window[currentTab + "CurrentNode"].name);
 		$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
 
@@ -222,244 +185,198 @@ function dragend(d, i) {
 		
 		updateAll();
 	}
-	dragStarted = false;
+	dragStarted = false;		//now reset all drag variables
 	dragSelect = null;
 	dragTarget = null;
 	dragTargetHTML = null;
-	console.log("drag ended for: " + d.name);
 	tick();
-	//~ force.resume();
-	force.start();
+	actorForce.start();
 }
 
+//updates elements in SVG, nodes updated on actorID
 function updateSVG(){
-	linkGroup = linkGroup.data(links);
+	//update links
+	linkGroup = linkGroup.data(actorLinks);
 
 	linkGroup.enter().append('svg:path')
 		.attr('class', 'link')
 		.style('marker-start', function(d) { return d.source.actor == "target" ? 'url(#start-arrow)' : ''; })
 		.style('marker-end', function(d) { return d.target.actor == "target" ? 'url(#end-arrow)' : ''; })
-		.on('mousedown', function(d) { // do we ever need to select a link? make it delete..
-			console.log("mousedown on connector");		//MWD	this seems to be a mousedown on the connector
+		.on('mousedown', function(d) {							//delete link
 			var obj1 = JSON.stringify(d);
-			for(var j = 0; j < links.length; j++) {		//this removes the links on click
-				if(obj1 === JSON.stringify(links[j])) {
-					links.splice(j,1);
+			for(var j = 0; j < actorLinks.length; j++) {		//this removes the links on click
+				if(obj1 === JSON.stringify(actorLinks[j])) {
+					actorLinks.splice(j,1);
 				}
 			}
 			updateAll();
-			console.log("all links:");
-			for (var x = 0; x < links.length; x++)
-				console.log(links[x].source.name + "   " + links[x].target.name);
-		})
-		;
+		});
 		
 	// remove old links
 	linkGroup.exit().remove();
 
-	//~ console.log("update svg nodes");
-	//~ for (var x = 0; x < nodes.length; x ++)
-		//~ console.log(nodes[x]);
-	//~ console.log("_____________________________");
+	//now update nodes
+	nodeGroup = nodeGroup.data(actorNodes, function(d){return d.actorID;});
 
-	nodeGroup = nodeGroup.data(nodes, function(d){return d.actorID;});		//this is good for name changes but not good for deleting nodes
-	
+	//define circle for node
 	var innerNode = nodeGroup.enter().append("g").attr("id", function(d){return d.name + "Group";}).call(node_drag);
-	innerNode.append("circle").attr("class", "actorNode").attr("r", allR).style('fill', function(d){return d.nodeCol;}).style('opacity', "0.5").style('stroke', pebbleBorderColor).style("pointer-events", "all")
-	.on("click", function(d){
-		console.log("clicked on innerNode");
-		//~ console.log(d);
-		if (window[currentTab + "CurrentNode"] !== d) {
-			console.log("different");
+	innerNode.append("circle").attr("class", "actorNode").attr("r", actorNodeR)
+		.style('fill', function(d){return d.nodeCol;})
+		.style('opacity', "0.5")
+		.style('stroke', pebbleBorderColor)
+		.style("pointer-events", "all")
+		.on("click", function(d){				//shows actor selection for selected node
+			if (window[currentTab + "CurrentNode"] !== d) {			//only update gui if selected node is different than the current
+				$("#" + d.actor + "TabBtn").trigger("click");
+				window[currentTab + "CurrentNode"] = d;
 
-			$("#" + d.actor + "TabBtn").trigger("click");
-			window[currentTab + "CurrentNode"] = d;
-			updateGroupName(d.name);
-			//update gui
-			$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
-			$("." + currentTab + "Chk:checked").prop("checked", false);
-			for (var x = 0; x < d.groupIndices.length; x ++)
-				$("#" + d.groupIndices[x]).prop("checked", true);
-			console.log(window[currentTab + "CurrentNode"]);
-			$("#" + currentTab + "ShowSelected").trigger("click");
-		}
-	})
-	.on("contextmenu", function(d){
-		d3.event.preventDefault();
-		d3.event.stopPropagation();		//prevents mouseup on node
-		//~ console.log("right clicked on innerNode");
-		//~ console.log(d);
+				//update gui
+				updateGroupName(d.name);
+				$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
 
-		originNode = d;
+				//update actor selection checks
+				$("." + currentTab + "Chk:checked").prop("checked", false);
+				for (var x = 0; x < d.groupIndices.length; x ++)
+					$("#" + d.groupIndices[x]).prop("checked", true);
+					
+				$("#" + currentTab + "ShowSelected").trigger("click");
+			}
+		})
+		.on("contextmenu", function(d){		//begins drag line drawing for linking nodes
+			d3.event.preventDefault();
+			d3.event.stopPropagation();		//prevents mouseup on node
 
-		drag_line.style('marker-end', function(){
-				if (d.actor == "source")
-					return 'url(#end-arrow)';
-				else
-					return '';
-			})
-			.style('marker-start', function(){
-				if (d.actor == "target")
-					return 'url(#start-arrow)';
-				else
-					return '';
-			}).classed('hidden', false).attr('d', 'M' + originNode.x + ',' + originNode.y + 'L' + originNode.x + ',' + originNode.y);
+			originNode = d;
 
-		svg.on('mousemove', lineMousemove);
-	})
-	.on("mouseup", function(d){
-		d3.event.stopPropagation();		//prevents mouseup on svg
-		//~ console.log("mouse up on innerNode");
-		//~ console.log(d);
-		createLink(d);
-	})
-	.on("mousedown", function(d){
-		//~ d3.event.stopPropagation();		//cannot call this in order to drag nodes
-		//~ console.log("mouse down on innerNode");
-		//~ console.log(d);
-		createLink(d);
-	})
-	.on("mouseover", function(d){
-		//~ console.log("mouse over node: " + d.name + "||| dragStarted = " + dragStarted);// + "||| dragSelect = " + dragSelect.name);
-		if(dragSelect && dragSelect != d && dragSelect.actor == d.actor) {
-			d3.select(this).transition().attr("r", allR + 10);
-			dragTarget = d;
-			dragTargetHTML = this;
-		}
-	})
-	.on("mouseout", function(d){
-		//~ console.log("mouse out node: " + d.name);
-		//~ if(dragStarted)
-			d3.select(this).transition().attr("r", allR);
+			drag_line.style('marker-end', function(){		//displays arrow in proper direction (source->target and target->source)
+					if (d.actor == "source")
+						return 'url(#end-arrow)';
+					else
+						return '';
+				})
+				.style('marker-start', function(){
+					if (d.actor == "target")
+						return 'url(#start-arrow)';
+					else
+						return '';
+				})
+				.classed('hidden', false).attr('d', 'M' + originNode.x + ',' + originNode.y + 'L' + originNode.x + ',' + originNode.y);
+
+			actorSVG.on('mousemove', lineMousemove);
+		})
+		.on("mouseup", function(d){			//creates link
+			d3.event.stopPropagation();		//prevents mouseup on svg
+			createLink(d);
+		})
+		.on("mousedown", function(d){		//creates link if mouseup did not catch
+			createLink(d);
+		})
+		.on("mouseover", function(d){		//displays animation for visual indication of mouseover while dragging
+			if(dragSelect && dragSelect != d && dragSelect.actor == d.actor) {
+				d3.select(this).transition().attr("r", actorNodeR + 10);
+				dragTarget = d;
+				dragTargetHTML = this;
+			}
+		})
+		.on("mouseout", function(d){		//display animation for visual indication of mouseout and resets dragTarget variables
+			d3.select(this).transition().attr("r", actorNodeR);
 			dragTarget = null;
 			dragTargetHTML = null;
-	})
-	;
+		});
 
-	console.log(window[currentTab + "CurrentNode"]);
-
+	//creates link between nodes
 	function createLink(d) {
-		if (d3.event.which == 3) {
-			//~ console.log("detected mouse up on right click");
+		if (d3.event.which == 3) {	//mouse button was right click, so interpret as user wants to create another line instead
 			return;
 		}
 
-		if(!originNode)
-			return;		//if no origin node selected
+		if(!originNode)				//if no origin node is selected then return
+			return;
 
-		drag_line.classed('hidden', true).style('marker-end', '');		//hide line
+		drag_line.classed('hidden', true).style('marker-end', '');		//hide drag line
 
-		// check for drag-to-self and same actor to actor
+		// check for drag-to-self and same actor to actor (source to source)
 		destNode = d;
 		if (destNode === originNode || destNode.actor == originNode.actor){
 			resetMouseVars();
 			return;
 		}
 
-		//~ console.log("link made!!!!!!!!!!!!!!!!!!!");
-
-		var actualSource = originNode.actor == "source" ? originNode : destNode;
+		//here link is now made
+		var actualSource = originNode.actor == "source" ? originNode : destNode;	//choose the node that is a source
 		var actualTarget = destNode.actor == "target" ? destNode : originNode;
 
-		if (links.filter(function(linkItem){return (linkItem.source == actualSource && linkItem.target == actualTarget);})[0]){
-			console.log("link exists");
+		if (actorLinks.filter(function(linkItem){return (linkItem.source == actualSource && linkItem.target == actualTarget);})[0]){
+			//link exists, no need to make it again
 			return;
 		}
 		else {
-			links.push(new linkObj(actualSource, actualTarget));
+			//add link
+			actorLinks.push(new linkObj(actualSource, actualTarget));
 			updateAll();
-			console.log("all links:");
-			for (var x = 0; x < links.length; x++)
-				console.log(links[x].source.name + "   " + links[x].target.name);
 		}
 
 		resetMouseVars();
-	}
+	}	//end of createLink()
 
-	//~ console.log("changing text?");					//innerNode only keeps track of new additions to force nodes
-	//~ for (var x = 0; x < innerNode.length; x ++)
-		//~ console.log(innerNode[x]);
-	innerNode.append('svg:text').attr('x', 0).attr('y', 15).attr('class', 'id').text(function(d){return d.name;});
-
-	//~ svg.selectAll("text").data(nodes).text(function(d){return d.name;});		//this sometimes flips names around
-	//~ console.log("----------------------------------");\
-
-	//~ console.log(svg.selectAll("text")[0]);
-
-	nodeGroup.exit().remove();
-
-	//update all text nodes to match new name			//maybe remove this, redundant hopefully
-	//~ console.log("updating text");
-	svg.selectAll("text").text(function(d) {
-		//~ console.log(d);
+	innerNode.append('svg:text').attr('x', 0).attr('y', 15).attr('class', 'id').text(function(d){return d.name;});	//add text to nodes
+	
+	nodeGroup.exit().remove();		//remove any nodes that are not part of the display
+	
+	//update all names of nodes - changeID and actorID are not updated on name change to save room for other changes; probably unneccesary for a normal user (unlikely they will perform so many changes)
+	actorSVG.selectAll("text").text(function(d) {
 		return d.name;
 	});
-
-	
 }
 
+//function that is called on every animated step of the SVG, handles boundary and node collision
 function tick(e) {
 	if (e) {	//if not dragging
-		nodes.forEach(function(o, i) {		//o = object, i = index
-			o.x += (o.actor == "source") ? e.alpha * -5 : e.alpha * 5;		//groups same actors together
+		actorNodes.forEach(function(o, i) {		//o = object, i = index
+			o.x += (o.actor == "source") ? e.alpha * -5 : e.alpha * 5;			//groups same actors together
 		});
 
-		var q = d3.geom.quadtree(nodes), i = 0, n = nodes.length;
-		while( ++i < n) q.visit(collide(nodes[i]));
+		var q = d3.geom.quadtree(actorNodes), i = 0, n = actorNodes.length;		//prevent node collisions
+		while( ++i < n) q.visit(collide(actorNodes[i]));
 	}
-	
+
+	//node movement and display constrained here
 	nodeGroup.attr("transform", function(d) {
-		d.x = Math.max(allR, Math.min(width - allR, d.x));
-		d.y = Math.max(allR, Math.min(height - allR, d.y));
-		if (d.actor == "source" && d.x > boundaryLeft)
+		d.x = Math.max(actorNodeR, Math.min(actorWidth - actorNodeR, d.x));		//test SVG boundary conditions
+		d.y = Math.max(actorNodeR, Math.min(actorHeight - actorNodeR, d.y));
+		if (d.actor == "source" && d.x > boundaryLeft)		//test source/target boundary conditions
 			d.x = boundaryLeft;
 		if (d.actor == "target" && d.x < boundaryRight)
 			d.x = boundaryRight;
 		return "translate(" + d.x + "," + d.y + ")";
 	});
 
-	//~ nodeGroup.style("stroke", function(d) {
-		//~ if (window[currentTab + "CurrentNode"] == d)
-			//~ return "black";
-		//~ else
-			//~ return pebbleBorderColor;
-	//~ });
-	//~ $(".actorNode").each(function(index, element) {
-		//~ console.log($(element).parent()[0]);
-		//~ console.log(window[currentTab + "CurrentNode"].name);
-		//~ if ($(element).parent()[0] == window[currentTab + "CurrentNode"].name)
-			//~ $(element).css("stroke", "1px solid black");
-		//~ else
-			//~ $(element).css("stroke", pebbleBorderColor);
-	//~ });
-
-	svg.selectAll("circle").style("stroke", function(d) {
-		//~ console.log("updating style?");
-		//~ console.log(d);
-		//~ console.log(window[currentTab + "CurrentNode"]);
+	//node outline defined here
+	actorSVG.selectAll("circle").style("stroke", function(d) {
+		//give selected node a black outline, and all other nodes the default color
 		if (d == window[currentTab + "CurrentNode"]) {
-			//~ console.log("matched");
 			return "#000000";
 		}
 		else {
-			//~ console.log("no match");
 			return pebbleBorderColor;
 		}
 	}).style("stroke-width", function(d) {
+		//give selected node a thicker 3px outline, and all other nodes the default 1px
 		if (d == window[currentTab + "CurrentNode"])
 			return 3;
 		else
 			return 1;
 	});
 
+	//link movement and display determined here
 	linkGroup.attr('d', function(d){
 		var deltaX = d.target.x - d.source.x,
 		deltaY = d.target.y - d.source.y,
 		dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
 		normX = deltaX / dist,
 		normY = deltaY / dist,
-		sourcePadding = (d.source.actor == "target") ? allR+5 : allR,			//MWD	spacing on the line before arrow head
-		targetPadding = (d.target.actor == "target") ? allR+5 : allR,
+		sourcePadding = (d.source.actor == "target") ? actorNodeR+5 : actorNodeR,		//spacing on the line before arrow head
+		targetPadding = (d.target.actor == "target") ? actorNodeR+5 : actorNodeR,
 		sourceX = d.source.x + (sourcePadding * normX),
 		sourceY = d.source.y + (sourcePadding * normY),
 		targetX = d.target.x - (targetPadding * normX),
@@ -469,11 +386,12 @@ function tick(e) {
 	});
 }
 
+//function called per tick() to prevent collisions among nodes
 function collide(node) {
-	var r = allR + padding, nx1 = node.x - r, nx2 = node.x + r, ny1 = node.y - r, ny2 = node.y + r;
+	var r = actorNodeR + actorPadding, nx1 = node.x - r, nx2 = node.x + r, ny1 = node.y - r, ny2 = node.y + r;
 	return function(quad, x1, y1, x2, y2) {
 		if (quad.point && (quad.point !== node)) {
-			var x = node.x - quad.point.x, y = node.y - quad.point.y, l = Math.sqrt(x * x + y * y), r = allR + allR + padding;
+			var x = node.x - quad.point.x, y = node.y - quad.point.y, l = Math.sqrt(x * x + y * y), r = actorNodeR + actorNodeR + actorPadding;
 
 			if (l < r) {
 				l = (l - r) / l * .5;
@@ -487,6 +405,7 @@ function collide(node) {
 	};
 }
 
+//if dragging update drag line to mouse coordinates, called on mousemove on SVG
 function lineMousemove() {
 	if(!originNode) return;
 
@@ -494,8 +413,9 @@ function lineMousemove() {
 	drag_line.attr('d', 'M' + originNode.x + ',' + originNode.y + 'L' + d3.mouse(this)[0] + ',' + d3.mouse(this)[1]);
 }
 
+//if dragging hide line, called on mouseup on SVG
 function lineMouseup() {
-	if(originNode) {
+	if (originNode) {
 		// hide drag line
 		drag_line.classed('hidden', true).style('marker-end', '');
 	}    
@@ -503,14 +423,16 @@ function lineMouseup() {
 	resetMouseVars();
 }
 
+//reset drag link node variables
 function resetMouseVars() {
 	originNode = null;
 	destNode = null;
 }
 
+//function to handle force and SVG updates
 function updateAll() {
-	force.stop();
-	force = force.nodes(nodes).links(links).start();
+	actorForce.stop();
+	actorForce = actorForce.nodes(actorNodes).links(actorLinks).start();
 	resetMouseVars();
 	updateSVG();
 }
@@ -519,34 +441,27 @@ function updateAll() {
 
 //rename group on click
 $(document).ready(function() {
-	//reset group display
+	//default group display on page load, adds default source/target to nodes and SVG
 	$("#editGroupName").ready(function() {
-		//~ var defaultGroupName = sourceGroups[sourceCurrentGroupNum].title;
-		//~ updateGroupName(defaultGroupName);
-		nodes.push(new nodeObj("Source Group 0", [], [], colors(currentSize), "source", changeID));
+		actorNodes.push(new nodeObj("Source Group 0", [], [], actorColors(currentSize), "source", changeID));
 		currentSize ++;
 		sourceSize ++;
 		changeID ++;
-		nodes.push(new nodeObj("Target Group 0", [], [], colors(currentSize), "target", changeID));
+		actorNodes.push(new nodeObj("Target Group 0", [], [], actorColors(currentSize), "target", changeID));
 		currentSize ++;
 		targetSize ++;
 		changeID ++;
-		sourceCurrentNode = nodes[0];
-		targetCurrentNode = nodes[1];
+		sourceCurrentNode = actorNodes[0];
+		targetCurrentNode = actorNodes[1];
 	});
 
-	//enable editing
-	//~ $("#groupNameDisplay").click(function() {
-		//~ $("#groupNameDisplay").hide();
-		//~ $("#editGroupName").css("display", "block").show().focus();
-	//~ });
+	//visual feedback for name changing
 	$("#editGroupName").click(function() {
 		$("#editGroupName").css("background-color", "white").css("border", "1px solid black");
 	});
 
-	//catch enter key
+	//catch enter and escape key
 	$("#editGroupName").keydown(function(e) {
-		console.log(e.keyCode);
 		if (e.keyCode == 13 || e.keyCode == 27) {		//enter or escape key pressed
 			$("#editGroupName").focusout();
 			$("#" + currentTab + "TabBtn").focus();		//remove focus
@@ -555,36 +470,93 @@ $(document).ready(function() {
 
 	//save changes to group name
 	$("#editGroupName").focusout(function() {
-		//~ $("#editGroupName").hide();
 		var newGroupName = $("#editGroupName").val().trim();
-		if (newGroupName == "") {
-			//~ newGroupName = window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].title;
+		if (newGroupName == "") {		//revert to previous name if none entered
 			newGroupName = window[currentTab + "CurrentNode"].name;
 		}
-		//~ $("#groupNameDisplay").text(newGroupName).css("display", "block").show();
+		//remove visual feedback
 		$("#editGroupName").css("background-color", "#F9F9F9").css("border", "none");
-		//change in group
-		//~ window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].title = newGroupName;
+		//update in nodes data structure
 		window[currentTab + "CurrentNode"].name = newGroupName;
 		//update DOM
 		updateGroupName(newGroupName);
 
 		updateAll();		//update force
 	});
-	//~ console.log("on load: " + sourceGroups[0].title);
-	//~ console.log(sourceGroups[0].nodes);
-	//~ console.log(sourceCurrentGroupNum);
-	//~ console.log(sourceGroups[sourceCurrentGroupNum]);
+
+	//remove a group if possible
+	$("#deleteGroup").click(function() {
+		var cur = actorNodes.indexOf(window[currentTab + "CurrentNode"]);
+		var prev = cur - 1;
+		var next = cur + 1;
+		while (true) {
+			if (actorNodes[prev] && actorNodes[prev].actor == currentTab) {
+				//set previous node to current and remove old
+				window[currentTab + "CurrentNode"] = actorNodes[prev];
+				updateGroupName(actorNodes[prev].name);
+
+				$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
+				//update actor selection checks
+				$("." + currentTab + "Chk:checked").prop("checked", false);
+				for (var x = 0; x < actorNodes[prev].groupIndices.length; x ++)
+					$("#" + actorNodes[prev].groupIndices[x]).prop("checked", true);
+				$("#" + currentTab + "ShowSelected").trigger("click");
+
+				//update links
+				for (var x = 0; x < actorLinks.length; x ++) {
+					if (actorLinks[x].source == actorNodes[cur])
+						actorLinks.splice(x, 1);
+					else if (actorLinks[x].target == actorNodes[cur])
+						actorLinks.splice(x , 1);
+				}
+				actorNodes.splice(cur, 1);
+				updateAll();
+				return;
+			}
+			else if (actorNodes[next] && actorNodes[next].actor == currentTab) {
+				//set next node to current and remove old
+				window[currentTab + "CurrentNode"] = actorNodes[next];
+				updateGroupName(actorNodes[next].name);
+
+				$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
+				//update actor selection checks
+				$("." + currentTab + "Chk:checked").prop("checked", false);
+				for (var x = 0; x < actorNodes[next].groupIndices.length; x ++)
+					$("#" + actorNodes[next].groupIndices[x]).prop("checked", true);
+				$("#" + currentTab + "ShowSelected").trigger("click");
+
+				//update links
+				for (var x = 0; x < actorLinks.length; x ++) {
+					if (actorLinks[x].source == actorNodes[cur])
+						actorLinks.splice(x, 1);
+					else if (actorLinks[x].target == actorNodes[cur])
+						actorLinks.splice(x , 1);
+				}
+				actorNodes.splice(cur, 1);
+				updateAll();
+				return;
+			}
+			else {
+				//update search in both directions
+				if (prev > -1)
+					prev --;
+				if (next < actorNodes.length)
+					next ++;
+				if (prev == -1 && next == actorNodes.length)
+					break;
+			}
+		}
+		alert("Need at least one " + currentTab + " node!");
+	});
 });
 
 //update display of group name
 function updateGroupName(newGroupName) {
 	$("#editGroupName").attr("placeholder", newGroupName);
 	$("#editGroupName").val(newGroupName);
-	//~ $("#groupNameDisplay").text(newGroupName);
 }
 
-//switches tabs in actor subset
+//switches tabs in actor subset, sets current and active nodes
 function actorTabSwitch(origin, tab) {
 	switch(origin) {
 		case "sourceTabBtn":
@@ -593,7 +565,7 @@ function actorTabSwitch(origin, tab) {
 			$("#sourceTabBtn").removeClass("btn-default").addClass("active");
 			currentTab = "source";
 			break;
-		default:
+		default:	//other button (targetTabBtn)
 			document.getElementById("sourceDiv").style.display = "none";
 			$("#sourceTabBtn").removeClass("active").addClass("btn-default");
 			$("#targetTabBtn").removeClass("btn-default").addClass("active");
@@ -601,9 +573,9 @@ function actorTabSwitch(origin, tab) {
 			break;
 	}
 
-	//~ updateGroupName(window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].title);
 	updateGroupName(window[currentTab + "CurrentNode"].name);
 	document.getElementById(tab).style.display = "inline-block";
+	tick();
 }
 
 //load dictionary and data
@@ -619,7 +591,7 @@ window.onload = function(){
 			dict.length--;	//remove last element(empty line)
 			defer.resolve();
 		});
-		return defer;
+		return defer;		//return dictionary load completed
 	};
 
 	//loads the data
@@ -730,19 +702,41 @@ window.onload = function(){
 		lbl.setAttribute("data-placement", "right");
 		lbl.setAttribute("data-trigger", "hover");
 
-		if (order != "Full") {
-			lbl.setAttribute("data-content", binarySearch(value));
-		}
-		else {
-			lbl.setAttribute("data-content", "test lbl");
-		}
-
-		lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
-		lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
-
 		displayList.appendChild(chkbox);
 		displayList.appendChild(lbl);
 		displayList.appendChild(seperator);
+
+		$("#" + lbl.id).mouseover(function() {
+			if (!$(this).attr("data-content")) {
+				if (order != "Full")
+					$(this).attr("data-content", binarySearch(value));
+				else {
+					var head = binarySearch(value);
+						var tail = "";
+						for (var x = 0; x < value.length; x += 3) {
+							var temp = binarySearch(value.substring(x, x+3));
+							if (temp == "no translation found")
+								temp = "?";
+							tail += temp + " ";
+						}
+						tail = tail.trim();
+
+						if (head == "no translation found")
+							$(this).attr("data-content", tail);
+						else {
+							if (head != tail)
+								$(this).attr("data-content", head + "; " + tail);
+							else
+								$(this).attr("data-content" , head);
+						}
+				}
+			}
+			$(this).popover("toggle");
+		});
+
+		$("#" + lbl.id).mouseout(function() {
+			$(this).popover("toggle");
+		});
 
 		function binarySearch(element) {
 			var l = 0, r = dict.length-1;
@@ -766,44 +760,22 @@ window.onload = function(){
 	}
 }
 
-//when an actor selected, add into group
+//when an actor selected, add into currentNode.group
 function actorSelectChanged(element) {
 	element.checked = !!(element.checked);
-	console.log("actor check");
-	console.log(element);
-	//add into group
-	//if checked
-	//	if source then add into actorConnections[curGroupNum]
-	//	else add into targetSelList
-	//else
-	//	if source then remove from actorConnections[curGroupNum]
-	//	else remove from targetSelList
-	if (element.checked) {
-		//~ console.log(element.value);
-		//~ if (window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.indexOf(element.value) < 0) {
-			//~ window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.push(element.value);
-		//~ }
-		//~ console.log(window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]]);
+	if (element.checked) {					//add into group
 		if (window[currentTab + "CurrentNode"].group.indexOf(element.value < 0)) {		//perhaps change to a set
 			window[currentTab + "CurrentNode"].group.push(element.value);
 			window[currentTab + "CurrentNode"].groupIndices.push(element.id);
 		}
 	}
-	else {
-		//~ var index = window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.indexOf(element.value);
-		//~ if (index > -1) {
-			//~ window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.splice(index, 1);
-		//~ }
+	else {									//remove from group
 		var index = window[currentTab + "CurrentNode"].group.indexOf(element.value);
 		if (index > -1) {
 			window[currentTab + "CurrentNode"].group.splice(index, 1);
 			window[currentTab + "CurrentNode"].groupIndices.splice(index, 1);
 		}
 	}
-	//~ console.log("Title: " + window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].title);
-	//~ console.log("Contents: " + window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes);
-	console.log("Current node name: " + window[currentTab + "CurrentNode"].name);
-	console.log(window[currentTab + "CurrentNode"]);
 }
 
 //when filter checkbox checked, add or remove filter
@@ -932,7 +904,7 @@ $(".actorSearch").on("keyup", function(event) {
 	actorSearch(currentTab);
 });
 
-//on load of page, keep unchecked
+//on load of page, keep actorShowSelected unchecked
 $(".actorShowSelected").ready(function() {
 	$(".actorShowSelected").prop("checked", false);
 });
@@ -943,34 +915,30 @@ function showSelected(element) {
 		currentScreen.length = 0;
 		clearChecks();
 
-		$("#" + element.id).prop("checked", true);
+		$("#" + element.id).prop("checked", true);		//set self to checked because clearChecks() removes the check
 	
 		$("." + currentTab + "Chk").each(function(i, element) {
 			if (element.checked) {
-				//~ console.log(element.id);
 				currentScreen.push(i);
 				$("#" + element.id).css("display", "inline-block")
-				//~ $("label[for='" + element.id + "']").css("display", "inline-block");
-				$("#" + element.id).next().css("display", "inline-block");
+				$("#" + element.id).next().css("display", "inline-block");		//set label for checkbox to visible
 			}
 			else {
 				$("#" + element.id).css("display", "none");
-				//~ $("label[for='" + element.id + "']").css("display", "none");
 				$("#" + element.id).next().css("display", "none");
 			}
 		});
-		//~ console.log("done");
 	}
 	else
 		$("#clearAll" + capitalizeFirst(currentTab) + "s").click();		//later implement to restore previous view?
 }
 
-//on load of page, keep unchecked
+//on load of page, keep checkbox for selecting all filters unchecked
 $(".allCheck").ready(function() {
 	$(".allCheck").prop("checked", false);
 });
 
-//selects all checks for specified element
+//selects all checks for specified element, handles indeterminate state of checkboxes
 $(".allCheck").click(function(event) {
 	var currentEntityType = event.target.id.substring(6, 9);
 	var currentElement = (currentEntityType == "Org") ? $("#" + currentTab + currentEntityType + "AllCheck") : $("#" + currentTab + "CountryAllCheck");
@@ -1013,36 +981,23 @@ $(".allCheck").click(function(event) {
 
 //adds all of the current matched items into the current selection
 $(".actorSelectAll").click(function(event) {
-	//~ console.log("in select all");
-	//~ console.log(currentScreen);
 	for (var x = 0; x < currentScreen.length; x++) {
-		//~ if (window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.indexOf(window[currentTab + "FullList"][currentScreen[x]]) < 0) {
-			//~ window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.push(window[currentTab + "FullList"][currentScreen[x]]);
-		//~ }
 		if (window[currentTab + "CurrentNode"].group.indexOf(window[currentTab + "FullList"][currentScreen[x]]) < 0) {
 			window[currentTab + "CurrentNode"].group.push(window[currentTab + "FullList"][currentScreen[x]]);
 			window[currentTab + "CurrentNode"].groupIndices.push(currentTab + "FullCheck" + currentScreen[x]);
 		}
 		$("#" + currentTab + "FullCheck" + currentScreen[x]).prop("checked", true);
 	}
-	//~ console.log(window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]]);
-	//~ console.log(window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes);
 });
 
 //clears all of the current matched items from the current selection
 $(".actorClearAll").click(function(event) {
-	//~ console.log("in clear all");
 	if ($("#" + currentTab + "ShowSelected").prop("checked")) {
 		$("#" + currentTab + "ShowSelected").prop("checked", false);
 		$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
 	}
 	
 	for (var x = 0; x < currentScreen.length; x++) {
-		//~ index = window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.indexOf(window[currentTab + "FullList"][currentScreen[x]]);
-		//~ if (index > -1) {
-			//~ window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes.splice(index, 1);
-			//~ $("#" + currentTab + "FullCheck" + currentScreen[x]).prop("checked", false);
-		//~ }
 		index = window[currentTab + "CurrentNode"].group.indexOf(window[currentTab + "FullList"][currentScreen[x]]);
 		if (index > -1) {
 			window[currentTab + "CurrentNode"].group.splice(index, 1);
@@ -1050,19 +1005,16 @@ $(".actorClearAll").click(function(event) {
 			$("#" + currentTab + "FullCheck" + currentScreen[x]).prop("checked", false);
 		}
 	}
-	//~ console.log(window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]]);
-	//~ console.log(window[currentTab + "Groups"][window[currentTab + "CurrentGroupNum"]].nodes);
 });
 
-//adds a new group for source/actor
+//adds a new group for source/target
 $(".actorNewGroup").click(function(event) {
-	//~ currentSize ++;		//not good for creating new node number because shared with targets
-	nodes.push(new nodeObj(capitalizeFirst(currentTab) + " Group " + window[currentTab + "Size"], [], [], colors(currentSize), currentTab, changeID));
+	actorNodes.push(new nodeObj(capitalizeFirst(currentTab) + " Group " + window[currentTab + "Size"], [], [], actorColors(currentSize), currentTab, changeID));
 	window[currentTab + "Size"] ++;
 	currentSize ++;
 	changeID ++;
 	
-	window[currentTab + "CurrentNode"] = nodes[nodes.length - 1];
+	window[currentTab + "CurrentNode"] = actorNodes[actorNodes.length - 1];
 	updateGroupName(window[currentTab + "CurrentNode"].name);
 	//update gui
 	$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
@@ -1123,7 +1075,6 @@ function actorSearch(actorName) {
 			}
 		}
 	}
-	console.log(currentScreen);
 }
 
 //does as its name says; returns a string with the first character capitalized
