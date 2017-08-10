@@ -158,13 +158,13 @@ caret.app <- function(env){
 			trainIndex <- createDataPartition(iris$Species, p=split, list=FALSE)
 			data_train <- iris[ trainIndex,]
 			data_test <- iris[-trainIndex,]
-            c.model <- train(Species ~ ., data=data_train, method="rf", prox=TRUE)
-            write("c.model <- train(Species~., data=mydata, method=mymodel)",mylogfile,append=TRUE)
+            model <- train(Species ~ ., data=data_train, method="rf", prox=TRUE)
+            write("model <- train(Species~., data=mydata, method=mymodel)",mylogfile,append=TRUE)
 			
 			x_test <- data_test[,1:4]
 			y_test <- data_test[,5]
 			predictions <- predict(model, x_test)
-            print(summary(c.model))
+            print(summary(model))
             
         })
     }
