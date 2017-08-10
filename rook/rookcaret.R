@@ -144,7 +144,7 @@ caret.app <- function(env){
 
         tryCatch({
           ## 1. prepare mydata so that it is identical to the representation of the data in TwoRavens
-          mydata <- data(iris)
+          data(iris)
           write("mydata <- data(iris)",mylogfile,append=TRUE)
 
           # ## 2. additional subset of the data in the event that a user wants to estimate a model on the subset, but hasn't "selected" on the subset. that is, just brushed the region, does not press "Select", and presses "Estimate"
@@ -155,12 +155,15 @@ caret.app <- function(env){
 
             #for caret, we should split the data and train it
             split=0.80
-			trainIndex <- createDataPartition(mydata$Species, p=split, list=FALSE)
-			data_train <- mydata[ trainIndex,]
-			data_test <- mydata[-trainIndex,]
-            c.model <- train(Species~., data=mydata, method=mymodel)   # maybe just pass variables being used?
+			trainIndex <- createDataPartition(iris$Species, p=split, list=FALSE)
+			data_train <- iris[ trainIndex,]
+			data_test <- iris[-trainIndex,]
+            c.model <- train(Species~., data=data_train, method=mymodel)   # maybe just pass variables being used?
             write("c.model <- train(Species~., data=mydata, method=mymodel)",mylogfile,append=TRUE)
-
+			
+			x_test <- data_test[,1:4]
+			y_test <- data_test[,5]
+			predictions <- predict(model, x_test)
             print(summary(c.model))
             
         })
