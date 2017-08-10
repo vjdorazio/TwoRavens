@@ -144,8 +144,8 @@ caret.app <- function(env){
 
         tryCatch({
           ## 1. prepare mydata so that it is identical to the representation of the data in TwoRavens
-          mydata <- executeHistory(data=mydata, history=history)
-          write("mydata <- executeHistory(data=mydata, history=history)",mylogfile,append=TRUE)
+          mydata <- data(iris)
+          write("mydata <- data(iris)",mylogfile,append=TRUE)
 
           # ## 2. additional subset of the data in the event that a user wants to estimate a model on the subset, but hasn't "selected" on the subset. that is, just brushed the region, does not press "Select", and presses "Estimate"
           # usedata <- subsetData(data=mydata, sub=mysubset, varnames=myvars, plot=myplot)
@@ -154,15 +154,19 @@ caret.app <- function(env){
           # write("usedata <- refactor(usedata))",mylogfile,append=TRUE)
 
             #for caret, we should split the data and train it
-            c.model <- train(Species~., data=usedata, method=mymodel)   # maybe just pass variables being used?
-            write("c.model <- train(Species~., data=usedata, method=mymodel)",mylogfile,append=TRUE)
+            split=0.80
+			trainIndex <- createDataPartition(mydata$Species, p=split, list=FALSE)
+			data_train <- mydata[ trainIndex,]
+			data_test <- mydata[-trainIndex,]
+            c.model <- train(Species~., data=mydata, method=mymodel)   # maybe just pass variables being used?
+            write("c.model <- train(Species~., data=mydata, method=mymodel)",mylogfile,append=TRUE)
 
             print(summary(c.model))
             
         })
     }
 
-    write(result, "output/myresult.json")
+    
     response$write(result)
     response$finish()
 }
