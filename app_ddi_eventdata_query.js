@@ -237,7 +237,6 @@ function hide_first(data){
 $('#subsetTree').on(
     'tree.click',
     function (event) {
-        // TODO: Break if click occurred over one of the bootstrap buttons
         if (event.node.hasChildren()) {
             $('#subsetTree').tree('toggle', event.node);
         }
@@ -389,8 +388,7 @@ function getSubsetPreferences() {
                 subset['children'].push({
                     id: String(nodeId++),
                     name: country,
-                    show_op: false,
-                    type: 'country'
+                    show_op: false
                 });
             }
         }
@@ -411,13 +409,56 @@ function getSubsetPreferences() {
         }
     }
     if (subsetSelection == 'Actor') {
-        // TODO: Retrieve actor preferences from actor panel
-        return {
+        // Make parent node
+        var subset = {
             id: String(nodeId++),
             name: 'Actor Subset',
             operation: 'and',
             children: []
+        };
+
+        // Add each link to the parent node as another rule
+        for (var linkId in actorLinks) {
+            var link = {
+                id: String(nodeId++),
+                name: 'Link ' + String(linkId),
+                show_op: linkId !== 0,
+                operation: 'and',
+                children: [{
+                    id: String(nodeId++),
+                    name: 'Source: ' + actorLinks[linkId].source.name,
+                    show_op: false,
+                    children: []
+                }, {
+                    id: String(nodeId++),
+                    name: 'Target: ' + actorLinks[linkId].target.name,
+                    show_op: false,
+                    children: []
+                }]
+            };
+
+            for (var sourceId in actorLinks[linkId].source.group) {
+                link['children'].push({
+                    id: String(nodeId++),
+                    name: actorLinks[linkId].source.group[sourceId].value,
+                    show_op: false
+                });
+            }
+            for (var targetId in actorLinks[linkId].target.group) {
+                link['children'].push({
+                    id: String(nodeId++),
+                    name: actorLinks[linkId].source.group[targetId].value,
+                    show_op: false
+                });
+            }
         }
+
+        // Don't add a rule and ignore the stage if no links are made
+        if (subset['children'].length === 0) {
+            return {}
+        }
+
+        return subset
     }
 }
 
@@ -604,6 +645,28 @@ function buildSubset(){
             }
 
             rule_query['countrycode'] = rule_query_inner;
+        }
+
+        if (rule.name === 'Actor Subset'){
+            var link_list = [];
+            for (var link in rule.children) {
+                var link_rule = {};
+
+                var sourceList = [];
+                for (var source in link.children[0].children) {
+                    sourceList.push(source.name);
+                }
+                link_rule['source'] = {'$in': sourceList};
+
+                var targetList = [];
+                for (var target in link.children[1].children) {
+                    targetList.push(target.name)
+                }
+                link_rule['target'] = {'$in': targetList};
+
+                link_list.append(link_rule)
+            }
+            rule_query['$and'] = rule_query_inner;
         }
 
         return rule_query;
