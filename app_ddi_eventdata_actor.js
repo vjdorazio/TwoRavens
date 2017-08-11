@@ -78,12 +78,19 @@ var boundaryRight = Math.ceil(actorWidth/2) + 20;		//max x coordinate target nod
 
 var actorNodeR = 40;									//various definitions for node display
 var actorPadding = 5;
-var actorColors = d3.scale.category20();
+var actorColors = d3.scaleOrdinal(d3.schemeCategory20);
 var pebbleBorderColor = '#fa8072';
 
-var actorForce = d3.layout.force().nodes(actorNodes).links(actorLinks).size([actorWidth, actorHeight]).linkDistance(150).charge(-600).start();		//defines the force layout
+//var actorForce = d3.layout.force().nodes(actorNodes).links(actorLinks).size([actorWidth, actorHeight]).linkDistance(150).charge(-600).start();		//defines the force layout
 
-var node_drag = d3.behavior.drag().on("dragstart", dragstart).on("drag", dragmove).on("dragend", dragend);		//defines the drag
+var actorForce = d3.forceSimulation(actorNodes)
+    .force("link", d3.forceLink(actorLinks).distance(150))
+    .force('charge', d3.forceManyBody().strength(-600))
+    .force('X', d3.forceX(1000))
+.force('Y', d3.forceY().y(1000));
+//defines the force layout
+
+var node_drag = d3.drag().on("start", dragstart).on("drag", dragmove).on("end", dragend);		//defines the drag
 
 var dragStarted = false;		//determines if dragging
 var dragSelect = null;			//node that has started the drag
@@ -190,7 +197,7 @@ function dragend(d, i) {
 	dragTarget = null;
 	dragTargetHTML = null;
 	tick();
-	actorForce.start();
+	actorForce.restart();
 }
 
 //updates elements in SVG, nodes updated on actorID
@@ -432,10 +439,12 @@ function resetMouseVars() {
 //function to handle force and SVG updates
 function updateAll() {
 	actorForce.stop();
-	actorForce = actorForce.nodes(actorNodes).links(actorLinks).start();
+	actorForce = actorForce.nodes(actorNodes)
+    .force("link", d3.forceLink(actorLinks));
 	resetMouseVars();
 	updateSVG();
 }
+
 
 //end force functions, begin actor code
 

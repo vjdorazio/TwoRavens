@@ -1,9 +1,8 @@
 // Date tab of subsetting screen
-
 $("#dateSVG").empty();
 // Default calendar ranges
 var datemax = new Date();
-var datemin = d3.time.year.offset(datemax, -5);
+var datemin = d3.timeYear.offset(datemax, -5);
 
 // Stubs for user preference
 var dateminUser = datemin;
@@ -138,7 +137,7 @@ function createDateplot() {
             return row.Date >= dateminUser && row.Date <= datemaxUser;
         });
 
-        var format = d3.time.format("%m-%d-%Y");
+        var format = d3.timeFormat("%m-%d-%Y");
 
         if (dateSetup) {
             $("#fromdate").datepicker('option', 'minDate', datemin);
