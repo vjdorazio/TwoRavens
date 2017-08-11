@@ -87,7 +87,7 @@ var pebbleBorderColor = '#fa8072';
 
 var actorForce = d3.forceSimulation(actorNodes)
     .force("link", d3.forceLink(actorLinks).distance(150))
-    .force('charge', d3.forceManyBody().strength(-600))
+  //  .force('charge', d3.forceManyBody().strength(-600))
     .force('X', d3.forceX(1000))
 .force('Y', d3.forceY().y(1000));
 //defines the force layout
