@@ -13,8 +13,7 @@
 // }
 
 // Delete stored tree (debug)
-// localStorage.removeItem('selectedVariables');
-// localStorage.removeItem('subsetData');
+localStorage.removeItem('subsetData');
 
 var submitLadda = Ladda.create(document.getElementById("buttonSubmitQuery"));
 
@@ -22,12 +21,15 @@ var submitLadda = Ladda.create(document.getElementById("buttonSubmitQuery"));
 var variableData = [];
 
 var subsetData = [];
-var nodeId = 2;
+var nodeId = 1;
 var groupId = 1;
+var submitId = 1;
+var queryId = 1;
 
 // Create the rightpanel data tree
 if (localStorage.getItem("subsetData") !== null) {
     // If the user has already submitted a query, restore the previous query from local data
+    console.log('DNE')
     subsetData = JSON.parse(localStorage.getItem('subsetData'));
     nodeId = localStorage.getItem('nodeId');
     groupId = localStorage.getItem('groupId');
@@ -208,9 +210,6 @@ $('#subsetTree').on(
 function hide_first(data){
     for (var i = 0; i < data.length; i++) {
         data[i]['show_op'] = i !== 0;
-        if (data[i]['name'].indexOf('Date Subset') === -1 && 'children' in data[i]){
-            data[i]['children'] = hide_first(data[i]['children']);
-        }
     }
     return data;
 }
@@ -225,7 +224,8 @@ $('#subsetTree').on(
     }
 );
 
-function addGroup() {
+function addGroup(query=false) {
+    // When the query argument is set, groups will be included under a 'query group'
     var movedChildren = [];
     var removeIds = [];
 
@@ -238,7 +238,7 @@ function addGroup() {
         var child = subsetData[child_id];
 
         // Don't put groups inside groups! Only a drag can do that.
-        if (child.name.indexOf('Subset') !== -1) {
+        if (child.name.indexOf('Subset') !== -1 || query) {
             movedChildren.push(child);
             removeIds.push(child_id);
         }
@@ -252,14 +252,25 @@ function addGroup() {
         subsetData.splice(removeIds[i], 1);
     }
 
-    subsetData.push(
-        {
-            id: String(nodeId++),
-            name: 'Group ' + String(groupId++),
-            operation: 'and',
-            children: movedChildren,
-            show_op: subsetData.length > 0
-        });
+    if (query) {
+        subsetData.push(
+            {
+                id: String(nodeId++),
+                name: 'Query ' + String(queryId++),
+                operation: 'and',
+                children: movedChildren,
+                show_op: subsetData.length > 0
+            });
+    } else {
+        subsetData.push(
+            {
+                id: String(nodeId++),
+                name: 'Group ' + String(groupId++),
+                operation: 'and',
+                children: movedChildren,
+                show_op: subsetData.length > 0
+            });
+    }
 
     $('#subsetTree').tree('loadData', subsetData);
 
@@ -275,7 +286,6 @@ function addRule() {
     // Index zero is root node. Add subset pref to nodes
     if (subsetSelection !== "") {
         var preferences = getSubsetPreferences();
-
         if (subsetData.length === 0) {
             preferences['show_op'] = false;
         }
@@ -342,17 +352,14 @@ function getSubsetPreferences() {
         };
 
         // Add each country to the parent node as another rule
-        var first = true;
         for (var country in mapListCountriesSelected) {
             if (mapListCountriesSelected[country]) {
                 subset['children'].push({
                     id: String(nodeId++),
                     name: country,
-                    show_op: !first,
-                    operation: 'and',
+                    show_op: false,
                     type: 'country'
                 });
-                first = false;
             }
         }
         // Don't add a rule and ignore the stage if no countries are selected
@@ -386,16 +393,18 @@ function getSubsetPreferences() {
  * Makes web request for rightpanel preferences
  */
 function submitQuery() {
-    submitLadda.start();
 
     // Store user preferences in local data
-    localStorage.setItem('selectedVariables', JSON.stringify([...selectedVariables]));
-    localStorage.setItem('subsetData', $('#subsetTree').tree('toJson'));
-    localStorage.setItem('nodeId', nodeId);
-    localStorage.setItem('groupId', groupId);
+    // localStorage.setItem('selectedVariables', JSON.stringify([...selectedVariables]));
+    // localStorage.setItem('subsetData', $('#subsetTree').tree('toJson'));
+    // localStorage.setItem('nodeId', nodeId);
+    // localStorage.setItem('groupId', groupId);
 
     var variableQuery = buildVariables();
     var subsetQuery = buildSubset();
+
+    // True for adding a query group, all existing preferences are grouped under a 'query group'
+    addGroup(true);
 
     console.log(JSON.stringify(subsetQuery, null, '  '));
     console.log(JSON.stringify(variableQuery, null, '  '));
@@ -412,7 +421,7 @@ function submitQuery() {
         }
     }
     function downloadFail(btn) {
-        btn.stop();
+        // btn.stop();
     }
 
     var urlcall = rappURL + "queryapp";
@@ -521,13 +530,21 @@ function buildSubset(){
         }
 
         if (rule.name === 'Location Subset'){
-            rule_query['countrycode'] = processGroup(rule);
-        }
+            var rule_query_inner = [];
+            for (var child_id in rule.children) {
+                rule_query_inner.push(rule.children[child_id].name);
+            }
 
-        // Individual countries are themselves considered rules.
-        // The code is structured this way to be able to use the group precedence parser on the country list
-        if ('type' in rule && rule.type === 'country') {
-            return rule.name;
+            if ('not' in rule) {
+                rule_query_inner = {'$not': rule_query_inner}
+            }
+
+            // Wrap with conjunction operator if specified.
+            if ('operation' in rule) {
+                rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
+            }
+
+            rule_query['countrycode'] = rule_query_inner;
         }
 
         return rule_query;
