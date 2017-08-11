@@ -1024,6 +1024,22 @@ display: inline;}
 	-webkit-transition: all 1s ease;
 }
 
+.country_table_collapse {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 0px;
+    width:auto;
+    -webkit-transition: all 1s ease;
+}
+
+.country_table_config {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 300px;
+    width:auto;
+    -webkit-transition: all 1s ease;
+}
+
 .hide_label {
 	display:none;
 }
@@ -1039,6 +1055,13 @@ display: inline;}
 	fill: steelblue;
 	cursor: pointer;
 }
+
+.bar_click {
+    fill:white;
+    cursor: pointer;
+    opacity: 0;
+}
+
 
 .bar_all_selected {
 	fill: brown;
@@ -1088,15 +1111,33 @@ display: inline;}
 .location_right {
 	width:auto;
 	position:absolute;
-	top:10%;
+    top:11px;
 	left:50%;
 }
 
+.location_left {
+    top:11px;
+    width:220px;
+}
+
+#svg_graph_table tr:nth-child(odd) {
+    background: #ADADAD;
+}
+
+#svg_graph_table tr:nth-child(even) {
+    background: #ADADAD;
+}
+
+.country_table_odd {
+    background: #ADADAD;
+}
+
+.country_table_even {
+    background: #F9F9F9;
+}
 
 .strike_through:hover {
 	text-decoration: line-through;
-	background-color: steelblue;
-	color: white;
 }
 
 /*begin styling for actor*/
