@@ -1,5 +1,7 @@
 #! /usr/bin/python
 
+#groups dictionaries from PETRARCH into one large file
+
 urlBase = "/home/marcus/Documents/TwoRavens_Su17/Vito TwoRavens/data/dict_work/from_PETRARCH/"
 
 code = []
@@ -93,12 +95,11 @@ fileW = open(urlBase + "Petrarch_clean_dict.txt", "w")
 i = 0
 while i < len(code):
 	fileW.write("%s\t" %code[i])
-	if (len(code[i]) == 3):
-		print(code[i])
+	if (len(translations[i]) == 1):
+		print(code[i] + "\t" + str(translations[i]))
 	for j in translations[i]:
 		fileW.write("%s " %j)
 	fileW.write("\n")
 	i += 1
 fileW.close()
-print("done")
 print("done")

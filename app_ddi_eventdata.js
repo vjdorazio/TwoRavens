@@ -3,16 +3,16 @@
 
 // hostname default - the app will use it to obtain the variable metadata
 // (ddi) and pre-processed data info if the file id is supplied as an
-// argument (for ex., gui.html?dfId=17), but hostname isn't. 
-// Edit it to suit your installation. 
-// (NOTE that if the file id isn't supplied, the app will default to the 
+// argument (for ex., gui.html?dfId=17), but hostname isn't.
+// Edit it to suit your installation.
+// (NOTE that if the file id isn't supplied, the app will default to the
 // local files specified below!)
-// NEW: it is also possible now to supply complete urls for the ddi and 
+// NEW: it is also possible now to supply complete urls for the ddi and
 // the tab-delimited data file; the parameters are ddiurl and dataurl.
 // These new parameters are optional. If they are not supplied, the app
-// will go the old route - will try to cook standard dataverse urls 
+// will go the old route - will try to cook standard dataverse urls
 // for both the data and metadata, if the file id is supplied; or the
-// local files if nothing is supplied. 
+// local files if nothing is supplied.
 // -- L.A.
 
 var production=false;
@@ -78,8 +78,8 @@ var rightClickLast = false;
 
 
 // this is the initial color scale that is used to establish the initial colors of the nodes.  allNodes.push() below establishes a field for the master node array allNodes called "nodeCol" and assigns a color from this scale to that field.  everything there after should refer to the nodeCol and not the color scale, this enables us to update colors and pass the variable type to R based on its coloring
-// var colors = d3.scaleOrdinal(d3.schemeCategory20);
-var colors = d3.scale.category20();
+var colors = d3.scaleOrdinal(d3.schemeCategory20);
+//var colors = d3.scale.category20();
 
 var colorTime=false;
 var timeColor = '#2d6ca2';
@@ -347,159 +347,138 @@ function findValue(json, key) {
 
 
 // this is the function and callback routine that loads all external data: metadata (DVN's ddi), preprocessed (for plotting distributions), and zeligmodels (produced by Zelig) and initiates the data download to the server
-readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
-    //console.log(UrlExists(metadataurl));
+ readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
+               //console.log(UrlExists(metadataurl));
 
 
-    //if(UrlExists(metadataurl)){
-    //d3.xml(metadataurl, "application/xml", function(xml) {
+               	//if(UrlExists(metadataurl)){
+                //d3.xml(metadataurl, "application/xml", function(xml) {
 
-    //				  d3.json(url, function(error, json) {
-    d3.json(url, function (json) {
+ 				//				  d3.json(url, function(error, json) {
+                d3.json(url,function(json){
 
-         var jsondata = json;
-         // console.log(jsondata);
-         //console.log("Findvalue: ",findValue(jsondata,"fileName"));
-         //  var vars = xml.documentElement.getElementsByTagName("var");
-         var vars = jsondata.variables;
-         //console.log("value of vars");
-         //        console.log(vars);
-         // var temp = xml.documentElement.getElementsByTagName("fileName");
-         var temp = findValue(jsondata, "fileName");
-         //      console.log("value of temp");
-         //    console.log(temp);
-         //
-         zparams.zdata = temp;//[0].childNodes[0].nodeValue;
-         //  console.log("value of zdata: ",zparams.zdata);
-         // function to clean the citation so that the POST is valid json
-         function cleanstring(s) {
-             s = s.replace(/\&/g, "and");
-             s = s.replace(/\;/g, ",");
-             s = s.replace(/\%/g, "-");
-             return s;
-         }
+                   var jsondata=json;
+                    // console.log(jsondata);
+                     //console.log("Findvalue: ",findValue(jsondata,"fileName"));
+                     //  var vars = xml.documentElement.getElementsByTagName("var");
+                       var vars=jsondata.variables;
+ 					  //console.log("value of vars");
+               //        console.log(vars);
+                      // var temp = xml.documentElement.getElementsByTagName("fileName");
+                       var temp = findValue(jsondata,"fileName");
+                 //      console.log("value of temp");
+                   //    console.log(temp);
+                     //
+                       zparams.zdata = temp;//[0].childNodes[0].nodeValue;
+                     //  console.log("value of zdata: ",zparams.zdata);
+                       // function to clean the citation so that the POST is valid json
+                       function cleanstring(s) {
+                         s=s.replace(/\&/g, "and");
+                         s=s.replace(/\;/g, ",");
+                         s=s.replace(/\%/g, "-");
+                         return s;
+                      }
 
-         // var cite = xml.documentElement.getElementsByTagName("biblCit");
-         var cite = findValue(jsondata, "biblCit");
-         zparams.zdatacite = cite;//[0].childNodes[0].nodeValue;
-         // console.log("value of zdatacite: ",zparams.zdatacite);
-         if (zparams.zdatacite !== undefined) {
-             zparams.zdatacite = cleanstring(zparams.zdatacite);
-         }
-         //console.log("value of zdatacite: ",zparams.zdatacite);
-         //
+                      // var cite = xml.documentElement.getElementsByTagName("biblCit");
+                       var cite=findValue(jsondata,"biblCit");
+                       zparams.zdatacite=cite;//[0].childNodes[0].nodeValue;
+                      // console.log("value of zdatacite: ",zparams.zdatacite);
+                       if(zparams.zdatacite!== undefined){
+                         zparams.zdatacite=cleanstring(zparams.zdatacite);
+                       }
+                       //console.log("value of zdatacite: ",zparams.zdatacite);
+                       //
 
-         // dataset name trimmed to 12 chars
-         var dataname = zparams.zdata.replace(/\.(.*)/, "");  // regular expression to drop any file extension
-         // Put dataset name, from meta-data, into top panel
-         d3.select("#dataName")
-             .html(dataname);
+                       // dataset name trimmed to 12 chars
+                       var dataname = zparams.zdata.replace( /\.(.*)/, "") ;  // regular expression to drop any file extension
+                       // Put dataset name, from meta-data, into top panel
+                       d3.select("#dataName")
+                       .html(dataname);
 
-         $('#cite div.panel-body').text(zparams.zdatacite);
+                       $('#cite div.panel-body').text(zparams.zdatacite);
 
-         // Put dataset name, from meta-data, into page title
-         d3.select("title").html("TwoRavens " + dataname)
-         //d3.select("#title").html("blah");
+                       // Put dataset name, from meta-data, into page title
+                       d3.select("title").html("TwoRavens " +dataname)
+                       //d3.select("#title").html("blah");
 
-         // temporary values for hold that correspond to histogram bins
-         hold = [.6, .2, .9, .8, .1, .3, .4];
-         var myvalues = [0, 0, 0, 0, 0];
-         //console.log("length: ",vars.length);
-         // console.log(vars);
+                       // temporary values for hold that correspond to histogram bins
+                       hold = [.6, .2, .9, .8, .1, .3, .4];
+                       var myvalues = [0, 0, 0, 0, 0];
+                        //console.log("length: ",vars.length);
+                       // console.log(vars);
 
-         //var tmp=vars.ccode;
-         //console.log("tmp= ",tmp);
-         var i = 0;
-         for (var key in vars) {
-             //	console.log(vars[key]);
-             //p[key] = jsondata["variables"][key];
-             valueKey[i] = key;
+ 						//var tmp=vars.ccode;
+ 						//console.log("tmp= ",tmp);
+ 						var i=0;
+ 										for(var key in vars) {
+ 										//	console.log(vars[key]);
+ 							                //p[key] = jsondata["variables"][key];
+ 							                valueKey[i]=key;
 
-             if (vars[key].labl.length === 0) {
-                 lablArray[i] = "no label";
-             }
-             else {
-                 lablArray[i] = vars[key].labl;
-             }
+ 							                if(vars[key].labl.length===0){lablArray[i]="no label";}
+ 							                else{lablArray[i]=vars[key].labl;}
 
 
-             i++;
+ 							                i++;
 
-         }
-         //console.log("test=",ccode.labl.);
-         //console.log("lablArray=",lablArray);
-
-
-         for (i = 0; i < valueKey.length; i++) {
+ 							            }
+ 							            //console.log("test=",ccode.labl.);
+ 					//console.log("lablArray=",lablArray);
 
 
-             //valueKey[i] = vars[i].attributes.name.nodeValue;
+                       for (i=0;i<valueKey.length;i++) {
 
-             //if(vars[i].getElementsByTagName("labl").length === 0) {lablArray[i]="no label";}
-             //else {lablArray[i] = vars[i].getElementsByTagName("labl")[0].childNodes[0].nodeValue;}
 
-             //  var datasetcount = d3.layout.histogram()
-             //  .bins(barnumber).frequency(false)
-             //  (myvalues);
+                       //valueKey[i] = vars[i].attributes.name.nodeValue;
 
-             // this creates an object to be pushed to allNodes. this contains all the preprocessed data we have for the variable, as well as UI data pertinent to that variable, such as setx values (if the user has selected them) and pebble coordinates
-             var obj1 = {
-                 id: i,
-                 reflexive: false,
-                 "name": valueKey[i],
-                 "labl": lablArray[i],
-                 data: [5, 15, 20, 0, 5, 15, 20],
-                 count: hold,
-                 "nodeCol": colors(i),
-                 "baseCol": colors(i),
-                 "strokeColor": selVarColor,
-                 "strokeWidth": "1",
-                 "subsetplot": false,
-                 "subsetrange": ["", ""],
-                 "setxplot": false,
-                 "setxvals": ["", ""],
-                 "grayout": false
-             };
+                       //if(vars[i].getElementsByTagName("labl").length === 0) {lablArray[i]="no label";}
+                       //else {lablArray[i] = vars[i].getElementsByTagName("labl")[0].childNodes[0].nodeValue;}
 
-             jQuery.extend(true, obj1, preprocess[valueKey[i]]);
-             allNodesColors(obj1);
+                     //  var datasetcount = d3.layout.histogram()
+                     //  .bins(barnumber).frequency(false)
+                     //  (myvalues);
 
-             // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
-             allNodes.push(obj1);
+                       // this creates an object to be pushed to allNodes. this contains all the preprocessed data we have for the variable, as well as UI data pertinent to that variable, such as setx values (if the user has selected them) and pebble coordinates
+                       var obj1 = {id:i, reflexive: false, "name": valueKey[i], "labl": lablArray[i], data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false};
 
-         }
-         ;
+                       jQuery.extend(true, obj1, preprocess[valueKey[i]]);
+                       allNodesColors(obj1);
 
-         //console.log("allNodes: ", allNodes);
-         // Reading the zelig models and populating the model list in the right panel.
-         d3.json("data/zelig5models.json", function (error, json) {
-             if (error) return console.warn(error);
-             var jsondata = json;
+                       // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
+                       allNodes.push(obj1);
 
-             //console.log("zelig models json: ", jsondata);
-             for (var key in jsondata.zelig5models) {
-                 if (jsondata.zelig5models.hasOwnProperty(key)) {
-                     mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
-                 }
-             }
+                       };
 
-             d3.json("data/zelig5choicemodels.json", function (error, json) {
-                 if (error) return console.warn(error);
-                 var jsondata = json;
-                 //console.log("zelig choice models json: ", jsondata);
-                 for (var key in jsondata.zelig5choicemodels) {
-                     if (jsondata.zelig5choicemodels.hasOwnProperty(key)) {
-                         mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
-                     }
-                 }
+                       //console.log("allNodes: ", allNodes);
+                       // Reading the zelig models and populating the model list in the right panel.
+                       d3.json("data/zelig5models.json", function(error, json) {
+                               if (error) return console.warn(error);
+                               var jsondata = json;
 
-                 scaffolding();
-                 //                dataDownload();
-             });
-         });
-     });
+                               //console.log("zelig models json: ", jsondata);
+                               for(var key in jsondata.zelig5models) {
+                               if(jsondata.zelig5models.hasOwnProperty(key)) {
+                               mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
+                               }
+                               }
 
- });
+                               d3.json("data/zelig5choicemodels.json", function(error, json) {
+                                       if (error) return console.warn(error);
+                                       var jsondata = json;
+                                       //console.log("zelig choice models json: ", jsondata);
+                                       for(var key in jsondata.zelig5choicemodels) {
+                                       if(jsondata.zelig5choicemodels.hasOwnProperty(key)) {
+                                       mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
+                                       }
+                                       }
+
+                                       scaffolding();
+                       //                dataDownload();
+                                       });
+                               });
+                       });
+
+                });
 
 
 ////////////////////////////////////////////
@@ -588,37 +567,34 @@ function scaffolding(callback) {
 
 //alert("scaffoldingflag"+flag);
 
-    eventlist = new Array(20)
-        .join().split(',')
-        .map(function (item, index) {
-            return ++index;
-        });
+
+eventlist=new Array(20)
+    .join().split(',')
+    .map(function(item, index){ return ++index;})
 
     // console.log(eventlist);
     //populating event type
-    d3.select("#tab5").selectAll("p")
-        .data(eventlist)
-        .enter()
-        .append("p")
-        // .attr("id",function(d){
-        //     return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
-        //     }) // perhapse ensure this id is unique by adding '_' to the front?
-        .text(function (d) {
-            return d;
-        })
-        .style('background-color', function (d) {
-            //if(findNodeIndex(d) > 2) {return varColor;}
-            //else {
-            return hexToRgba(selVarColor);
-        })
-        .attr("data-container", "body")
-        .attr("data-toggle", "popover")
-        .attr("data-trigger", "hover")
-        .attr("data-placement", "center")
-        .attr("data-html", "true")
-        .attr("onmouseover", "$(this).popover('toggle');")
-        .attr("onmouseout", "$(this).popover('toggle');")
-        .attr("data-original-title", "Summary Statistics");
+		d3.select("#tab5").selectAll("p")
+    .data(eventlist)
+    .enter()
+    .append("p")
+    // .attr("id",function(d){
+    //     return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
+    //     }) // perhapse ensure this id is unique by adding '_' to the front?
+    .text(function(d){return d;})
+    .style('background-color',function(d) {
+         //if(findNodeIndex(d) > 2) {return varColor;}
+         //else {
+                return hexToRgba(selVarColor);
+               })
+    .attr("data-container", "body")
+    .attr("data-toggle", "popover")
+    .attr("data-trigger", "hover")
+    .attr("data-placement", "center")
+    .attr("data-html", "true")
+    .attr("onmouseover", "$(this).popover('toggle');")
+    .attr("onmouseout", "$(this).popover('toggle');")
+    .attr("data-original-title", "Summary Statistics");
 
     // console.log(valueKey);
     d3.select("#variableList").selectAll("p") 			//do something with this..
@@ -646,6 +622,7 @@ function scaffolding(callback) {
         .attr("data-html", "true")
         .attr("onmouseover", "$(this).popover('toggle');")
         .attr("onmouseout", "$(this).popover('toggle');")
+/*<<<<<<< HEAD
         .attr("data-original-title", "Summary Statistics")
         .on("click", function () {
             var variableName = d3.select(this).text();
@@ -663,6 +640,10 @@ function scaffolding(callback) {
             // This updates the listing in the right panel
             reloadVariables();
         });
+=======*/
+        .attr("data-original-title", "Summary Statistics");
+
+//>>>>>>> Marcus_EventDataSubset
 
 
     d3.select("#tab2").selectAll("p") 			//do something with this..
@@ -724,6 +705,7 @@ function scaffolding(callback) {
         }
         });
 
+
     function selectionMadeSubset(n) {
         subsetSelection = n;
 
@@ -734,6 +716,7 @@ function scaffolding(callback) {
                 return varColor;
         })
     }
+
 
     d3.select("#models")
     .style('height', 2000)
@@ -792,44 +775,48 @@ $(document).on('input', '#searchvar', function() {
 });
 
 
-var srchid = [];
-var vkey = [];
-$("#searchvar").on("keyup", function search(e) {
+	var srchid=[];
+	var vkey=[];
+	$("#searchvar").on("keyup",function search(e) {
     //if(e.keyCode == 8 ) {
-    //d3.select("#tab1").selectAll("p")
+		//d3.select("#tab1").selectAll("p")
 
-    $("#tab1").children().popover('hide');
-    //}
-    var flag = 0;
-    var k = 0;
-    vkey = [];
-    srchid = [];
+		$("#tab1").children().popover('hide');
+	//}
+	var flag=0;
+		var k=0;
+		  vkey=[];
+		 srchid=[];
 
-    if ($(this).val() === '') {
-        srchid = [];
-        flag = 0;
-        updatedata(valueKey, flag);
-        return;
-    }
+		 if($(this).val()===''){
+			srchid=[];
+			flag=0;
+			updatedata(valueKey,flag);
+			return;
+		}
 
-    for (var i = 0; i < allNodes.length; i++) {
-        if ((allNodes[i]["name"].indexOf($(this).val()) != -1)) {
-            srchid[k] = i;
+		for(var i=0;i<allNodes.length;i++)
+		{
+			if((allNodes[i]["name"].indexOf($(this).val())!=-1))
+			{
+				srchid[k]=i;
 
-            k = k + 1;
-        }
-    }
-    for (var i = 0; i < allNodes.length; i++) {
-        if ((allNodes[i]["labl"].indexOf($(this).val()) != -1) && ($.inArray(i, srchid) == -1)) {
+			k=k+1;}
+		}
+		for(var i=0;i<allNodes.length;i++)
+		{
+			if((allNodes[i]["labl"].indexOf($(this).val())!=-1) && ($.inArray(i, srchid)==-1))
+			{
 
-            srchid[k] = i;
+				srchid[k]=i;
 
-            k = k + 1;
-        }
-    }
+			k=k+1;}
+		}
 
-    //console.log(srchid);
-    lngth = srchid.length;
+		//console.log(srchid);
+		lngth=srchid.length;
+
+                       
 	if(k==0){
 			vkey=valueKey;
 
@@ -862,8 +849,48 @@ $("#searchvar").on("keyup", function search(e) {
 
 });
 
-function updatedata(value, flag) {
-    var clr = '#000000';
+	function updatedata(value,flag)
+	{
+	var clr='#000000' ;
+
+	var nodename=[];
+	var bordercol='#000000';
+	var borderstyle='solid';
+	for(var i=0;i<nodes.length;i++)
+	{
+		nodename[i]=nodes[i].name;
+	}
+
+	d3.select("#variableList").selectAll("p").data(valueKey).remove();
+
+	d3.select("#variableList").selectAll("p")
+		//do something with this..
+
+		.data(value)
+		.enter()
+		.append("p")
+		.attr("id",function(d){
+			  return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
+			  }) // perhapse ensure this id is unique by adding '_' to the front?
+		.text(function(d){return d;})
+		.style('background-color',function(d) {
+			  if($.inArray(findNode(d).name,nodename)==-1) {return varColor;}
+
+			   else {return hexToRgba(selVarColor);}
+			   }).style('border-style',function(d){
+				   if($.inArray(findNodeIndex(d),srchid)!=-1 && flag==1){return borderstyle;}
+			   })
+			   .style('border-color',function(d){
+				   if($.inArray(findNodeIndex(d),srchid)!=-1 && flag==1){return bordercol;}
+			   })
+    .attr("data-container", "body")
+    .attr("data-toggle", "popover")
+    .attr("data-trigger", "hover")
+    .attr("data-placement", "right")
+    .attr("data-html", "true")
+    .attr("onmouseover", "$(this).popover('toggle');")
+    .attr("onmouseout", "$(this).popover('toggle');")
+    .attr("data-original-title", "Summary Statistics");
 
     var nodename = [];
     var bordercol = '#000000';
@@ -872,70 +899,14 @@ function updatedata(value, flag) {
         nodename[i] = nodes[i].name;
     }
 
-    d3.select("#variableList").selectAll("p").data(valueKey).remove();
+	$("#tab1").children().popover('hide');
+	populatePopover();
 
-    d3.select("#variableList").selectAll("p")
-    //do something with this..
+        //Mike had previously commented this line out
+	addlistener(nodes);
 
-        .data(value)
-        .enter()
-        .append("p")
-        .attr("id", function (d) {
-            return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
-        }) // perhapse ensure this id is unique by adding '_' to the front?
-        .text(function (d) {
-            return d;
-        })
-        .style('background-color', function (d) {
-            if (selectedVariables.has(d3.select(this).text())) {
-                return hexToRgba(selVarColor)
-            } else {
-                return hexToRgba(varColor)
-            }
-        }).style('border-style', function (d) {
-        if ($.inArray(findNodeIndex(d), srchid) != -1 && flag == 1) {
-            return borderstyle;
-        }
-    })
-        .style('border-color', function (d) {
-            if ($.inArray(findNodeIndex(d), srchid) != -1 && flag == 1) {
-                return bordercol;
-            }
-        })
-        .attr("data-container", "body")
-        .attr("data-toggle", "popover")
-        .attr("data-trigger", "hover")
-        .attr("data-placement", "right")
-        .attr("data-html", "true")
-        .attr("onmouseover", "$(this).popover('toggle');")
-        .attr("onmouseout", "$(this).popover('toggle');")
-        .attr("data-original-title", "Summary Statistics")
-        .on("click", function () {
-            var variableName = d3.select(this).text();
-            var currentColor = d3.select(this).style('background-color') == hexToRgba(varColor) ? hexToRgba(selVarColor) : hexToRgba(varColor);
 
-            if (currentColor === hexToRgba(selVarColor)) {
-                selectedVariables.add(variableName);
-            } else {
-                if (selectedVariables.has(variableName)) {
-                    selectedVariables.delete(variableName);
-                }
-            }
-
-            d3.select(this).style("background-color", currentColor);
-            // This updates the listing in the right panel
-            reloadVariables();
-        });
-
-    fakeClick();
-
-    $("#tab1").children().popover('hide');
-    populatePopover();
-
-    // I commented this out... Michael Shoemate (Shoeboxam)
-    // addlistener(nodes);
-
-}
+	}
 
 //
 //
@@ -956,15 +927,19 @@ function updatedata(value, flag) {
 // var force;
 
 
-$(document).ready(function () {
-    $("#btnSave").hide();
-});
+
+        $(document).ready(function(){
+
+        		$("#btnSave").hide();
+        });
 
 
-//Write to JSON Function, to write new metadata file after the user has tagged a variable as a time variable
-function writetojson(btn) {
 
-    //var jsonallnodes=JSON.stringify(allNodes);
+
+  //Write to JSON Function, to write new metadata file after the user has tagged a variable as a time variable
+	function writetojson(btn){
+
+		//var jsonallnodes=JSON.stringify(allNodes);
 
     var outtypes = [];
     for (var j = 0; j < allNodes.length; j++) {
@@ -978,19 +953,35 @@ function writetojson(btn) {
         });
     }
 
-    // console.log("Outtypes:"+outtypes);
-    writeout = {outtypes: outtypes}
-    writeoutjson = JSON.stringify(writeout);
-    //console.log(jsonallnodes);
-    urlcall = rappURL + "writeapp";
 
-    //base.concat(jsonout);
-    function cleanstring(s) {
-        s = s.replace(/\&/g, "and");
-        s = s.replace(/\;/g, ",");
-        s = s.replace(/\%/g, "-");
-        return s;
-    }
+   // console.log("Outtypes:"+outtypes);
+		writeout={outtypes:outtypes}
+				writeoutjson=JSON.stringify(writeout);
+				//console.log(jsonallnodes);
+				urlcall = rappURL+"writeapp";
+
+				//base.concat(jsonout);
+    	function cleanstring(s) {
+                        s=s.replace(/\&/g, "and");
+                        s=s.replace(/\;/g, ",");
+                        s=s.replace(/\%/g, "-");
+                        return s;
+                      }
+                      var properjson=cleanstring(writeoutjson);
+
+    var solajsonout = "solaJSON="+properjson;
+//console.log(properjson);
+
+function writesuccess(btn,json){
+
+	selectLadda.stop();
+
+      $('#btnSave').hide();
+}
+
+function writefail(btn)
+{
+	selectLadda.stop();
 
     var properjson = cleanstring(writeoutjson);
 
@@ -1009,14 +1000,8 @@ function writetojson(btn) {
 
     selectLadda.start();
     makeCorsRequest(urlcall, btn, writesuccess, writefail, solajsonout);
-}
-//end of write to json
-
-
-
-
-
-
+    }
+}//end of write to json
 
 		// init D3 force layout
 		function forced3layout(nodes, links,  width,  height,tick)
@@ -1038,97 +1023,97 @@ function writetojson(btn) {
             mousedown_link = null;
         }
 
-//ROHIT BHATTACHARJEE ad listener function
-function addlistener(nodes){
-    d3.select("#variableList").selectAll("p")
-        .on("mouseover", function(d) {
+	//ROHIT BHATTACHARJEE ad listener function
+	function addlistener(nodes){
+	d3.select("#variableList").selectAll("p")
+    .on("mouseover", function(d) {
 
-            // REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
-            $("body div.popover")
-                .addClass("variables");
-            $("body div.popover div.popover-content")
-                .addClass("form-horizontal");
+		// REMOVED THIS TOOLTIP CODE AND MADE A BOOTSTRAP POPOVER COMPONENT
+        $("body div.popover")
+        .addClass("variables");
+        $("body div.popover div.popover-content")
+        .addClass("form-horizontal");
+         })
+    .on("mouseout", function() {
+
+										//Remove the tooltip
+											//d3.select("#tooltip").style("display", "none");
         })
-        .on("mouseout", function() {
+     
+    .on("click", function varClick(){
+        if(allNodes[findNodeIndex(this.id)].grayout) {return null;}
 
-            //Remove the tooltip
-            //d3.select("#tooltip").style("display", "none");
-        })
+        d3.select(this)
+        .style('background-color',function(d) {
+               var myText = d3.select(this).text();
+               var myColor = d3.select(this).style('background-color');
+               var mySC = allNodes[findNodeIndex(myText)].strokeColor;
+               var myNode = allNodes[findNodeIndex(this.id)];
 
+               	//console.log("inside SC wala if");
+               //	SC=timeColor;
 
-        .on("click", function varClick(){
-            if(allNodes[findNodeIndex(this.id)].grayout) {return null;}
+               zparams.zvars = []; //empty the zvars array
+               if(d3.rgb(myColor).toString() === varColor.toString()) {	// we are adding a var
 
-            d3.select(this)
-                .style('background-color',function(d) {
-                    var myText = d3.select(this).text();
-                    var myColor = d3.select(this).style('background-color');
-                    var mySC = allNodes[findNodeIndex(myText)].strokeColor;
-                    var myNode = allNodes[findNodeIndex(this.id)];
+                if(nodes.length==0) {
+                    nodes.push(findNode(myText));
+                    nodes[0].reflexive=true;
+                }
 
-                    //console.log("inside SC wala if");
-                    //   SC=timeColor;
+                else {nodes.push(findNode(myText));}
 
-                    zparams.zvars = []; //empty the zvars array
-                    if(d3.rgb(myColor).toString() === varColor.toString()) { // we are adding a var
+               if(myNode.time==="yes") {
+                    tagColors(myNode, timeColor);
+                    return hexToRgba(timeColor);
+               }
+               else if(myNode.nature==="nominal") {
+                    tagColors(myNode, nomColor);
+                    return hexToRgba(nomColor);
+               }
+               else {
+                    return hexToRgba(selVarColor);
+               }
 
-                        if(nodes.length==0) {
-                            nodes.push(findNode(myText));
-                            nodes[0].reflexive=true;
-                        }
+               }
+               else { // dropping a variable
 
-                        else {nodes.push(findNode(myText));}
+                    nodes.splice(findNode(myText)["index"], 1);
+                    spliceLinksForNode(findNode(myText));
 
-                        if(myNode.time==="yes") {
-                            tagColors(myNode, timeColor);
-                            return hexToRgba(timeColor);
-                        }
-                        else if(myNode.nature==="nominal") {
-                            tagColors(myNode, nomColor);
-                            return hexToRgba(nomColor);
-                        }
-                        else {
-                            return hexToRgba(selVarColor);
-                        }
+                if(mySC==dvColor) {
+                    var dvIndex = zparams.zdv.indexOf(myText);
+                    if (dvIndex > -1) { zparams.zdv.splice(dvIndex, 1); }
+                    //zparams.zdv="";
+                }
+                else if(mySC==csColor) {
+                    var csIndex = zparams.zcross.indexOf(myText);
+                    if (csIndex > -1) { zparams.zcross.splice(csIndex, 1); }
+                }
+                else if(mySC==timeColor) {
+                	//console.log("entering some if");
+                    var timeIndex = zparams.ztime.indexOf(myText);
+                    //console.log("Timeindex=",timeIndex);
+                    if (timeIndex > -1) { zparams.ztime.splice(timeIndex, 1); }
+                }
+               else if(mySC==nomColor) {
+                    var nomIndex = zparams.znom.indexOf(myText);
+                    if (nomIndex > -1) { zparams.znom.splice(dvIndex, 1); }
+               }
 
-                    }
-                    else { // dropping a variable
+               // nodeReset(allNodes[findNodeIndex(myText)]);
+                borderState();
+               legend();
+                return varColor;
+               }
+               });
 
-                        nodes.splice(findNode(myText)["index"], 1);
-                        spliceLinksForNode(findNode(myText));
-
-                        if(mySC==dvColor) {
-                            var dvIndex = zparams.zdv.indexOf(myText);
-                            if (dvIndex > -1) { zparams.zdv.splice(dvIndex, 1); }
-                            //zparams.zdv="";
-                        }
-                        else if(mySC==csColor) {
-                            var csIndex = zparams.zcross.indexOf(myText);
-                            if (csIndex > -1) { zparams.zcross.splice(csIndex, 1); }
-                        }
-                        else if(mySC==timeColor) {
-                            //console.log("entering some if");
-                            var timeIndex = zparams.ztime.indexOf(myText);
-                            //console.log("Timeindex=",timeIndex);
-                            if (timeIndex > -1) { zparams.ztime.splice(timeIndex, 1); }
-                        }
-                        else if(mySC==nomColor) {
-                            var nomIndex = zparams.znom.indexOf(myText);
-                            if (nomIndex > -1) { zparams.znom.splice(dvIndex, 1); }
-                        }
-
-                        // nodeReset(allNodes[findNodeIndex(myText)]);
-                        borderState();
-                        legend();
-                        return varColor;
-                    }
-                });
-
-            panelPlots();
-            restart();
+        panelPlots();
+        restart();
         });
-}
-//console.log("Search ID at start: "+srchid);
+	}
+		//console.log("Search ID at start: "+srchid);
+
 
 // returns id
 var findNodeIndex = function(nodeName) {
@@ -1209,7 +1194,8 @@ function zPop() {
 
 function estimate(btn) {
 
-    if (production && zparams.zsessionid == "") {
+
+    if(production && zparams.zsessionid=="") {
         alert("Warning: Data download is not complete. Try again soon.");
         return;
     }
@@ -1229,12 +1215,12 @@ function estimate(btn) {
     //console.log("POST out: ", solajsonout);
 
 
-    zparams.allVars = valueKey.slice(10, 25); // this is because the URL is too long...
+    zparams.allVars = valueKey.slice(10,25); // this is because the URL is too long...
     var jsonout = JSON.stringify(zparams);
     //var selectorBase = rappURL+"selectorapp?solaJSON=";
-    var selectorurlcall = rappURL + "selectorapp"; //.concat(jsonout);
+    var selectorurlcall = rappURL+"selectorapp"; //.concat(jsonout);
 
-    function estimateSuccess(btn, json) {
+    function estimateSuccess(btn,json) {
         estimateLadda.stop();  // stop spinner
         allResults.push(json);
         // console.log(allResults);
@@ -1245,12 +1231,13 @@ function estimate(btn) {
             myparent.removeChild(document.getElementById("resultsHolder"));
         }
 
-        estimated = true;
+
+        estimated=true;
         d3.select("#results")
-            .style("display", "block");
+        .style("display", "block");
 
         d3.select("#resultsView")
-            .style("display", "block");
+        .style("display", "block");
 
         d3.select("#modelView")
             .style("display", "block");
@@ -1260,7 +1247,7 @@ function estimate(btn) {
         $("#btnResults").trigger("click");
 
 
-        modelCount = modelCount + 1;
+        modelCount = modelCount+1;
         var model = "Model".concat(modelCount);
 
         function modCol() {
@@ -1312,7 +1299,8 @@ function estimate(btn) {
     }
 
     estimateLadda.start();  // start spinner
-    makeCorsRequest(urlcall, btn, estimateSuccess, estimateFail, solajsonout);
+
+    makeCorsRequest(urlcall,btn, estimateSuccess, estimateFail, solajsonout);
     //makeCorsRequest(selectorurlcall, btn, selectorSuccess, selectorFail, solajsonout);
 
 
@@ -1329,17 +1317,20 @@ function dataDownload() {
     zparams.zmetadataurl = metadataurl;
     zparams.zusername = username;
     var jsonout = JSON.stringify(zparams);
-    var btn = "nobutton";
+
+    var btn="nobutton";
 
     //var base = rappURL+"zeligapp?solaJSON="
     urlcall = rappURL + "dataapp"; //base.concat(jsonout);
     var solajsonout = "solaJSON=" + jsonout;
     //console.log("urlcall out: ", urlcall);
-    // console.log("POST out: ", solajsonout);
+
+   // console.log("POST out: ", solajsonout);
 
     function downloadSuccess(btn, json) {
         //console.log("dataDownload json in: ", json);
-        zparams.zsessionid = json.sessionid[0];
+        zparams.zsessionid=json.sessionid[0];
+
 
         // set the link URL
         if (production) {
@@ -1355,9 +1346,9 @@ function dataDownload() {
 
     function downloadFail(btn) {
         console.log("Data have not been downloaded");
-    }
 
-    makeCorsRequest(urlcall, btn, downloadSuccess, downloadFail, solajsonout);
+    makeCorsRequest(urlcall,btn, downloadSuccess, downloadFail, solajsonout);
+    }
 }
 
 
@@ -1553,44 +1544,48 @@ function transform(n,t, typeTransform) {
     var jsonout = JSON.stringify(transformstuff);
     //var base = rappURL+"transformapp?solaJSON="
 
-    urlcall = rappURL + "transformapp"; //base.concat(jsonout);
-    var solajsonout = "solaJSON=" + jsonout;
+
+    urlcall = rappURL+"transformapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON="+jsonout;
     //console.log("urlcall out: ", urlcall);
     //console.log("POST out: ", solajsonout);
+
 
 
     function transformSuccess(btn, json) {
         estimateLadda.stop();
         //console.log("json in: ", json);
 
-        if (json.typeTransform[0]) {
 
-            d3.json(json.url, function (error, json) {
-                if (error) return console.warn(error);
-                var jsondata = json;
-                var vars = jsondata["variables"];
+        if(json.typeTransform[0]) {
 
-                for (var key in vars) {
-                    var myIndex = findNodeIndex(key);
-                    jQuery.extend(true, allNodes[myIndex], jsondata.variables[key]);
+            d3.json(json.url, function(error, json) {
+                        if (error) return console.warn(error);
+                        var jsondata = json;
+                    	var vars=jsondata["variables"];
 
-                    if (allNodes[myIndex].plottype === "continuous") {
-                        densityNode(allNodes[myIndex]);
-                    }
-                    else if (allNodes[myIndex].plottype === "bar") {
-                        barsNode(allNodes[myIndex]);
-                    }
-                }
+                        for(var key in vars) {
+                            var myIndex = findNodeIndex(key);
+                            jQuery.extend(true, allNodes[myIndex], jsondata.variables[key]);
 
-                fakeClick();
-                populatePopover();
-                panelPlots();
-                //console.log(allNodes[myIndex]);
-            });
+                            if(allNodes[myIndex].plottype === "continuous") {
+                                densityNode(allNodes[myIndex]);
+                            }
+                            else if (allNodes[myIndex].plottype === "bar") {
+                                barsNode(allNodes[myIndex]);
+                            }
+                        }
+
+                        fakeClick();
+                        populatePopover();
+                        panelPlots();
+                    //console.log(allNodes[myIndex]);
+                    });
         }
         else {
 
-            callHistory.push({func: "transform", zvars: n, transform: t});
+            callHistory.push({func:"transform", zvars:n, transform:t});
+
 
             var subseted = false;
             var rCall = [];
@@ -1598,40 +1593,22 @@ function transform(n,t, typeTransform) {
             var newVar = rCall[0][0];
             trans.push(newVar);
 
-            d3.json(json.url, function (error, json) {
-                if (error) return console.warn(error);
-                var jsondata = json;
-                //var jsondata = json;
-                var vars = jsondata["variables"];
-                for (var key in vars) {
-                    var myIndex = findNodeIndex(key);
-                    if (typeof myIndex !== "undefined") {
+
+            d3.json(json.url, function(error, json) {
+                    if (error) return console.warn(error);
+                    var jsondata = json;
+                    //var jsondata = json;
+                    var vars=jsondata["variables"];
+                    for(var key in vars) {
+                        var myIndex = findNodeIndex(key);
+                    if(typeof myIndex !== "undefined") {
+
                         alert("Invalid transformation: this variable name already exists.");
                         return;
                     }
                     // add transformed variable to the current space
                     var i = allNodes.length;
-                    var obj1 = {
-                        id: i,
-                        reflexive: false,
-                        "name": key,
-                        "labl": "transformlabel",
-                        data: [5, 15, 20, 0, 5, 15, 20],
-                        count: [.6, .2, .9, .8, .1, .3, .4],
-                        "nodeCol": colors(i),
-                        "baseCol": colors(i),
-                        "strokeColor": selVarColor,
-                        "strokeWidth": "1",
-                        "subsetplot": false,
-                        "subsetrange": ["", ""],
-                        "setxplot": false,
-                        "setxvals": ["", ""],
-                        "grayout": false,
-                        "defaultInterval": jsondata.variables[key]["interval"],
-                        "defaultNumchar": jsondata.variables[key]["numchar"],
-                        "defaultNature": jsondata.variables[key]["nature"],
-                        "defaultBinary": jsondata.variables[key]["binary"]
-                    };
+                    var obj1 = {id:i, reflexive: false, "name": key, "labl": "transformlabel", data: [5,15,20,0,5,15,20], count: [.6, .2, .9, .8, .1, .3, .4], "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false, "defaultInterval":jsondata.variables[key]["interval"], "defaultNumchar":jsondata.variables[key]["numchar"], "defaultNature":jsondata.variables[key]["nature"], "defaultBinary":jsondata.variables[key]["binary"]};
 
                     jQuery.extend(true, obj1, jsondata.variables[key]);
                     allNodes.push(obj1);
@@ -1642,16 +1619,18 @@ function transform(n,t, typeTransform) {
                     fakeClick();
                     panelPlots();
 
-                    if (allNodes[i].plottype === "continuous") {
+                    if(allNodes[i].plottype === "continuous") {
                         densityNode(allNodes[i]);
                     }
                     else if (allNodes[i].plottype === "bar") {
                         barsNode(allNodes[i]);
-                    }
-                }//for
+
+                        }
+                    }//for
 
 
-            });
+                    });
+
 
             // update the log
             logArray.push("transform: ".concat(rCall[0]));
@@ -1726,7 +1705,8 @@ function transform(n,t, typeTransform) {
     }
 
     estimateLadda.start();  // start spinner
-    makeCorsRequest(urlcall, btn, transformSuccess, transformFail, solajsonout);
+
+    makeCorsRequest(urlcall,btn, transformSuccess, transformFail, solajsonout);
 
 }
 
@@ -2367,7 +2347,8 @@ function hexToRgba(hex) {
     var b = bigint & 255;
     var a = '0.5';
 
-    return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+
+    return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 }
 
 // function takes a node and a color and updates zparams
@@ -2547,7 +2528,8 @@ function subsetSelect(btn) {
         zparams.zdataurl = dataurl;
     }
 
-    if (production && zparams.zsessionid == "") {
+
+    if(production && zparams.zsessionid=="") {
         alert("Warning: Data download is not complete. Try again soon.");
         return;
     }
@@ -2576,7 +2558,8 @@ function subsetSelect(btn) {
         } //only need to check one
     }
 
-    if (subsetEmpty == true) {
+
+    if(subsetEmpty==true) {
         alert("Warning: No new subset selected.");
         return;
     }
@@ -2593,22 +2576,16 @@ function subsetSelect(btn) {
         });
     }
 
-    var subsetstuff = {
-        zdataurl: zparams.zdataurl,
-        zvars: zparams.zvars,
-        zsubset: zparams.zsubset,
-        zsessionid: zparams.zsessionid,
-        zplot: zparams.zplot,
-        callHistory: callHistory,
-        typeStuff: outtypes
-    };
+
+    var subsetstuff = {zdataurl:zparams.zdataurl, zvars:zparams.zvars, zsubset:zparams.zsubset, zsessionid:zparams.zsessionid, zplot:zparams.zplot, callHistory:callHistory, typeStuff:outtypes};
 
     var jsonout = JSON.stringify(subsetstuff);
     //var base = rappURL+"subsetapp?solaJSON="
-    var urlcall = rappURL + "subsetapp"; //base.concat(jsonout);
-    var solajsonout = "solaJSON=" + jsonout;
+    urlcall = rappURL+"subsetapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON="+jsonout;
 
     console.log("POST out: ", solajsonout);
+
 
 
     function subsetSelectSuccess(btn, json) {
@@ -2633,15 +2610,9 @@ function subsetSelect(btn) {
         var myLog = jQuery.extend(true, [], logArray);
         var myHistory = jQuery.extend(true, [], callHistory);
 
-        spaces[myspace] = {
-            "allNodes": myNodes,
-            "zparams": myParams,
-            "trans": myTrans,
-            "force": myForce,
-            "preprocess": myPreprocess,
-            "logArray": myLog,
-            "callHistory": myHistory
-        };
+
+        spaces[myspace] = {"allNodes":myNodes, "zparams":myParams, "trans":myTrans, "force":myForce, "preprocess":myPreprocess, "logArray":myLog, "callHistory":myHistory};
+
 
         // remove pre-subset svg
         var selectMe = "#m".concat(myspace);
@@ -2649,27 +2620,22 @@ function subsetSelect(btn) {
         selectMe = "#whitespace".concat(myspace);
         d3.select(selectMe).remove();
 
-        // selectMe = "navdot".concat(myspace);
-        // var mynavdot = document.getElementById(selectMe);
-        // mynavdot.removeAttribute("class");
+       // selectMe = "navdot".concat(myspace);
+       // var mynavdot = document.getElementById(selectMe);
+       // mynavdot.removeAttribute("class");
 
         myspace = spaces.length;
-        callHistory.push({
-            func: "subset",
-            zvars: jQuery.extend(true, [], zparams.zvars),
-            zsubset: jQuery.extend(true, [], zparams.zsubset),
-            zplot: jQuery.extend(true, [], zparams.zplot)
-        });
+        callHistory.push({func:"subset", zvars:jQuery.extend(true, [],zparams.zvars), zsubset:jQuery.extend(true, [],zparams.zsubset), zplot:jQuery.extend(true, [],zparams.zplot)});
 
 
-        //  selectMe = "navdot".concat(myspace-1);
-        //  mynavdot = document.getElementById(selectMe);
+      //  selectMe = "navdot".concat(myspace-1);
+      //  mynavdot = document.getElementById(selectMe);
 
-        //   var newnavdot = document.createElement("li");
-        //   newnavdot.setAttribute("class", "active");
-        //    selectMe = "navdot".concat(myspace);
-        //    newnavdot.setAttribute("id", selectMe);
-        //    mynavdot.parentNode.insertBefore(newnavdot, mynavdot.nextSibling);
+     //   var newnavdot = document.createElement("li");
+     //   newnavdot.setAttribute("class", "active");
+    //    selectMe = "navdot".concat(myspace);
+    //    newnavdot.setAttribute("id", selectMe);
+    //    mynavdot.parentNode.insertBefore(newnavdot, mynavdot.nextSibling);
 
 
         // this is to be used to gray out and remove listeners for variables that have been subsetted out of the data
@@ -2701,45 +2667,45 @@ function subsetSelect(btn) {
         svg = d3.select("#whitespace");
 
 
-        d3.json(json.url, function (error, json) {
-            if (error) return console.warn(error);
-            var jsondata = json;
-            var vars = jsondata["variables"];
+        d3.json(json.url, function(error, json) {
+                if (error) return console.warn(error);
+                var jsondata = json;
+                var vars=jsondata["variables"];
 
-            // console.log(jsondata);
-            for (var key in jsondata["variables"]) {
+               // console.log(jsondata);
+                for(var key in jsondata["variables"]) {
 
-                var myIndex = findNodeIndex(key);
-                //console.log("Key Value:"+key);
-                //console.log("My index:"+myIndex);
-                //console.log("Node Index"+findNodeIndex(key));
-                allNodes[myIndex].plotx = undefined;
-                allNodes[myIndex].ploty = undefined;
-                allNodes[myIndex].plotvalues = undefined;
-                allNodes[myIndex].plottype = "";
-                //allNodes[myIndex].plotx=null;
-                //allNodes[myIndex].ploty=null;
-                //allNodes[myIndex].plotvalues=null;
-                //allNodes[myIndex].plottype="";
+                    var myIndex = findNodeIndex(key);
+                	//console.log("Key Value:"+key);
+                	//console.log("My index:"+myIndex);
+                	//console.log("Node Index"+findNodeIndex(key));
+                    allNodes[myIndex].plotx=undefined;
+                    allNodes[myIndex].ploty=undefined;
+                    allNodes[myIndex].plotvalues=undefined;
+                    allNodes[myIndex].plottype="";
+                    //allNodes[myIndex].plotx=null;
+                    //allNodes[myIndex].ploty=null;
+                    //allNodes[myIndex].plotvalues=null;
+                    //allNodes[myIndex].plottype="";
 
-                jQuery.extend(true, allNodes[myIndex], jsondata.variables[key]);
-                allNodes[myIndex].subsetplot = false;
-                allNodes[myIndex].subsetrange = ["", ""];
-                allNodes[myIndex].setxplot = false;
-                allNodes[myIndex].setxvals = ["", ""];
+                    jQuery.extend(true, allNodes[myIndex], jsondata.variables[key]);
+                    allNodes[myIndex].subsetplot=false;
+                    allNodes[myIndex].subsetrange=["",""];
+                    allNodes[myIndex].setxplot=false;
+                    allNodes[myIndex].setxvals=["",""];
 
-                if (allNodes[myIndex].valid == 0) {
-                    grayOuts.push(allNodes[myIndex].name);
-                    allNodes[myIndex].grayout = true;
+                    if(allNodes[myIndex].valid==0) {
+                        grayOuts.push(allNodes[myIndex].name);
+                        allNodes[myIndex].grayout=true;
+                    }
                 }
-            }
 
-            rePlot();
-            populatePopover();
-            layout(v = "add");
+                rePlot();
+                populatePopover();
+                layout(v="add");
 
-        });
-        //  console.log("vaalue of all nodes after subset:",allNodes);
+                });
+  //  console.log("vaalue of all nodes after subset:",allNodes);
         varOut(grayOuts);
     }
 
@@ -2749,8 +2715,7 @@ function subsetSelect(btn) {
     }
 
     selectLadda.start(); //start button motion
-    makeCorsRequest(urlcall, btn, subsetSelectSuccess, subsetSelectFail, solajsonout);
-
+    makeCorsRequest(urlcall,btn, subsetSelectSuccess, subsetSelectFail, solajsonout);
 }
 
 function readPlotLines(url,callback){
@@ -3174,362 +3139,47 @@ function d3date() {
 
 var d3loc_draw = false;
 function d3loc() {
+//<<<<<<< HEAD
 	if(!d3loc_draw) {
 		d3loc_draw = true;
 		drawMainGraph();
 	}
+/*=======
+
+	drawMainGraph();
+>>>>>>> Marcus_EventDataSubset*/
 }
 
 function d3action() {
 }
 
+var actorDisplayed = false;
+function d3actor() {
+	if (!actorDisplayed) {
+		$(document).ready(function() {
+			//update display variables
 
+			actorWidth = actorSVG.node().getBoundingClientRect().width;
+			actorHeight = actorSVG.node().getBoundingClientRect().height;
 
-function d3actor() {}
-var sourceFilterChecked = [];
-var sourceEntityChecked = [];
-var targetFilterChecked = [];
-var targetEntityChecked = [];
+			boundaryLeft = Math.floor(actorWidth/2) - 20;
+			boundaryRight = Math.ceil(actorHeight/2) + 20;
 
-var sourceFullList = [];
-var targetFullList= [];
-
-var orgs = ["IGO", "IMG", "MNC", "NGO"]		//hard coded organizations to remove from entities list; hopefully temporary
-
-var sourceOrgLength = orgs.length, sourceCountryLength;
-var sourceOrgSelect = 0, sourceCountrySelect = 0;
-
-var targetOrgLength = orgs.length, targetCountryLength;
-var targetOrgSelect = 0, targetCountrySelect = 0;
-
-var actorType = ["source", "target"];
-var actorOrder = ["Full", "Entity", "Role", "Attr"];
-
-window.onload = function(){
-	//read dictionary and store for fast retrieval
-	var dict;
-	$.get('data/CAMEO_actor_dict_1.csv', function (data) {		//probably will have to wrap this in a function so it can be read first
-		dict = data.split('\n');
-	});
-
-	for (var m = 0; m < actorType.length; m++) {
-		var orgList;
-		if (m == 0) {
-			orgList = document.getElementById("orgSourcesList");
-		}
-		else {
-			orgList = document.getElementById("orgTargetsList");
-		}
-		for (y = 0; y < orgs.length; y ++) {
-			createElement(true, actorType[m], "Org", orgs, y, orgList);
-		}
-
-		for (var i = 0; i < actorOrder.length; i++) {
-			(function(i,m) {
-				$.get('data/' + actorType[m] + actorOrder[i] + '.csv', function(data) {
-					var lines = data.split('\n');
-					var displayList;
-					var chkSwitch = true;		//enables code for filter
-					switch (i) {
-						case 0:
-							displayList = document.getElementById("searchList" + capitalizeFirst(actorType[m]) + "s");
-							chkSwitch = false;
-							break;
-						case 1:
-							displayList = document.getElementById("country" + capitalizeFirst(actorType[m]) + "sList");
-							lines = lines.filter(function(val) {
-								return (orgs.indexOf(val > -1));
-							});
-							window[actorType[m] + "CountryLength"] = lines.length;
-							actorOrder[i] = "Country";
-							break;
-						case 2:
-							displayList = document.getElementById("role" + capitalizeFirst(actorType[m]) + "sList");
-							break;
-						case 3:
-							displayList = document.getElementById("attribute" + capitalizeFirst(actorType[m]) + "sList");
-							break;
-						}
-
-					for (x = 0; x < lines.length - 1; x++) {
-						createElement(chkSwitch, actorType[m], actorOrder[i], lines, x, displayList);
-
-						switch (actorType[m] + actorOrder[i]) {
-							case "sourceFull":
-								sourceFullList.push(lines[x].replace(/["]+/g, ''));
-								break;
-							case "targetFull":
-								targetFullList.push(lines[x].replace(/["]+/g, ''));
-								break;
-						}
-					}
-					if (actorOrder[i] == "Country") {
-						actorOrder[i] = "Entity";
-					}
-				});
-			})(i,m);
-		}
+			actorSVG.append("path").attr("d", function() {
+				return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;
+			}).attr("stroke", "black");
+			
+			actorForce.stop();
+            actorForce = actorForce.force('X', d3.forceX(actorWidth))
+                          .force('Y', d3.forceY(actorHeight))
+                          .restart();
+			updateAll();
+			actorDisplayed = true;
+		});
 	}
-	$("#sourceTabBtn").trigger("click");
-	function createElement(chkSwitch = true, type, order, lines, x, displayList) {
-		var seperator = document.createElement("div");
-		seperator.className = "seperator";
 
-		var chkbox = document.createElement("input");
-		chkbox.type = "checkbox";
-		chkbox.name = type + order + "Check";
-		chkbox.id = type + order + "Check" + x;
-		chkbox.value = lines[x].replace(/["]+/g, '');
-		chkbox.className = "actorChk";
-		if (chkSwitch) {
-			chkbox.onchange = function(){actorFilterChanged(this);};
-		}
-
-		var lbl = document.createElement("label");
-		lbl.htmlFor = type + order + "Check" + x;
-		lbl.className = "actorChkLbl";
-		lbl.id = type + order + "Lbl" + x;
-		lbl.innerHTML = lines[x].replace(/["]+/g, '');
-
-		lbl.setAttribute("data-container", "body");
-		lbl.setAttribute("data-toggle", "popover");
-		lbl.setAttribute("data-placement", "right");
-		lbl.setAttribute("data-trigger", "hover");
-		lbl.setAttribute("data-content", "test lbl");
-
-		lbl.setAttribute("onmouseover", "$(this).popover('toggle')");
-		lbl.setAttribute("onmouseout", "$(this).popover('toggle')");
-
-		displayList.appendChild(chkbox);
-		displayList.appendChild(lbl);
-		displayList.appendChild(seperator);
-	}
 }
-
-//when checkbox checked, add or remove filter
-function actorFilterChanged(element) {
-	element.checked = !!(element.checked);
-	var ending = getActorEnding(element);
-	var currentActorType = element.id.substring(0, 6);
-	if (element.checked) {
-		if (ending == "orga" || ending == "coun") {
-			window[currentActorType + "EntityChecked"].push(element.value + ending);
-			switch(ending) {
-				case "orga":
-					window[currentActorType + "OrgSelect"]++;
-					if (window[currentActorType + "OrgSelect"] == window[currentActorType + "OrgLength"]) {
-						$("#" + currentActorType + "OrgAllCheck").prop("checked", true);
-						$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", false);
-					}
-					else {
-						$("#" + currentActorType + "OrgAllCheck").prop("checked", false);
-						$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", true);
-					}
-					break;
-				case "coun":
-					window[currentActorType + "CountrySelect"]++;
-					if (window[currentActorType + "CountrySelect"] == window[currentActorType + "CountryLength"]) {
-						$("#" + currentActorType + "CountryAllCheck").prop("checked", true);
-						$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", false);
-					}
-					else {
-						$("#" + currentActorType + "CountryAllCheck").prop("check", false);
-						$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", true);
-					}
-					break;
-				}
-		}
-		else {
-			window[currentActorType + "FilterChecked"].push(element.value + ending);
-		}
-	}
-	else {
-		if (ending == "orga" || ending == "coun"){
-			var index = window[currentActorType + "EntityChecked"].indexOf(element.value + ending);
-			if (index > -1 ) {
-				window[currentActorType + "EntityChecked"].splice(index, 1);
-				switch(ending) {
-				case "orga":
-					window[currentActorType + "OrgSelect"]--;
-					if (window[currentActorType + "OrgSelect"] == 0) {
-						$("#" + currentActorType + "OrgAllCheck").prop("checked", false);
-						$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", false);
-					}
-					else {
-						$("#" + currentActorType + "OrgAllCheck").prop("checked", false);
-						$("#" + currentActorType + "OrgAllCheck").prop("indeterminate", true);
-					}
-					break;
-				case "coun":
-					window[currentActorType + "CountrySelect"]--;
-					if (window[currentActorType + "CountrySelect"] == 0) {
-						$("#" + currentActorType + "CountryAllCheck").prop("checked", false);
-						$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", false);
-					}
-					else {
-						$("#" + currentActorType + "CountryAllCheck").prop("check", false);
-						$("#" + currentActorType + "CountryAllCheck").prop("indeterminate", true);
-					}
-					break;
-				}
-			}
-		}
-		else {
-			var index = window[currentActorType + "FilterChecked"].indexOf(element.value + ending);
-			if (index > -1) {
-				window[currentActorType + "FilterChecked"].splice(index, 1);
-			}
-		}
-	}
-	actorSearch(currentActorType);
-}
-
-//returns a string of the type of filter; element is a checkbox
-function getActorEnding(element) {
-	switch (element.name.substring(6)) {
-		case "OrgCheck":
-			return "orga";
-		case "CountryCheck":
-			return "coun";
-		case "RoleCheck":
-			return "role";
-		case "AttrCheck":
-			return "attr";
-	}
-}
-
-function removeEnding(str) {
-	return str.substring(0, str.length - 4);
-}
-
-//clears search and filter selections
-$(".clearActorBtn").click(function(event) {
-	var currentActorType = event.target.id.substring(8, 14).toLowerCase();
-	document.getElementById(currentActorType + "Search").value = "";
-	$("#" + currentActorType + "Filter :checkbox").prop("checked", false);
-	window[currentActorType + "FilterChecked"].length = 0;
-	window[currentActorType + "EntityChecked"].length = 0;
-	window[currentActorType + "OrgSelect"] = 0;
-	$("#" + currentActorType + "OrgAllCheck").prop("checked", false).prop("indeterminate", false);
-	window[currentActorType + "CountrySelect"] = 0;
-	$("#" + currentActorType + "CountryAllCheck").prop("checked", false).prop("indeterminate", false);
-	actorSearch(currentActorType);
-});
-
-//clear search box when reloading page
-$(".actorSearch").ready(function() {
-	$(".actorSearch").val("");
-});
-
-//when typing in search box
-$(".actorSearch").on("keyup", function(event) {
-	actorSearch(event.target.id.substring(0, 6));
-});
-
-//on load of page, keep unchecked
-$(".allCheck").ready(function() {
-	$(".allCheck").prop("checked", false);
-});
-
-//selects all checks for specified element
-$(".allCheck").click(function(event) {
-	var currentActorType = event.target.id.substring(0, 6);
-	var currentEntityType = event.target.id.substring(6, 9);
-	var currentElement = (currentEntityType == "Org") ? $("#" + currentActorType + currentEntityType + "AllCheck") : $("#" + currentActorType + "CountryAllCheck");
-
-	currentElement.prop("indeterminate", false);
-	if (currentElement.prop("checked")) {
-		if (currentEntityType == "Org") {
-			$("#org" + capitalizeFirst(currentActorType) + "sList input:checkbox:not(:checked)").each(function() {
-				window[currentActorType + "EntityChecked"].push(this.value + "orga");
-				$(this).prop("checked", true);
-			});
-			window[currentActorType + "OrgSelect"] = window[currentActorType + "OrgLength"];
-		}
-		else {
-			$("#country" + capitalizeFirst(currentActorType) + "sList input:checkbox:not(:checked)").each(function() {
-				window[currentActorType + "EntityChecked"].push(this.value + "coun");
-				$(this).prop("checked", true);
-			});
-			window[currentActorType + "CountrySelect"] = window[currentActorType + "CountryLength"];
-		}
-	}
-	else {
-		if (currentEntityType == "Org") {
-			$("#org" + capitalizeFirst(currentActorType) + "sList input:checkbox:checked").each(function() {
-				window[currentActorType + "EntityChecked"].splice(window[currentActorType + "EntityChecked"].indexOf(this.value + "orga"), 1);
-				$(this).prop("checked", false);
-			});
-			window[currentActorType + "OrgSelect"] = 0;
-		}
-		else {
-			$("#country" + capitalizeFirst(currentActorType) + "sList input:checkbox:checked").each(function() {
-				window[currentActorType + "EntityChecked"].splice(window[currentActorType + "EntityChecked"].indexOf(this.value + "coun"), 1);
-				$(this).prop("checked", false);
-			});
-			window[currentActorType + "CountrySelect"] = 0;
-		}
-	}
-	actorSearch(currentActorType);
-});
-
-//searches for the specified text and filters (maybe implement escape characters for text search?)
-function actorSearch(actorName) {
-	actorName = actorName.toLowerCase();
-	var searchText = $("#" + actorName + "Search").val().toUpperCase();
-
-	var listLen = window[actorName + "FullList"].length;
-	for (x = 0; x < listLen; x++) {
-		var matched = false;
-		//search for entity
-		var tempLen = window[actorName + "EntityChecked"].length;
-		for (i = 0; i < tempLen; i++) {
-			if (removeEnding(window[actorName + "EntityChecked"][i]) == window[actorName + "FullList"][x].substring(0, 3)) {
-				matched = true;
-				break;
-			}
-		}
-		if (!matched && window[actorName + "EntityChecked"].length > 0) {
-			$("#" + actorName + "FullCheck"+x).css("display", "none");
-			$("#" + actorName + "FullLbl" + x).css("display", "none");
-		}
-		else {
-			var matchFilter = true;
-			//search for text
-			if (searchText != "" && window[actorName + "FullList"][x].indexOf(searchText) == -1) {
-				matchFilter = false;
-			}
-
-			//search for other filters
-			tempLen = window[actorName + "FilterChecked"].length;
-			for (i = 0; matchFilter && i < tempLen; i++) {
-				var index = window[actorName + "FullList"][x].indexOf(removeEnding(window[actorName + "FilterChecked"][i]));
-				if (index < 0) {
-					matchFilter = false;
-				}
-				else {
-					if (removeEnding(window[actorName + "FilterChecked"][i]).length == 3 && index%3 != 0) {
-						matchFilter = false;
-					}
-				}
-			}
-			if (matchFilter) {
-				$("#" + actorName + "FullCheck"+x).css("display", "inline-block");
-				$("#" + actorName + "FullLbl" + x).css("display", "inline-block");
-			}
-			else {
-				$("#" + actorName + "FullCheck"+x).css("display", "none");
-				$("#" + actorName + "FullLbl" + x).css("display", "none");
-			}
-		}
-	}
-}
-
-function capitalizeFirst(str) {
-	return str.charAt(0).toUpperCase() + str.substring(1);
-}
-
-//end of actor code
+//actor code moved to app_ddi_eventdata_actor.js
 
 /**
  * Variables declared for location
@@ -3554,6 +3204,9 @@ function capitalizeFirst(str) {
 
 function drawMainGraph() {
 
+	if(mapGraphSVG["main_graph"] != null) {
+		return;
+	}
 
 	$("#subsetLocation").append('<div class="container"><div id="subsetLocation_panel" class="row"></div></div>');
 

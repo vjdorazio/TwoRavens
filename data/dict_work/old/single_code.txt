@@ -17,7 +17,6 @@ ARB	Arab (ethnic group)
 ARE	United Arab Emirates
 ARG	Argentina
 ARM	Armenia
-ASA	Asia
 ASA	Asia (region)
 ASM	American Samoa
 ATG	Antigua and Barbuda
@@ -93,7 +92,6 @@ CZA	Czechoslovakia
 CZE	Czech Republic
 DEU	Germany
 DEV	Development
-DFL	Democratic Front for the Lib. of Palestine (DLFP)
 DJI	Djibouti
 DMA	Dominica
 DNK	Denmark
@@ -105,11 +103,9 @@ ECU	Ecuador
 EDU	Education
 EEU	Eastern Europe
 EGY	Egypt
-EIN	East Indies
 EIN	East Indies (region)
 ELI	Elites
 ENV	Environment
-ENV	Environmental
 ERI	Eritrea
 ESH	Western Sahara
 ESP	Spain
@@ -161,16 +157,14 @@ HUT	Hutu
 HUT	Hutu (ethnic group)
 IBO	Ibo
 IDN	Indonesia
-IGO	Inter-governmental Organization
 IGO	Inter-governmental organizations
 IJW	Ijaws
-IMG	Internationl Militarized Group
+IMG	International Militarized Groups
 IMY	Isle of Man
 IND	India
 INR	Indian religions
 INS	Insurgents
 INT	Ambiguous international or transnational actor
-INT	Internationl Actor
 IRL	Ireland
 IRN	Iran
 IRQ	Iraq
@@ -189,7 +183,6 @@ JPN	Japan
 JUD	Judiciary
 KAS	Kashmir
 KAZ	Kazakhstan
-KDP	Kurdish Democratic Party (KDP)
 KEN	Kenya
 KGZ	Kyrgyzstan
 KHM	Cambodia
@@ -226,12 +219,10 @@ MDG	Madagascar
 MDT	Mediterranean
 MDV	Maldives
 MEA	Middle East
-MED	Media
 MED	Medical
 MEX	Mexico
 MHL	Marshall Islands
 MIL	MIlitary
-MIL	Military
 MKD	Former Yugoslav Republic of Macedonia
 MKD	Macedonia
 MLI	Mali
@@ -239,9 +230,7 @@ MLN	millenarian
 MLT	Malta
 MMR	Myanmar
 MMR	Myanmar (Burma)
-MNC	Multi-national Corporations
 MNC	Multi-national corporation
-MNE	Montenegro
 MNG	Mongolia
 MNP	Northern Mariana Islands
 MOD	Moderate
@@ -250,6 +239,7 @@ MOS	Muslim
 MOZ	Mozambique
 MRT	Mauritania
 MSR	Montserrat
+MTN	Montenegro
 MTQ	Martinique
 MUS	Mauritius
 MWI	Malawi
@@ -261,9 +251,7 @@ NCL	New Caledonia
 NER	Niger
 NFK	Norfolk Island
 NGA	Nigeria
-NGM	Non-governmental Movements
 NGM	Non-governmental movements
-NGO	Non-governmental Organizations
 NGO	Non-governmental organizations
 NIC	Nicaragua
 NIU	Niue
@@ -278,7 +266,6 @@ OFF	Offshoot
 OGO	Ogoni
 OMN	Oman
 OPP	Opposition
-OPP	Political Opposition
 PAG	Animist/Pagan
 PAG	pagan
 PAK	Pakistan
@@ -299,18 +286,16 @@ PRY	Paraguay
 PSE	Occupied Palestinian Territories
 PSE	Occupied Palestinian Territory
 PSE	Palestinian Occupied Territories
-PTY Party
+PTY	Party
 PYF	French Polynesia
 QAT	Qatar
 RAC	racialist
 RAD	Radical
 REB	Rebel
-REB	Rebels
 REF	Refugee
-REF	Refugees
 REL	Unspecified Religious
 REU	Runion
-ROU	Romania
+ROM	Romania
 RUS	Russia
 RWA	Rwanda
 SAF	Southern Africa
@@ -322,7 +307,7 @@ SCN	Scandinavia
 SDN	Sudan
 SEA	Southeast Asia
 SEN	Senegal
-SEP	Separatist Rebels
+SEP	Separatist rebels
 SER	Serb
 SER	ethnic Serb
 SGP	Singapore
@@ -342,10 +327,8 @@ SNL	Sinhalese (ethnic group)
 SOM	Somalia
 SPM	Saint Pierre and Miquelon
 SPY	Spy
-SPY	State Intelligence Services
 SRB	Serbia
 SRB	Serbia (d.r.)
-SSD	South Sudan
 STP	Sao Tome and Principe
 SUR	Suriname
 SVK	Slovakia
@@ -382,12 +365,10 @@ TUV	Tuvalu
 TWN	Taiwan
 TZA	Tanzania
 UAF	Unidentified Armed Force
-UAF	Unidentified Armed forces
 UFO	extraterrestrial
 UGA	Uganda
 UIG	Uighur
 UIG	Uighur (Chinese ethnic minority)
-UIS	Unidentified State Actors
 UIS	Unidentified state actors
 UKR	Ukraine
 URY	Uruguay

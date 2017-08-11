@@ -1156,9 +1156,8 @@ div.actorTab button.active {
 }
 
 #fullContainer {
-	margin-top: 40px;
 	width: 100%;
-	height: calc(100% - 110px);
+	height: calc(100% - 130px);
 	box-sizing: border-box;
 }
 
@@ -1191,7 +1190,7 @@ div.actorTab button.active {
 	display: inline-block;
 	position: absolute;
 	width :180px;
-	height: calc(100% - 180px);
+	height: calc(100% - 200px);
 	overflow-x: scroll;
 	overflow-y: scroll;
 	white-space: nowrap;
@@ -1201,7 +1200,7 @@ div.actorTab button.active {
 	display: inline-block;
 	position: absolute;
 	width: 150px;
-	height: calc(100% - 180px);
+	height: calc(100% - 200px);
 	overflow-x: scroll;
 	overflow-y: scroll;
 	white-space: nowrap;
@@ -1213,20 +1212,45 @@ div.actorTab button.active {
 	height: 30px;
 }
 
-#actorSelectionDiv {
-	width: 340px;
-	border: 1px solid #ADADAD;
-	top: 72px;
-	left: 10px;
+#actorContainer {
+	width: calc(100% - 335px);
 	height: calc(100% - 20px);
+	margin-top:10px;
+}
+
+#actorSelectionDiv {
+	float: left;
+	width: 350px;
+	height: 100%;
+	border: 1px solid #ADADAD;
 	background: #F9F9F9;
-	margin-top: 10px;
 	margin-bottom: 4px;
+}
+
+#actorLinkDiv {
+	float: left;
+	width: calc(100% - 350px);
+	height: 100%;
+	border: 1px solid #ADADAD;
+}
+
+.actorBottom {
+	margin-top:-2px;
+}
+
+.actorNewGroup {
+	float: right;
+}
+
+.actorShowSelected {
+	display: inline-block;
 }
 
 .actorHead4 {
 	margin-bottom: 0px;
 	display: inline-block;
+	font-size: 18px;
+	
 }
 
 .filterExpand {
@@ -1237,13 +1261,17 @@ div.actorTab button.active {
 	vertical-align: middle;
 	outline: none;
 
-	background-image: url(collapse.png);
+	background-image: url(expand.png);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 	border: none;
 }
 
-.actorChk {
+.filterContainer {
+	display: none;
+}
+
+.sourceChk, .targetChk, .actorChk {
 	display: inline-block;
 	vertical-align: text-bottom;
 	margin: 1px 5px 0px 5px !important;
@@ -1252,5 +1280,74 @@ div.actorTab button.active {
 .actorChkLbl {
 	display: inline-block;
 	margin-right: 10px;
+}
+
+#editGroupName {
+	display: inline-block;
+	text-align: center;
+	width: 250px;
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1.1;
+	padding: 0px;
+	/*height: 17.6px;*/
+	border: none;
+	border-image-width: 0;
+	outline: none;
+	box-shadow: none;
+	background-color: #F9F9F9;
+
+	top:0px;
+}
+
+#deleteGroup {
+	display: inline-block;
+	float: right;
+	border: 0px;
+	height: 17px;
+
+	top:0px;
+}
+
+/*styling for link SVG*/
+#actorLinkSVG {
+  background-color: #FFF;
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+path.link {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3px;
+	cursor: pointer;
+}
+
+path.link.dragline {
+  pointer-events: none;
+}
+
+path.link.hidden {
+  stroke-width: 0;
+}
+
+
+circle.node {
+  stroke-width: 1.5px;
+  cursor: pointer;
+}
+
+text {
+  font: 12px sans-serif;
+  pointer-events: none;
+}
+
+text.id {
+  text-anchor: middle;
+  font-weight: bold;
 }
 /*end styling for actor*/

@@ -36,7 +36,7 @@ DZAREBGSP	Salafist Group
 EGYREBMBR	Muslim Brotherhood
 ESPBSQ	Basque
 FRYKSV	Kosovo (d.r.)
-FRYMNE	Montenegro (d.r.)
+FRYMTN	Montenegro (d.r.)
 FRYSRB	Serbia (d.r.)
 FRYVVD	Vojvodina (d.r.)
 GBRREBIRA	Irish Republican Army
@@ -82,8 +82,8 @@ IGOCAFBCA	Bank of Central African States (BEAC)
 IGOCAFCEM	Monetary and Economic Community of Central Africa (CEMAC)
 IGOCAFECA	Economic Community of Central African States
 IGOCASCIS	Commonwealth of Independent States
+IGOCEM	Common Market for Eastern and Southern Africa
 IGOCEM	Monetary and Economic Community of Central Africa
-IGOCES	Common Market for Eastern and Southern Africa
 IGOCFA	Franc Zone Financial Community of Africa
 IGOCIS	Commonwealth of Independent States
 IGOCOE	Council of Europe
@@ -384,7 +384,7 @@ PALREBPLF	Palestine Liberation Front
 PNGBOU	Bougainville
 PSEGOVFTA	Fatah (d.r.)
 PSEGOVHMS	Hamas (d.r.)
-PSEGZA	Gaza Strip
+PSEGZS	Gaza Strip
 PSEREBAAM	Al Aqsa Martyrs Brigade
 PSEREBDFL	Democratic Front for the Liberation of Palestine (DFLP)
 PSEREBHMS	Hamas (d.r.)
@@ -396,7 +396,7 @@ RUSCNY	Chechnya
 RWAGOVRPF	Rwandan Patriotic Front (d.r.)
 RWAUAFRPF	Rwandan Patriotic Front (d.r.)
 SCGKSV	Kosovo (d.r.)
-SCGMNE	Montenegro (d.r.)
+SCGMTN	Montenegro (d.r.)
 SCGSRB	Serbia (d.r.)
 SCGVVD	Vojvodina (d.r.)
 SDNDFR	Darfur
@@ -440,10 +440,10 @@ TURSOE	Southeast Turkey
 UGAREBADF	Allied Democratic Forces
 UGAREBLRA	Lord’s Resistance Army
 YUGBSN	Yugoslavia’s Republic of Bosnia (d.r.)
-YUGHRV	Yugoslavia’s Republic of Croatia (d.r.)
+YUGCTA	Yugoslavia’s Republic of Croatia (d.r.)
 YUGKSV	Kosovo (d.r.)
 YUGMCD	Yugoslavia’s Republic of Macedonia (d.r.)
-YUGMNE	Montenegro (d.r.)
+YUGMTN	Montenegro (d.r.)
 YUGSLN	Yugoslavia’s Republic of Slovenia (d.r.)
 YUGSRB	Yugoslavia’s Republic of Serbia (d.r.)
 YUGVVD	Vojvodina (d.r.)
