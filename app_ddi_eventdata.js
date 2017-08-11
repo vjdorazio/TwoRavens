@@ -3036,22 +3036,29 @@ var actorDisplayed = false;
 function d3actor() {
 	if (!actorDisplayed) {
 		$(document).ready(function() {
-			//update display variables
+			if (actorCodeLoaded) {			//if .js file has loaded, this variable will be true and defined
+				//update display variables
+				$("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
 
-			actorWidth = actorSVG.node().getBoundingClientRect().width;
-			actorHeight = actorSVG.node().getBoundingClientRect().height;
+				actorWidth = actorSVG.node().getBoundingClientRect().width;
+				actorHeight = actorSVG.node().getBoundingClientRect().height;
 
-			boundaryLeft = Math.floor(actorWidth/2) - 20;
-			boundaryRight = Math.ceil(actorHeight/2) + 20;
+				boundaryLeft = Math.floor(actorWidth/2) - 20;
+				boundaryRight = Math.ceil(actorHeight/2) + 20;
 
-			actorSVG.append("path").attr("d", function() {
-				return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;
-			}).attr("stroke", "black");
-			
-			actorForce.stop();
-			actorForce = actorForce.size([actorWidth, actorHeight]).start();
-			updateAll();
-			actorDisplayed = true;
+				actorSVG.append("path").attr("d", function() {
+					return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;
+				}).attr("stroke", "black");
+
+				//~ actorSVG.append("path").attr("d", function() {
+					//~ return "M0,1H" + actorWidth;
+				//~ }).attr("stroke", "black");
+				
+				actorForce.stop();
+				actorForce = actorForce.size([actorWidth, actorHeight]).start();
+				updateAll();
+				actorDisplayed = true;
+			}
 		});
 	}
 }

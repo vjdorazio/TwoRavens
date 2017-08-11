@@ -164,11 +164,8 @@
 				</div>
 
 				<div id="groupNameDisplayContainer" class="panel-heading text-center" style="padding-bottom:0px;">
-<!--
-					<h3 id="groupNameDisplay" class="panel-title" style="overflow:hidden;">Group 0</h3>
--->
-					<input id="editGroupName" type="text" placeholder="Source Group 0"/>	<!--change placeholder on group -->
-					<button id="deleteGroup" type="button" data-toggle="tooltip" title="Delete current group">X</button>
+					<input id="editGroupName" type="text" placeholder="Source 0" data-toggle="tooltip" title="Click to change group name"/>	<!--change placeholder on group -->
+					<button id="deleteGroup" type="button" data-toggle="tooltip" title="Delete current group"></button>
 				</div>
 
 				<div id="fullContainer">
@@ -280,11 +277,11 @@
 
             <div id="actorLinkDiv">
 				<div id="linkTitle">
-					<h3 class="panel-title text-center" style="width:50%; float:left;">Sources</h3>
-					<h3 class="panel-title text-center" style="width:50%; float:left;">Targets</h3>
+					<h3 id="linkTitleLeft" class="panel-title text-center">Sources</h3>
+					<h3 id="linkTitleRight" class="panel-title text-center">Targets</h3>
 				</div>
 				
-				<svg id="actorLinkSVG" style="height: calc(100% - 18px); width: 100%;"></svg>
+				<svg id="actorLinkSVG"></svg>
             </div>
         </div>
         </div>
@@ -454,7 +451,7 @@ function closeRightPanel() {
     <script src="app_ddi_eventdata_query.js"></script>
 
     <script type="text/javascript" src="d3.v3.min.js"></script>
-    <script src="app_ddi_eventdata_actor.js"></script>
+    <script id="actorCodeJS" type="text/javascript" src="app_ddi_eventdata_actor.js"></script>
 
   </body>
 </html>

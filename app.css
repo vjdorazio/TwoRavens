@@ -1222,13 +1222,13 @@ div.actorTab button.active {
 	height: 100%;
 	border: 1px solid #ADADAD;
 	background: #F9F9F9;
-	margin-bottom: 4px;
+	margin-bottom: 3px;
 }
 
 #actorLinkDiv {
-	float: left;
-	width: calc(100% - 350px);
-	height: 100%;
+	margin-left: 350px;
+	width: 640px;
+	height: 627px;
 	border: 1px solid #ADADAD;
 }
 
@@ -1288,7 +1288,6 @@ div.actorTab button.active {
 	font-weight: 500;
 	line-height: 1.1;
 	padding: 0px;
-	/*height: 17.6px;*/
 	border: none;
 	border-image-width: 0;
 	outline: none;
@@ -1300,52 +1299,79 @@ div.actorTab button.active {
 
 #deleteGroup {
 	display: inline-block;
-	float: right;
-	border: 0px;
-	height: 17px;
-
 	top:0px;
+	margin-right: 20px;
+
+	padding: 0px;
+	height: 15px;
+	width: 15px;
+	vertical-align: middle;
+	outline: none;
+	background-color: #F9F9F9;
+
+	background-image: url(delete.png);
+	background-repeat: no-repeat;
+	background-position: 0px 0px;
+	border: none;
+}
+
+#linkTitleLeft, #linkTitleRight {
+	width: 50%;
+	float: left;
+	border-bottom: 1px solid #ADADAD;
 }
 
 /*styling for link SVG*/
 #actorLinkSVG {
-  background-color: #FFF;
-  cursor: default;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
+	background-color: #FFF;
+	cursor: default;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	height: calc(100% - 19px);
+	width: 100%;
 }
 
 path.link {
-  fill: none;
-  stroke: #000;
-  stroke-width: 3px;
+	fill: none;
+	stroke: #000;
+	stroke-width: 3px;
 	cursor: pointer;
 }
 
 path.link.dragline {
-  pointer-events: none;
+	pointer-events: none;
 }
 
 path.link.hidden {
-  stroke-width: 0;
+	stroke-width: 0;
 }
 
-
 circle.node {
-  stroke-width: 1.5px;
-  cursor: pointer;
+	stroke-width: 1.5px;
+	cursor: pointer;
 }
 
 text {
-  font: 12px sans-serif;
-  pointer-events: none;
+	font: 12px sans-serif;
+	pointer-events: none;
 }
 
 text.id {
-  text-anchor: middle;
-  font-weight: bold;
+	text-anchor: middle;
+	font-weight: bold;
+}
+
+.SVGtooltip {
+	display: none;
+	position: absolute;
+	text-align: center;
+	padding: 5px;
+	font: 12px sans-serif;
+	background: #ddd;
+	border: 1px solid #F9F9F9;
+	pointer-events: none;
 }
 /*end styling for actor*/
