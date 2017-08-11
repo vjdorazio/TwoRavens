@@ -9,7 +9,9 @@
 //     operation: 'and',        // Stores preference of operation menu element
 //     children: [],            // If children exist
 //     negate: false,           // If exists, have a negation button
+//     editable: true,          // If false, operation cannot be edited
 //     cancellable: false       // If exists and false, disable the delete button
+//     cancel_prompt: false     // If exists and true, prompt before deletion, and un-subset data
 // }
 
 // Delete stored tree (debug)
@@ -23,13 +25,11 @@ var variableData = [];
 var subsetData = [];
 var nodeId = 1;
 var groupId = 1;
-var submitId = 1;
 var queryId = 1;
 
 // Create the rightpanel data tree
 if (localStorage.getItem("subsetData") !== null) {
     // If the user has already submitted a query, restore the previous query from local data
-    console.log('DNE')
     subsetData = JSON.parse(localStorage.getItem('subsetData'));
     nodeId = localStorage.getItem('nodeId');
     groupId = localStorage.getItem('groupId');
@@ -77,14 +77,16 @@ function buttonOperator(id, state) {
 
 function callbackOperator(id, operand) {
     var node = $('#subsetTree').tree('getNodeById', id);
-    node.operation = operand;
+    if (!('editable' in node) || ('editable' in node && node.editable)) {
+        node.operation = operand;
 
-    // Redraw tree
-    subsetData = JSON.parse($('#subsetTree').tree('toJson'));
-    var qtree = $('#subsetTree');
-    var state = qtree.tree('getState');
-    qtree.tree('loadData', subsetData, 0);
-    qtree.tree('setState', state);
+        // Redraw tree
+        subsetData = JSON.parse($('#subsetTree').tree('toJson'));
+        var qtree = $('#subsetTree');
+        var state = qtree.tree('getState');
+        qtree.tree('loadData', subsetData, 0);
+        qtree.tree('setState', state);
+    }
 }
 
 function buttonDelete(id) {
@@ -93,6 +95,13 @@ function buttonDelete(id) {
 
 function callbackDelete(id) {
     var node = $('#subsetTree').tree('getNodeById', id);
+    if ('cancel_prompt' in node && node.cancel_prompt) {
+        if (confirm("You are deleting a query. This will return your subsetting to an earlier state.")) {
+            // TODO: update data and redraw all plots
+        } else {
+            return;
+        }
+    }
 
     if (node.children) {
         for (var i = node.children.length - 1; i >= 0; i--) {
@@ -168,11 +177,22 @@ $(function () {
             }
         },
         onCanMove: function (node) {
+            // Cannot move nodes in uneditable queries
+            if ('editable' in node && !node.editable) {
+                return false
+            }
+
             // Subset and Group may be moved
             var is_country = ('type' in node && node.type === 'country');
             return (node.name.indexOf('Subset') !== -1 || node.name.indexOf('Group') !== -1 || is_country);
         },
         onCanMoveTo: function (moved_node, target_node, position) {
+
+            // Cannot move to uneditable queries
+            if ('editable' in target_node && !target_node.editable) {
+                return false
+            }
+
             // Countries can be moved to child of location subset group
             if ('type' in moved_node && moved_node.type === 'country') {
                 return position === 'after' && target_node.parent.name === 'Location Subset';
@@ -229,8 +249,10 @@ function addGroup(query=false) {
     var movedChildren = [];
     var removeIds = [];
 
+    // If everything is deleted, then restart the ids
     if (subsetData.length === 0) {
-        groupId = 1
+        groupId = 1;
+        queryId = 1;
     }
 
     // Make list of children to be moved
@@ -238,7 +260,12 @@ function addGroup(query=false) {
         var child = subsetData[child_id];
 
         // Don't put groups inside groups! Only a drag can do that.
-        if (child.name.indexOf('Subset') !== -1 || query) {
+        if (!query && child.name.indexOf('Subset') !== -1) {
+            movedChildren.push(child);
+            removeIds.push(child_id);
+
+        // A query grouping can, however put groups inside of groups.
+        } else if (query && child.name.indexOf('Query') === -1) {
             movedChildren.push(child);
             removeIds.push(child_id);
         }
@@ -253,8 +280,7 @@ function addGroup(query=false) {
     }
 
     if (query) {
-        subsetData.push(
-            {
+        subsetData.push({
                 id: String(nodeId++),
                 name: 'Query ' + String(queryId++),
                 operation: 'and',
@@ -262,8 +288,7 @@ function addGroup(query=false) {
                 show_op: subsetData.length > 0
             });
     } else {
-        subsetData.push(
-            {
+        subsetData.push({
                 id: String(nodeId++),
                 name: 'Group ' + String(groupId++),
                 operation: 'and',
@@ -279,13 +304,22 @@ function addGroup(query=false) {
     var state = qtree.tree('getState');
     qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
-    qtree.tree('openNode', qtree.tree('getNodeById', nodeId - 1), true);
+    if (!query) {
+        qtree.tree('openNode', qtree.tree('getNodeById', nodeId - 1), true);
+    }
 }
 
 function addRule() {
     // Index zero is root node. Add subset pref to nodes
     if (subsetSelection !== "") {
         var preferences = getSubsetPreferences();
+
+        // Don't add an empty preference
+        if (Object.keys(preferences).length === 0) {
+            return;
+        }
+
+        // Don't show the boolean operator on the first element
         if (subsetData.length === 0) {
             preferences['show_op'] = false;
         }
@@ -297,7 +331,6 @@ function addRule() {
         qtree.tree('loadData', subsetData, 0);
         qtree.tree('setState', state);
         qtree.tree('closeNode', qtree.tree('getNodeById', preferences['id']), false);
-        qtree.tree('openNode', qtree.tree('getNodeById', 1), true);
     }
 }
 
@@ -316,8 +349,7 @@ function getSubsetPreferences() {
 
         // For mapping numerical months to strings in the child node name
         var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
-            "July", "Aug", "Sep", "Oct", "Nov", "Dec"
-        ];
+            "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         return {
             id: String(nodeId++),
@@ -406,10 +438,37 @@ function submitQuery() {
     // True for adding a query group, all existing preferences are grouped under a 'query group'
     addGroup(true);
 
+    // Add all nodes to selection
+    var qtree = $('#subsetTree');
+    var nodeList = [...Array(nodeId).keys()];
+
+    nodeList.forEach(
+        function(node_id){
+            const node = qtree.tree("getNodeById", node_id);
+
+            if (node) {
+                qtree.tree("addToSelection", node);
+                node.editable = false;
+
+                if (node.name.indexOf('Query') === -1) {
+                    node.cancellable = false;
+                } else {
+                    node.cancel_prompt = true;
+                }
+            }
+        }
+    );
+
+    // Redraw tree
+    subsetData = JSON.parse($('#subsetTree').tree('toJson'));
+    var state = qtree.tree('getState');
+    qtree.tree('loadData', subsetData, 0);
+    qtree.tree('setState', state);
+
     console.log(JSON.stringify(subsetQuery, null, '  '));
     console.log(JSON.stringify(variableQuery, null, '  '));
 
-    var queryjson = JSON.stringify([subsetQuery, variableQuery])
+    var queryjson = JSON.stringify([subsetQuery, variableQuery]);
 
     function downloadSuccess(btn, json) {
 
