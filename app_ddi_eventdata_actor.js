@@ -1,3 +1,5 @@
+var actorCodeLoaded = true;
+
 //some preperation and activation for gui display
 $(document).ready(function() {
 	//expands divs with filters
@@ -15,7 +17,7 @@ $(document).ready(function() {
 	});
 
 	//enable jquery hover text for various gui elements
-	$(".actorBottom, .clearActorBtn, #deleteGroup, .actorShowSelectedLbl").tooltip({container: "body"});
+	$(".actorBottom, .clearActorBtn, #deleteGroup, .actorShowSelectedLbl, #editGroupName").tooltip({container: "body"});
 });
 
 var sourceFilterChecked = [];	//list of filters excluding entities under source that are checked
@@ -97,6 +99,8 @@ var dragSelect = null;			//node that has started the drag
 var dragTarget = null;			//node that is under the dragged node
 var dragTargetHTML = null;		//html for dragTarget
 
+var mousedownNode = null;		//catch for Chrome, check for mouseup + mousedown and manually trigger click
+
 //moves node to back of HTML index in order to allow mouseover detection
 d3.selection.prototype.moveToBack = function() {
 	return this.each(function() {
@@ -113,7 +117,7 @@ actorSVG.append('svg:defs').append('svg:marker').attr('id', 'end-arrow').attr('v
 actorSVG.append('svg:defs').append('svg:marker').attr('id', 'start-arrow').attr('viewBox', '0 -5 10 10').attr('refX', 4).attr('markerWidth', 3).attr('markerHeight', 3).attr('orient', 'auto').append('svg:path').attr('d', 'M10,-5L0,0L10,5').style('fill', '#000');
 
 //define SVG mouse actions
-actorSVG.on("mouseup", function(d){			//cancel draw line
+actorSVG.on("mouseup", function(d){		//cancel draw line
 	lineMouseup();
 }).on("contextmenu", function(d){		//prevent right click on svg
 	d3.event.preventDefault();
@@ -127,6 +131,8 @@ var nodeGroup = actorSVG.append("svg:g").attr("class", "allNodesGroup").selectAl
 
 //draw the drag line last to show it over the nodes when dragging
 var drag_line = actorSVG.append('svg:path').attr('class', 'link dragline hidden').attr('d', 'M0,0L0,0');
+
+var tooltipSVG = d3.select(actorSVG.node().parentNode).append("div").attr("class", "SVGtooltip").style("opacity", 0);
 
 var originNode = null;				//node that is the start of drag link line
 var destNode = null;				//node that is the end of the drag link line
@@ -142,6 +148,7 @@ function dragstart(d, i) {
 	actorForce.stop();		// stops the force auto positioning before you start dragging
 	dragStarted = true;
 	dragSelect = d;
+	tooltipSVG.transition().duration(200).style("opacity", 0).style("display", "none");
 	d3.select(this).moveToBack();
 }
 
@@ -232,23 +239,6 @@ function updateSVG(){
 		.style('opacity', "0.5")
 		.style('stroke', pebbleBorderColor)
 		.style("pointer-events", "all")
-		.on("click", function(d){				//shows actor selection for selected node
-			if (window[currentTab + "CurrentNode"] !== d) {			//only update gui if selected node is different than the current
-				$("#" + d.actor + "TabBtn").trigger("click");
-				window[currentTab + "CurrentNode"] = d;
-
-				//update gui
-				updateGroupName(d.name);
-				$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
-
-				//update actor selection checks
-				$("." + currentTab + "Chk:checked").prop("checked", false);
-				for (var x = 0; x < d.groupIndices.length; x ++)
-					$("#" + d.groupIndices[x]).prop("checked", true);
-					
-				$("#" + currentTab + "ShowSelected").trigger("click");
-			}
-		})
 		.on("contextmenu", function(d){		//begins drag line drawing for linking nodes
 			d3.event.preventDefault();
 			d3.event.stopPropagation();		//prevents mouseup on node
@@ -274,22 +264,58 @@ function updateSVG(){
 		.on("mouseup", function(d){			//creates link
 			d3.event.stopPropagation();		//prevents mouseup on svg
 			createLink(d);
+			nodeClick(d);
+			mousedownNode = null;
 		})
 		.on("mousedown", function(d){		//creates link if mouseup did not catch
 			createLink(d);
+			mousedownNode = d;
 		})
-		.on("mouseover", function(d){		//displays animation for visual indication of mouseover while dragging
+		.on("mouseover", function(d){		//displays animation for visual indication of mouseover while dragging and sets tooltip
 			if(dragSelect && dragSelect != d && dragSelect.actor == d.actor) {
 				d3.select(this).transition().attr("r", actorNodeR + 10);
 				dragTarget = d;
 				dragTargetHTML = this;
+			}
+
+			if (!dragStarted) {
+				tooltipSVG.html(d.name).style("display", "block");
+				tooltipSVG.transition().duration(200).style("opacity", 1);
 			}
 		})
 		.on("mouseout", function(d){		//display animation for visual indication of mouseout and resets dragTarget variables
 			d3.select(this).transition().attr("r", actorNodeR);
 			dragTarget = null;
 			dragTargetHTML = null;
+
+			tooltipSVG.transition().duration(200).style("opacity", 0).style("display", "none");		//reset tooltip
+		})
+		.on("mousemove", function(d){		//display tooltip
+			if (!dragStarted)
+				tooltipSVG.style("display", "block").style("left", (d3.event.pageX - 250) + "px").style("top", (d3.event.pageY - 75) + "px");
 		});
+
+	//performs on "click" of node, shows actor selection on node click
+	function nodeClick(d) {
+		if (window[d.actor + "CurrentNode"] === d) {
+			$("#" + d.actor + "TabBtn").trigger("click");
+		}
+		else if (window[currentTab + "CurrentNode"] !== d) {			//only update gui if selected node is different than the current
+			$("#" + d.actor + "TabBtn").trigger("click");
+			window[currentTab + "CurrentNode"] = d;
+
+			//update gui
+			updateGroupName(d.name);
+			$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
+
+			//update actor selection checks
+			$("." + currentTab + "Chk:checked").prop("checked", false);
+			for (var x = 0; x < d.groupIndices.length; x ++)
+				$("#" + d.groupIndices[x]).prop("checked", true);
+				
+			$("#" + currentTab + "ShowSelected").trigger("click");
+		}
+	}
 
 	//creates link between nodes
 	function createLink(d) {
@@ -326,13 +352,21 @@ function updateSVG(){
 		resetMouseVars();
 	}	//end of createLink()
 
-	innerNode.append('svg:text').attr('x', 0).attr('y', 15).attr('class', 'id').text(function(d){return d.name;});	//add text to nodes
+	innerNode.append('svg:text').attr('x', 0).attr('y', 15).attr('class', 'id').text(function(d){	//add text to nodes
+		if (d.name.length > 12)
+			return d.name.substring(0, 9) + "...";
+		else
+			return d.name;
+	});
 	
 	nodeGroup.exit().remove();		//remove any nodes that are not part of the display
 	
 	//update all names of nodes - changeID and actorID are not updated on name change to save room for other changes; probably unneccesary for a normal user (unlikely they will perform so many changes)
 	actorSVG.selectAll("text").text(function(d) {
-		return d.name;
+		if (d.name.length > 12)
+			return d.name.substring(0, 9) + "...";
+		else
+			return d.name;
 	});
 }
 
@@ -448,15 +482,15 @@ function updateAll() {
 
 //end force functions, begin actor code
 
-//rename group on click
+//rename group on click, initialize groups
 $(document).ready(function() {
 	//default group display on page load, adds default source/target to nodes and SVG
 	$("#editGroupName").ready(function() {
-		actorNodes.push(new nodeObj("Source Group 0", [], [], actorColors(currentSize), "source", changeID));
+		actorNodes.push(new nodeObj("Source 0", [], [], actorColors(currentSize), "source", changeID));
 		currentSize ++;
 		sourceSize ++;
 		changeID ++;
-		actorNodes.push(new nodeObj("Target Group 0", [], [], actorColors(currentSize), "target", changeID));
+		actorNodes.push(new nodeObj("Target 0", [], [], actorColors(currentSize), "target", changeID));
 		currentSize ++;
 		targetSize ++;
 		changeID ++;
@@ -1018,7 +1052,7 @@ $(".actorClearAll").click(function(event) {
 
 //adds a new group for source/target
 $(".actorNewGroup").click(function(event) {
-	actorNodes.push(new nodeObj(capitalizeFirst(currentTab) + " Group " + window[currentTab + "Size"], [], [], actorColors(currentSize), currentTab, changeID));
+	actorNodes.push(new nodeObj(capitalizeFirst(currentTab) + " " + window[currentTab + "Size"], [], [], actorColors(currentSize), currentTab, changeID));
 	window[currentTab + "Size"] ++;
 	currentSize ++;
 	changeID ++;
