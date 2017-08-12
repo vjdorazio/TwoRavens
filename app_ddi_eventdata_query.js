@@ -19,7 +19,8 @@ localStorage.removeItem('subsetData');
 
 var submitLadda = Ladda.create(document.getElementById("buttonSubmitQuery"));
 
-// selectedVariables is persistent, variableData is only used to render into the gui
+// variableData is used to render into the tree gui
+// variable names come from 'nodes' variable
 var variableData = [];
 
 var subsetData = [];
@@ -133,9 +134,9 @@ $(function () {
 // Updates the rightpanel variables menu
 function reloadVariables() {
     variableData.length = 0;
-    selectedVariables.forEach(function(element){
+    nodes.forEach(function(element){
         variableData.push({
-            name: element,
+            name: element.name,
             cancellable: false,
             show_op: false
         })
@@ -468,7 +469,6 @@ function getSubsetPreferences() {
 function submitQuery() {
 
     // Store user preferences in local data
-    // localStorage.setItem('selectedVariables', JSON.stringify([...selectedVariables]));
     // localStorage.setItem('subsetData', $('#subsetTree').tree('toJson'));
     // localStorage.setItem('nodeId', nodeId);
     // localStorage.setItem('groupId', groupId);
@@ -532,19 +532,19 @@ function submitQuery() {
 
 // Construct mongoDB projection (subsets columns)
 function buildVariables(){
-    var fieldQuery = {};
+    let fieldQuery = {};
     // I'm finding that browser support for the set is spotty, so I spread the set into a list before iterating
-    var variableList = [...selectedVariables];
-    for (var idx in variableList) {
-        fieldQuery[variableList[idx]] = 1;
+    for (let idx in nodes) {
+        fieldQuery[nodes[idx].name] = 1;
     }
     return fieldQuery;
 }
 
 // Construct mongoDB filter (subsets rows)
 function buildSubset(){
+    if (subsetData.length === 0) return {};
 
-    var subsetQuery = processGroup({'children': subsetData});
+    let subsetQuery = processGroup({'children': subsetData});
 
     // First construct a boolean expression tree via operator precedence between group siblings
     // Then build query for each node and pass up the tree

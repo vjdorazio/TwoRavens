@@ -103,15 +103,7 @@ var d3Color = '#1f77b4';  // d3's default blue
 var grayColor = '#c0c0c0';
 
 var subsetSelection = "";
-var selectedVariables = new Set();
 
-// localStorage.removeItem('selectedVariables');
-
-// Create the rightpanel data tree
-if (localStorage.getItem("selectedVariables") !== null) {
-    // If the user has already submitted a query, restore the previous query from local data
-    selectedVariables = new Set(JSON.parse(localStorage.getItem('selectedVariables')));
-}
 var righttab = "btnModels"; // global for current tab in right panel
 
 var zparams = {
@@ -588,11 +580,19 @@ function scaffolding(callback) {
 
 //alert("scaffoldingflag"+flag);
 
-    eventlist = new Array(20)
-        .join().split(',')
-        .map(function (item, index) {
-            return ++index;
+    let splice = (color, text, ...args) => {
+        args.forEach(x => {
+            if (color != x[0])
+                return;
+            let idx = zparams[x[1]].indexOf(text);
+            idx > -1 && zparams[x[1]].splice(idx, 1);
         });
+    };
+
+
+eventlist=new Array(20)
+    .join().split(',')
+    .map(function(item, index){ return ++index;})
 
     // console.log(eventlist);
     //populating event type
@@ -632,11 +632,13 @@ function scaffolding(callback) {
             return d;
         })
         .style('background-color', function () {
-            if (selectedVariables.has(d3.select(this).text())) {
-                return hexToRgba(selVarColor)
-            } else {
-                return hexToRgba(varColor)
+            let self_name = d3.select(this).text();
+            for (let node in nodes) {
+                if (self_name === node.name) {
+                    return hexToRgba(selVarColor)
+                }
             }
+            return hexToRgba(varColor);
         })
         .attr("data-container", "body")
         .attr("data-toggle", "popover")
@@ -648,21 +650,31 @@ function scaffolding(callback) {
         .attr("onmouseout", "$(this).popover('toggle');")
         .attr("data-original-title", "Summary Statistics")
         .on("click", function () {
-            var variableName = d3.select(this).text();
-            var currentColor = d3.select(this).style('background-color') == hexToRgba(varColor) ? hexToRgba(selVarColor) : hexToRgba(varColor);
+            d3.select(this)
+                .style('background-color', function(d) {
+                    zparams.zvars = [];
+                    let text = d3.select(this).text();
+                    if (d3.rgb(d3.select(this).style('background-color')).toString().replace(/\s/g, '') == hexToRgba(varColor)) { // we are adding a var
+                        nodes.push(findNode(text));
+                        if (nodes.length == 0) nodes[0].reflexive = true;
 
-            if (currentColor === hexToRgba(selVarColor)) {
-                selectedVariables.add(variableName);
-            } else {
-                if (selectedVariables.has(variableName)) {
-                    selectedVariables.delete(variableName);
-                }
-            }
+                        return hexToRgba(selVarColor);
+                    } else {
+                        // dropping a variable
+                        nodes.splice(findNode(text).index, 1);
+                        spliceLinksForNode(findNode(text));
+                        splice(text, [dvColor, 'zdv'], [csColor, 'zcross'], [timeColor, 'ztime'], [nomColor, 'znom']);
+                        nodeReset(allNodes[findNodeIndex(text)]);
+                        borderState();
 
-            d3.select(this).style("background-color", currentColor);
+                        return hexToRgba(varColor);
+                    }
+                });
+            fakeClick();
             // This updates the listing in the right panel
             reloadVariables();
-        });
+        })
+        .attr("data-original-title", "Summary Statistics");
 
 
     d3.select("#tab2").selectAll("p") 			//do something with this..
@@ -2346,30 +2358,11 @@ function leftpanelMedium() {
     .attr("class", "sidepanel container clearfix");
 }
 
-// function to convert color codes
-function hexToRgb(hex) {
-    var h=hex.replace('#', '');
-
-    var bigint = parseInt(h, 16);
-    var r = (bigint >> 16) & 255;
-    var g = (bigint >> 8) & 255;
-    var b = bigint & 255;
-
-    return "rgb(" + r + ", " + g + ", " + b + ")";
-}
-
-
-function hexToRgba(hex) {
-    var h=hex.replace('#', '');
-
-    var bigint = parseInt(h, 16);
-    var r = (bigint >> 16) & 255;
-    var g = (bigint >> 8) & 255;
-    var b = bigint & 255;
-    var a = '0.5';
-
-    return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
-}
+// converts color codes
+let hexToRgba = hex => {
+    let int = parseInt(hex.replace('#', ''), 16);
+    return `rgba(${[(int >> 16) & 255, (int >> 8) & 255, int & 255, '0.5'].join(',')})`;
+};
 
 // function takes a node and a color and updates zparams
 function setColors (n, c) {
