@@ -49,12 +49,12 @@ function buttonNegate(id, state) {
 }
 
 function callbackNegate(id, bool) {
-    var node = $('#subsetTree').tree('getNodeById', id);
+    let node = $('#subsetTree').tree('getNodeById', id);
     node.negate = bool;
 
     subsetData = JSON.parse($('#subsetTree').tree('toJson'));
-    var qtree = $('#subsetTree');
-    var state = qtree.tree('getState');
+    let qtree = $('#subsetTree');
+    let state = qtree.tree('getState');
     qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
 }
@@ -67,7 +67,7 @@ function buttonOperator(id, state) {
     }
 
     // To enable nand and nor, comment above and uncomment below. Please mind; the query builder does not support nand/nor
-    // var logDropdown = ' <div class="dropdown" style="display:inline"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
+    // let logDropdown = ' <div class="dropdown" style="display:inline"><button class="btn btn-default dropdown-toggle btn-xs" type="button" data-toggle="dropdown">' + state + ' <span class="caret"></span></button>';
     // logDropdown += '<ul class="dropdown-menu dropdown-menu-right" id="addDropmenu" style="float:left;margin:0;padding:0;width:45px;min-width:45px">' +
     //     '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="1" onclick="callbackOperator(' + id + ', &quot;and&quot;)">and</a></li>' +
     //     '<li style="margin:0;padding:0;width:45px"><a style="margin:0;height:20px;padding:2px;width:43px!important" data-addsel="2" onclick="callbackOperator(' + id + ', &quot;or&quot;)">or</a></li>' +
@@ -77,14 +77,14 @@ function buttonOperator(id, state) {
 }
 
 function callbackOperator(id, operand) {
-    var node = $('#subsetTree').tree('getNodeById', id);
+    let node = $('#subsetTree').tree('getNodeById', id);
     if (!('editable' in node) || ('editable' in node && node.editable)) {
         node.operation = operand;
 
         // Redraw tree
         subsetData = JSON.parse($('#subsetTree').tree('toJson'));
-        var qtree = $('#subsetTree');
-        var state = qtree.tree('getState');
+        let qtree = $('#subsetTree');
+        let state = qtree.tree('getState');
         qtree.tree('loadData', subsetData, 0);
         qtree.tree('setState', state);
     }
@@ -95,7 +95,7 @@ function buttonDelete(id) {
 }
 
 function callbackDelete(id) {
-    var node = $('#subsetTree').tree('getNodeById', id);
+    let node = $('#subsetTree').tree('getNodeById', id);
     if ('cancel_prompt' in node && node.cancel_prompt) {
         if (confirm("You are deleting a query. This will return your subsetting to an earlier state.")) {
             // TODO: update data and redraw all plots
@@ -105,7 +105,7 @@ function callbackDelete(id) {
     }
 
     if (node.children) {
-        for (var i = node.children.length - 1; i >= 0; i--) {
+        for (let i = node.children.length - 1; i >= 0; i--) {
             $('#subsetTree').tree('removeNode', node.children[i])
         }
     }
@@ -114,8 +114,8 @@ function callbackDelete(id) {
     subsetData = JSON.parse($('#subsetTree').tree('toJson'));
     subsetData = hide_first(subsetData);
 
-    var qtree = $('#subsetTree');
-    var state = qtree.tree('getState');
+    let qtree = $('#subsetTree');
+    let state = qtree.tree('getState');
     qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
 }
@@ -142,8 +142,8 @@ function reloadVariables() {
         })
     });
 
-    var qtree = $('#variableTree');
-    var state = qtree.tree('getState');
+    let qtree = $('#variableTree');
+    let state = qtree.tree('getState');
     qtree.tree('loadData', variableData, 0);
     qtree.tree('setState', state);
 }
@@ -184,7 +184,7 @@ $(function () {
             }
 
             // Subset and Group may be moved
-            var is_country = ('type' in node && node.type === 'country');
+            let is_country = ('type' in node && node.type === 'country');
             return (node.name.indexOf('Subset') !== -1 || node.name.indexOf('Group') !== -1 || is_country);
         },
         onCanMoveTo: function (moved_node, target_node, position) {
@@ -221,15 +221,15 @@ $('#subsetTree').on(
         subsetData = JSON.parse($('#subsetTree').tree('toJson'));
 
         subsetData = hide_first(subsetData);
-        var qtree = $('#subsetTree');
-        var state = qtree.tree('getState');
+        let qtree = $('#subsetTree');
+        let state = qtree.tree('getState');
         qtree.tree('loadData', subsetData, 0);
         qtree.tree('setState', state);
     }
 );
 
 function hide_first(data){
-    for (var i = 0; i < data.length; i++) {
+    for (let i = 0; i < data.length; i++) {
         data[i]['show_op'] = i !== 0;
     }
     return data;
@@ -246,8 +246,8 @@ $('#subsetTree').on(
 
 function addGroup(query=false) {
     // When the query argument is set, groups will be included under a 'query group'
-    var movedChildren = [];
-    var removeIds = [];
+    let movedChildren = [];
+    let removeIds = [];
 
     // If everything is deleted, then restart the ids
     if (subsetData.length === 0) {
@@ -256,8 +256,8 @@ function addGroup(query=false) {
     }
 
     // Make list of children to be moved
-    for (var child_id in subsetData) {
-        var child = subsetData[child_id];
+    for (let child_id in subsetData) {
+        let child = subsetData[child_id];
 
         // Don't put groups inside groups! Only a drag can do that.
         if (!query && child.name.indexOf('Subset') !== -1) {
@@ -275,7 +275,7 @@ function addGroup(query=false) {
     }
 
     // Delete elements from root directory that are moved
-    for (var i = removeIds.length - 1; i >= 0; i--) {
+    for (let i = removeIds.length - 1; i >= 0; i--) {
         subsetData.splice(removeIds[i], 1);
     }
 
@@ -300,8 +300,8 @@ function addGroup(query=false) {
     $('#subsetTree').tree('loadData', subsetData);
 
 
-    var qtree = $('#subsetTree');
-    var state = qtree.tree('getState');
+    let qtree = $('#subsetTree');
+    let state = qtree.tree('getState');
     qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
     if (!query) {
@@ -312,7 +312,7 @@ function addGroup(query=false) {
 function addRule() {
     // Index zero is root node. Add subset pref to nodes
     if (subsetSelection !== "") {
-        var preferences = getSubsetPreferences();
+        let preferences = getSubsetPreferences();
 
         // Don't add an empty preference
         if (Object.keys(preferences).length === 0) {
@@ -326,8 +326,8 @@ function addRule() {
 
         subsetData.push(preferences);
 
-        var qtree = $('#subsetTree');
-        var state = qtree.tree('getState');
+        let qtree = $('#subsetTree');
+        let state = qtree.tree('getState');
         qtree.tree('loadData', subsetData, 0);
         qtree.tree('setState', state);
         qtree.tree('closeNode', qtree.tree('getNodeById', preferences['id']), false);
@@ -348,7 +348,7 @@ function getSubsetPreferences() {
         // }
 
         // For mapping numerical months to strings in the child node name
-        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
+        let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
             "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         return {
@@ -376,7 +376,7 @@ function getSubsetPreferences() {
 
     if (subsetSelection == 'Location') {
         // Make parent node
-        var subset = {
+        let subset = {
             id: String(nodeId++),
             name: 'Location Subset',
             operation: 'and',
@@ -384,7 +384,7 @@ function getSubsetPreferences() {
         };
 
         // Add each country to the parent node as another rule
-        for (var country in mapListCountriesSelected) {
+        for (let country in mapListCountriesSelected) {
             if (mapListCountriesSelected[country]) {
                 subset['children'].push({
                     id: String(nodeId++),
@@ -411,7 +411,7 @@ function getSubsetPreferences() {
     }
     if (subsetSelection == 'Actor') {
         // Make parent node
-        var subset = {
+        let subset = {
             id: String(nodeId++),
             name: 'Actor Subset',
             operation: 'and',
@@ -419,8 +419,8 @@ function getSubsetPreferences() {
         };
 
         // Add each link to the parent node as another rule
-        for (var linkId in actorLinks) {
-            var link = {
+        for (let linkId in actorLinks) {
+            let link = {
                 id: String(nodeId++),
                 name: 'Link ' + String(linkId),
                 show_op: linkId !== 0,
@@ -438,14 +438,14 @@ function getSubsetPreferences() {
                 }]
             };
 
-            for (var sourceId in actorLinks[linkId].source.group) {
+            for (let sourceId in actorLinks[linkId].source.group) {
                 link['children'].push({
                     id: String(nodeId++),
                     name: actorLinks[linkId].source.group[sourceId].value,
                     show_op: false
                 });
             }
-            for (var targetId in actorLinks[linkId].target.group) {
+            for (let targetId in actorLinks[linkId].target.group) {
                 link['children'].push({
                     id: String(nodeId++),
                     name: actorLinks[linkId].source.group[targetId].value,
@@ -473,15 +473,15 @@ function submitQuery() {
     // localStorage.setItem('nodeId', nodeId);
     // localStorage.setItem('groupId', groupId);
 
-    var variableQuery = buildVariables();
-    var subsetQuery = buildSubset();
+    let variableQuery = buildVariables();
+    let subsetQuery = buildSubset();
 
     // True for adding a query group, all existing preferences are grouped under a 'query group'
     addGroup(true);
 
     // Add all nodes to selection
-    var qtree = $('#subsetTree');
-    var nodeList = [...Array(nodeId).keys()];
+    let qtree = $('#subsetTree');
+    let nodeList = [...Array(nodeId).keys()];
 
     nodeList.forEach(
         function(node_id){
@@ -502,14 +502,14 @@ function submitQuery() {
 
     // Redraw tree
     subsetData = JSON.parse($('#subsetTree').tree('toJson'));
-    var state = qtree.tree('getState');
+    let state = qtree.tree('getState');
     qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
 
     console.log(JSON.stringify(subsetQuery, null, '  '));
     console.log(JSON.stringify(variableQuery, null, '  '));
 
-    var queryjson = JSON.stringify([subsetQuery, variableQuery]);
+    let queryjson = JSON.stringify([subsetQuery, variableQuery]);
 
     function downloadSuccess(btn, json) {
 
@@ -524,8 +524,8 @@ function submitQuery() {
         // btn.stop();
     }
 
-    var urlcall = rappURL + "queryapp";
-    var solajsonout = "solaJSON=" + queryjson;
+    let urlcall = rappURL + "queryapp";
+    let solajsonout = "solaJSON=" + queryjson;
 
     makeCorsRequest(urlcall, submitLadda, downloadSuccess, downloadFail, solajsonout);
 }
@@ -563,14 +563,14 @@ function buildSubset(){
     function processGroup(group) {
 
         // all rules are 'or'ed together
-        var group_query = {'$or': []};
+        let group_query = {'$or': []};
 
         // strings of rules conjuncted by 'and' operators are clotted in semigroups that act together as one rule
-        var semigroup = [];
+        let semigroup = [];
 
-        for (var child_id = 0; child_id < group.children.length - 1; child_id++) {
-            var op_self = group.children[child_id]['operation'];
-            var op_next = group.children[child_id + 1]['operation'];
+        for (let child_id = 0; child_id < group.children.length - 1; child_id++) {
+            let op_self = group.children[child_id]['operation'];
+            let op_next = group.children[child_id + 1]['operation'];
 
             // Clot together and operators
             if (op_self === 'and' || op_next === 'and') {
@@ -589,11 +589,11 @@ function buildSubset(){
 
         // Process final sibling
         if (group.children[group.children.length - 1]['operation'] === 'and') {
-            semigroup.push(processNode(group.children[child_id]));
+            semigroup.push(processNode(group.children[group.children.length - 1]));
             group_query['$or'].push({'$and': semigroup.slice()})
 
         } else {
-            group_query['$or'].push(processNode(group.children[child_id]));
+            group_query['$or'].push(processNode(group.children[group.children.length - 1]));
         }
 
         // Collapse unnecessary conjunctors
@@ -609,12 +609,12 @@ function buildSubset(){
 
     // Return a mongoDB query for a rule data structure
     function processRule(rule) {
-        var rule_query = {};
+        let rule_query = {};
 
         if (rule.name === 'Date Subset') {
-            var rule_query_inner = {};
-            for (var child_id in rule.children) {
-                var child = rule.children[child_id];
+            let rule_query_inner = {};
+            for (let child_id in rule.children) {
+                let child = rule.children[child_id];
                 if ('fromDate' in child) {
                     rule_query_inner['$gte'] = child.fromDate;
                 }
@@ -630,8 +630,8 @@ function buildSubset(){
         }
 
         if (rule.name === 'Location Subset'){
-            var rule_query_inner = [];
-            for (var child_id in rule.children) {
+            let rule_query_inner = [];
+            for (let child_id in rule.children) {
                 rule_query_inner.push(rule.children[child_id].name);
             }
 
@@ -648,18 +648,18 @@ function buildSubset(){
         }
 
         if (rule.name === 'Actor Subset'){
-            var link_list = [];
-            for (var link in rule.children) {
-                var link_rule = {};
+            let link_list = [];
+            for (let link in rule.children) {
+                let link_rule = {};
 
-                var sourceList = [];
-                for (var source in link.children[0].children) {
+                let sourceList = [];
+                for (let source in link.children[0].children) {
                     sourceList.push(source.name);
                 }
                 link_rule['source'] = {'$in': sourceList};
 
-                var targetList = [];
-                for (var target in link.children[1].children) {
+                let targetList = [];
+                for (let target in link.children[1].children) {
                     targetList.push(target.name)
                 }
                 link_rule['target'] = {'$in': targetList};
@@ -674,7 +674,7 @@ function buildSubset(){
 
     function operatorWrap(operation, json) {
         // If no operator is specified, mongoDB will assume 'and'
-        var temp = {};
+        let temp = {};
 
         // NAND is not explicitly defined in mongoDB, but there is an equivalent:
         // { '$nand': [content] } === { '$not': { '$and': [content] } }
