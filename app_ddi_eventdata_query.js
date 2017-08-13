@@ -509,7 +509,7 @@ function submitQuery() {
     console.log(JSON.stringify(subsetQuery, null, '  '));
     console.log(JSON.stringify(variableQuery, null, '  '));
 
-    let queryjson = JSON.stringify([subsetQuery, variableQuery]);
+    let queryjson = JSON.stringify({'subsets': subsetQuery, 'variables': variableQuery});
 
     function downloadSuccess(btn, json) {
 
@@ -523,17 +523,18 @@ function submitQuery() {
     function downloadFail(btn) {
         // btn.stop();
     }
-
-    let urlcall = rappURL + "queryapp";
-    let solajsonout = "solaJSON=" + queryjson;
-
-    makeCorsRequest(urlcall, submitLadda, downloadSuccess, downloadFail, solajsonout);
+    // The cors request was failing, so I switched to a simple post instead.
+    let urlcall = rappURL + "eventdataapp";
+    $.post(urlcall, {'solaJSON': queryjson}).done(function (data) {
+        alert("Response: " + data);
+    });
+    // let solajsonout = "solaJSON=" + queryjson;
+    // makeCorsRequest(urlcall, submitLadda, downloadSuccess, downloadFail, solajsonout);
 }
 
 // Construct mongoDB projection (subsets columns)
 function buildVariables(){
     let fieldQuery = {};
-    // I'm finding that browser support for the set is spotty, so I spread the set into a list before iterating
     for (let idx in nodes) {
         fieldQuery[nodes[idx].name] = 1;
     }
@@ -612,21 +613,37 @@ function buildSubset(){
         let rule_query = {};
 
         if (rule.name === 'Date Subset') {
+
+            function pad(number) {
+                if (number <= 9) {
+                    return ("0" + number.toString());
+                }
+                else {
+                    return number.toString()
+                }
+            }
+
             let rule_query_inner = {};
             for (let child_id in rule.children) {
                 let child = rule.children[child_id];
                 if ('fromDate' in child) {
-                    rule_query_inner['$gte'] = child.fromDate;
+                    let date = child.fromDate.getFullYear().toString() +
+                               pad(child.fromDate.getMonth()) +
+                               pad(child.fromDate.getDay());
+                    rule_query_inner['$gte'] = date;
                 }
                 if ('toDate' in child) {
-                    rule_query_inner['$lte'] = child.toDate;
+                    let date = child.toDate.getFullYear().toString() +
+                               pad(child.toDate.getMonth()) +
+                               pad(child.toDate.getDay());
+                    rule_query_inner['$lte'] = date;
                 }
             }
             // Wrap with conjunction operator if specified.
             if ('operation' in rule) {
                 rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
             }
-            rule_query['date8'] = rule_query_inner;
+            rule_query['Date'] = rule_query_inner;
         }
 
         if (rule.name === 'Location Subset'){
@@ -643,8 +660,7 @@ function buildSubset(){
             if ('operation' in rule) {
                 rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
             }
-
-            rule_query['countrycode'] = rule_query_inner;
+            rule_query['AdminInfo'] = rule_query_inner;
         }
 
         if (rule.name === 'Actor Subset'){
@@ -656,13 +672,13 @@ function buildSubset(){
                 for (let source in link.children[0].children) {
                     sourceList.push(source.name);
                 }
-                link_rule['source'] = {'$in': sourceList};
+                link_rule['Source'] = {'$in': sourceList};
 
                 let targetList = [];
                 for (let target in link.children[1].children) {
                     targetList.push(target.name)
                 }
-                link_rule['target'] = {'$in': targetList};
+                link_rule['Target'] = {'$in': targetList};
 
                 link_list.append(link_rule)
             }
