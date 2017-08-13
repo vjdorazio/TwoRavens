@@ -1373,8 +1373,8 @@ div.actorTab button.active {
 	-ms-user-select: none;
 	-o-user-select: none;
 	user-select: none;
-	height: calc(100% - 19px);
-	width: 100%;
+	height: calc(100% - 19px) !important;
+	width: 100% !important;
 }
 
 path.link {
