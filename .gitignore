@@ -1,2 +1,4 @@
 .idea/
 ~*.docx
+.Rproj.user
+*.Rproj

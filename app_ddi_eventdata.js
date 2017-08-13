@@ -48,17 +48,10 @@ if (fileid && !dataurl) {
 
 if (!production) {
     // base URL for the R apps:
-    var rappURL = "http://0.0.0.0:8000/custom/";
+    var rappURL = "http://localhost:8000/custom/";
 } else {
     var rappURL = "https://beta.dataverse.org/custom/"; //this will change when/if the production host changes
 }
-
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//This part of the code reads in the date-frequency csv file, and reads that data to show the distribution graph, and defines all the variables and functions for this
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 var logArray = [];
 
@@ -265,25 +258,18 @@ if (dataurl) {
 let preprocess = {};
 let mods = {};
 
-//This function finds whether a key is present in the json file, and sends the key's value if present.
-function findValue(json, key) {
-    if (key in json) return json[key];
-    else {
-        var otherValue;
-        for (var otherKey in json) {
-            if (json[otherKey] && json[otherKey].constructor === Object) {
-                otherValue = findValue(json[otherKey], key);
-                if (otherValue !== undefined) return otherValue;
-            }
-        }
-    }
-}
+// Load preprocessed data
+// Prepare zparams for full data query
+readPreprocess(url = pURL, p = preprocess, callback = pageSetup);
 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//end of distribution graph
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+// everything below this point is a function
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 // Load external data:
 //      metadata (DVN's ddi)
@@ -310,7 +296,7 @@ function readPreprocess(url, variabledict, callback) {
     });
 }
 
-readPreprocess(url = pURL, p = preprocess, callback = function (jsondata) {
+function pageSetup(jsondata) {
     zparams.zdata = findValue(jsondata, "fileName");
 
     // function to clean the citation so that the POST is valid json
@@ -385,58 +371,30 @@ readPreprocess(url = pURL, p = preprocess, callback = function (jsondata) {
 
         // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
         allNodes.push(obj1);
-
     }
 
-    //console.log("allNodes: ", allNodes);
-    // Reading the zelig models and populating the model list in the right panel.
-    d3.json("data/zelig5models.json", function (error, json) {
-        if (error) return console.warn(error);
-        var jsondata = json;
+    // Now that page is setup and data saved to node list, render the gui
+    scaffolding();
+}
 
-        //console.log("zelig models json: ", jsondata);
-        for (var key in jsondata.zelig5models) {
-            if (jsondata.zelig5models.hasOwnProperty(key)) {
-                mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
+//This function finds whether a key is present in the json file, and sends the key's value if present.
+function findValue(json, key) {
+    if (key in json) return json[key];
+    else {
+        var otherValue;
+        for (var otherKey in json) {
+            if (json[otherKey] && json[otherKey].constructor === Object) {
+                otherValue = findValue(json[otherKey], key);
+                if (otherValue !== undefined) return otherValue;
             }
         }
+    }
+}
 
-        d3.json("data/zelig5choicemodels.json", function (error, json) {
-            if (error) return console.warn(error);
-            var jsondata = json;
-            //console.log("zelig choice models json: ", jsondata);
-            for (var key in jsondata.zelig5choicemodels) {
-                if (jsondata.zelig5choicemodels.hasOwnProperty(key)) {
-                    mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
-                }
-            }
-
-            scaffolding();
-            dataDownload();
-        });
-    });
-});
-
-
-////////////////////////////////////////////
-// everything below this point is a function
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
-
-
-
-
-
-// scaffolding is called after all external data are guaranteed to have been read to completion. this populates the left panel with variable names, the right panel with model names, the transformation tool, an the associated mouseovers. its callback is layout(), which initializes the modeling space
+// scaffolding is called after all external data are guaranteed to have been read to completion.
+// this populates the left panel with variable names, the transformation tool, an the associated mouseovers.
+// its callback is layout(), which initializes the modeling space
 function scaffolding(callback) {
-
 
     //jquery does this well
     $('#tInput').click(function() {
@@ -893,9 +851,11 @@ function updatedata(value, flag) {
 // var force;
 
 
-$(document).ready(function () {
-    $("#btnSave").hide();
-});
+
+        $(document).ready(function(){
+
+        		$("#btnSave").hide();
+        });
 
 
 //Write to JSON Function, to write new metadata file after the user has tagged a variable as a time variable
@@ -928,6 +888,22 @@ function writetojson(btn) {
         s = s.replace(/\%/g, "-");
         return s;
     }
+
+    var properjson = cleanstring(writeoutjson);
+
+    var solajsonout = "solaJSON=" + properjson;
+//console.log(properjson);
+
+function writesuccess(btn,json){
+
+	selectLadda.stop();
+
+      $('#btnSave').hide();
+}
+
+function writefail(btn)
+{
+	selectLadda.stop();
 
     var properjson = cleanstring(writeoutjson);
 
@@ -1755,7 +1731,7 @@ function createCORSRequest(method, url, callback) {
         // CORS not supported.
         xhr = null;
     }
-  // xhr.setRequestHeader('Content-Type', 'text/json');
+    // xhr.setRequestHeader('Content-Type', 'text/json');
 //xhr.setRequestHeader('Content-Type', 'multipart/form-data');
 
 
@@ -1766,9 +1742,9 @@ function createCORSRequest(method, url, callback) {
 
 
 // Make the actual CORS request.
-function makeCorsRequest(url,btn,callback, warningcallback, jsonstring) {
+function makeCorsRequest(url, btn, callback, warningcallback, jsonstring) {
     var xhr = createCORSRequest('POST', url);
-	//console.log("inside cors json size:"+jsonstring.length);
+    //console.log("inside cors json size:"+jsonstring.length);
     if (!xhr) {
         alert('CORS not supported');
         return;
@@ -1776,35 +1752,35 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonstring) {
     // Response handlers for asynchronous load
     // onload or onreadystatechange?
 
-    xhr.onload = function() {
+    xhr.onload = function () {
 
-      var text = xhr.responseText;
-      //console.log("text ", text);
+        var text = xhr.responseText;
+        //console.log("text ", text);
 
         try {
             var json = JSON.parse(text);   // should wrap in try / catch
             var names = Object.keys(json);
         }
-        catch(err) {
+        catch (err) {
             estimateLadda.stop();
             selectLadda.stop();
             //console.log(err);
             alert('Error: Could not parse incoming JSON.');
         }
 
-      if (names[0] == "warning"){
-        warningcallback(btn);
-        alert("Warning: " + json.warning);
-      }else{
-        callback(btn, json);
-      }
+        if (names[0] == "warning") {
+            warningcallback(btn);
+            alert("Warning: " + json.warning);
+        } else {
+            callback(btn, json);
+        }
     };
-    xhr.onerror = function() {
+    xhr.onerror = function () {
         // note: xhr.readystate should be 4, and status should be 200.  a status of 0 occurs when the url becomes too large
-        if(xhr.status==0) {
+        if (xhr.status == 0) {
             alert('There was an error making the request. xmlhttprequest status is 0.');
         }
-        else if(xhr.readyState!=4) {
+        else if (xhr.readyState != 4) {
             alert('There was an error making the request. xmlhttprequest readystate is not 4.');
         }
         else {
@@ -1814,6 +1790,7 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonstring) {
         estimateLadda.stop();
         selectLadda.stop();
     };
+    console.log(jsonstring);
     xhr.send(jsonstring);
 }
 
@@ -3112,7 +3089,7 @@ function d3actor() {
 	}
 
 	actorSearch(currentActorType);
-});
+}
 
 //searches for the specified text and filters (maybe implement escape characters for text search?)
 function actorSearch(actorName) {
