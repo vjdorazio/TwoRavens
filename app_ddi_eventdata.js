@@ -48,17 +48,10 @@ if (fileid && !dataurl) {
 
 if (!production) {
     // base URL for the R apps:
-    var rappURL = "http://0.0.0.0:8000/custom/";
+    var rappURL = "http://localhost:8000/custom/";
 } else {
     var rappURL = "https://beta.dataverse.org/custom/"; //this will change when/if the production host changes
 }
-
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//This part of the code reads in the date-frequency csv file, and reads that data to show the distribution graph, and defines all the variables and functions for this
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 var logArray = [];
 
@@ -103,15 +96,7 @@ var d3Color = '#1f77b4';  // d3's default blue
 var grayColor = '#c0c0c0';
 
 var subsetSelection = "";
-var selectedVariables = new Set();
 
-// localStorage.removeItem('selectedVariables');
-
-// Create the rightpanel data tree
-if (localStorage.getItem("selectedVariables") !== null) {
-    // If the user has already submitted a query, restore the previous query from local data
-    selectedVariables = new Set(JSON.parse(localStorage.getItem('selectedVariables')));
-}
 var righttab = "btnModels"; // global for current tab in right panel
 
 var zparams = {
@@ -180,7 +165,7 @@ var arc4 = d3.arc()
 // From .csv
 var dataset2 = [];
 var valueKey = [];
-var variableSubsetKeys = ["Date","Location","Action","Actor"];
+var variableSubsetKeys = ["Date","Location","Action","Actor"]; // Used to label buttons in the left panel
 var lablArray = [];
 var hold = [];
 var allNodes = [];
@@ -188,7 +173,7 @@ var newallNodes=[];
 var allResults = [];
 var subsetNodes = [];
 var links = [];
-var nodes = [];
+var nodes = [];  // Stores selected variables in leftpanel
 var transformVar = "";
 var summaryHold = false;
 var selInteract = false;
@@ -228,12 +213,9 @@ $('#collapseLog').on('hidden.bs.collapse', function () {
 
 // text for the about box
 // note that .textContent is the new way to write text to a div
-$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cumulative guidance and meta-analysis.'); //This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
+$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cumulative guidance and meta-analysis.');
+//This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
 
-
-
-
-//
 // read DDI metadata with d3:
 var metadataurl = "";
 if (ddiurl) {
@@ -259,247 +241,160 @@ if (ddiurl) {
     //metadataurl="data/0000.xml"; // zero vars in metadata
 }
 
-// Reading the pre-processed metadata:
 // Pre-processed data:
-var pURL = "";
+let pURL = "";
 
 if (dataurl) {
     // data url is supplied
     pURL = dataurl+"&format=prep";
-    console.log("TEst")
-
+    console.log("Test")
 } else {
     // no dataurl/file id supplied; use one of the sample data files distributed with the app in the "data" directory:
     pURL="data/samplePhoxPreprocess.json";
     datepath="data/dateplot.csv";
-
-
-    //This is testing whether a newer json file exists or not. if yes, we will use that file, else use the default file
-   //var test=UrlExists(purltest);
-   //if(test==true){
-     // pURL = purltest;
-     // console.log("test is true");
-    //}
-   //else
-   	//pURL = "data/fearonLaitinpreprocess8.json";
-
-  // console.log("yo value of test",test);
-   /*$.ajax({
-    url:purltest,
-    type:'HEAD',
-    error: function()
-    {
-    	console.log("error");
-    	pURL = "data/fearonLaitinPreprocess4.json";
-        //file not exists
-    },
-    success: function()
-    {
-    	console.log("success");
-    	pURL = purltest;
-        //file exists
-    }
-	});*/
-		function UrlExists(url)
-		{
-		    var http = new XMLHttpRequest();
-		    http.open('HEAD', url, false);
-		    http.send();
-		    return http.status!=404;
-		}
-    //console.log(purltest);
-   // console.log(pURL);
 }
 
- // .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-var preprocess = {};
-var mods = new Object;
-// console.log("Value of username: ",username);
+// Holds the list of all variables
+let preprocess = {};
+let mods = {};
 
-//This function finds whether a key is present in the json file, and sends the key's value if present.
-function findValue(json, key) {
-		 if (key in json) return json[key];
-		 else {
-			    var otherValue;
-			    for (var otherKey in json) {
-			      if (json[otherKey] && json[otherKey].constructor === Object) {
-			        otherValue = findValue(json[otherKey], key);
-			        if (otherValue !== undefined) return otherValue;
-			      }
-			    }
-			  }
-		}
+// Load preprocessed data
+// Prepare zparams for full data query
+readPreprocess(url = pURL, p = preprocess, callback = pageSetup);
 
 
-
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//end of distribution graph
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
-
-//});
-
-
-// this is the function and callback routine that loads all external data: metadata (DVN's ddi), preprocessed (for plotting distributions), and zeligmodels (produced by Zelig) and initiates the data download to the server
- readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
-               //console.log(UrlExists(metadataurl));
-
-
-               	//if(UrlExists(metadataurl)){
-                //d3.xml(metadataurl, "application/xml", function(xml) {
-
- 				//				  d3.json(url, function(error, json) {
-                d3.json(url,function(json){
-
-                   var jsondata=json;
-                    // console.log(jsondata);
-                     //console.log("Findvalue: ",findValue(jsondata,"fileName"));
-                     //  var vars = xml.documentElement.getElementsByTagName("var");
-                       var vars=jsondata.variables;
- 					  //console.log("value of vars");
-               //        console.log(vars);
-                      // var temp = xml.documentElement.getElementsByTagName("fileName");
-                       var temp = findValue(jsondata,"fileName");
-                 //      console.log("value of temp");
-                   //    console.log(temp);
-                     //
-                       zparams.zdata = temp;//[0].childNodes[0].nodeValue;
-                     //  console.log("value of zdata: ",zparams.zdata);
-                       // function to clean the citation so that the POST is valid json
-                       function cleanstring(s) {
-                         s=s.replace(/\&/g, "and");
-                         s=s.replace(/\;/g, ",");
-                         s=s.replace(/\%/g, "-");
-                         return s;
-                      }
-
-                      // var cite = xml.documentElement.getElementsByTagName("biblCit");
-                       var cite=findValue(jsondata,"biblCit");
-                       zparams.zdatacite=cite;//[0].childNodes[0].nodeValue;
-                      // console.log("value of zdatacite: ",zparams.zdatacite);
-                       if(zparams.zdatacite!== undefined){
-                         zparams.zdatacite=cleanstring(zparams.zdatacite);
-                       }
-                       //console.log("value of zdatacite: ",zparams.zdatacite);
-                       //
-
-                       // dataset name trimmed to 12 chars
-                       var dataname = zparams.zdata.replace( /\.(.*)/, "") ;  // regular expression to drop any file extension
-                       // Put dataset name, from meta-data, into top panel
-                       d3.select("#dataName")
-                       .html(dataname);
-
-                       $('#cite div.panel-body').text(zparams.zdatacite);
-
-                       // Put dataset name, from meta-data, into page title
-                       d3.select("title").html("TwoRavens " +dataname)
-                       //d3.select("#title").html("blah");
-
-                       // temporary values for hold that correspond to histogram bins
-                       hold = [.6, .2, .9, .8, .1, .3, .4];
-                       var myvalues = [0, 0, 0, 0, 0];
-                        //console.log("length: ",vars.length);
-                       // console.log(vars);
-
- 						//var tmp=vars.ccode;
- 						//console.log("tmp= ",tmp);
- 						var i=0;
- 										for(var key in vars) {
- 										//	console.log(vars[key]);
- 							                //p[key] = jsondata["variables"][key];
- 							                valueKey[i]=key;
-
- 							                if(vars[key].labl.length===0){lablArray[i]="no label";}
- 							                else{lablArray[i]=vars[key].labl;}
-
-
- 							                i++;
-
- 							            }
- 							            //console.log("test=",ccode.labl.);
- 					//console.log("lablArray=",lablArray);
-
-
-                       for (i=0;i<valueKey.length;i++) {
-
-
-                       //valueKey[i] = vars[i].attributes.name.nodeValue;
-
-                       //if(vars[i].getElementsByTagName("labl").length === 0) {lablArray[i]="no label";}
-                       //else {lablArray[i] = vars[i].getElementsByTagName("labl")[0].childNodes[0].nodeValue;}
-
-                     //  var datasetcount = d3.layout.histogram()
-                     //  .bins(barnumber).frequency(false)
-                     //  (myvalues);
-
-                       // this creates an object to be pushed to allNodes. this contains all the preprocessed data we have for the variable, as well as UI data pertinent to that variable, such as setx values (if the user has selected them) and pebble coordinates
-                       var obj1 = {id:i, reflexive: false, "name": valueKey[i], "labl": lablArray[i], data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false};
-
-                       jQuery.extend(true, obj1, preprocess[valueKey[i]]);
-                       allNodesColors(obj1);
-
-                       // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
-                       allNodes.push(obj1);
-
-                       };
-
-                       //console.log("allNodes: ", allNodes);
-                       // Reading the zelig models and populating the model list in the right panel.
-                       d3.json("data/zelig5models.json", function(error, json) {
-                               if (error) return console.warn(error);
-                               var jsondata = json;
-
-                               //console.log("zelig models json: ", jsondata);
-                               for(var key in jsondata.zelig5models) {
-                               if(jsondata.zelig5models.hasOwnProperty(key)) {
-                               mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
-                               }
-                               }
-
-                               d3.json("data/zelig5choicemodels.json", function(error, json) {
-                                       if (error) return console.warn(error);
-                                       var jsondata = json;
-                                       //console.log("zelig choice models json: ", jsondata);
-                                       for(var key in jsondata.zelig5choicemodels) {
-                                       if(jsondata.zelig5choicemodels.hasOwnProperty(key)) {
-                                       mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
-                                       }
-                                       }
-
-                                       scaffolding();
-                       //                dataDownload();
-                                       });
-                               });
-                       });
-
-                });
-
-
-////////////////////////////////////////////
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
 // everything below this point is a function
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+// Load external data:
+//      metadata (DVN's ddi)
+//      preprocessed (for plotting distributions)
+//      zeligmodels (produced by Zelig)
 
+function readPreprocess(url, variabledict, callback) {
 
+    d3.json(url, function (error, jsondata) {
+        if (error) return console.warn(error);
 
+        if (jsondata.dataset.private) {
+            private = jsondata["dataset"]["private"];
+        }
 
+        //copying the object
+        for (let key in jsondata["variables"]) {
+            variabledict[key] = jsondata["variables"][key];
+        }
 
+        if (typeof callback === "function") {
+            callback(jsondata);
+        }
+    });
+}
 
+function pageSetup(jsondata) {
+    zparams.zdata = findValue(jsondata, "fileName");
 
-// scaffolding is called after all external data are guaranteed to have been read to completion. this populates the left panel with variable names, the right panel with model names, the transformation tool, an the associated mouseovers. its callback is layout(), which initializes the modeling space
+    // function to clean the citation so that the POST is valid json
+    function cleanstring(s) {
+        s = s.replace(/\&/g, "and");
+        s = s.replace(/\;/g, ",");
+        s = s.replace(/\%/g, "-");
+        return s;
+    }
+
+    zparams.zdatacite = findValue(jsondata, "biblcit");
+    if (zparams.zdatacite !== undefined) {
+        zparams.zdatacite = cleanstring(zparams.zdatacite);
+    }
+
+    // dataset name trimmed to 12 chars
+    let dataname = zparams.zdata.replace(/\.(.*)/, "");  // regular expression to drop any file extension
+
+    // Put dataset name, from meta-data, into top panel
+    d3.select("#dataName").html(dataname);
+    // Put dataset name, from meta-data, into page title
+    d3.select("title").html("TwoRavens " + dataname);
+
+    $('#cite div.panel-body').text(zparams.zdatacite);
+
+    // temporary values for hold that correspond to histogram bins
+    hold = [.6, .2, .9, .8, .1, .3, .4];
+
+    let vars = jsondata.variables;
+
+    let i = 0;
+    for (let key in vars) {
+        //	console.log(vars[key]);
+        //p[key] = jsondata["variables"][key];
+        valueKey[i] = key;
+
+        if (vars[key].labl.length === 0) {
+            lablArray[i] = "no label";
+        }
+
+        else {
+            lablArray[i] = vars[key].labl;
+        }
+        i++;
+    }
+
+    for (i = 0; i < valueKey.length; i++) {
+        // this creates an object to be pushed to allNode that contains:
+        //      preprocessed data we have for the variable
+        //      UI data pertinent to that variable, such as setx values (if the user has selected them)
+        //      pebble coordinates
+        let obj1 = {
+            id: i,
+            reflexive: false,
+            "name": valueKey[i],
+            "labl": lablArray[i],
+            data: [5, 15, 20, 0, 5, 15, 20],
+            count: hold,
+            "nodeCol": colors(i),
+            "baseCol": colors(i),
+            "strokeColor": selVarColor,
+            "strokeWidth": "1",
+            "subsetplot": false,
+            "subsetrange": ["", ""],
+            "setxplot": false,
+            "setxvals": ["", ""],
+            "grayout": false
+        };
+
+        jQuery.extend(true, obj1, preprocess[valueKey[i]]);
+        allNodesColors(obj1);
+
+        // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
+        allNodes.push(obj1);
+    }
+
+    // Now that page is setup and data saved to node list, render the gui
+    scaffolding();
+}
+
+//This function finds whether a key is present in the json file, and sends the key's value if present.
+function findValue(json, key) {
+    if (key in json) return json[key];
+    else {
+        var otherValue;
+        for (var otherKey in json) {
+            if (json[otherKey] && json[otherKey].constructor === Object) {
+                otherValue = findValue(json[otherKey], key);
+                if (otherValue !== undefined) return otherValue;
+            }
+        }
+    }
+}
+
+// scaffolding is called after all external data are guaranteed to have been read to completion.
+// this populates the left panel with variable names, the transformation tool, an the associated mouseovers.
+// its callback is layout(), which initializes the modeling space
 function scaffolding(callback) {
-
 
     //jquery does this well
     $('#tInput').click(function() {
@@ -567,6 +462,15 @@ function scaffolding(callback) {
 
 //alert("scaffoldingflag"+flag);
 
+    let splice = (color, text, ...args) => {
+        args.forEach(x => {
+            if (color != x[0])
+                return;
+            let idx = zparams[x[1]].indexOf(text);
+            idx > -1 && zparams[x[1]].splice(idx, 1);
+        });
+    };
+
 
 eventlist=new Array(20)
     .join().split(',')
@@ -608,11 +512,13 @@ eventlist=new Array(20)
             return d;
         })
         .style('background-color', function () {
-            if (selectedVariables.has(d3.select(this).text())) {
-                return hexToRgba(selVarColor)
-            } else {
-                return hexToRgba(varColor)
+            let self_name = d3.select(this).text();
+            for (let node in nodes) {
+                if (self_name === node.name) {
+                    return hexToRgba(selVarColor)
+                }
             }
+            return hexToRgba(varColor);
         })
         .attr("data-container", "body")
         .attr("data-toggle", "popover")
@@ -622,28 +528,33 @@ eventlist=new Array(20)
         .attr("data-html", "true")
         .attr("onmouseover", "$(this).popover('toggle');")
         .attr("onmouseout", "$(this).popover('toggle');")
-/*<<<<<<< HEAD
         .attr("data-original-title", "Summary Statistics")
         .on("click", function () {
-            var variableName = d3.select(this).text();
-            var currentColor = d3.select(this).style('background-color') == hexToRgba(varColor) ? hexToRgba(selVarColor) : hexToRgba(varColor);
+            d3.select(this)
+                .style('background-color', function(d) {
+                    zparams.zvars = [];
+                    let text = d3.select(this).text();
+                    if (d3.rgb(d3.select(this).style('background-color')).toString().replace(/\s/g, '') == hexToRgba(varColor)) { // we are adding a var
+                        nodes.push(findNode(text));
+                        if (nodes.length == 0) nodes[0].reflexive = true;
 
-            if (currentColor === hexToRgba(selVarColor)) {
-                selectedVariables.add(variableName);
-            } else {
-                if (selectedVariables.has(variableName)) {
-                    selectedVariables.delete(variableName);
-                }
-            }
+                        return hexToRgba(selVarColor);
+                    } else {
+                        // dropping a variable
+                        nodes.splice(findNode(text).index, 1);
+                        spliceLinksForNode(findNode(text));
+                        splice(text, [dvColor, 'zdv'], [csColor, 'zcross'], [timeColor, 'ztime'], [nomColor, 'znom']);
+                        nodeReset(allNodes[findNodeIndex(text)]);
+                        borderState();
 
-            d3.select(this).style("background-color", currentColor);
+                        return hexToRgba(varColor);
+                    }
+                });
+            fakeClick();
             // This updates the listing in the right panel
             reloadVariables();
-        });
-=======*/
+        })
         .attr("data-original-title", "Summary Statistics");
-
-//>>>>>>> Marcus_EventDataSubset
 
 
     d3.select("#tab2").selectAll("p") 			//do something with this..
@@ -816,7 +727,7 @@ $(document).on('input', '#searchvar', function() {
 		//console.log(srchid);
 		lngth=srchid.length;
 
-                       
+
 	if(k==0){
 			vkey=valueKey;
 
@@ -934,12 +845,10 @@ $(document).on('input', '#searchvar', function() {
         });
 
 
+//Write to JSON Function, to write new metadata file after the user has tagged a variable as a time variable
+function writetojson(btn) {
 
-
-  //Write to JSON Function, to write new metadata file after the user has tagged a variable as a time variable
-	function writetojson(btn){
-
-		//var jsonallnodes=JSON.stringify(allNodes);
+    //var jsonallnodes=JSON.stringify(allNodes);
 
     var outtypes = [];
     for (var j = 0; j < allNodes.length; j++) {
@@ -954,22 +863,23 @@ $(document).on('input', '#searchvar', function() {
     }
 
 
-   // console.log("Outtypes:"+outtypes);
-		writeout={outtypes:outtypes}
-				writeoutjson=JSON.stringify(writeout);
-				//console.log(jsonallnodes);
-				urlcall = rappURL+"writeapp";
+    // console.log("Outtypes:"+outtypes);
+    writeout = {outtypes: outtypes}
+    writeoutjson = JSON.stringify(writeout);
+    //console.log(jsonallnodes);
+    urlcall = rappURL + "writeapp";
 
-				//base.concat(jsonout);
-    	function cleanstring(s) {
-                        s=s.replace(/\&/g, "and");
-                        s=s.replace(/\;/g, ",");
-                        s=s.replace(/\%/g, "-");
-                        return s;
-                      }
-                      var properjson=cleanstring(writeoutjson);
+    //base.concat(jsonout);
+    function cleanstring(s) {
+        s = s.replace(/\&/g, "and");
+        s = s.replace(/\;/g, ",");
+        s = s.replace(/\%/g, "-");
+        return s;
+    }
 
-    var solajsonout = "solaJSON="+properjson;
+    var properjson = cleanstring(writeoutjson);
+
+    var solajsonout = "solaJSON=" + properjson;
 //console.log(properjson);
 
 function writesuccess(btn,json){
@@ -1798,7 +1708,7 @@ function createCORSRequest(method, url, callback) {
         // CORS not supported.
         xhr = null;
     }
-  // xhr.setRequestHeader('Content-Type', 'text/json');
+    // xhr.setRequestHeader('Content-Type', 'text/json');
 //xhr.setRequestHeader('Content-Type', 'multipart/form-data');
 
 
@@ -1809,9 +1719,9 @@ function createCORSRequest(method, url, callback) {
 
 
 // Make the actual CORS request.
-function makeCorsRequest(url,btn,callback, warningcallback, jsonstring) {
+function makeCorsRequest(url, btn, callback, warningcallback, jsonstring) {
     var xhr = createCORSRequest('POST', url);
-	//console.log("inside cors json size:"+jsonstring.length);
+    //console.log("inside cors json size:"+jsonstring.length);
     if (!xhr) {
         alert('CORS not supported');
         return;
@@ -1819,35 +1729,35 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonstring) {
     // Response handlers for asynchronous load
     // onload or onreadystatechange?
 
-    xhr.onload = function() {
+    xhr.onload = function () {
 
-      var text = xhr.responseText;
-      //console.log("text ", text);
+        var text = xhr.responseText;
+        //console.log("text ", text);
 
         try {
             var json = JSON.parse(text);   // should wrap in try / catch
             var names = Object.keys(json);
         }
-        catch(err) {
+        catch (err) {
             estimateLadda.stop();
             selectLadda.stop();
             //console.log(err);
             alert('Error: Could not parse incoming JSON.');
         }
 
-      if (names[0] == "warning"){
-        warningcallback(btn);
-        alert("Warning: " + json.warning);
-      }else{
-        callback(btn, json);
-      }
+        if (names[0] == "warning") {
+            warningcallback(btn);
+            alert("Warning: " + json.warning);
+        } else {
+            callback(btn, json);
+        }
     };
-    xhr.onerror = function() {
+    xhr.onerror = function () {
         // note: xhr.readystate should be 4, and status should be 200.  a status of 0 occurs when the url becomes too large
-        if(xhr.status==0) {
+        if (xhr.status == 0) {
             alert('There was an error making the request. xmlhttprequest status is 0.');
         }
-        else if(xhr.readyState!=4) {
+        else if (xhr.readyState != 4) {
             alert('There was an error making the request. xmlhttprequest readystate is not 4.');
         }
         else {
@@ -1857,6 +1767,7 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonstring) {
         estimateLadda.stop();
         selectLadda.stop();
     };
+    console.log(jsonstring);
     xhr.send(jsonstring);
 }
 
@@ -2325,31 +2236,11 @@ function leftpanelMedium() {
     .attr("class", "sidepanel container clearfix");
 }
 
-// function to convert color codes
-function hexToRgb(hex) {
-    var h=hex.replace('#', '');
-
-    var bigint = parseInt(h, 16);
-    var r = (bigint >> 16) & 255;
-    var g = (bigint >> 8) & 255;
-    var b = bigint & 255;
-
-    return "rgb(" + r + ", " + g + ", " + b + ")";
-}
-
-
-function hexToRgba(hex) {
-    var h=hex.replace('#', '');
-
-    var bigint = parseInt(h, 16);
-    var r = (bigint >> 16) & 255;
-    var g = (bigint >> 8) & 255;
-    var b = bigint & 255;
-    var a = '0.5';
-
-
-    return "rgba(" + r + "," + g + "," + b + "," + a + ")";
-}
+// converts color codes
+let hexToRgba = hex => {
+    let int = parseInt(hex.replace('#', ''), 16);
+    return `rgba(${[(int >> 16) & 255, (int >> 8) & 255, int & 255, '0.5'].join(',')})`;
+};
 
 // function takes a node and a color and updates zparams
 function setColors (n, c) {
@@ -2725,36 +2616,6 @@ if(typeof callback === "function") {
             }
 
 
-}
-
-
-
-function readPreprocess(url, p, v, callback) {
-    //console.log(url);
-    //console.log("purl:",url);
-    d3.json(url, function(error, json) {
-            if (error) return console.warn(error);
-            var jsondata = json;
-
-            //console.log("inside readPreprocess function");
-            //console.log(jsondata);
-            //console.log(jsondata["variables"]);
-
-            if(jsondata.dataset.private){
-              private = jsondata["dataset"]["private"];
-            };
-
-            //copying the object
-            for(var key in jsondata["variables"]) {
-                p[key] = jsondata["variables"][key];
-            }
-            // console.log("we're here")
-            // console.log(p);
-
-            if(typeof callback === "function") {
-                callback();
-            }
-            });
 }
 
 /*

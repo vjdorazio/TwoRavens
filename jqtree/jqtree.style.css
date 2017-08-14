@@ -20,3 +20,11 @@ ul.jqtree-tree ul.jqtree_common {
 ul.jqtree-tree .jqtree-title {
 	margin-left:0
 }
+
+ul.jqtree-tree li.jqtree-selected > .jqtree-element,
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
+    background: #eaf0ff;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7); }
+
+ul.jqtree-tree li.jqtree-folder {
+    margin-bottom: 0; }
