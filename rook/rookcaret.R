@@ -94,10 +94,10 @@ caret.app <- function(env){
 
     if(!warning){
         if(production){
-            mydata <- readData(sessionid=mysessionid,logfile=mylogfile)
+            #mydata <- readData(sessionid=mysessionid,logfile=mylogfile)
             write(deparse(bquote(mydata<-read.delim(file=.(paste("data_",mysessionid,".tab",sep=""))))),mylogfile,append=TRUE)
         }else{
-            mydata <- read.delim("../data/fearonLaitin.tsv")
+            #mydata <- read.delim("../data/fearonLaitin.tsv")
             write("mydata <- read.delim(\"../data/fearonLaitin.tsv\")",mylogfile,append=TRUE)
             #mydata <- read.delim("../data/QualOfGovt.tsv")
         }
@@ -154,22 +154,30 @@ caret.app <- function(env){
           # write("usedata <- refactor(usedata))",mylogfile,append=TRUE)
 
             #for caret, we should split the data and train it
-            split=0.80
-			trainIndex <- createDataPartition(iris$Species, p=split, list=FALSE)
-			data_train <- iris[ trainIndex,]
-			data_test <- iris[-trainIndex,]
-            model <- train(Species ~ ., data=data_train, method="rf", prox=TRUE)
-            write("model <- train(Species~., data=mydata, method=mymodel)",mylogfile,append=TRUE)
-			
-			x_test <- data_test[,1:4]
-			y_test <- data_test[,5]
-			predictions <- predict(model, x_test)
+            #split=0.80
+			#trainIndex <- createDataPartition(iris$Species, p=split, list=FALSE)
+			#data_train <- iris[ trainIndex,]
+			#data_test <- iris[-trainIndex,]
+            #model <- train(Species ~ ., data=data_train, method="rf", prox=TRUE)
+            TrainFeature <- iris[,1:4]
+			TrainClasses <- iris[,5]
+            model <- train(TrainFeature, TrainClasses,
+                  method = "knn",
+                  preProcess = c("center", "scale"),
+                  tuneLength = 10,
+                  trControl = trainControl(method = "cv"))
+ 
+            write("model <- train(TrainData, TrainClasses, method=mymodel)",mylogfile,append=TRUE)
+			print(model)
+			#x_test <- data_test[,1:4]
+			#y_test <- data_test[,5]
+			#predictions <- predict(model, x_test)
             print(summary(model))
             
         })
     }
 
     
-    response$write(result)
+    response$write(model)
     response$finish()
 }
