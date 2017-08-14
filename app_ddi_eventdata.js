@@ -4011,12 +4011,12 @@ function renderActionGraph(svg, gid){
 
     if(gid == 1) {
 
-        d3.tsv("data/actiondata.tsv", getMapActionLookup(), function (data) {
+        d3.tsv("data/actionplot.tsv", getMapActionLookup(), function (data) {
 
             var pid = -1;
             data.forEach(function (d) {
 
-                var eventRootCode = (d.EventRootCode).toString();
+                var eventRootCode = (d.RootCode).toString();
                 var eventRootCode_2Ch = eventRootCode.length < 2 ? "0" + eventRootCode : eventRootCode.substr(0, 2);
 
                 var pentaClass = "-1";
