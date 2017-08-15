@@ -252,9 +252,6 @@ function updateSVG(){
 				.style('opacity', "0.5")
 				.style('stroke', pebbleBorderColor)
 				.style("pointer-events", "all")
-				.on("click", function(d){
-					console.log("clicked");
-				})
 				.on("contextmenu", function(d){		//begins drag line drawing for linking nodes
 					d3.event.preventDefault();
 					d3.event.stopPropagation();		//prevents mouseup on node
@@ -277,17 +274,14 @@ function updateSVG(){
 
 					actorSVG.on('mousemove', lineMousemove);
 				})
-				.on("mouseup", function(d){			//creates link
-					console.log("mouseup");
+				.on("mouseup", function(d){			//creates link		//for some reason, this no longer fires
 					d3.event.stopPropagation();		//prevents mouseup on svg
 					createLink(d);
 					nodeClick(d);
 					mousedownNode = null;
 				})
 				.on("mousedown", function(d){		//creates link if mouseup did not catch
-					console.log("mousedown");
 					createLink(d);
-					//~ mousedownNode = d;
 					nodeClick(d);
 				})
 				.on("mouseover", function(d){		//displays animation for visual indication of mouseover while dragging and sets tooltip
@@ -311,7 +305,11 @@ function updateSVG(){
 				})
 				.on("mousemove", function(d){		//display tooltip
 					if (!dragStarted)
-						tooltipSVG.style("display", "block").style("left", (d3.event.pageX - 250) + "px").style("top", (d3.event.pageY - 75) + "px");
+						//~ tooltipSVG.style("display", "block").style("left", (d3.event.pageX - 250) + "px").style("top", (d3.event.pageY - 75) + "px");
+						tooltipSVG.style("display", "block").style("left", (d.x + 350) + "px").style("top", (d.y) + "px");
+						console.log(this);
+						console.log($(this).offset().top - $(window).scrollTop());
+						console.log($(this).offset().left - $(window).scrollLeft());
 				});
 
 			d3.select(this).append('svg:text').attr('x', 0).attr('y', 15).attr('class', 'id').text(function(d){	//add text to nodes
@@ -325,7 +323,7 @@ function updateSVG(){
 
 				
 
-	//performs on "click" of node, shows actor selection on node click
+	//performs on "click" of node, shows actor selection on node click; call moved to mousedown because click() did not fire for Chrome
 	function nodeClick(d) {
 		if (window[d.actor + "CurrentNode"] === d) {
 			$("#" + d.actor + "TabBtn").trigger("click");
@@ -392,7 +390,7 @@ function updateSVG(){
 }
 
 //function that is called on every animated step of the SVG, handles boundary and node collision
-function tick(e) {
+function tick() {
 	if (!dragStarted) {
 		var q = d3.quadtree().x((d) => d.x).y((d) => d.y).addAll(actorNodes);
 		for (var x = 0; x < actorNodes.length; x ++) {
@@ -402,6 +400,8 @@ function tick(e) {
 
 	//node movement and display constrained here
 	nodeGroup.attr("transform", function(d) {
+		console.log("transform D: ");
+		console.log(d);
 		d.x = Math.max(actorNodeR, Math.min(actorWidth - actorNodeR, d.x));		//test SVG boundary conditions
 		d.y = Math.max(actorNodeR, Math.min(actorHeight - actorNodeR, d.y));
 		if (d.actor == "source" && d.x > boundaryLeft)		//test source/target boundary conditions
@@ -491,7 +491,6 @@ function resetMouseVars() {
 
 //function to handle force and SVG updates
 function updateAll() {
-	//~ actorForce.stop();
 	updateSVG();
 	actorForce.nodes(actorNodes).force("link").links(actorLinks);
 	actorForce.alpha(1).restart();
