@@ -6,6 +6,7 @@
 
 
 caret.app <- function(env){
+	calculate_result <- FALSE
     production<-FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
     warning<-FALSE  
     result <-list()
@@ -36,12 +37,12 @@ caret.app <- function(env){
         mydv <- everything$zdv
         if(length(mydv) == 0){
             warning <- TRUE
-            result<-list(warning="No relative variable selected.")
+            result<-list(warning="No dependent variable selected.")
         }
-        # if(length(mydv) > 1){
-        #     warning <- TRUE
-        #     result<-list(warning="Too many dependent variable selected.")
-        # }
+         if(length(mydv) > 1){
+             warning <- TRUE
+             result<-list(warning="Too many dependent variable selected.")
+         }
     }
 
     #for model selection
@@ -103,13 +104,7 @@ caret.app <- function(env){
         }
     }
 
-    # if(!warning){
-    #     mysubset <- parseSubset(everything$zsubset)
-    #     if(is.null(mysubset)){
-    #         warning <- TRUE
-    #         result <- list(warning="Problem with subset.")
-    #     }
-    # }
+
 
     if(!warning){
         history <- everything$callHistory
@@ -143,15 +138,14 @@ caret.app <- function(env){
         print(setxCall)
 
         tryCatch({
-          ## 1. prepare mydata so that it is identical to the representation of the data in TwoRavens
-          data(iris)
-          write("mydata <- data(iris)",mylogfile,append=TRUE)
+          # get dependent variable
+          class <- everything$zdv
+          all <- everything$zvars
+          feature <- setdiff(zvar,zdv)
+          #data(iris)
+          write("mydata <- everything$zdv",mylogfile,append=TRUE)
 
           # ## 2. additional subset of the data in the event that a user wants to estimate a model on the subset, but hasn't "selected" on the subset. that is, just brushed the region, does not press "Select", and presses "Estimate"
-          # usedata <- subsetData(data=mydata, sub=mysubset, varnames=myvars, plot=myplot)
-          # usedata <- refactor(usedata) # when data is subset, factors levels do not update, and this causes an error in zelig's setx(). refactor() is a quick fix
-          # write("usedata <- subsetData(data=mydata, sub=mysubset, varnames=myvars, plot=myplot)",mylogfile,append=TRUE)
-          # write("usedata <- refactor(usedata))",mylogfile,append=TRUE)
 
             #for caret, we should split the data and train it
             #split=0.80
@@ -159,25 +153,29 @@ caret.app <- function(env){
 			#data_train <- iris[ trainIndex,]
 			#data_test <- iris[-trainIndex,]
             #model <- train(Species ~ ., data=data_train, method="rf", prox=TRUE)
-            TrainFeature <- iris[,1:4]
-			TrainClasses <- iris[,5]
-            model <- train(TrainFeature, TrainClasses,
+            #TrainFeature <- iris[,1:4]
+			#TrainClasses <- iris[,5]
+            result <- train(feature, class,
                   method = "knn",
                   preProcess = c("center", "scale"),
                   tuneLength = 10,
                   trControl = trainControl(method = "cv"))
  
-            write("model <- train(TrainData, TrainClasses, method=mymodel)",mylogfile,append=TRUE)
-			print(model)
-			#x_test <- data_test[,1:4]
-			#y_test <- data_test[,5]
-			#predictions <- predict(model, x_test)
-            print(summary(model))
-            
+            write("result <- train(TrainData, TrainClasses, method=mymodel)",mylogfile,append=TRUE)
+			resultMatrix <- confusionMatrix(result)
+			accuracy_value <- sum(diag(resultMatrix$table))/100
+			result<-list(Accuracy=accuracy_value)
+			result<-jsonlite:::toJSON(result)
+            calculate_result <- TRUE
         })
     }
-
     
-    response$write(model)
+    if(!calculate_result){
+    	result<-jsonlite:::toJSON(result)
+    }
+	
+    print(result)
+    
+    response$write(result)
     response$finish()
 }
