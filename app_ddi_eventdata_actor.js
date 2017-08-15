@@ -86,21 +86,17 @@ var pebbleBorderColor = '#fa8072';
 //var actorForce = d3.layout.force().nodes(actorNodes).links(actorLinks).size([actorWidth, actorHeight]).linkDistance(150).charge(-600).start();		//defines the force layout
 
 var actorForce = d3.forceSimulation()
-    .force("link", d3.forceLink().distance(150).strength(0.9))
-    .force("x", d3.forceX().x(function(d) {
+    .force("link", d3.forceLink().distance(150).strength(0.9))	//link force to keep nodes together
+    .force("x", d3.forceX().x(function(d) {					//grouping by nodes
 		if (d.actor == "source")
 			return Math.floor(actorWidth/3);
 		return Math.floor(2*actorWidth/3);
 	}).strength(0.06))
-	.force("y", d3.forceY().y(function(d) {
+	.force("y", d3.forceY().y(function(d) {					//cluster nodes
 		return Math.floor(actorHeight/2);
 	}).strength(0.05))
-	//~ .force("collision", d3.forceCollide().radius(actorNodeR))
-	.force('charge', d3.forceManyBody().strength(-100));
-	//~ .force("center", d3.forceCenter(Math.floor(actorWidth/2), Math.floor(actorHeight/2)));
-//defines the force layout
+	.force('charge', d3.forceManyBody().strength(-100));	//prevent tight clustering
 
-console.log(actorForce);
 
 var node_drag = d3.drag().on("start", dragstart).on("drag", dragmove).on("end", dragend);		//defines the drag
 
@@ -202,10 +198,12 @@ function dragend(d, i) {
 		//now set gui to show dragTarget data
 		window[dragTarget.actor + "CurrentNode"] = dragTarget;
 		$("#" + dragTarget.actor + "TabBtn").trigger("click");
+		currentTab = dragTarget.actor;								//sanity check
 		updateGroupName(window[currentTab + "CurrentNode"].name);
 		$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
 
-		$("#" + currentTab + "ShowSelected").trigger("click");
+		$("#" + currentTab + "ShowSelected").prop("checked", true);
+		showSelected($("#" + currentTab + "ShowSelected")[0]);
 		
 		updateAll();
 	}
@@ -254,6 +252,9 @@ function updateSVG(){
 				.style('opacity', "0.5")
 				.style('stroke', pebbleBorderColor)
 				.style("pointer-events", "all")
+				.on("click", function(d){
+					console.log("clicked");
+				})
 				.on("contextmenu", function(d){		//begins drag line drawing for linking nodes
 					d3.event.preventDefault();
 					d3.event.stopPropagation();		//prevents mouseup on node
@@ -277,14 +278,17 @@ function updateSVG(){
 					actorSVG.on('mousemove', lineMousemove);
 				})
 				.on("mouseup", function(d){			//creates link
+					console.log("mouseup");
 					d3.event.stopPropagation();		//prevents mouseup on svg
 					createLink(d);
 					nodeClick(d);
 					mousedownNode = null;
 				})
 				.on("mousedown", function(d){		//creates link if mouseup did not catch
+					console.log("mousedown");
 					createLink(d);
-					mousedownNode = d;
+					//~ mousedownNode = d;
+					nodeClick(d);
 				})
 				.on("mouseover", function(d){		//displays animation for visual indication of mouseover while dragging and sets tooltip
 					if(dragSelect && dragSelect != d && dragSelect.actor == d.actor) {
@@ -446,7 +450,6 @@ function tick(e) {
 function collide(node) {
 	var r = actorNodeR + actorPadding, nx1 = node.x - r, nx2 = node.x + r, ny1 = node.y - r, ny2 = node.y + r;
 	return function(quad, x1, y1, x2, y2) {
-		console.log("in no name");
 		if (quad.data && (quad.data !== node)) {
 			var x = node.x - quad.data.x, y = node.y - quad.data.y, l = Math.sqrt(x * x + y * y), r = actorNodeR + actorNodeR + actorPadding;
 
