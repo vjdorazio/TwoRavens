@@ -730,7 +730,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
     var margin_cross = {top: 30, right: 15, bottom: 40, left: 40}
         , width_cross = 285 - margin_cross.left - margin_cross.right
         , height_cross = 160 - margin_cross.top - margin_cross.bottom;
-    var padding_cross = 70;
+    var padding_cross = 80;
 
     for (var i = 0; i < plot_nodes.length; i++) {
         if (plot_nodes[i].name === PlotNameA) {
