@@ -421,7 +421,7 @@ function disconnectAll() {
 function connectAll() {
     console.log("Connect All function called");
 
-    connect_nodes = nodes.slice();
+   var connect_nodes = nodes.slice();
     for (var i = 0; i < connect_nodes.length; i++) {
         console.log("All connect nodes: " + connect_nodes[i].name);
     }
@@ -463,7 +463,7 @@ function connectAll() {
             var val2 = j.toString();
 
             if (nodesCheck(val1, val2) && i != j) {
-                console.log("PAssed value : " + i.toString() + j.toString());
+               // console.log("PAssed value : " + i.toString() + j.toString());
                 links.push({source: nodes[i], target: nodes[j], left: false, right: true});
             }
 
@@ -712,584 +712,290 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
 
 });
 //Kripanshu Bhargava density plot cross tab
-
-function crossTabDensityPlot(PlotA,PlotB,plotA_Name,plotB_Name)
-{
-    var data_cross=[];
-
-
-   d3.select("#resultsView_tabular").html("");
+/*
+console.log( "crossTabDensityPlot The node is called " + node.name)
+    d3.select("#resultsView_tabular").html("");
     d3.select("#resultsView_tabular").select("svg_cross").remove();
     d3.select("#resultsView_tabular").select("area").remove();
+    */
+function crossTabPlots(PlotNameA,PlotNameB) {
 
-
-    var nanCount = 0;
-    for (var i = 0; i < 1000; i++) {
-        if (isNaN(PlotA[i]) || isNaN(PlotB[i])) {
-            nanCount++;
-        } else {
-            var newNumber1 = PlotA[i];
-            var newNumber2 =PlotB[i];
-            data_cross.push({xaxis:i, yaxis: newNumber1, y2axis: newNumber2 });
-
-        }
-
-
-    }
-    var margin_cross = { top: 10, right: 10, bottom: 80, left: 40 },
-        margin_cross2 = { top: 10, right: 10, bottom: 80, left: 40 },
+var data2=[];
+    var plot_nodes = nodes.slice();
+    var margin_cross = {top: 10, right: 10, bottom: 80, left: 40},
+        margin_cross2 = {top: 10, right: 10, bottom: 80, left: 40},
         width_cross = 250 - margin_cross.left - margin_cross.right,
         height_cross = 200 - margin_cross.top - margin_cross.bottom,
         height_cross2 = 200 - margin_cross2.top - margin_cross2.bottom;
 
-    var min_x = d3.min(data_cross, function(d,i) { return data_cross[i].xaxis; });
-    var max_x = d3.max(data_cross, function(d,i) { return data_cross[i].xaxis; });
-    var avg_x = (max_x - min_x)/10;
-    var min_x2 = d3.min(data_cross, function(d,i) { return data_cross[i].xaxis; });
-    var max_x2 = d3.max(data_cross, function(d,i) { return data_cross[i].xaxis; });
-    var avg_x2 = (max_x2 - min_x2)/10;
-    var min_y = d3.min(data_cross, function(d,i) { return data_cross[i].yaxis; });
-    var max_y = d3.max(data_cross, function(d,i) { return data_cross[i].yaxis; });
-    var avg_y = (max_y - min_y)/10;
-    var min_y2 = d3.min(data_cross, function(d,i) { return data_cross[i].y2axis; });
-    var max_y2= d3.max(data_cross, function(d,i) { return data_cross[i].y2axis; });
-    var avg_y2 = (max_y2 - min_y2)/10;
-
-    var data_tab = data_cross.map(type,function(error,d) {
-        if(error) return error;
-        return {
-            xAxis: d.xaxis,
-            yAxis: d.yaxis
-        };
-    });
-    var data_tab2 = data_cross.map(type1,function(error,d) {
-        if(error) return error;
-        return {
-            xAxis: d.xaxis,
-            yAxis2: d.y2axis
-        };
-    });
-
-    var x_cross = d3.scale.linear().range([0, width_cross]),
-        x_cross2 = d3.scale.linear().range([0, width_cross]),
-        y_cross = d3.scale.linear().range([height_cross, 0]),
-        y_cross2 = d3.scale.linear().range([height_cross2, 0]);
-
-    var padding=250;
-    var xAxis = d3.svg.axis().scale(x_cross).orient("bottom").ticks(5),
-        xAxis2 = d3.svg.axis().scale(x_cross2).orient("bottom").ticks(5),
-        yAxis = d3.svg.axis().scale(y_cross).orient("left");
+    for (var i = 0; i < plot_nodes.length; i++) {
+        if (plot_nodes[i].name === PlotNameA) {
+            if (plot_nodes[i].plottype === "continuous") {
+                density_cross(plot_nodes[i]);
+            }
+            else if (plot_nodes[i].plottype === "bar") {
+                bar_cross(plot_nodes[i]);
+            }
+        } else if (plot_nodes[i].name === PlotNameB) {
+            if (plot_nodes[i].plottype === "continuous") {
+                density_cross(plot_nodes[i]);
+            }
+            else if (plot_nodes[i].plottype === "bar") {
+                bar_cross(plot_nodes[i]);
+            }
+        }
 
 
-    var brush = d3.svg.brush()
-        .x(x_cross)
-        .on("brush", brushed);
-    var brush1 = d3.svg.brush()
-        .x(x_cross2)
-        .on("brush", brushed1);
+    }
 
-    var area = d3.svg.area()
-        .interpolate("monotone")
-        .x(function (d) { return x_cross(d.xAxis); })
-        .y0(height_cross)
-        .y1(function (d) { return y_cross(d.yAxis); });
+// this is the function to add  the density plot if any
+    function density_cross(density_env) {
 
-    var area2 = d3.svg.area()
-        .interpolate("monotone")
-        .x(function (d) { return x_cross2(d.xAxis); })
-        .y0(height_cross2)
-        .y1(function (d) { return y_cross2(d.yAxis2); });
+        console.log("welcome to : " + density_env.name);
+        var mydiv = "#resultsView_tabular";
+        var yVals = density_env.ploty;
+        var xVals = density_env.plotx;
 
-    d3.select("#resultsView_tabular").append("g")
-        .attr("id","btnDiv")
-        .style('font-size','65%')
-        .style("width","150px")
-        .style("position","absolute")
-        .style("left","55%")
-        .style("top","290px")
-
-    d3.select("#btnDiv")[0][0].innerHTML = [
-        '<h3>Data Selection </h3>',
-        '<p>Enter the data in the box to decide the number of divisions: </p>',
-        '<ul>'
-    ].join('\n')
+        // an array of objects
 
 
+        for (var i = 0; i < density_env.plotx.length; i++) {
+            data2.push({x: density_env.plotx[i], y: density_env.ploty[i]});
+        }
 
-    d3.select("#btnDiv")
-        .append("input")
-        .attr({
-            "id": "a",
-            "value": 0
-        }) .attr({
-        "type": "text",
-        "size": 4,
-        "autofocus": "true",
-        "inputmode": "numeric"
-    })
-        .style({
-            "text-align": "center",
-            "display": "inline-block",
-            "margin-right": "10px"
+        data2.forEach(function (d) {
+            d.x = +d.x;
+            d.y = +d.y;
         });
-
-    var btns = d3.select("#btnDiv").selectAll("button").data(["EQUIDISTANCE","EQUIMASS"])
-
-    btns = btns.enter().append("button").style("display","inline-block")
-
-    // fill the buttons with the year from the data assigned to them
-    btns.each(function (d) {
-        this.innerText = d;
-    })
-
-    btns.on("click", getData);
-    //drawBrush(0,2);
-    //drawBrush1(0,2);
-
-    drawBrush(0,0.2);
-    drawBrush1(0,0.2);
-function getData()
-{
-    if(this.innerText==="EQUIDISTANCE")
-    {
-        console.log(this.innerText + "EQUIDISTANCE");
-        var a=0;
-        var b=parseInt(d3.select("input#a")[0][0].value);
-        var Size=1000/b;
-        console.log(" size : "+Size);
-        drawBrush(a,Size);
-        drawBrush1(a,Size);
-    }
-    else if(this.innerText==="EQUIMASS")
-    {
-        console.log(this.innerText+"EQUIMASS");
-        var a=parseInt(this.innerText);
-        var b=parseInt(this.innerText)+100;
-        drawBrush(a,b);
-        drawBrush1(a,b);
-    }
+        console.log(data2);
 
 
-}
+        var x = d3.scale.linear()
+            .domain([d3.min(xVals), d3.max(xVals)])
+            .range([0, width_cross]);
 
-    function drawBrush(a,b) {
-        // our year will this.innerText
-        console.log("button clicked 1")
-       // console.log(this.innerText);
-       // console.log(parseInt(this.innerText)+100);
+        var invx = d3.scale.linear()
+            .range([d3.min(xVals), d3.max(xVals)])
+            .domain([0, width_cross]);
 
-
-        // define our brush extent to be begin and end of the year
-        brush.extent([a,b]);
-
-
-        // now draw the brush to match our extent
-        // use transition to slow it down so we can see what is happening
-        // remove transition so just d3.select(".brush") to just draw
-        brush(d3.select(".brush").transition());
+        var y = d3.scale.linear()
+            .domain([d3.min(yVals), d3.max(yVals)])
+            .range([height_cross, 0]);
 
 
-        // now fire the brushstart, brushmove, and brushend events
-        // remove transition so just d3.select(".brush") to just draw
-      //  brush.event(d3.select(".brush").transition().delay(1000))
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .ticks(5)
+            .orient("bottom");
 
-    }
-    function drawBrush1(c,d) {
-        // our year will this.innerText
-
-        console.log("button clicked 2")
-            //console.log(this.innerText);
-       // console.log(parseInt(this.innerText)+100);
-
-
-        // define our brush extent to be begin and end of the year
-
-        brush1.extent([c,d]);
-
-        // now draw the brush to match our extent
-        // use transition to slow it down so we can see what is happening
-        // remove transition so just d3.select(".brush") to just draw
-
-        brush1(d3.select(".brush").transition());
-
-        // now fire the brushstart, brushmove, and brushend events
-        // remove transition so just d3.select(".brush") to just draw
-        //  brush.event(d3.select(".brush").transition().delay(1000))
-
-    }
-    var svg_cross = d3.select("#resultsView_tabular").append("svg")
-        .attr("width", width_cross + margin_cross.left )
-        .attr("height", height_cross + margin_cross.top );
-
-
-
-    svg_cross.append("defs").append("clipPath")
-        .attr("id", "clip")
-        .append("rect")
-        .attr("width", width_cross)
-        .attr("height", height_cross);
-
-
-    var context = svg_cross.append("g")
-
-        .attr("class", "context")
-        .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
-    var context2 = svg_cross.append("g")
-
-        .attr("class", "context")
-        .attr("transform", "translate(" +( margin_cross2.left + padding) +"," + margin_cross2.top + ")");
-
-
-    x_cross.domain(d3.extent(data_tab.map(function (d) { return d.xAxis; })));
-    y_cross.domain([d3.min(data_tab.map(function (d) { return d.yAxis; })), d3.max(data_tab.map(function (d) { return d.yAxis; }))]);
-    x_cross2.domain(x_cross.domain());
-    y_cross2.domain([d3.min(data_tab.map(function (d) { return d.yAxis2; })), d3.max(data_tab.map(function (d) { return d.yAxis2; }))]);
-
-
-
-    context.append("path")
-        .datum(data_tab)
-        .attr("class", "area")
-        .attr("d", area);
-
-    context.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height_cross + ")")
-        .call(xAxis2);
-
-    context.append("g")
-        .attr("class", "x brush")
-        .call(brush)
-        .selectAll("rect")
-        .attr("y", -6)
-        .attr("height", height_cross + 7);
-
-
-    context2.append("path")
-        .datum(data_tab2)
-        .attr("class", "area2")
-        .attr("d", area2);
-
-    context2.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height_cross2 + ")")
-        .call(xAxis2);
-
-    context2.append("g")
-        .attr("class", "x brush")
-        .call(brush1)
-        .selectAll("rect")
-        .attr("y", -6)
-        .attr("height", height_cross2 + 7);
-
-
-   context.append("text")
-        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-        .attr("transform", "translate("+ (width_cross/2) +","+(height_cross+padding/5)+")")  // centre below axis
-        .text(plotA_Name)
-        .style("fill","#424242");
-    context2.append("text")
-        .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-        .attr("transform", "translate("+ (width_cross-padding/3) +","+(height_cross2+padding/5)+")")  // centre below axis
-        .text(plotB_Name)
-        .style("fill","#424242");
-
-    function brushed() {
-        console.log("brushcalled")
-       console.log(brush.extent());
-
-    }
-    function brushed1() {
-        console.log("brushcalled1")
-        console.log(brush1.extent());
-
-    }
-    function type(d) {
-        d.xAxis =+d.xaxis;
-        d.yAxis = +d.yaxis;
-        return d;
-    }
-    function type1(d) {
-        d.xAxis =+d.xaxis;
-        d.yAxis2 = +d.y2axis;
-        return d;
-    }
-    /*
-
-        var margin_cross = { top: 20, right: 30, bottom: 100, left: 30 },
-            margin_cross2 = { top: 20, right: 8, bottom: 100, left: 290 },
-            width_cross = 300 - margin_cross.left - margin_cross.right,
-            width_cross2 = 300 - margin_cross2.left - margin_cross2.right,
-            height_cross= 240 - margin_cross.top - margin_cross.bottom,
-            height_cross2 = 240 - margin_cross2.top - margin_cross2.bottom;
-        var padding_cross =35;
-
-        var x_cross = d3.scale.linear().range([0, width_cross]),
-            x_cross2 = d3.scale.linear().range([0, width_cross]),
-            y_cross = d3.scale.linear().range([height_cross, 0]),
-            y_cross2=d3.scale.linear().range([height_cross2,0]);
-
-        var xAxis1 = d3.svg.axis().scale(x_cross).orient("bottom")
-                .ticks(5),
-            xAxis2 = d3.svg.axis().scale(x_cross2).orient("bottom")
-                .ticks(5),
-            yAxis= d3.svg.axis().scale(y_cross).orient("left"),
-             yAxis2= d3.svg.axis().scale(y_cross2).orient("left");
-
-        var brush = d3.svg.brush()
-            .x(x_cross)
-            .on("brush", brushed);
-        var brush1 = d3.svg.brush()
-            .x(x_cross2)
-            .on("brush", brushed1);
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
 
         var area = d3.svg.area()
             .interpolate("monotone")
-            .x(function (d) { return x_cross(d.xAxis); })
-            .y0(height_cross)
-            .y1(function (d) { return y_cross(d.yAxis); });
-
-        var area2= d3.svg.area()
-            .interpolate("monotone")
-            .x(function (d) { return x_cross2(d.xAxis); })
-            .y0(height_cross2)
-            .y1(function (d) { return y_cross2(d.y2Axis); });
-
-
-
-
-         var svg_cross = d3.select("#resultsView_tabular").append("svg")
-                .attr("width", width_cross )
-                .attr("height", height_cross );
-
-        // make some buttons to drive our zoom
-        d3.select("#resultsView_tabular").append("g")
-            .attr("id","btnDiv")
-            .style('font-size','75%')
-            .style("width","200px")
-            .style("position","absolute")
-            .style("left", 2.2*margin_cross2.left + "px")
-            .style("top","330px");
-
-        d3.select("#btnDiv")[0][0].innerHTML = [
-            '<h5>Data Selection</h5>',
-            '<p>Enter the number of division of chart based upon density or distance.</p>'
-        ].join('\n')
-
-
-        d3.select("#btnDiv")
-            .append("input")
-            .attr({
-                "id": "a",
-                "value": 0
-            }) .attr({
-            "type": "text",
-            "size": 3,
-            "autofocus": "true",
-            "inputmode": "numeric"
-        })
-            .style({
-                "text-align": "center",
-                "display": "inline-block",
-                "margin-right": "10px"
+            .x(function (d) {
+                return x(d.x);
+            })
+            .y0(height)
+            .y1(function (d) {
+                return y(d.y);
             });
-        var btns = d3.select("#btnDiv").selectAll("button").data(["200","EquiMass"]);
 
-        btns = btns.enter().append("button").style("display","inline-block");
+        var line = d3.svg.line()
+            .x(function (d) {
+                return x(d.x);
+            })
+            .y(function (d) {
+                return y(d.y);
+            })
+            .interpolate("monotone");
 
-        // fill the buttons with the year from the data assigned to them
-        btns.each(function (d) {
-            this.innerText = d;
-        })
+        var plotsvg = d3.select(mydiv)
+            .append("svg")
+            .attr("id", function () {
+                var myname = density_env.name.toString();
+                myname = myname.replace(/\(|\)/g, "");
+                return myname.concat("_", mydiv.substr(1), "_", density_env.id);
+            })
+            .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
+            .style("height", height_cross + margin_cross.top + margin_cross.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
 
-        btns.on("click", drawBrush);
+        plotsvg.append("path")
+            .datum(data2)
+            .attr("class", "area")
+            .attr("d", area);
+        plotsvg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height_cross + ")")
+            .call(xAxis);
 
-        function getData()
-        {
-
-            var zoomA = d3.select("input#a")[0][0].value;
-            if(this.innerText==="EquiDistant")
-            {
-                console.log("zoomA : EquiDistant : "+ zoomA);
-                drawBrush(parseInt(zoomA),180);
-                drawBrush1(parseInt(zoomA),180);
-            }
-            else if(this.innerText==="EquiMass")
-            {
-                console.log("zoomA : equiMass :"+ zoomA);
-                drawBrush(parseInt(zoomA),460);
-                drawBrush1(parseInt(zoomA),460);
-            }
-
-            //drawBrush(this.innerText);
-        }
-
-
-
-        // style both of the inputs at once
-        // more on HTML5 <input> at https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
-
-
-
-        // fill the buttons with the year from the data assigned to them
+        plotsvg.append("text")
+            .attr("x", (width_cross / 2))
+            .attr("y", 0-(margin_cross.top / 2))
+            .attr("text-anchor", "middle")
+            .style("font-size", "12px")
+            .text(density_env.name);
 
 
-    function printIt() {
-            console.log("divide the data");
 
     }
 
-        svg_cross.append("defs").append("clipPath")
-            .attr("id", "clip")
-            .append("rect")
-            .attr("width", width_cross)
-            .attr("height", height_cross);
-
-            var chart1 = svg_cross.append("g")
-                .attr("class", "chart1")
-                .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
-            var chart2 = svg_cross.append("g")
-                .attr("class", "chart2")
-                .attr("transform", "translate(" + margin_cross2.left + "," + margin_cross2.top + ")");
-
-
-        x_cross.domain(d3.extent(data_tab.map(function (d) { return d.xAxis; })));
-        y_cross.domain([d3.min(data_tab.map(function (d) { return d.yAxis; })), d3.max(data_tab.map(function (d) { return d.yAxis; }))]);
-        x_cross2.domain(d3.extent(data_tab2.map(function (d) { return d.xAxis; })));
-        y_cross2.domain([d3.min(data_tab2.map(function (d) { return d.y2Axis; })), d3.max(data_tab2.map(function (d) { return d.y2Axis; }))]);
-          //  x_cross.domain([min_x-avg_x, max_x+avg_x]);
-            //x_cross2.domain([min_x2-avg_x2, max_x2+avg_x2]);
-              //  y_cross.domain([min_y, max_y+avg_y]);
-                //y_cross2.domain([min_y2, max_y2+avg_y2]);
-               // y2.domain([0,d3.max(data_tab.map(function (d) { return d.y2axis; }))]);
-
-                chart1.append("path")
-                .datum(data_tab)
-                .attr("class", "area")
-                .attr("d", area);
-
-
-            chart2.append("path")
-                .datum(data_tab2)
-                .attr("class", "area2")
-                .attr("d", area2);
-
-           chart1.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height_cross + ")")
-                .call(xAxis1);
-            chart2.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate("+ (width_cross2)+"," + (height_cross)+ ")")
-                .call(xAxis2);
-
-
-                chart1.append("g")
-                    .attr("class", "y axis")
-                    .call(yAxis);
-                chart2.append("g")
-                    .attr("class", "y axis")
-                    .attr("transform", "translate("+ width_cross2+",0)")
-                    .call(yAxis2);
 
 
 
 
-            chart1.append("text")
-                .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-                .attr("transform", "translate("+ (width_cross/2) +","+(height_cross+padding_cross)+")")  // centre below axis
-                .text(plotA_Name)
-                .style("fill","#424242");
-            chart2.append("text")
-                .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-                .attr("transform", "translate("+ (width_cross2+100) +","+(height_cross2+padding_cross)+")")  // centre below axis
-                .text(plotB_Name)
-                .style("fill","#424242");
-      //  drawBrush(10,90);
-        function drawBrush() {
-            // our year will this.innerText
-            //console.log(text)
-            var x0 = parseInt(this.innerText);
-            var x1 = parseInt(this.innerText)+200;
 
-            console.log("x0 : "+ x0);
-            console.log("x1 : "+ x1);
 
-            // define our brush extent to be begin and end of the year
-            brush.extent([x0,x1]);
-            // now draw the brush to match our extent
-            // use transition to slow it down so we can see what is happening
-            // remove transition so just d3.select(".brush") to just draw
-            brush(d3.select(".brush").transition().delay(1500));
 
-            // now fire the brushstart, brushmove, and brushend events
-            // remove transition so just d3.select(".brush") to just draw
-          //  brush.event(d3.select(".brush").transition())
+
+// this is the function to add the bar plot if any
+function bar_cross(bar_env)
+{
+    console.log("welcome to : "+ bar_env.name);
+
+    var barPadding = .015;  // Space between bars
+    var topScale =1.2;      // Multiplicative factor to assign space at top within graph - currently removed from implementation
+    var plotXaxis = true;
+
+    // Data
+    var keys = Object.keys(bar_env.plotvalues);
+    var yVals = new Array;
+    var ciUpperVals = new Array;
+    var ciLowerVals = new Array;
+    var ciSize;
+
+    var xVals = new Array;
+    var yValKey = new Array;
+
+    console.log(keys);
+
+
+
+    var mydiv = "#resultsView_tabular";
+
+
+    if(bar_env.nature==="nominal") {
+        var xi = 0;
+        for (var i = 0; i < keys.length; i++) {
+            if(bar_env.plotvalues[keys[i]]==0) {continue;}
+            yVals[xi] = bar_env.plotvalues[keys[i]];
+            xVals[xi] = xi;
+            if (private) {
+                if (bar_env.plotvaluesCI) {
+                    ciLowerVals[xi] = bar_env.plotValuesCI.lowerBound[keys[i]];
+                    ciUpperVals[xi] = bar_env.plotValuesCI.upperBound[keys[i]];
+                }
+                ciSize = ciUpperVals[xi] - ciLowerVals[xi];
+            };
+
+            yValKey.push({y:yVals[xi], x:keys[i] });
+            xi = xi+1;
         }
-       // drawBrush1(200,480);
-        function drawBrush1(a,b) {
-            // our year will this.innerText
-            //console.log(text)
-            var x0 = parseInt(a);
-            var x1 = parseInt(b);
-
-            console.log("x0 : "+ x0);
-            console.log("x1 : "+ x1);
-
-            // define our brush extent to be begin and end of the year
-            brush1.extent([x0,x1]);
-            // now draw the brush to match our extent
-            // use transition to slow it down so we can see what is happening
-            // remove transition so just d3.select(".brush") to just draw
-            brush1(d3.select(".brush").transition().delay(1500));
-
-            // now fire the brushstart, brushmove, and brushend events
-            // remove transition so just d3.select(".brush") to just draw
-            //brush.event(d3.select(".brush").transition().delay(1000))
+        yValKey.sort(function(a,b){return b.y-a.y}); // array of objects, each object has y, the same as yVals, and x, the category
+        yVals.sort(function(a,b){return b-a}); // array of y values, the height of the bars
+        ciUpperVals.sort(function(a,b){return b.y-a.y}); // ?
+        ciLowerVals.sort(function(a,b){return b.y-a.y}); // ?
+    }
+    else {
+        for (var i = 0; i < keys.length; i++) {
+           // console.log("plotvalues in bars");
+            //console.log(node);
+            yVals[i] = bar_env.plotvalues[keys[i]];
+            xVals[i] = Number(keys[i]);
+            if (private) {
+                if (bar_env.plotvaluesCI) {
+                    ciLowerVals[i] = bar_env.plotvaluesCI.lowerBound[keys[i]];
+                    ciUpperVals[i] = bar_env.plotvaluesCI.upperBound[keys[i]];
+                }
+                ciSize = ciUpperVals[i] - ciLowerVals[i];
+            }
         }
+    }
 
-        chart1.append("g")
-            .attr("class", "x brush")
-            .call(brush)
-            .selectAll("rect")
-            .attr("y", -6)
-            .attr("height", height_cross );
-        chart2.append("g")
-            .attr("class", "x brush")
-            .call(brush1)
-            .selectAll("rect")
-            .attr("y", -6)
-            .attr("height", height_cross2 );
+    if((yVals.length>15 & bar_env.numchar==="numeric") | (yVals.length>5 & bar_env.numchar==="character")) {plotXaxis=false;}
+    var maxY = d3.max(yVals); // in the future, set maxY to the value of the maximum confidence limit
+    var minX = d3.min(xVals);
+    var maxX = d3.max(xVals);
 
-        function brushed()
-        {
+    if (private && bar_env.stabilityBin) {
+        var x = d3.scale.linear()
+            .domain([ minX-0.5 , maxX+1.5])
+            .range([0, width_cross]);
+    } else {
+        var x = d3.scale.linear()
+            .domain([ minX-0.5 , maxX+0.5])
+            .range([0, width_cross]);
+    }
 
-            console.log("Brushed called" + brush.extent());
-            x_cross.domain(brush.empty() ? x_cross.domain() : brush.extent());
-               chart1.select(".area").attr("d", area);
-              chart1.select(".x axis").call(xAxis1);
-        }
-        function brushed1()
-        {
+    var invx = d3.scale.linear()
+        .range([ minX-0.5 , maxX+0.5])
+        .domain([0, width_cross]);
 
-            console.log("Brushed1 called");
-            x_cross2.domain(brush1.empty() ? x_cross2.domain() : brush1.extent());
-            chart2.select(".area2").attr("d", area2);
-            chart2.select(".x axis").call(xAxis2);
-        }
-        function type(d) {
+    var y = d3.scale.linear()
+    // .domain([0, maxY])
+        .domain([0, maxY])
+        .range([0, height_cross]);
 
-            d.xAxis =+d.xaxis;
-            d.yAxis = +d.yaxis;
-            return d;
-        }
-        function type1(d) {
-            d.xAxis =+d.xaxis;
-            d.y2Axis = +d.y2axis;
-            return d;
-        }
-    */
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .ticks(yVals.length)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+    var plotsvg = d3.select(mydiv)
+        .append("svg")
+        .attr("id", function(){
+            var myname = bar_env.name.toString();
+            myname = myname.replace(/\(|\)/g, "");
+            return myname.concat("_",mydiv.substr(1), "_", bar_env.id);
+        })
+        .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
+        .style("height", height_cross + margin_cross.top + margin_cross.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
+
+    var rectWidth = x(minX + 0.5 - 2*barPadding); //the "width" is the coordinate of the end of the first bar
+
+    plotsvg.selectAll("rect")
+        .data(yVals)
+        .enter()
+        .append("rect")
+        .attr("x", function(d, i) {
+            return x(xVals[i]-0.5+barPadding);
+        })
+        .attr("y", function(d) {
+            return y(maxY - d);
+        })
+        .attr("width", rectWidth)
+        .attr("height", function(d) {
+            return y(d);
+        })
+        .attr("fill", "#1f77b4");
+
+    if(plotXaxis) {
+        plotsvg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height_cross + ")")
+            .call(xAxis);
+    }
+
+    plotsvg.append("text")
+        .attr("x", (width_cross / 2))
+        .attr("y", 0-(margin_cross.top / 2))
+        .attr("text-anchor", "middle")
+        .style("font-size", "12px")
+        .text(bar_env.name);
 }
+
+}
+
+
 
 //Kripanshu Bhargava bivariatePlot(Scatter plot)
 
@@ -4309,7 +4015,11 @@ function viz_explore(m, json_vizexplore, model_name_set) {
     //document.getElementById('tabular_chart2').style.display = "block";
     document.getElementById('scatterplot').style.display = "none";
     bivariatePlot(x_axis, y_axis, get_data[0], get_data[1]);
-    crossTabDensityPlot(x_axis,y_axis,get_data[0],get_data[1]);
+  //  crossTabDensityPlot(x_axis,y_axis,get_data[0],get_data[1]);
+
+   crossTabPlots(get_data[0],get_data[1]);
+
+
     /*
      for(var t=0; t<x_axis.length; t++){
      console.log(" the x axis is :"+x_axis[t] );
