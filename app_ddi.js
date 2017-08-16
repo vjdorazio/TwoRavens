@@ -711,22 +711,28 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
     });
 
 });
-//Kripanshu Bhargava density plot cross tab
-/*
-console.log( "crossTabDensityPlot The node is called " + node.name)
+//Kripanshu Bhargava  plot for cross tab
+
+function crossTabPlots(PlotNameA,PlotNameB) {
+    var mydiv = "#resultsView_tabular";
     d3.select("#resultsView_tabular").html("");
     d3.select("#resultsView_tabular").select("svg_cross").remove();
     d3.select("#resultsView_tabular").select("area").remove();
-    */
-function crossTabPlots(PlotNameA,PlotNameB) {
+
 
 var data2=[];
     var plot_nodes = nodes.slice();
-    var margin_cross = {top: 10, right: 10, bottom: 80, left: 40},
-        margin_cross2 = {top: 10, right: 10, bottom: 80, left: 40},
-        width_cross = 250 - margin_cross.left - margin_cross.right,
-        height_cross = 200 - margin_cross.top - margin_cross.bottom,
-        height_cross2 = 200 - margin_cross2.top - margin_cross2.bottom;
+
+
+    var tempWidth = d3.select(mydiv).style("width")
+    var width_cross = tempWidth.substring(0,(tempWidth.length-2));
+
+    var tempHeight = d3.select(mydiv).style("height")
+    var height_cross = tempHeight.substring(0,(tempHeight.length-2));
+
+    var margin_cross = {top: 20, right: 20, bottom: 53, left: 30};
+    width_cross = 200;
+    height_cross = 120;
 
     for (var i = 0; i < plot_nodes.length; i++) {
         if (plot_nodes[i].name === PlotNameA) {
@@ -752,7 +758,7 @@ var data2=[];
     function density_cross(density_env) {
 
         console.log("welcome to : " + density_env.name);
-        var mydiv = "#resultsView_tabular";
+        //var mydiv = "#resultsView_tabular";
         var yVals = density_env.ploty;
         var xVals = density_env.plotx;
 
@@ -771,15 +777,15 @@ var data2=[];
 
 
         var x = d3.scale.linear()
-            .domain([d3.min(xVals), d3.max(xVals)])
+            .domain([d3.min(data2.map(function (d) { return d.x; })), d3.max(data2.map(function (d) { return d.x; }))])
             .range([0, width_cross]);
 
         var invx = d3.scale.linear()
-            .range([d3.min(xVals), d3.max(xVals)])
+            .range([d3.min(data2.map(function (d) { return d.x; })), d3.max(data2.map(function (d) { return d.x; }))])
             .domain([0, width_cross]);
 
         var y = d3.scale.linear()
-            .domain([d3.min(yVals), d3.max(yVals)])
+            .domain([d3.min(data2.map(function (d) { return d.y; })), d3.max(data2.map(function (d) { return d.y; }))])
             .range([height_cross, 0]);
 
 
@@ -819,9 +825,11 @@ var data2=[];
                 return myname.concat("_", mydiv.substr(1), "_", density_env.id);
             })
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
-            .style("height", height_cross + margin_cross.top + margin_cross.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
+            .style("height", height_cross + margin_cross.top + margin_cross.bottom);
+
+
+            plotsvg.append("g")
+            .attr("transform", "translate(" + (margin_cross.left+10) + "," + (margin_cross.top) + ")");
 
         plotsvg.append("path")
             .datum(data2)
@@ -829,12 +837,12 @@ var data2=[];
             .attr("d", area);
         plotsvg.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0," + height_cross + ")")
+            .attr("transform", "translate(0," + (height_cross ) + ")")
             .call(xAxis);
 
         plotsvg.append("text")
             .attr("x", (width_cross / 2))
-            .attr("y", 0-(margin_cross.top / 2))
+            .attr("y", (margin_cross.top ))
             .attr("text-anchor", "middle")
             .style("font-size", "12px")
             .text(density_env.name);
@@ -874,7 +882,7 @@ function bar_cross(bar_env)
 
 
 
-    var mydiv = "#resultsView_tabular";
+//    var mydiv = "#resultsView_tabular";
 
 
     if(bar_env.nature==="nominal") {
