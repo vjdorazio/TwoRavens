@@ -314,6 +314,7 @@ if (dataurl) {
 var preprocess = {};
 var mods = new Object;
 console.log("Value of username: ", username);
+
 //This function finds whether a key is present in the json file, and sends the key's value if present.
 function findValue(json, key) {
     if (key in json) return json[key];
@@ -417,11 +418,12 @@ function disconnectAll() {
 
 
 }
+
 //KRIPANSHU BHARGAVA : connect all the nodes
 function connectAll() {
     console.log("Connect All function called");
 
-   var connect_nodes = nodes.slice();
+    var connect_nodes = nodes.slice();
     for (var i = 0; i < connect_nodes.length; i++) {
         console.log("All connect nodes: " + connect_nodes[i].name);
     }
@@ -463,7 +465,7 @@ function connectAll() {
             var val2 = j.toString();
 
             if (nodesCheck(val1, val2) && i != j) {
-               // console.log("PAssed value : " + i.toString() + j.toString());
+                // console.log("PAssed value : " + i.toString() + j.toString());
                 links.push({source: nodes[i], target: nodes[j], left: false, right: true});
             }
 
@@ -711,28 +713,24 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
     });
 
 });
+
 //Kripanshu Bhargava  plot for cross tab
 
-function crossTabPlots(PlotNameA,PlotNameB) {
+function crossTabPlots(PlotNameA, PlotNameB) {
     var mydiv = "#resultsView_tabular";
     d3.select("#resultsView_tabular").html("");
     d3.select("#resultsView_tabular").select("svg_cross").remove();
     d3.select("#resultsView_tabular").select("area").remove();
 
 
-var data2=[];
+    var data2 = [];
     var plot_nodes = nodes.slice();
 
 
-    var tempWidth = d3.select(mydiv).style("width")
-    var width_cross = tempWidth.substring(0,(tempWidth.length-2));
-
-    var tempHeight = d3.select(mydiv).style("height")
-    var height_cross = tempHeight.substring(0,(tempHeight.length-2));
-
-    var margin_cross = {top: 20, right: 20, bottom: 53, left: 30};
-    width_cross = 200;
-    height_cross = 120;
+    var margin_cross = {top: 30, right: 15, bottom: 40, left: 40}
+        , width_cross = 285 - margin_cross.left - margin_cross.right
+        , height_cross = 160 - margin_cross.top - margin_cross.bottom;
+    var padding_cross = 70;
 
     for (var i = 0; i < plot_nodes.length; i++) {
         if (plot_nodes[i].name === PlotNameA) {
@@ -753,6 +751,67 @@ var data2=[];
 
 
     }
+    d3.select(mydiv).append("g")
+        .attr("id", "btnDiv")
+        .style('font-size', '75%')
+        .style("width", "280px")
+        .style("position", "absolute")
+        .style("left", (15 * margin_cross.left + padding_cross) + "px")
+        .style("top", "300px")
+
+    d3.select("#btnDiv")[0][0].innerHTML = [
+        '<h5>Data Selection</h5>',
+        '<p>Enter the number to specify the distribution of the cross-tabs.</p>',
+        '<p>Select between Equidistant and Equimass.</p>'
+
+    ].join('\n')
+
+
+    d3.select("#btnDiv")
+        .append("input")
+        .attr({
+            "id": "a",
+            "value": 0
+        })
+
+
+    // style both of the inputs at once
+    // more on HTML5 <input> at https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
+    d3.selectAll("input")
+        .attr({
+            "type": "text",
+            "size": 3,
+            "autofocus": "true",
+            "inputmode": "numeric"
+        })
+        .style({
+            "text-align": "center",
+            "display": "inline-block",
+            "margin-right": "10px"
+        });
+
+
+    var btns = d3.select("#btnDiv").selectAll("button").data(["EQUIDISTANCE", "EQUIMASS"])
+    btns = btns.enter().append("button").style("display", "inline-block")
+
+    // fill the buttons with the year from the data assigned to them
+    btns.each(function (d) {
+        this.innerText = d;
+    });
+
+    btns.on("click", getData);
+
+    function getData() {
+
+        if (this.innerText === "EQUIDISTANCE") {
+
+        }
+        else if (this.innerText === "EQUIMASS") {
+
+        }
+
+    }
+
 
 // this is the function to add  the density plot if any
     function density_cross(density_env) {
@@ -775,17 +834,42 @@ var data2=[];
         });
         console.log(data2);
 
-
+        var min_x = d3.min(data2, function (d, i) {
+            return data2[i].x;
+        });
+        var max_x = d3.max(data2, function (d, i) {
+            return data2[i].x;
+        });
+        var avg_x = (max_x - min_x) / 10;
+        var min_y = d3.min(data2, function (d, i) {
+            return data2[i].y;
+        });
+        var max_y = d3.max(data2, function (d, i) {
+            return data2[i].y;
+        });
+        var avg_y = (max_y - min_y) / 10;
         var x = d3.scale.linear()
-            .domain([d3.min(data2.map(function (d) { return d.x; })), d3.max(data2.map(function (d) { return d.x; }))])
+            .domain([d3.min(data2.map(function (d) {
+                return d.x;
+            })), d3.max(data2.map(function (d) {
+                return d.x;
+            }))])
             .range([0, width_cross]);
 
         var invx = d3.scale.linear()
-            .range([d3.min(data2.map(function (d) { return d.x; })), d3.max(data2.map(function (d) { return d.x; }))])
+            .range([d3.min(data2.map(function (d) {
+                return d.x;
+            })), d3.max(data2.map(function (d) {
+                return d.x;
+            }))])
             .domain([0, width_cross]);
 
         var y = d3.scale.linear()
-            .domain([d3.min(data2.map(function (d) { return d.y; })), d3.max(data2.map(function (d) { return d.y; }))])
+            .domain([d3.min(data2.map(function (d) {
+                return d.y;
+            })), d3.max(data2.map(function (d) {
+                return d.y;
+            }))])
             .range([height_cross, 0]);
 
 
@@ -803,7 +887,7 @@ var data2=[];
             .x(function (d) {
                 return x(d.x);
             })
-            .y0(height)
+            .y0(height_cross - avg_y)
             .y1(function (d) {
                 return y(d.y);
             });
@@ -825,11 +909,10 @@ var data2=[];
                 return myname.concat("_", mydiv.substr(1), "_", density_env.id);
             })
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
-            .style("height", height_cross + margin_cross.top + margin_cross.bottom);
+            .style("height", height_cross + margin_cross.top + margin_cross.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
 
-
-            plotsvg.append("g")
-            .attr("transform", "translate(" + (margin_cross.left+10) + "," + (margin_cross.top) + ")");
 
         plotsvg.append("path")
             .datum(data2)
@@ -837,177 +920,173 @@ var data2=[];
             .attr("d", area);
         plotsvg.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0," + (height_cross ) + ")")
+            .attr("transform", "translate(0," + (height_cross  ) + ")")
             .call(xAxis);
 
         plotsvg.append("text")
             .attr("x", (width_cross / 2))
-            .attr("y", (margin_cross.top ))
+            .attr("y", (margin_cross.top + padding_cross + padding_cross / 7 ))
             .attr("text-anchor", "middle")
             .style("font-size", "12px")
             .text(density_env.name);
 
 
-
     }
 
 
-
-
-
-
-
-
-
 // this is the function to add the bar plot if any
-function bar_cross(bar_env)
-{
-    console.log("welcome to : "+ bar_env.name);
+    function bar_cross(bar_env) {
+        console.log("welcome to : " + bar_env.name);
 
-    var barPadding = .015;  // Space between bars
-    var topScale =1.2;      // Multiplicative factor to assign space at top within graph - currently removed from implementation
-    var plotXaxis = true;
+        var barPadding = .015;  // Space between bars
+        var topScale = 1.2;      // Multiplicative factor to assign space at top within graph - currently removed from implementation
+        var plotXaxis = true;
 
-    // Data
-    var keys = Object.keys(bar_env.plotvalues);
-    var yVals = new Array;
-    var ciUpperVals = new Array;
-    var ciLowerVals = new Array;
-    var ciSize;
+        // Data
+        var keys = Object.keys(bar_env.plotvalues);
+        var yVals = new Array;
+        var ciUpperVals = new Array;
+        var ciLowerVals = new Array;
+        var ciSize;
 
-    var xVals = new Array;
-    var yValKey = new Array;
+        var xVals = new Array;
+        var yValKey = new Array;
 
-    console.log(keys);
-
+        console.log(keys);
 
 
 //    var mydiv = "#resultsView_tabular";
 
 
-    if(bar_env.nature==="nominal") {
-        var xi = 0;
-        for (var i = 0; i < keys.length; i++) {
-            if(bar_env.plotvalues[keys[i]]==0) {continue;}
-            yVals[xi] = bar_env.plotvalues[keys[i]];
-            xVals[xi] = xi;
-            if (private) {
-                if (bar_env.plotvaluesCI) {
-                    ciLowerVals[xi] = bar_env.plotValuesCI.lowerBound[keys[i]];
-                    ciUpperVals[xi] = bar_env.plotValuesCI.upperBound[keys[i]];
+        if (bar_env.nature === "nominal") {
+            var xi = 0;
+            for (var i = 0; i < keys.length; i++) {
+                if (bar_env.plotvalues[keys[i]] == 0) {
+                    continue;
                 }
-                ciSize = ciUpperVals[xi] - ciLowerVals[xi];
-            };
+                yVals[xi] = bar_env.plotvalues[keys[i]];
+                xVals[xi] = xi;
+                if (private) {
+                    if (bar_env.plotvaluesCI) {
+                        ciLowerVals[xi] = bar_env.plotValuesCI.lowerBound[keys[i]];
+                        ciUpperVals[xi] = bar_env.plotValuesCI.upperBound[keys[i]];
+                    }
+                    ciSize = ciUpperVals[xi] - ciLowerVals[xi];
+                }
+                ;
 
-            yValKey.push({y:yVals[xi], x:keys[i] });
-            xi = xi+1;
+                yValKey.push({y: yVals[xi], x: keys[i]});
+                xi = xi + 1;
+            }
+            yValKey.sort(function (a, b) {
+                return b.y - a.y
+            }); // array of objects, each object has y, the same as yVals, and x, the category
+            yVals.sort(function (a, b) {
+                return b - a
+            }); // array of y values, the height of the bars
+            ciUpperVals.sort(function (a, b) {
+                return b.y - a.y
+            }); // ?
+            ciLowerVals.sort(function (a, b) {
+                return b.y - a.y
+            }); // ?
         }
-        yValKey.sort(function(a,b){return b.y-a.y}); // array of objects, each object has y, the same as yVals, and x, the category
-        yVals.sort(function(a,b){return b-a}); // array of y values, the height of the bars
-        ciUpperVals.sort(function(a,b){return b.y-a.y}); // ?
-        ciLowerVals.sort(function(a,b){return b.y-a.y}); // ?
-    }
-    else {
-        for (var i = 0; i < keys.length; i++) {
-           // console.log("plotvalues in bars");
-            //console.log(node);
-            yVals[i] = bar_env.plotvalues[keys[i]];
-            xVals[i] = Number(keys[i]);
-            if (private) {
-                if (bar_env.plotvaluesCI) {
-                    ciLowerVals[i] = bar_env.plotvaluesCI.lowerBound[keys[i]];
-                    ciUpperVals[i] = bar_env.plotvaluesCI.upperBound[keys[i]];
+        else {
+            for (var i = 0; i < keys.length; i++) {
+                // console.log("plotvalues in bars");
+                //console.log(node);
+                yVals[i] = bar_env.plotvalues[keys[i]];
+                xVals[i] = Number(keys[i]);
+                if (private) {
+                    if (bar_env.plotvaluesCI) {
+                        ciLowerVals[i] = bar_env.plotvaluesCI.lowerBound[keys[i]];
+                        ciUpperVals[i] = bar_env.plotvaluesCI.upperBound[keys[i]];
+                    }
+                    ciSize = ciUpperVals[i] - ciLowerVals[i];
                 }
-                ciSize = ciUpperVals[i] - ciLowerVals[i];
             }
         }
-    }
 
-    if((yVals.length>15 & bar_env.numchar==="numeric") | (yVals.length>5 & bar_env.numchar==="character")) {plotXaxis=false;}
-    var maxY = d3.max(yVals); // in the future, set maxY to the value of the maximum confidence limit
-    var minX = d3.min(xVals);
-    var maxX = d3.max(xVals);
-
-    if (private && bar_env.stabilityBin) {
+        if ((yVals.length > 15 & bar_env.numchar === "numeric") | (yVals.length > 5 & bar_env.numchar === "character")) {
+            plotXaxis = false;
+        }
+        var maxY = d3.max(yVals); // in the future, set maxY to the value of the maximum confidence limit
+        var minX = d3.min(xVals);
+        var maxX = d3.max(xVals);
         var x = d3.scale.linear()
-            .domain([ minX-0.5 , maxX+1.5])
+            .domain([minX - 0.5, maxX + 0.5])
             .range([0, width_cross]);
-    } else {
-        var x = d3.scale.linear()
-            .domain([ minX-0.5 , maxX+0.5])
-            .range([0, width_cross]);
+
+        var invx = d3.scale.linear()
+            .range([minX - 0.5, maxX + 0.5])
+            .domain([0, width_cross]);
+
+        var y = d3.scale.linear()
+        // .domain([0, maxY])
+            .domain([0, maxY])
+            .range([0, height_cross]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .ticks(yVals.length)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
+
+        var plotsvg = d3.select(mydiv)
+            .append("svg")
+            .attr("id", function () {
+                var myname = bar_env.name.toString();
+                myname = myname.replace(/\(|\)/g, "");
+                return myname.concat("_", mydiv.substr(1), "_", bar_env.id);
+            })
+            .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
+            .style("height", height_cross + margin_cross.top + margin_cross.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
+
+        var rectWidth = x(minX + 0.5 - 2 * barPadding); //the "width" is the coordinate of the end of the first bar
+
+        plotsvg.selectAll("rect")
+            .data(yVals)
+            .enter()
+            .append("rect")
+            .attr("x", function (d, i) {
+                return x(xVals[i] - 0.5 + barPadding);
+            })
+            .attr("y", function (d) {
+                return y(maxY - d);
+            })
+            .attr("width", rectWidth)
+            .attr("height", function (d) {
+                return y(d);
+            })
+            .attr("fill", "#fa8072");
+
+        if (plotXaxis) {
+            plotsvg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height_cross + ")")
+                .call(xAxis);
+        }
+
+        plotsvg.append("text")
+            .attr("x", (width_cross / 2))
+            .attr("y", margin_cross.top + padding_cross + padding_cross / 7)
+            .attr("text-anchor", "middle")
+            .style("font-size", "12px")
+            .text(bar_env.name);
     }
-
-    var invx = d3.scale.linear()
-        .range([ minX-0.5 , maxX+0.5])
-        .domain([0, width_cross]);
-
-    var y = d3.scale.linear()
-    // .domain([0, maxY])
-        .domain([0, maxY])
-        .range([0, height_cross]);
-
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .ticks(yVals.length)
-        .orient("bottom");
-
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left");
-
-    var plotsvg = d3.select(mydiv)
-        .append("svg")
-        .attr("id", function(){
-            var myname = bar_env.name.toString();
-            myname = myname.replace(/\(|\)/g, "");
-            return myname.concat("_",mydiv.substr(1), "_", bar_env.id);
-        })
-        .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
-        .style("height", height_cross + margin_cross.top + margin_cross.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
-
-    var rectWidth = x(minX + 0.5 - 2*barPadding); //the "width" is the coordinate of the end of the first bar
-
-    plotsvg.selectAll("rect")
-        .data(yVals)
-        .enter()
-        .append("rect")
-        .attr("x", function(d, i) {
-            return x(xVals[i]-0.5+barPadding);
-        })
-        .attr("y", function(d) {
-            return y(maxY - d);
-        })
-        .attr("width", rectWidth)
-        .attr("height", function(d) {
-            return y(d);
-        })
-        .attr("fill", "#1f77b4");
-
-    if(plotXaxis) {
-        plotsvg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height_cross + ")")
-            .call(xAxis);
-    }
-
-    plotsvg.append("text")
-        .attr("x", (width_cross / 2))
-        .attr("y", 0-(margin_cross.top / 2))
-        .attr("text-anchor", "middle")
-        .style("font-size", "12px")
-        .text(bar_env.name);
-}
 
 }
-
 
 
 //Kripanshu Bhargava bivariatePlot(Scatter plot)
 
 var data_plot = [];
+
 function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
 
 
@@ -1021,7 +1100,7 @@ function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
     d3.select("#linechart").select("svg").remove();
     d3.select("#linechart").html("");
     d3.select("#heatchart").html("");
-   // $("#NAcount").html("");
+    // $("#NAcount").html("");
 
 
     /*
@@ -1033,20 +1112,18 @@ function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
      */
 
 
-
-
-console.log("bivariate plot called");
+    console.log("bivariate plot called");
     // scatter plot
 
-    data_plot=[];
+    data_plot = [];
     var nanCount = 0;
     for (var i = 0; i < 1000; i++) {
         if (isNaN(x_Axis[i]) || isNaN(y_Axis[i])) {
             nanCount++;
         } else {
             var newNumber1 = x_Axis[i];
-            var newNumber2 =y_Axis[i];
-            data_plot.push({xaxis: newNumber1, yaxis: newNumber2, score:Math.random()*100});
+            var newNumber2 = y_Axis[i];
+            data_plot.push({xaxis: newNumber1, yaxis: newNumber2, score: Math.random() * 100});
 
         }
 
@@ -1057,22 +1134,30 @@ console.log("bivariate plot called");
     var margin = {top: 20, right: 15, bottom: 40, left: 60}
         , width = 520 - margin.left - margin.right
         , height = 300 - margin.top - margin.bottom;
-    var padding=100;
+    var padding = 100;
 
-    var min_x = d3.min(data_plot, function(d,i) { return data_plot[i].xaxis; });
-    var max_x = d3.max(data_plot, function(d,i) { return data_plot[i].xaxis; });
-    var avg_x = (max_x - min_x)/10;
-    var min_y = d3.min(data_plot, function(d,i) { return data_plot[i].yaxis; });
-    var max_y = d3.max(data_plot, function(d,i) { return data_plot[i].yaxis; });
-    var avg_y = (max_y - min_y)/10;
+    var min_x = d3.min(data_plot, function (d, i) {
+        return data_plot[i].xaxis;
+    });
+    var max_x = d3.max(data_plot, function (d, i) {
+        return data_plot[i].xaxis;
+    });
+    var avg_x = (max_x - min_x) / 10;
+    var min_y = d3.min(data_plot, function (d, i) {
+        return data_plot[i].yaxis;
+    });
+    var max_y = d3.max(data_plot, function (d, i) {
+        return data_plot[i].yaxis;
+    });
+    var avg_y = (max_y - min_y) / 10;
 
     var xScale = d3.scale.linear()
-        .domain([min_x-avg_x, max_x+avg_x])
-        .range([ 0, width ]);
+        .domain([min_x - avg_x, max_x + avg_x])
+        .range([0, width]);
 
     var yScale = d3.scale.linear()
-        .domain([min_y-avg_y, max_y+avg_y])
-        .range([ height, 0 ]);
+        .domain([min_y - avg_y, max_y + avg_y])
+        .range([height, 0]);
 
     var xAxis = d3.svg.axis()
         .scale(xScale)
@@ -1127,22 +1212,26 @@ console.log("bivariate plot called");
         .data(data_plot)
         .enter()
         .append("circle")
-        .attr("cx", function (d,i) { return xScale(data_plot[i].xaxis); } )
-        .attr("cy", function (d,i) { return yScale(data_plot[i].yaxis); } )
+        .attr("cx", function (d, i) {
+            return xScale(data_plot[i].xaxis);
+        })
+        .attr("cy", function (d, i) {
+            return yScale(data_plot[i].yaxis);
+        })
         .attr("r", 2)
-        .style("fill", "#B71C1C" )
-        ;
+        .style("fill", "#B71C1C")
+    ;
     chart_scatter.append("text")
         .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-        .attr("transform", "translate("+ padding/5 +","+(height/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+        .attr("transform", "translate(" + padding / 5 + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
         .text(y_Axis_name)
-        .style("fill","#424242");
+        .style("fill", "#424242");
 
     chart_scatter.append("text")
         .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-        .attr("transform", "translate("+ (width/2) +","+(height+(padding/2))+")")  // centre below axis
+        .attr("transform", "translate(" + (width / 2) + "," + (height + (padding / 2)) + ")")  // centre below axis
         .text(x_Axis_name)
-        .style("fill","#424242");
+        .style("fill", "#424242");
 
     function zoomed() {
         var panX = d3.event.translate[0];
@@ -1150,11 +1239,11 @@ console.log("bivariate plot called");
         var scale = d3.event.scale;
 
         panX = panX > 10 ? 10 : panX;
-        var maxX = -(scale-1)*width-10;
+        var maxX = -(scale - 1) * width - 10;
         panX = panX < maxX ? maxX : panX;
 
         panY = panY > 10 ? 10 : panY;
-        var maxY = -(scale-1)*height-10;
+        var maxY = -(scale - 1) * height - 10;
         panY = panY < maxY ? maxY : panY;
 
         zoom.translate([panX, panY]);
@@ -1163,142 +1252,147 @@ console.log("bivariate plot called");
         main1.select(".x.axis").call(xAxis);
         main1.select(".y.axis").call(yAxis);
         main1.selectAll("circle")
-            .attr("cx", function (d,i) { return xScale(data_plot[i].xaxis); } )
-            .attr("cy", function (d,i) { return yScale(data_plot[i].yaxis); } )
+            .attr("cx", function (d, i) {
+                return xScale(data_plot[i].xaxis);
+            })
+            .attr("cy", function (d, i) {
+                return yScale(data_plot[i].yaxis);
+            })
             .attr("r", 3)
-            .style("fill", "#B71C1C" )
+            .style("fill", "#B71C1C")
         ;
     }
-/*
-data_plot=[];
-    var nanCount = 0;
-    for (var i = 0; i < 1000; i++) {
-        if (isNaN(x_Axis[i]) || isNaN(y_Axis[i])) {
-            nanCount++;
-        } else {
-            var newNumber1 = Math.floor(x_Axis[i]);
-            var newNumber2 = Math.floor(y_Axis[i]);
-            data_plot.push({xaxis: newNumber1, yaxis: newNumber2, score:i/100});
+
+    /*
+    data_plot=[];
+        var nanCount = 0;
+        for (var i = 0; i < 1000; i++) {
+            if (isNaN(x_Axis[i]) || isNaN(y_Axis[i])) {
+                nanCount++;
+            } else {
+                var newNumber1 = Math.floor(x_Axis[i]);
+                var newNumber2 = Math.floor(y_Axis[i]);
+                data_plot.push({xaxis: newNumber1, yaxis: newNumber2, score:i/100});
+
+            }
+
 
         }
 
 
-    }
 
+        var margin = {top: 20, right: 10, bottom: 20, left: 60},
+            width = 460 - margin.left - margin.right,
+            height = 200 - margin.top - margin.bottom;
 
-
-    var margin = {top: 20, right: 10, bottom: 20, left: 60},
-        width = 460 - margin.left - margin.right,
-        height = 200 - margin.top - margin.bottom;
-
-    var xMax = d3.max(data_plot, function (d, i) {
-            return data_plot[i].xaxis
-        }),
-        xMin = 0,
-        yMax = d3.max(data_plot, function (d, i) {
-            return data_plot[i].yaxis
-        }),
-        yMin = 0;
-
-
-
-
-//Define scales
-var x = d3.scale.linear()
-    .domain([xMin, xMax])
-    .range([0, width]);
-
-var y = d3.scale.linear()
-    .domain([yMin, yMax])
-    .range([height, 0]);
-
-
-//Define X axis
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
-    .tickSize(-height, 0, 0)
-
-;
-
-//Define Y axis
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .ticks(5)
-    .tickSize(-width, 0, 0)
-
-;
-
-var svg = d3.select("#scatterplot")  // This is where we put our vis
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .attr("background-color", "#fff")
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-    .call(d3.behavior.zoom().x(x).y(y).scaleExtent([1, 20]).on("zoom", zoom))
-;
-
-
-svg.append("rect")
-    .attr("width", width)
-    .attr("height", height)
-
-    .attr("stroke-color", "#E0E0E0");
-
-svg.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis)
-
-
-;
-svg.append("g")
-    .attr("class", "y axis")
-    .call(yAxis)
-
-
-;
+        var xMax = d3.max(data_plot, function (d, i) {
+                return data_plot[i].xaxis
+            }),
+            xMin = 0,
+            yMax = d3.max(data_plot, function (d, i) {
+                return data_plot[i].yaxis
+            }),
+            yMin = 0;
 
 
 
 
-var circle = svg.selectAll("circle")
-    .data(data_plot)
-    .enter()
-    .append("circle")
-    .attr("class", "hex")
-    .attr("transform", function (d, i) {
-        return "translate(" + x(data_plot[i].xaxis) + "," + y(data_plot[i].yaxis) + ")";
-    })
-    .attr('r', 3)
-    .attr("opacity", "1.0")
-    .attr("fill", "#1A237E");
+    //Define scales
+    var x = d3.scale.linear()
+        .domain([xMin, xMax])
+        .range([0, width]);
+
+    var y = d3.scale.linear()
+        .domain([yMin, yMax])
+        .range([height, 0]);
 
 
-function zoom(d) {
-    //svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-    svg.select(".x.axis").call(xAxis);
-    svg.select(".y.axis").call(yAxis);
-    svg.selectAll("circle")
+    //Define X axis
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        .tickSize(-height, 0, 0)
+
+    ;
+
+    //Define Y axis
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(5)
+        .tickSize(-width, 0, 0)
+
+    ;
+
+    var svg = d3.select("#scatterplot")  // This is where we put our vis
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("background-color", "#fff")
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .call(d3.behavior.zoom().x(x).y(y).scaleExtent([1, 20]).on("zoom", zoom))
+    ;
+
+
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+
+        .attr("stroke-color", "#E0E0E0");
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+
+
+    ;
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+
+
+    ;
+
+
+
+
+    var circle = svg.selectAll("circle")
+        .data(data_plot)
+        .enter()
+        .append("circle")
+        .attr("class", "hex")
         .attr("transform", function (d, i) {
-            return "translate(" + x(Math.max(data_plot[i].xaxis)) + "," + y(Math.max(data_plot[i].yaxis)) + ")";
+            return "translate(" + x(data_plot[i].xaxis) + "," + y(data_plot[i].yaxis) + ")";
         })
-        .attr('r', 6);
-}
- */
+        .attr('r', 3)
+        .attr("opacity", "1.0")
+        .attr("fill", "#1A237E");
+
+
+    function zoom(d) {
+        //svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        svg.select(".x.axis").call(xAxis);
+        svg.select(".y.axis").call(yAxis);
+        svg.selectAll("circle")
+            .attr("transform", function (d, i) {
+                return "translate(" + x(Math.max(data_plot[i].xaxis)) + "," + y(Math.max(data_plot[i].yaxis)) + ")";
+            })
+            .attr('r', 6);
+    }
+     */
 //heatmap
 
 
-    d3.select("#NAcount").text("There are "+ nanCount + " number of NA values in the relation.");
-   // document.getElementById('heatchart').style.display = "block";
-    heatmap( x_Axis_name, y_Axis_name);
+    d3.select("#NAcount").text("There are " + nanCount + " number of NA values in the relation.");
+    // document.getElementById('heatchart').style.display = "block";
+    heatmap(x_Axis_name, y_Axis_name);
 
 }
 
 //Kripanshu Bhargava bivariatePlot(Heatmap)
-function heatmap( x_Axis_name, y_Axis_name) {
+function heatmap(x_Axis_name, y_Axis_name) {
 
 
     d3.select("#heatChart").select("svg").remove();
@@ -1372,115 +1466,131 @@ function heatmap( x_Axis_name, y_Axis_name) {
     var margin_heat = {top: 30, right: 10, bottom: 60, left: 60},
         width_heat = 500 - margin_heat.left - margin_heat.right,
         height_heat = 300 - margin_heat.top - margin_heat.bottom;
-    var padding=100;
+    var padding = 100;
 
-    var min_x = d3.min(data_plot, function(d,i) { return data_plot[i].xaxis; });
-    var max_x = d3.max(data_plot, function(d,i) { return data_plot[i].xaxis; });
-    var avg_x = (max_x - min_x)/100;
-    var min_y = d3.min(data_plot, function(d,i) { return data_plot[i].yaxis; });
-    var max_y = d3.max(data_plot, function(d,i) { return data_plot[i].yaxis; });
-    var avg_y = (max_y - min_y)/100;
+    var min_x = d3.min(data_plot, function (d, i) {
+        return data_plot[i].xaxis;
+    });
+    var max_x = d3.max(data_plot, function (d, i) {
+        return data_plot[i].xaxis;
+    });
+    var avg_x = (max_x - min_x) / 100;
+    var min_y = d3.min(data_plot, function (d, i) {
+        return data_plot[i].yaxis;
+    });
+    var max_y = d3.max(data_plot, function (d, i) {
+        return data_plot[i].yaxis;
+    });
+    var avg_y = (max_y - min_y) / 100;
 
     var x = d3.scale.linear()
-        .domain([min_x-avg_x, max_x+avg_x])
-        .range([ 0, width_heat ]);
+        .domain([min_x - avg_x, max_x + avg_x])
+        .range([0, width_heat]);
 
     var y = d3.scale.linear()
-        .domain([min_y-avg_y, max_y+avg_y])
-        .range([ height_heat, 0 ]);
+        .domain([min_y - avg_y, max_y + avg_y])
+        .range([height_heat, 0]);
 
     var z = d3.scale.linear().range(["#EF9A9A", "#EF5350"]);
 
 
 // This could be inferred from the data if it weren't sparse.
     var xStep = avg_x,
-        yStep = avg_y+0.1;
+        yStep = avg_y + 0.1;
     var svg_heat = d3.select("#heatchart").append("svg")
         .attr("width", width_heat + margin_heat.left + margin_heat.right)
         .attr("height", height_heat + margin_heat.top + margin_heat.bottom)
         .append("g")
         .attr("transform", "translate(" + margin_heat.left + "," + margin_heat.top + ")")
-        .style("background-color","#FFEBEE");
+        .style("background-color", "#FFEBEE");
 
 
+    // Compute the scale domains.
+    x.domain(d3.extent(data_plot, function (d, i) {
+        return data_plot[i].xaxis;
+    }));
+    y.domain(d3.extent(data_plot, function (d, i) {
+        return data_plot[i].yaxis;
+    }));
+    z.domain([0, d3.max(data_plot, function (d, i) {
+        return data_plot[i].score;
+    })]);
 
-        // Compute the scale domains.
-        x.domain(d3.extent(data_plot, function(d,i) { return data_plot[i].xaxis; }));
-        y.domain(d3.extent(data_plot, function(d,i) { return data_plot[i].yaxis; }));
-        z.domain([0, d3.max(data_plot, function(d,i) { return data_plot[i].score; })]);
+    // Extend the x- and y-domain to fit the last bucket.
+    // For example, the y-bucket 3200 corresponds to values [3200, 3300].
+    x.domain([x.domain()[0], +x.domain()[1] + xStep]);
+    y.domain([y.domain()[0], y.domain()[1] + yStep]);
 
-        // Extend the x- and y-domain to fit the last bucket.
-        // For example, the y-bucket 3200 corresponds to values [3200, 3300].
-        x.domain([x.domain()[0], +x.domain()[1] + xStep]);
-        y.domain([y.domain()[0], y.domain()[1] + yStep]);
+    // Display the tiles for each non-zero bucket.
+    // See http://bl.ocks.org/3074470 for an alternative implementation.
+    svg_heat.selectAll(".tile")
+        .data(data_plot)
+        .enter().append("rect")
+        .attr("class", "tile")
+        .attr("x", function (d, i) {
+            return x(data_plot[i].xaxis);
+        })
+        .attr("y", function (d, i) {
+            return y(data_plot[i].yaxis + yStep);
+        })
+        .attr("width", 15)
+        .attr("height", 15)
+        .attr("dx", ".35em")
+        .attr("dy", ".35em")
+        .style("fill", function (d, i) {
+            return z(data_plot[i].score);
+        });
 
-        // Display the tiles for each non-zero bucket.
-        // See http://bl.ocks.org/3074470 for an alternative implementation.
-        svg_heat.selectAll(".tile")
-            .data(data_plot)
-            .enter().append("rect")
-            .attr("class", "tile")
-            .attr("x", function(d,i) { return x(data_plot[i].xaxis ); })
-            .attr("y", function(d,i) { return y(data_plot[i].yaxis +yStep); })
-            .attr("width", 15)
-            .attr("height", 15)
-            .attr("dx", ".35em")
-            .attr("dy", ".35em")
-            .style("fill", function(d,i) { return z(data_plot[i].score); });
 
+    svg_heat.append("text")
+        .attr("class", "label")
+        .attr("x", width_heat + 20)
+        .attr("y", 10)
+        .attr("dy", ".35em")
+        .text("Count");
 
+    // Add an x-axis with label.
+    svg_heat.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height_heat + ")")
+        .call(d3.svg.axis().scale(x).ticks(5).tickSize(-height_heat).orient("bottom"))
+        .append("text")
+        .attr("class", "label")
+        .attr("x", width_heat)
+        .attr("y", -6)
+        .attr("text-anchor", "end")
+        .text("");
 
-
-        svg_heat.append("text")
-            .attr("class", "label")
-            .attr("x", width_heat + 20)
-            .attr("y", 10)
-            .attr("dy", ".35em")
-            .text("Count");
-
-        // Add an x-axis with label.
-        svg_heat.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height_heat + ")")
-            .call(d3.svg.axis().scale(x).ticks(5).tickSize(-height_heat).orient("bottom"))
-            .append("text")
-            .attr("class", "label")
-            .attr("x", width_heat)
-            .attr("y", -6)
-            .attr("text-anchor", "end")
-            .text("");
-
-        // Add a y-axis with label.
-        svg_heat.append("g")
-            .attr("class", "y axis")
-            .call(d3.svg.axis().scale(y).tickSize(-width_heat).orient("left"))
-            .append("text")
-            .attr("class", "label")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .attr("text-anchor", "end")
-            .attr("transform", "rotate(-90)")
-            .text("");
+    // Add a y-axis with label.
+    svg_heat.append("g")
+        .attr("class", "y axis")
+        .call(d3.svg.axis().scale(y).tickSize(-width_heat).orient("left"))
+        .append("text")
+        .attr("class", "label")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .attr("text-anchor", "end")
+        .attr("transform", "rotate(-90)")
+        .text("");
 
     svg_heat.append("text")
         .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-        .attr("transform", "translate(-40,"+(height_heat/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+        .attr("transform", "translate(-40," + (height_heat / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
         .text(y_Axis_name)
-        .style("fill","#424242");
+        .style("fill", "#424242");
 
     svg_heat.append("text")
         .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-        .attr("transform", "translate("+ (width_heat/2) +","+(height_heat+padding/4)+")")  // centre below axis
+        .attr("transform", "translate(" + (width_heat / 2) + "," + (height_heat + padding / 4) + ")")  // centre below axis
         .text(x_Axis_name)
-        .style("fill","#424242");
+        .style("fill", "#424242");
 
 
 }
 
 
 //Kripanshu Bhargava bivariatePlot(linechart)
-function linechart()
-{
+function linechart() {
     document.getElementById('linechart').style.display = "block";
     d3.select("#lineChart").select("svg").remove();
     $('#linechart').html("");
@@ -1500,18 +1610,18 @@ function linechart()
         .attr("transform", "translate(" + margin_linechart.left + "," + margin_linechart.top + ")");
     // var dateParser = d3.time.format("%Y/%m/%d").parse;
     var x = d3.scale.linear()
-        .domain(d3.extent(data_plot, function(d){
+        .domain(d3.extent(data_plot, function (d) {
 
             return d.xaxis;
         }))
-        .range([0,width_linechart]);
+        .range([0, width_linechart]);
     var y = d3.scale.linear()
-        .domain([d3.min(data_plot, function(d){
+        .domain([d3.min(data_plot, function (d) {
             return d.yaxis;
-        }), d3.max(data_plot, function(d){
+        }), d3.max(data_plot, function (d) {
             return d.yaxis;
         })])
-        .range([height_linechart,0]);
+        .range([height_linechart, 0]);
     var xAxis = d3.svg.axis()
         .scale(x)
         .orient("bottom")
@@ -1522,14 +1632,15 @@ function linechart()
         .orient("left")
         .ticks(5);
     var line = d3.svg.line()
-        .x(function(d){
+        .x(function (d) {
 
             return x(d.xaxis);
         })
-        .y(function(d){
+        .y(function (d) {
             return y(d.yaxis);
         });
-    function plot(params){
+
+    function plot(params) {
         this.append("g")
             .classed("x axis", true)
             .attr("transform", "translate(0," + height_linechart + ")")
@@ -1552,18 +1663,18 @@ function linechart()
             .attr("r", 2);
         //update
         this.selectAll(".trendline")
-            .attr("d", function(d){
+            .attr("d", function (d) {
                 return line(d);
             });
         this.selectAll(".point")
-            .attr("cx", function(d){
+            .attr("cx", function (d) {
                 var date = d.xaxis;
                 return x(date);
             })
-            .attr("cy", function(d){
+            .attr("cy", function (d) {
                 return y(d.yaxis);
             })
-            .style("color","#EF5350");
+            .style("color", "#EF5350");
         //exit()
         this.selectAll(".trendline")
             .data([params.data])
@@ -1574,6 +1685,7 @@ function linechart()
             .exit()
             .remove();
     }
+
     plot.call(chart, {
         data: data_plot,
         axis: {
@@ -1582,7 +1694,6 @@ function linechart()
         }
     });
 }
-
 
 
 ////////////////////////////////////////////
@@ -1622,9 +1733,6 @@ function linechart()
  .attr("onmouseout", "$(this).popover('toggle');")
  .attr("data-original-title", "Summary Statistics");
  */
-
-
-
 
 
 // scaffolding is called after all external data are guaranteed to have been read to completion. this populates the left panel with variable names, the right panel with model names, the transformation tool, an the associated mouseovers. its callback is layout(), which initializes the modeling space
@@ -1804,6 +1912,7 @@ function scaffolding(callback) {
         callback(); // this calls layout() because at this point all scaffolding is up and ready
     }
 }
+
 /*
  $("#clearbtn").click(function() {
  $("#searchvar").val('').focus();
@@ -2609,7 +2718,7 @@ function restart() {
                         console.log("False");
 
                 }
-                else("dont tag it");
+                else ("dont tag it");
             }
             else {
 
@@ -2628,7 +2737,7 @@ function restart() {
                         console.log("False");
 
                 }
-                else("dont tag it");
+                else ("dont tag it");
 
             }
 
@@ -2778,7 +2887,7 @@ function restart() {
 
 
                 }
-                else("dont tag it");
+                else ("dont tag it");
 
             }
             else if (d.defaultNumchar == "numeric" && d.nature == "nominal") {
@@ -2789,7 +2898,7 @@ function restart() {
 
 
                 }
-                else("dont tag it")
+                else ("dont tag it")
 
             }
 
@@ -3173,6 +3282,7 @@ function writetojson(btn) {
     var properjson = cleanstring(writeoutjson);
 
     var solajsonout = "solaJSON=" + properjson;
+
 //console.log(properjson);
 
     function writesuccess(btn, json) {
@@ -3197,6 +3307,7 @@ function writetojson(btn) {
 
 
 }
+
 //end of write to json
 
 var drag_line = svg.append('svg:path')
@@ -3361,6 +3472,7 @@ function addlistener(nodes) {
             restart();
         });
 }
+
 //console.log("Search ID at start: "+srchid);
 
 
@@ -3626,7 +3738,7 @@ function explore(btn) {
             myparent.removeChild(document.getElementById("resultsHolder"));
         }
         d3.select("#modelView").html("");
-     //   d3.select("#resultsView_tabular").html("");
+        //   d3.select("#resultsView_tabular").html("");
         d3.select("#resultsView_statistics").html("");
 
         estimated = true;
@@ -3691,6 +3803,7 @@ function explore(btn) {
         var model = "Model".concat(modelCount);
         var model_name = value;
         console.log(" and our value is  : " + count1);
+
         function modCol() {
             d3.select("#modelView")
                 .selectAll("p")
@@ -3962,6 +4075,7 @@ function viz_explore(m, json_vizexplore, model_name_set) {
 
 
     var mym = +m.substr(5, 5) - 1;
+
 //console.log("mym is : "+ mym);
     function removeKids(parent) {
         while (parent.firstChild) {
@@ -4023,9 +4137,9 @@ function viz_explore(m, json_vizexplore, model_name_set) {
     //document.getElementById('tabular_chart2').style.display = "block";
     document.getElementById('scatterplot').style.display = "none";
     bivariatePlot(x_axis, y_axis, get_data[0], get_data[1]);
-  //  crossTabDensityPlot(x_axis,y_axis,get_data[0],get_data[1]);
+    //  crossTabDensityPlot(x_axis,y_axis,get_data[0],get_data[1]);
 
-   crossTabPlots(get_data[0],get_data[1]);
+    crossTabPlots(get_data[0], get_data[1]);
 
 
     /*
@@ -4219,61 +4333,61 @@ function viz_explore(m, json_vizexplore, model_name_set) {
     }
 
 
-   // d3.select("#resultsView_tabular").html("");
-   /*
-    function d3table1(data) {
-        var width = 120,   // width of svg
-            height = 160,  // height of svg
-            padding = 22; // space around the chart, not including labels
+    // d3.select("#resultsView_tabular").html("");
+    /*
+     function d3table1(data) {
+         var width = 120,   // width of svg
+             height = 160,  // height of svg
+             padding = 22; // space around the chart, not including labels
 
 
-        d3.select("#resultsView_tabular")
-            .html("")
-            .style("background-color", "#fff")
-            .append("h5")
-            .text("CROSS-TABS ")
-            .style("color", "#424242")
-        ;
+         d3.select("#resultsView_tabular")
+             .html("")
+             .style("background-color", "#fff")
+             .append("h5")
+             .text("CROSS-TABS ")
+             .style("color", "#424242")
+         ;
 
-        var sv = d3.select("#resultsView_tabular").append("svg").attr("width", "100%").attr("height", "100%").style("overflow", "visible");
-        var fo = sv.append('foreignObject').attr("width", "100%").attr("height", "100%").style("padding", 10).attr("overflow", "visible");
-        var table = fo.append("xhtml:table").attr("class", "table").style("border-collapse", " collapse"),
-            th = table.append("tr").style("border", 1).text("_").style("color", "#fff");
+         var sv = d3.select("#resultsView_tabular").append("svg").attr("width", "100%").attr("height", "100%").style("overflow", "visible");
+         var fo = sv.append('foreignObject').attr("width", "100%").attr("height", "100%").style("padding", 10).attr("overflow", "visible");
+         var table = fo.append("xhtml:table").attr("class", "table").style("border-collapse", " collapse"),
+             th = table.append("tr").style("border", 1).text("_").style("color", "#fff");
 
-        for (var i = 0; i < colnames.length; i++) {
+         for (var i = 0; i < colnames.length; i++) {
 
-            th.append("td").style("border-bottom", 1).style("text-align", "center").style("background-color", selVarColor).append("b").text(colnames[i]);
+             th.append("td").style("border-bottom", 1).style("text-align", "center").style("background-color", selVarColor).append("b").text(colnames[i]);
 
-        }
+         }
 
 
-        for (var k = 0; k < rownames.length; k++) {
-            var pos = 0;
-            var tr = table.append("tr").style("margin-left", 20).style("background-color", "#BDBDBD").style("border", 1).style("text-align", "center").text(rownames[k]);
-            for (var m = 0; m < colnames.length; m++) {
-                for (var z = 0; z < data.length; z++) {
-                    if (rownames[k] == data[z].rowname && colnames[m] == data[z].colname) {
-                        tr.append("td").style("border", 1).style("text-align", "center").style("position", "relative").style("background-color", varColor).text(data[z].value);
-                    }
-                }
+         for (var k = 0; k < rownames.length; k++) {
+             var pos = 0;
+             var tr = table.append("tr").style("margin-left", 20).style("background-color", "#BDBDBD").style("border", 1).style("text-align", "center").text(rownames[k]);
+             for (var m = 0; m < colnames.length; m++) {
+                 for (var z = 0; z < data.length; z++) {
+                     if (rownames[k] == data[z].rowname && colnames[m] == data[z].colname) {
+                         tr.append("td").style("border", 1).style("text-align", "center").style("position", "relative").style("background-color", varColor).text(data[z].value);
+                     }
+                 }
 
-            }
-        }
-        sv.append("text")
-            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-            .attr("transform", "translate(" + (padding / 2) + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
-            .text(get_data[0]);
+             }
+         }
+         sv.append("text")
+             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+             .attr("transform", "translate(" + (padding / 2) + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+             .text(get_data[0]);
 
-        sv.append("text")
-            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-            .attr("transform", "translate(" + (width) + "," + (padding / 2) + ")")  // centre below axis
-            .text(get_data[1]);
+         sv.append("text")
+             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+             .attr("transform", "translate(" + (width) + "," + (padding / 2) + ")")  // centre below axis
+             .text(get_data[1]);
 
-    }
+     }
 
-    d3table1(table_obj);
+     d3table1(table_obj);
 
-*/
+ */
     // data for the statistical div
     var string1 = cork.toString();
     var string3 = string1.substring(string1.indexOf(":"), string1.length);
@@ -5237,6 +5351,7 @@ function rightpanelMedium() {
     d3.select("#rightpanel")
         .attr("class", "sidepanel container clearfix");
 }
+
 function leftpanelMedium() {
     d3.select("#leftpanel")
         .attr("class", "sidepanel container clearfix");
@@ -6012,6 +6127,7 @@ function clickcite(toggle) {
         return false;
     }
 }
+
 // function to remove all the children svgs inside subset and setx divs
 function rePlot() {
 
