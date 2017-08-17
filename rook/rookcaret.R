@@ -141,7 +141,8 @@ caret.app <- function(env){
           # get dependent variable
           class <- everything$zdv
           all <- everything$zvars
-          feature <- setdiff(zvar,zdv)
+          feature <- setdiff(all,class)
+          mymodel <- everything$zmodel
           #data(iris)
           write("mydata <- everything$zdv",mylogfile,append=TRUE)
 
@@ -153,20 +154,22 @@ caret.app <- function(env){
 			#data_train <- iris[ trainIndex,]
 			#data_test <- iris[-trainIndex,]
             #model <- train(Species ~ ., data=data_train, method="rf", prox=TRUE)
-            #TrainFeature <- iris[,1:4]
-			#TrainClasses <- iris[,5]
-            result <- train(feature, class,
-                  method = "knn",
-                  preProcess = c("center", "scale"),
-                  tuneLength = 10,
-                  trControl = trainControl(method = "cv"))
- 
+            #feature <- iris[,1:4]
+			#class <- iris[,5]
+			print(feature)
+			print(class)
+            #result <- train(feature, class,
+            #      method = mymodel,
+            #      preProcess = c("center", "scale"),
+            #      tuneLength = 10,
+            #      trControl = trainControl(method = "cv"))
+ 			
             write("result <- train(TrainData, TrainClasses, method=mymodel)",mylogfile,append=TRUE)
-			resultMatrix <- confusionMatrix(result)
-			accuracy_value <- sum(diag(resultMatrix$table))/100
-			result<-list(Accuracy=accuracy_value)
-			result<-jsonlite:::toJSON(result)
-            calculate_result <- TRUE
+			#resultMatrix <- confusionMatrix(result)
+			#accuracy_value <- sum(diag(resultMatrix$table))/100
+			#result<-list(Accuracy=accuracy_value)
+			#result<-jsonlite:::toJSON(result)
+            #calculate_result <- TRUE
         })
     }
     
