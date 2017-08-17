@@ -725,9 +725,12 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
     var data2 = [];
     var plot_nodes = nodes.slice();
-
-
-    var margin_cross = {top: 30, right: 15, bottom: 40, left: 40}
+var plotsvg,plotsvg1;
+var xVals,yVals;
+var x,y,x_1,y_1;
+    var myname1,myname;
+    var minX,maxY,minY,maxX;
+    var margin_cross = {top: 30, right: 15, bottom: 40, left: 50}
         , width_cross = 285 - margin_cross.left - margin_cross.right
         , height_cross = 160 - margin_cross.top - margin_cross.bottom;
     var padding_cross = 80;
@@ -756,7 +759,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         .style('font-size', '75%')
         .style("width", "280px")
         .style("position", "absolute")
-        .style("left", (15 * margin_cross.left + padding_cross) + "px")
+        .style("left", (14 * margin_cross.left + padding_cross) + "px")
         .style("top", "300px")
 
     d3.select("#btnDiv")[0][0].innerHTML = [
@@ -803,8 +806,10 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
     function getData() {
 
-        if (this.innerText === "EQUIDISTANCE") {
-
+        if (this.innerText === "EQUIDISTANCE")
+        {
+            var size= parseInt(d3.select("input#a")[0][0].value);
+            equidistance(size);
         }
         else if (this.innerText === "EQUIMASS") {
 
@@ -818,8 +823,8 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
         console.log("welcome to : " + density_env.name);
         //var mydiv = "#resultsView_tabular";
-        var yVals = density_env.ploty;
-        var xVals = density_env.plotx;
+         yVals = density_env.ploty;
+         xVals = density_env.plotx;
 
         // an array of objects
 
@@ -848,12 +853,8 @@ function crossTabPlots(PlotNameA, PlotNameB) {
             return data2[i].y;
         });
         var avg_y = (max_y - min_y) / 10;
-        var x = d3.scale.linear()
-            .domain([d3.min(data2.map(function (d) {
-                return d.x;
-            })), d3.max(data2.map(function (d) {
-                return d.x;
-            }))])
+         x = d3.scale.linear()
+            .domain([d3.min(xVals), d3.max(xVals)])
             .range([0, width_cross]);
 
         var invx = d3.scale.linear()
@@ -864,7 +865,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
             }))])
             .domain([0, width_cross]);
 
-        var y = d3.scale.linear()
+         y = d3.scale.linear()
             .domain([d3.min(data2.map(function (d) {
                 return d.y;
             })), d3.max(data2.map(function (d) {
@@ -901,17 +902,18 @@ function crossTabPlots(PlotNameA, PlotNameB) {
             })
             .interpolate("monotone");
 
-        var plotsvg = d3.select(mydiv)
+         plotsvg = d3.select(mydiv)
+
             .append("svg")
             .attr("id", function () {
-                var myname = density_env.name.toString();
+                 myname = density_env.name.toString();
                 myname = myname.replace(/\(|\)/g, "");
                 return myname.concat("_", mydiv.substr(1), "_", density_env.id);
             })
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
             .style("height", height_cross + margin_cross.top + margin_cross.bottom)
             .append("g")
-            .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
+            .attr("transform", "translate(" + (margin_cross.left )+ "," + margin_cross.top + ")");
 
 
         plotsvg.append("path")
@@ -929,6 +931,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
             .attr("text-anchor", "middle")
             .style("font-size", "12px")
             .text(density_env.name);
+
 
 
     }
@@ -950,7 +953,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         var ciSize;
 
         var xVals = new Array;
-        var yValKey = new Array;
+         yValKey = new Array;
 
         console.log(keys);
 
@@ -1010,10 +1013,11 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         if ((yVals.length > 15 & bar_env.numchar === "numeric") | (yVals.length > 5 & bar_env.numchar === "character")) {
             plotXaxis = false;
         }
-        var maxY = d3.max(yVals); // in the future, set maxY to the value of the maximum confidence limit
-        var minX = d3.min(xVals);
-        var maxX = d3.max(xVals);
-        var x = d3.scale.linear()
+        minY=d3.min(yVals);
+         maxY = d3.max(yVals); // in the future, set maxY to the value of the maximum confidence limit
+         minX = d3.min(xVals);
+         maxX = d3.max(xVals);
+         x_1 = d3.scale.linear()
             .domain([minX - 0.5, maxX + 0.5])
             .range([0, width_cross]);
 
@@ -1021,63 +1025,130 @@ function crossTabPlots(PlotNameA, PlotNameB) {
             .range([minX - 0.5, maxX + 0.5])
             .domain([0, width_cross]);
 
-        var y = d3.scale.linear()
+         y_1 = d3.scale.linear()
         // .domain([0, maxY])
             .domain([0, maxY])
             .range([0, height_cross]);
 
         var xAxis = d3.svg.axis()
-            .scale(x)
+            .scale(x_1)
             .ticks(yVals.length)
             .orient("bottom");
 
         var yAxis = d3.svg.axis()
-            .scale(y)
+            .scale(y_1)
             .orient("left");
 
-        var plotsvg = d3.select(mydiv)
+         plotsvg1 = d3.select(mydiv)
             .append("svg")
             .attr("id", function () {
-                var myname = bar_env.name.toString();
-                myname = myname.replace(/\(|\)/g, "");
-                return myname.concat("_", mydiv.substr(1), "_", bar_env.id);
+                 myname1 = bar_env.name.toString();
+                myname1 = myname1.replace(/\(|\)/g, "");
+                return myname1.concat("_", mydiv.substr(1), "_", bar_env.id);
             })
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
             .style("height", height_cross + margin_cross.top + margin_cross.bottom)
             .append("g")
             .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
 
-        var rectWidth = x(minX + 0.5 - 2 * barPadding); //the "width" is the coordinate of the end of the first bar
+        var rectWidth = x_1(minX + 0.5 - 2 * barPadding); //the "width" is the coordinate of the end of the first bar
 
-        plotsvg.selectAll("rect")
+        plotsvg1.selectAll("rect")
             .data(yVals)
             .enter()
             .append("rect")
             .attr("x", function (d, i) {
-                return x(xVals[i] - 0.5 + barPadding);
+                return x_1(xVals[i] - 0.5 + barPadding);
             })
             .attr("y", function (d) {
-                return y(maxY - d);
+                return y_1(maxY - d);
             })
             .attr("width", rectWidth)
             .attr("height", function (d) {
-                return y(d);
+                return y_1(d);
             })
             .attr("fill", "#fa8072");
 
         if (plotXaxis) {
-            plotsvg.append("g")
+            plotsvg1.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height_cross + ")")
                 .call(xAxis);
         }
 
-        plotsvg.append("text")
+        plotsvg1.append("text")
             .attr("x", (width_cross / 2))
             .attr("y", margin_cross.top + padding_cross + padding_cross / 7)
             .attr("text-anchor", "middle")
             .style("font-size", "12px")
             .text(bar_env.name);
+    }
+
+
+    function equidistance(a)
+    {
+        d3.selectAll("#line1").remove();
+        d3.selectAll("#line2").remove();
+
+        console.log("equidistance size : "+ a);
+// setup the x_cord according to the size given by user
+
+        var upper_limit=d3.max(xVals);
+        var lower_limit=d3.min(xVals);
+
+        var upper_limit1=maxX;
+        var lower_limit1=minX;
+
+        //console.log(upper_limit +" and " + lower_limit);
+        var diff=upper_limit-lower_limit;
+        var buffer= diff/a;
+        var x_cord=[];
+        console.log("diff : "+ diff);
+        console.log("buffer : "+buffer);
+        var push_data=lower_limit;
+
+        for(var i=0; i<a;i++)
+        {
+            push_data=push_data+buffer;
+    x_cord.push(push_data);
+
+            plotsvg.append("line")
+                .attr("id","line1")
+                .attr("x1",  x(x_cord[i]))
+                .attr("x2",x(x_cord[i]) )
+                .attr("y1", y(d3.min(yVals)))
+                .attr("y2", y(d3.max(yVals)))
+                .style("stroke", "red")
+                .style("stroke-dasharray", "3");
+        }
+        console.log(x_cord);
+
+        //the line division for the 2nd plot
+        var diff1=upper_limit1-lower_limit1;
+        var buffer1= diff1/a;
+        var x_cord1=[];
+        console.log("diff1 : "+ diff1);
+        console.log("buffer1 : "+buffer1);
+        var push_data1=lower_limit1;
+
+        for(var i=0; i<a;i++)
+        {
+            push_data1=push_data1+buffer1;
+            x_cord1.push(push_data1);
+//console.log("maxY : "+ maxY);
+            plotsvg1.append("line")
+                .attr("id","line2")
+                .attr("x1",  x_1(x_cord1[i]))
+                .attr("x2",x_1(x_cord1[i]) )
+                .attr("y1", y_1(0))
+                .attr("y2", y_1(maxY))
+                .style("stroke", "red")
+                .style("stroke-dasharray", "3");
+        }
+
+
+
+
     }
 
 }
