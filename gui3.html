@@ -87,13 +87,14 @@
         <div class="row-fluid">
             <div id="leftpanelcontent">
                 <div id="leftContentArea">
-                    <div id="tab1" style="display:block;padding:10px 8px;text-align:center;width:100%;">
 
+                    <div id="tab1" style="display:block;padding:10px 8px;text-align:center;width:100%;">
                         <input type="text" id="searchvar" placeholder="Search Variables and Labels" class="form-control" style="width:100%; margin-bottom:5px;"/>
                         <div id="variableList" style="display:inline;text-align:center;position:absolute;left:6px;top:128px;height:calc(100% - 128px);width:226px;overflow-y:scroll"></div>
                     </div>
-                    <div id="tab2" style="display:none; margin-top:.5em;">
+                    <div id="subsetList" style="display:none; margin-top:.5em;">
                     </div>
+
                 </div>
             </div>
         </div>
@@ -351,37 +352,42 @@
     </div>
 
 <script>
-//     closeRightPanel();
-// Open/Close Panels
-  $('#leftpanel span').click(function(){
-      closeLeftPanel();
-  });
-  $('#rightpanel span').click(function(){
-      closeRightPanel();
-  });
+    //     closeRightPanel();
+    // Open/Close Panels
+    $('#leftpanel span').click(function () {
+        closeLeftPanel();
+    });
+    $('#rightpanel span').click(function () {
+        closeRightPanel();
+    });
 
-  function closeLeftPanel() {
-      if ($('#leftpanel').hasClass('forceclosepanel')) {
-        // do nothing
-      } else {
-          /*$('#leftpanel .btn-toolbar').hide();*/
-          $('#leftpanel').removeClass('expandpanel');
-          $('#leftpanel > div.row-fluid').toggleClass('closepanel');
-          $('#leftpanel').toggleClass('closepanel');
-      }
-  }
-
-function closeRightPanel() {
-    if ($('#rightpanel').hasClass('forceclosepanel')) {
-        // do nothing
-    } else {
-        /*$('#rightpanel .nav-tabs').hide();*/
-        $('#rightpanel').removeClass('expandpanel');
-        $('#rightpanel > div.row-fluid').toggleClass('closepanel');
-        $('#rightpanel').toggleClass('closepanel');
-        rightpanelMargin();
+    function closeLeftPanel() {
+        if ($('#leftpanel').hasClass('forceclosepanel')) {
+        } else {
+            /*$('#leftpanel .btn-toolbar').hide();*/
+            $('#main').css('margin-left', '270px');
+            $('#main').css('width', 'calc(100% - 270px)');
+            $('#leftpanel').removeClass('expandpanel');
+            $('#leftpanel > div.row-fluid').toggleClass('closepanel');
+            $('#leftpanel').toggleClass('closepanel');
+        }
+        if ($('#leftpanel').hasClass('closepanel')) {
+            $('#main').css('margin-left', '46px');
+            $('#main').css('width', 'calc(100% - 46px)');
+        }
     }
-}
+
+    function closeRightPanel() {
+        if ($('#rightpanel').hasClass('forceclosepanel')) {
+            // do nothing
+        } else {
+            /*$('#rightpanel .nav-tabs').hide();*/
+            $('#rightpanel').removeClass('expandpanel');
+            $('#rightpanel > div.row-fluid').toggleClass('closepanel');
+            $('#rightpanel').toggleClass('closepanel');
+            rightpanelMargin();
+        }
+    }
 
   var myurl=window.location.toString();
   var fileid="";
@@ -488,14 +494,10 @@ function closeRightPanel() {
 	});
 
 </script>
-
-    <script src="app_ddi_eventdata.js"></script>
-    <script src="app_ddi_eventdata_date.js"></script>
-    <script src="app_ddi_eventdata_query.js"></script>
-
-    <script type="text/javascript" src="d3.v3.min.js"></script>
+    <script id="subsetCodeJS" type="text/javascript" src="app_ddi_eventdata_subset.js"></script>
+    <script id="dateCodeJS" type="text/javascript" src="app_ddi_eventdata_date.js"></script>
     <script id="actorCodeJS" type="text/javascript" src="app_ddi_eventdata_actor.js"></script>
-
+    <script id="queryCodeJS" type="text/javascript"  src="app_ddi_eventdata_query.js"></script>
   </body>
 </html>
 

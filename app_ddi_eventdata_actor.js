@@ -307,9 +307,9 @@ function updateSVG(){
 					if (!dragStarted)
 						//~ tooltipSVG.style("display", "block").style("left", (d3.event.pageX - 250) + "px").style("top", (d3.event.pageY - 75) + "px");
 						tooltipSVG.style("display", "block").style("left", (d.x + 350) + "px").style("top", (d.y) + "px");
-						console.log(this);
-						console.log($(this).offset().top - $(window).scrollTop());
-						console.log($(this).offset().left - $(window).scrollLeft());
+						// console.log(this);
+						// console.log($(this).offset().top - $(window).scrollTop());
+						// console.log($(this).offset().left - $(window).scrollLeft());
 				});
 
 			d3.select(this).append('svg:text').attr('x', 0).attr('y', 15).attr('class', 'id').text(function(d){	//add text to nodes
@@ -400,8 +400,8 @@ function tick() {
 
 	//node movement and display constrained here
 	nodeGroup.attr("transform", function(d) {
-		console.log("transform D: ");
-		console.log(d);
+		// console.log("transform D: ");
+		// console.log(d);
 		d.x = Math.max(actorNodeR, Math.min(actorWidth - actorNodeR, d.x));		//test SVG boundary conditions
 		d.y = Math.max(actorNodeR, Math.min(actorHeight - actorNodeR, d.y));
 		if (d.actor == "source" && d.x > boundaryLeft)		//test source/target boundary conditions

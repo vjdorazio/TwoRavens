@@ -410,6 +410,7 @@ function getSubsetPreferences() {
         }
     }
     if (subsetSelection == 'Actor') {
+        console.log("ACTOR TRIGGERED");
         // Make parent node
         let subset = {
             id: String(nodeId++),
@@ -417,7 +418,7 @@ function getSubsetPreferences() {
             operation: 'and',
             children: []
         };
-
+        console.log(actorLinks);
         // Add each link to the parent node as another rule
         for (let linkId in actorLinks) {
             let link = {
@@ -439,19 +440,20 @@ function getSubsetPreferences() {
             };
 
             for (let sourceId in actorLinks[linkId].source.group) {
-                link['children'].push({
+                link['children'][0]['children'].push({
                     id: String(nodeId++),
                     name: actorLinks[linkId].source.group[sourceId].value,
                     show_op: false
                 });
             }
             for (let targetId in actorLinks[linkId].target.group) {
-                link['children'].push({
+                link['children'][1]['children'].push({
                     id: String(nodeId++),
                     name: actorLinks[linkId].source.group[targetId].value,
                     show_op: false
                 });
             }
+            subset['children'].push(link);
         }
 
         // Don't add a rule and ignore the stage if no links are made
