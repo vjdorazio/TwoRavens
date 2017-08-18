@@ -42,11 +42,21 @@ eventdata.app <- function(env) {
   }
   
   request <- Request$new(env)
+  
+  if (request$options()) {
+    response <- Response$new(status = 200)
+    response$header("Access-Control-Allow-Origin", "*")
+    response$header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+    response$header("Access-Control-Allow-Headers", "origin, content-type, accept")
+    response$finish()
+    return()
+  }
   response <- Response$new(headers = list("Access-Control-Allow-Origin" = "*"))
+  
   solajson = request$POST()$solaJSON
   if (is.null(solajson)) {
     warning <- TRUE
-    result <- "EventData R App is loaded, but no solajson sent. Please send solajson in the POST body."
+    result <- "EventData R App is loaded, but no json sent. Please send solaJSON in the POST body."
   }
   
   valid <- jsonlite::validate(solajson)
@@ -67,11 +77,11 @@ eventdata.app <- function(env) {
     result <- jsonlite:::toJSON(query)
   }
   
-  response$headers("localhost:8888")
-  
   if (production) {
     sink()
   }
+  
+  response$headers("localhost:8888")
   
   response$write(result)
   response$finish()
