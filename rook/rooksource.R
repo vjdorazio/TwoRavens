@@ -20,7 +20,7 @@ if(production) {
 }
 
 if(!production){
-    packageList<-c("Rcpp","VGAM", "AER", "dplyr", "quantreg", "geepack", "maxLik", "Amelia", "Rook","jsonlite","rjson", "devtools", "DescTools", "nloptr","XML","e1071")
+    packageList<-c("Rcpp","VGAM", "AER", "dplyr", "quantreg", "geepack", "maxLik", "Amelia", "Rook","jsonlite","rjson", "devtools", "DescTools", "nloptr","XML")
 
    ## install missing packages, and update if newer version available
    for(i in 1:length(packageList)){
@@ -29,6 +29,7 @@ if(!production){
        }
    }
    update.packages(ask = FALSE, dependencies = c('Suggests'), oldPkgs=packageList, repos="http://lib.stat.cmu.edu/R/CRAN/")
+   install.packages("caret", dependencies = c("Depends", "Suggests"))
 }
 
 library(Rook)
