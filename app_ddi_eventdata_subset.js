@@ -24,6 +24,9 @@ let subsetKeySelected = '';
 let varColor = '#f0f8ff';   //d3.rgb("aliceblue");
 let selVarColor = '#fa8072';    //d3.rgb("salmon");
 
+let dateData = [];
+let countryData = [];
+
 d3.select("#variableList").selectAll("p")
     .data(variables)
     .enter()
@@ -163,7 +166,12 @@ function makeCorsRequest(url, post, callback) {
 }
 
 function pageSetup(jsondata) {
-    console.log(jsondata);
+
+    dateData.length = 0;
+    for (let idx in jsondata.date_data) {
+        dateData.push(JSON.parse(jsondata.date_data[idx]))
+    }
+    createDateplot()
 
 }
 

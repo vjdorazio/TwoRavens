@@ -311,7 +311,7 @@ function addGroup(query=false) {
 
 function addRule() {
     // Index zero is root node. Add subset pref to nodes
-    if (subsetSelection !== "") {
+    if (subsetKeySelected !== "") {
         let preferences = getSubsetPreferences();
 
         // Don't add an empty preference
@@ -339,7 +339,7 @@ function addRule() {
  * @returns {{}} : dictionary of preferences
  */
 function getSubsetPreferences() {
-    if (subsetSelection == 'Date') {
+    if (subsetKeySelected === 'Date') {
 
         // There is a small bug here, but the case isn't very important in the first place
         // // Don't add a rule if the dates have not been changed
@@ -374,7 +374,7 @@ function getSubsetPreferences() {
         };
     }
 
-    if (subsetSelection == 'Location') {
+    if (subsetKeySelected === 'Location') {
         // Make parent node
         let subset = {
             id: String(nodeId++),
@@ -401,7 +401,7 @@ function getSubsetPreferences() {
         return subset
     }
 
-    if (subsetSelection == 'Action') {
+    if (subsetKeySelected === 'Action') {
         return {
             id: String(nodeId++),
             name: 'Action Subset',
@@ -409,7 +409,7 @@ function getSubsetPreferences() {
             children: []
         }
     }
-    if (subsetSelection == 'Actor') {
+    if (subsetKeySelected === 'Actor') {
         console.log("ACTOR TRIGGERED");
         // Make parent node
         let subset = {

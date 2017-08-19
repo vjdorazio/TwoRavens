@@ -110,127 +110,121 @@ function createDateplot() {
         datecontext.select(".brush").call(datebrush.move, datex.range().map(t.invertX, t));
     }
 
-    // d3.csv([data], [accessor], [callback])   // Data accessing/load is processed asynchronously
-    d3.csv(datepath, function (d) {
-        var parseDate = d3.timeParse("%b %Y");
-        d.Date = parseDate(d.Date);
-        d.Freq = +d.Freq;
-        return d;
-    }, function (error, data) {
-        if (error) throw error;
+    let parseDate = d3.timeParse("%Y%m");
+    let data = [];
 
-        // Set calendar ranges
-        datemin = d3.min(data, function (d) {
-            return d.Date;
-        });
+    for (let idx in dateData) {
+        let bin = {'Date': parseDate(dateData[idx].datebin), 'Freq': dateData[idx].total};
+        data.push(bin)
+    }
 
-        datemax = d3.max(data, function (d) {
-            return d.Date;
-        });
+    // Set calendar ranges
+    datemin = d3.min(data, function (d) {
+        return d.Date;
+    });
 
-        var freqmax = d3.max(data, function (d) {
-            return d.Freq;
-        });
+    datemax = d3.max(data, function (d) {
+        return d.Date;
+    });
 
-        // Filter highlighted data by date picked
-        var data_highlight = data.filter(function (row) {
-            return row.Date >= dateminUser && row.Date <= datemaxUser;
-        });
+    var freqmax = d3.max(data, function (d) {
+        return d.Freq;
+    });
 
-        var format = d3.timeFormat("%m-%d-%Y");
+    // Filter highlighted data by date picked
+    var data_highlight = data.filter(function (row) {
+        return row.Date >= dateminUser && row.Date <= datemaxUser;
+    });
 
-        if (dateSetup) {
-            $("#fromdate").datepicker('option', 'minDate', datemin);
-            $("#fromdate").datepicker('option', 'maxDate', datemax);
-            $("#fromdate").datepicker('option', 'defaultDate', datemin);
-            $("#fromdate").datepicker('option', 'yearRange', datemin.getFullYear() + ':' + datemax.getFullYear());
+    var format = d3.timeFormat("%m-%d-%Y");
 
-            $("#todate").datepicker('option', 'minDate', datemin);
-            $("#todate").datepicker('option', 'maxDate', datemax);
-            $("#todate").datepicker('option', 'defaultDate', datemax);
-            $("#todate").datepicker('option', 'yearRange', dateminUser.getFullYear() + ':' + datemax.getFullYear());
+    if (dateSetup) {
+        $("#fromdate").datepicker('option', 'minDate', datemin);
+        $("#fromdate").datepicker('option', 'maxDate', datemax);
+        $("#fromdate").datepicker('option', 'defaultDate', datemin);
+        $("#fromdate").datepicker('option', 'yearRange', datemin.getFullYear() + ':' + datemax.getFullYear());
 
-            $('#fromdate').val(format(datemin));
-            $('#todate').val(format(datemax));
-        }
+        $("#todate").datepicker('option', 'minDate', datemin);
+        $("#todate").datepicker('option', 'maxDate', datemax);
+        $("#todate").datepicker('option', 'defaultDate', datemax);
+        $("#todate").datepicker('option', 'yearRange', dateminUser.getFullYear() + ':' + datemax.getFullYear());
 
-        // Domain of dates: (range was set in variable initialization)
-        datex.domain(d3.extent(data, function (d) {
-            return d.Date;
-        }));
+        $('#fromdate').val(format(datemin));
+        $('#todate').val(format(datemax));
+    }
 
-        datey.domain([0, freqmax]);
-        datex2.domain(datex.domain());
-        datey2.domain(datey.domain());
+    // Domain of dates: (range was set in variable initialization)
+    datex.domain(d3.extent(data, function (d) {
+        return d.Date;
+    }));
 
-        // Draw data on focus portion of svg (datefocus) with the area variable attribute
-        datefocus.append("path")
-            .datum(data)
-            .style("fill", "#ADADAD")
-            .attr("class", "area")
-            .attr("d", datearea);
+    datey.domain([0, freqmax]);
+    datex2.domain(datex.domain());
+    datey2.domain(datey.domain());
 
-        // Draw a highlighted path to focus portion of svg within datearea parameters
-        datefocus.append("path")
-            .datum(data_highlight)
-            .attr("class", "areaUser")
-            .style("clip-path", "url(#clip)")
-            .style("fill", "steelblue")
-            .attr("d", datearea);
+    // Draw data on focus portion of svg (datefocus) with the area variable attribute
+    datefocus.append("path")
+        .datum(data)
+        .style("fill", "#ADADAD")
+        .attr("class", "area")
+        .attr("d", datearea);
 
-        // Add x and y axes to focus group
-        datefocus.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", "translate(0," + dateheight + ")")
-            .call(datexAxis);
+    // Draw a highlighted path to focus portion of svg within datearea parameters
+    datefocus.append("path")
+        .datum(data_highlight)
+        .attr("class", "areaUser")
+        .style("clip-path", "url(#clip)")
+        .style("fill", "steelblue")
+        .attr("d", datearea);
 
-        datefocus.append("g")
-            .attr("class", "axis axis--y")
-            .call(dateyAxis);
+    // Add x and y axes to focus group
+    datefocus.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + dateheight + ")")
+        .call(datexAxis);
 
-        // Draw data on context portion of svg (datecontext)
-        datecontext.append("path")
-            .datum(data)
-            .style("fill", "#ADADAD")
-            .attr("class", "area")
-            .attr("d", datearea2);
+    datefocus.append("g")
+        .attr("class", "axis axis--y")
+        .call(dateyAxis);
 
-        // Draw a highlighted path to context portion of svg
-        datecontext.append("path")
-            .datum(data_highlight)
-            .style("fill", "steelblue")
-            .attr("class", "area")
-            .attr("d", datearea2);
+    // Draw data on context portion of svg (datecontext)
+    datecontext.append("path")
+        .datum(data)
+        .style("fill", "#ADADAD")
+        .attr("class", "area")
+        .attr("d", datearea2);
 
-        // Add x axis to context group
-        datecontext.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", "translate(0," + dateheight2 + ")")
-            .call(datexAxis2);
+    // Draw a highlighted path to context portion of svg
+    datecontext.append("path")
+        .datum(data_highlight)
+        .style("fill", "steelblue")
+        .attr("class", "area")
+        .attr("d", datearea2);
 
-        // Add brushes to context group
-        datecontext.append("g")
-            .attr("class", "brush")
-            .call(datebrush)
-            .call(datebrush.move, datex.range());
+    // Add x axis to context group
+    datecontext.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + dateheight2 + ")")
+        .call(datexAxis2);
 
-        // Draw a box? Maybe for buffering?
-        dateSVG.append("rect")
-            .attr("class", "zoom")
-            .attr("width", datewidth)
-            .attr("height", dateheight)
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-            .call(datezoom);
+    // Add brushes to context group
+    datecontext.append("g")
+        .attr("class", "brush")
+        .call(datebrush)
+        .call(datebrush.move, datex.range());
 
-        dateSVG.append("datecontext");
+    // Draw a box? Maybe for buffering?
+    dateSVG.append("rect")
+        .attr("class", "zoom")
+        .attr("width", datewidth)
+        .attr("height", dateheight)
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .call(datezoom);
 
-        dateSetup = false;
-    })
+    dateSVG.append("datecontext");
+
+    dateSetup = false;
 }
-
-// Initial date plot setup, and set the default date range
-createDateplot();
-
 
 min=datemin.getFullYear();
 max=datemax.getFullYear();
@@ -250,9 +244,6 @@ $("#fromdate").datepicker({
         $("#todate").datepicker('option', 'defaultDate', datemax);
         $("#todate").datepicker('option', 'maxDate', datemax);
         fromdatestring = dateminUser.getFullYear() + "" + ('0' + (dateminUser.getMonth() + 1)).slice(-2) + "" + ('0' + dateminUser.getDate()).slice(-2);
-        qr["query"]["date8"]["$gte"] = fromdatestring;
-
-        // console.log("fromdate clicked,query:", qr);
     },
     onClose: function (selectedDate) {
         setTimeout(function () {
@@ -277,8 +268,6 @@ $("#todate").datepicker({
     onSelect: function () {
         datemaxUser = $(this).datepicker('getDate');
         todatestring = datemaxUser.getFullYear() + "" + ('0' + (datemaxUser.getMonth() + 1)).slice(-2) + "" + ('0' + datemaxUser.getDate()).slice(-2);
-        qr["query"]["date8"]["$lte"] = todatestring;
-        // console.log("todate selected,query string:", qr);
     },
     onClose: function () {
         createDateplot();
@@ -291,15 +280,9 @@ function setDatefromSlider() {
     [dateminUser, datemaxUser] = plotSelection;
 
     // Update gui
-    var format = d3.time.format("%m-%d-%Y");
+    var format = d3.timeFormat("%m-%d-%Y");
     $('#fromdate').val(format(dateminUser));
     $('#todate').val(format(datemaxUser));
-
-    // Update sql command
-    fromdatestring = dateminUser.getFullYear() + "" + ('0' + (dateminUser.getMonth() + 1)).slice(-2) + "" + ('0' + dateminUser.getDate()).slice(-2);
-    qr["query"]["date8"]["$gte"] = fromdatestring;
-    todatestring = datemaxUser.getFullYear() + "" + ('0' + (datemaxUser.getMonth() + 1)).slice(-2) + "" + ('0' + datemaxUser.getDate()).slice(-2);
-    qr["query"]["date8"]["$lte"] = todatestring;
 
     // Update plot
     createDateplot()

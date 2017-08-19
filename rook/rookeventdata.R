@@ -89,11 +89,11 @@ eventdata.app <- function(env) {
 
   # Collect frequency data necessary for subset plot
   date_frequencies = RMongo::dbAggregate(connection, 'samplePhox', c(
-    paste('{$match: ', subsets, '}'),
-    '{$group: { _id: {month: "$Month",
-                      year:  "$Year" },
-                      total: {$sum:1}}}',
-    '{$project : {month : "$_id.month", year : "$_id.year", total : "$total", _id : 0}}'))
+    paste('{$match: ', subsets, '}'),                                      # First, match based on data subset
+    '{$project: {monthyear: {$substrBytes: ["$Date", 0, 6]}, _id: 0}}',    # Cull to first six characters of Date
+    '{$group: { _id: "$monthyear", total: {$sum:1}}}',                     # Compute frequencies of each bin
+    '{$project: {"_id": 0, "datebin": "$_id", "total": "$total"}}',        # Rename fields
+    '{$sort: {datebin: 1}}'))                                              # Sort
 
   # Collect frequency data necessary for country plot
   country_frequencies = RMongo::dbAggregate(connection, 'samplePhox', c(
