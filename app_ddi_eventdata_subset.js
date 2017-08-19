@@ -8,18 +8,100 @@ if (!production) {
     rappURL = "https://beta.dataverse.org/custom/"; //this will change when/if the production host changes
 }
 
-// note that .textContent is the new way to write text to a div
-$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cumulative guidance and meta-analysis.');
-//This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
-
 let subsetURL = rappURL + 'eventdataapp';
 let query = {'subsets': {}, 'variables': {'Source': 1}};
-let response = {'subsets': {}, 'variables': {}};
+let response = {};
 
-let variables = {};
-let variablesSelected = {};
+let variables = ["X","GID","Date","Year","Month","Day","Source","SrcActor","SrcAgent","SOthAgent","Target","TgtActor",
+    "TgtAgent","TOthAgent","CAMEO","RootCode","QuadClass","Goldstein","None","Lat","Lon","Geoname","CountryCode",
+    "AdminInfo","ID","URL","sourcetxt"];
+let variablesSelected = new Set();
 
 let subsetKeys = ["Date", "Location", "Action", "Actor"]; // Used to label buttons in the left panel
+let subsetKeySelected = '';
+
+
+let varColor = '#f0f8ff';   //d3.rgb("aliceblue");
+let selVarColor = '#fa8072';    //d3.rgb("salmon");
+
+d3.select("#variableList").selectAll("p")
+    .data(variables)
+    .enter()
+    .append("p")
+    .text(function (d) {return d;})
+    .style('background-color', varColor)
+    .on("click", function () {
+        d3.select(this).style('background-color', function () {
+
+                let text = d3.select(this).text();
+                if (variablesSelected.has(text)) {
+                    variablesSelected.delete(text);
+                    return varColor
+
+                } else {
+                    variablesSelected.add(text);
+                    return selVarColor
+                }
+            });
+
+        reloadVariables()
+    });
+
+
+d3.select("#subsetList").selectAll("p")
+    .data(subsetKeys)
+    .enter()
+    .append("p")
+    .text(function (d) {return d;})
+    .style("text-align", "center")
+    .style('background-color', varColor)
+    .on("click", function () {
+        subsetKeySelected = d3.select(this).text();
+
+        d3.select('#subsetList').selectAll("p").style('background-color', function (d) {
+            if (d === subsetKeySelected)
+                return selVarColor;
+            else
+                return varColor;
+        });
+
+        if (subsetKeySelected === "Date") {
+            document.getElementById("subsetDate").style.display = 'inline';
+
+            document.getElementById("subsetLocation").style.display = 'none';
+            document.getElementById("subsetActor").style.display = 'none';
+            document.getElementById("subsetAction").style.display = 'none';
+        }
+
+        else if (subsetKeySelected === "Location") {
+            document.getElementById("subsetLocation").style.display = 'inline';
+
+            document.getElementById("subsetDate").style.display = 'none';
+            document.getElementById("subsetActor").style.display = 'none';
+            document.getElementById("subsetAction").style.display = 'none';
+            d3loc();
+        }
+
+        else if (subsetKeySelected === "Actor") {
+            document.getElementById("subsetActor").style.display = 'inline';
+
+            document.getElementById("subsetDate").style.display = 'none';
+            document.getElementById("subsetLocation").style.display = 'none';
+            document.getElementById("subsetAction").style.display = 'none';
+            d3actor();
+        }
+
+        else if (subsetKeySelected === "Action") {
+            document.getElementById("subsetAction").style.display = 'inline';
+
+            document.getElementById("subsetDate").style.display = 'none';
+            document.getElementById("subsetLocation").style.display = 'none';
+            document.getElementById("subsetActor").style.display = 'none';
+            d3action();
+
+        }
+        rightpanelMargin();
+    });
 
 // Initial load of preprocessed data
 makeCorsRequest(subsetURL, query, pageSetup);
@@ -83,112 +165,61 @@ function makeCorsRequest(url, post, callback) {
 function pageSetup(jsondata) {
     console.log(jsondata);
 
-    d3.select("#variableList").selectAll("p")
-        .data(jsondata['variables'])
-        .enter()
-        .append("p")
-        .attr("id", function (d) {
-            return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
-        }) // perhapse ensure this id is unique by adding '_' to the front?
-        .text(function (d) {return d;})
-        .style('background-color', hexToRgba(varColor))
-        .attr("data-container", "body")
-        .attr("data-toggle", "popover")
-        .attr("data-trigger", "hover")
-        .attr("data-placement", "right")
-        .attr("data-viewport", "{selector: '#body', padding: '62px'}")
-        .attr("data-html", "true")
-        .attr("onmouseover", "$(this).popover('toggle');")
-        .attr("onmouseout", "$(this).popover('toggle');")
-        .attr("data-original-title", "Summary Statistics")
-        .on("click", function () {
-            d3.select(this)
-                .style('background-color', function (d) {
-                    zparams.zvars = [];
-                    let text = d3.select(this).text();
-                    if (d3.rgb(d3.select(this).style('background-color')).toString().replace(/\s/g, '') == hexToRgba(varColor)) { // we are adding a var
-                        nodes.push(findNode(text));
-                        if (nodes.length == 0) nodes[0].reflexive = true;
-
-                        return hexToRgba(selVarColor);
-                    } else {
-                        // dropping a variable
-                        nodes.splice(findNode(text).index, 1);
-                        spliceLinksForNode(findNode(text));
-                        splice(text, [dvColor, 'zdv'], [csColor, 'zcross'], [timeColor, 'ztime'], [nomColor, 'znom']);
-                        nodeReset(allNodes[findNodeIndex(text)]);
-                        borderState();
-
-                        return hexToRgba(varColor);
-                    }
-                });
-        })
-        .attr("data-original-title", "Summary Statistics");
+}
 
 
-    d3.select("#subsetList").selectAll("p")
-        .data(subsetKeys)
-        .enter()
-        .append("p")
-        .style("text-align", "center")
-        .style('background-color', varColor)
-        .attr("data-container", "body")
-        .attr("data-toggle", "popover")
-        .attr("data-trigger", "hover")
-        .attr("data-placement", "right")
-        .attr("data-html", "true")
-        .on("click", function () {
-            if (d3.select(this).text() == "Date") {
-                document.getElementById("subsetDate").style.display = 'inline';
+// Select which tab is shown in the left panel
+function tabLeft(tab) {
 
-                document.getElementById("subsetLocation").style.display = 'none';
-                document.getElementById("subsetActor").style.display = 'none';
-                document.getElementById("subsetAction").style.display = 'none';
+    document.getElementById('variableTab').style.display = 'none';
+    document.getElementById('subsetTab').style.display = 'none';
 
-                selectionMadeSubset("Date");
-                rightpanelMargin();
-            }
-            else if (d3.select(this).text() == "Location") {
-                document.getElementById("subsetLocation").style.display = 'inline';
+    $(".btn-group").children().addClass("btn btn-default").removeClass("active");
 
-                document.getElementById("subsetDate").style.display = 'none';
-                document.getElementById("subsetActor").style.display = 'none';
-                document.getElementById("subsetAction").style.display = 'none';
-                selectionMadeSubset("Location");
-                d3loc();
-                rightpanelMargin();
-            }
-            else if (d3.select(this).text() == "Actor") {
-                document.getElementById("subsetActor").style.display = 'inline';
+    switch (tab) {
+        case "variableTab":
+            document.getElementById('btnVariables').setAttribute("class", "btn active");
 
-                document.getElementById("subsetDate").style.display = 'none';
-                document.getElementById("subsetLocation").style.display = 'none';
-                document.getElementById("subsetAction").style.display = 'none';
-                selectionMadeSubset("Actor");
-                d3actor();
-                rightpanelMargin();
-            }
-            else if (d3.select(this).text() == "Action") {
-                document.getElementById("subsetAction").style.display = 'inline';
+            break;
+        case "subsetTab":
+            document.getElementById('btnSubset').setAttribute("class", "btn active");
+    }
 
-                document.getElementById("subsetDate").style.display = 'none';
-                document.getElementById("subsetLocation").style.display = 'none';
-                document.getElementById("subsetActor").style.display = 'none';
-                selectionMadeSubset("Action");
-                d3action();
-                rightpanelMargin();
-            }
-        });
+    d3.select("#leftpanel").attr("class", "sidepanel container clearfix");
+    document.getElementById(tab).style.display = 'block';
+}
 
 
-    function selectionMadeSubset(n) {
-        subsetSelection = n;
+window.onresize = rightpanelMargin;
+rightpanelMargin();
 
-        d3.select("#tab2").selectAll("p").style('background-color', function (d) {
-            if (d == n)
-                return hexToRgba(selVarColor);
-            else
-                return varColor;
-        })
+function rightpanelMargin() {
+    main = $("#main");
+    if (main.get(0).scrollHeight > main.get(0).clientHeight) {
+        // Vertical scrollbar
+        document.getElementById("rightpanel").style.right = "27px";
+        if ($('#rightpanel').hasClass('closepanel')) {
+            document.getElementById("stageButton").style.right = "56px"
+        } else {
+            document.getElementById("stageButton").style.right = "286px"
+        }
+    } else {
+        // No vertical scrollbar
+        document.getElementById("rightpanel").style.right = "10px";
+        if ($('#rightpanel').hasClass('closepanel')) {
+            document.getElementById("stageButton").style.right = "40px"
+        } else {
+            document.getElementById("stageButton").style.right = "270px"
+        }
+    }
+
+    if (main.get(0).scrollWidth > main.get(0).clientWidth) {
+        // Horizontal scrollbar
+        document.getElementById("rightpanel").style.height = "calc(100% - 139px)";
+        document.getElementById("stageButton").style.bottom = "73px";
+    } else {
+        // No horizontal scrollbar
+        document.getElementById("rightpanel").style.height = "calc(100% - 122px)";
+        document.getElementById("stageButton").style.bottom = "56px";
     }
 }

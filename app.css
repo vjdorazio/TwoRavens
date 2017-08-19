@@ -161,6 +161,9 @@ table tr td{
 #variableList {
     z-index:1000;
 }
+#subsetList {
+    z-index:1000;
+}
 
 #leftpanel {
     border:1px solid #ADADAD;

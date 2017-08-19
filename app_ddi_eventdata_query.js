@@ -20,7 +20,7 @@ localStorage.removeItem('subsetData');
 var submitLadda = Ladda.create(document.getElementById("buttonSubmitQuery"));
 
 // variableData is used to render into the tree gui
-// variable names come from 'nodes' variable
+// variable names come from 'variablesSelected' variable
 var variableData = [];
 
 var subsetData = [];
@@ -134,9 +134,9 @@ $(function () {
 // Updates the rightpanel variables menu
 function reloadVariables() {
     variableData.length = 0;
-    nodes.forEach(function(element){
+    [...variablesSelected].forEach(function(element){
         variableData.push({
-            name: element.name,
+            name: element,
             cancellable: false,
             show_op: false
         })
@@ -537,8 +537,9 @@ function submitQuery() {
 // Construct mongoDB projection (subsets columns)
 function buildVariables(){
     let fieldQuery = {};
-    for (let idx in nodes) {
-        fieldQuery[nodes[idx].name] = 1;
+    let variablelist = [...variablesSelected];
+    for (let idx in variablelist) {
+        fieldQuery[variablelist][idx].name = 1;
     }
     return fieldQuery;
 }
