@@ -17,9 +17,9 @@
 #      3a. To check that the csv data is available, run in new CMD: 
 #          (connects to mongo server on default port, opens mongo prompt)
 #            mongo
-#        b. Switch to eventdata database
+#       b. Switch to eventdata database
 #            use eventdata
-#        c. Return all data from the samplePhox table
+#       c. Return all data from the samplePhox table
 #            db.samplePhox.find()
 # 
 # 4. Start a local R server to make this file available here: (should prompt for solajson)
@@ -31,6 +31,12 @@
 #                so the server must be restarted after each edit. There should be a better way.
 # 
 # 5. Submit query from local python server via eventdata web gui. This script will return the subsetted data
+#
+# 6. Permit CORS on your browser. This doesn't seem to work on Windows
+#      6a. Google Chrome: start with terminal argument
+#             google-chrome --disable-web-security
+#       b. Mozilla Firefox: in about:config settings
+#             security.fileuri.strict_origin_policy - set to False
 
 eventdata.app <- function(env) {
   production <- FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
@@ -42,28 +48,37 @@ eventdata.app <- function(env) {
   }
   
   request <- Request$new(env)
-  
+  print("Request received")
+
   if (request$options()) {
-    response <- Response$new(status = 200)
+    print(request$options())
+    print("Pre-flight")
+    response <- Response$new(status = 200L)
     response$header("Access-Control-Allow-Origin", "*")
     response$header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
     response$header("Access-Control-Allow-Headers", "origin, content-type, accept")
+
+    response$header("localhost:8888")
     response$finish()
     return()
   }
   response <- Response$new(headers = list("Access-Control-Allow-Origin" = "*"))
+  response$header("Access-Control-Allow-Origin", "*")
   
   solajson = request$POST()$solaJSON
   if (is.null(solajson)) {
     warning <- TRUE
     result <- "EventData R App is loaded, but no json sent. Please send solaJSON in the POST body."
   }
-  
-  valid <- jsonlite::validate(solajson)
-  if (!valid) {
-    warning <- TRUE
-    result <- list(warning = "The request is not valid json. Check for special characters.")
+  if (!warning) {
+    valid <- jsonlite::validate(solajson)
+
+    if (!valid) {
+      warning <- TRUE
+      result <- list(warning = "The request is not valid json. Check for special characters.")
+    }
   }
+
   
   if (!warning) {
     everything <- jsonlite::fromJSON(request$POST()$solaJSON)
@@ -81,7 +96,7 @@ eventdata.app <- function(env) {
     sink()
   }
   
-  response$headers("localhost:8888")
+  response$header("localhost:8888")
   
   response$write(result)
   response$finish()

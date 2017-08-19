@@ -30,9 +30,7 @@ function getData(url, post, callback = null) {
         if (error) return console.warn(error);
         if (callback) callback(JSON.parse(jsondata));
 
-    })
-        .header("Access-Control-Allow-Origin", "*")
-        .post({'solaJSON': JSON.stringify(post)});
+    }).post({'solaJSON': JSON.stringify(post)});
 }
 
 // d3.json("data/samplePhoxPreprocess.json", function (error, jsondata) {
@@ -41,6 +39,7 @@ function getData(url, post, callback = null) {
 // });
 
 function pageSetup(jsondata) {
+    console.log(jsondata);
 
     d3.select("#variableList").selectAll("p")
         .data(jsondata['variables'])
