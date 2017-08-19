@@ -952,7 +952,7 @@ var data2=[];
             console.log("diff : " + diff);
             console.log("buffer : " + buffer);
             var push_data = lower_limit;
-            for (var i = 0; i < a; i++) {
+            for (var i = 0; i < a-1; i++) {
                 push_data = push_data + buffer;
                 x_cord.push(push_data);
                 console.log("x_cord : " + x(x_cord[i]));
@@ -1139,7 +1139,7 @@ var data2=[];
             console.log("diff1 : "+ diff1);
             console.log("buffer1 : "+buffer1);
             var push_data1=lower_limit1;
-            for (var i = 0; i < a; i++) {
+            for (var i = 0; i < a-1; i++) {
                 push_data1 = push_data1 + buffer1;
                 x_cord1.push(push_data1);
 
@@ -1161,7 +1161,21 @@ var data2=[];
     }
 
     function equidistance(A,B,a)
-    {       d3.select("#resultsView_tabular").selectAll("svg").remove();
+    {
+        // json object to be sent to r server
+        var obj = new Object();
+        obj.plotNameA = A;
+        obj.equidistance = a;
+        obj.plotNameB=B;
+
+
+//convert object to json string
+        var string = JSON.stringify(obj);
+
+//convert string to Json Object
+        console.log(JSON.parse(string)); // this is your requirement.
+
+        d3.select("#resultsView_tabular").selectAll("svg").remove();
         d3.select("plotsvg1").remove();
         d3.select("#line1").remove();
         d3.select("#line2").remove();
@@ -1435,7 +1449,7 @@ function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
             .attr("cy", function (d, i) {
                 return yScale(data_plot[i].yaxis);
             })
-            .attr("r", 3)
+            .attr("r", 2.5)
             .style("fill", "#B71C1C")
         ;
     }
