@@ -41,12 +41,8 @@
 # NOTE: Use quit() to close the R server. Otherwise the ports will not correctly be released.
 #       If you use Rstudio, modify the IDE config so that it won't share the same port as the R server
 
-library(RMongo)
-
 eventdata.app <- function(env) {
   production <- FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
-  warning <- FALSE
-  result <- list()
   
   if (production) {
     sink(file = stderr(), type = "output")
@@ -56,49 +52,58 @@ eventdata.app <- function(env) {
   print("Request received")
 
   if (request$options()) {
-    print("Pre-flight")
+    print("Preflight")
     response <- Response$new(status = 200L)
     response$header("Access-Control-Allow-Origin", "*")
     response$header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
     response$header("Access-Control-Allow-Headers", "origin, content-type, accept")
     return(response$finish())
   }
+
   response <- Response$new(headers = list("Access-Control-Allow-Origin" = "*"))
   response$header("Access-Control-Allow-Origin", "*")
   
   solajson = request$POST()$solaJSON
+
   if (is.null(solajson)) {
-    warning <- TRUE
-    result <- '{"warning": "EventData R App is loaded, but no json sent. Please send solaJSON in the POST body."}'
+    response$write('{"warning": "EventData R App is loaded, but no json sent. Please send solaJSON in the POST body."}')
+    return(response$finish())
   }
 
-  if (!warning) {
-    valid <- jsonlite::validate(solajson)
+  # Ensure that text is valid json
+  valid <- jsonlite::validate(solajson)
 
-    if (!valid) {
-      warning <- TRUE
-      result <- list(warning = "The request is not valid json. Check for special characters.")
-    }
+  if (!valid) {
+    response$write('{"warning": "The request is not valid json. Check for special characters."}')
+    return(response$finish())
   }
-  
-  if (!warning) {
-    everything <- jsonlite::fromJSON(request$POST()$solaJSON)
-    subsets = toString(jsonlite::toJSON(everything$subsets))
-    variables = toString(jsonlite::toJSON(everything$variables))
-    
-    mongo <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)
-    query <- RMongo::dbGetQueryForKeys(mongo, 'samplePhox', subsets, variables)
-    
-    print(query)
-    result <- jsonlite::toJSON(query)
-  }
-  
+
+  everything <- jsonlite::fromJSON(request$POST()$solaJSON)
+  subsets = toString(jsonlite::toJSON(everything$subsets))
+  variables = toString(jsonlite::toJSON(everything$variables))
+
+  connection <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)
+  query <- RMongo::dbGetQueryForKeys(connection, 'samplePhox', subsets, variables)
+
+  result <- jsonlite::toJSON(query)
+
+  # Collect frequency data necessary for subset plot
+  date_frequencies = RMongo::dbAggregate(connection, 'samplePhox', c(
+    paste('{$match: ', subsets, '}'),
+    '{$group: { _id: {month: "$Month",
+                      year:  "$Year" },
+                      total: {$sum:1}}}',
+    '{$project : {month : "$_id.month", year : "$_id.year", total : "$total", _id : 0}}'))
+
+  # Collect frequency data necessary for country plot
+  country_frequencies = RMongo::dbAggregate(connection, 'samplePhox', c(
+  paste('{$match: ', subsets, '}'),
+  '{$group: { _id: {country: "$AdminInfo"}, country: {$sum:1}}}'))
+
   if (production) {
     sink()
   }
-
-  
+  result = toString(jsonlite::toJSON(list(date_data = date_frequencies, country_data = country_frequencies)))
   response$write(result)
   response$finish()
-  
 }

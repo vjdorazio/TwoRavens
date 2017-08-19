@@ -46,23 +46,22 @@ function makeCorsRequest(url, post, callback) {
 
     xhr.onload = function () {
         let text = xhr.responseText;
+        let json = '';
+        let names = [];
 
         try {
-            let json = JSON.parse(text);
-            let names = Object.keys(json);
-
-
-            if (names[0] === "warning") {
-                alert("Warning: " + json.warning);
-            } else {
-                callback(json);
-            }
+            json = JSON.parse(text);
+            names = Object.keys(json);
         }
         catch (err) {
-            estimateLadda.stop();
-            selectLadda.stop();
+            console.log(err);
             alert('Error: Could not parse incoming JSON.');
         }
+        if (names[0] === "warning") {
+            console.log(json.warning);
+            alert('Warning: Additional information in console.')
+        }
+        callback(json)
     };
 
     xhr.onerror = function () {
