@@ -8,8 +8,8 @@
 #
 # 1. Install mongodb
 # 
-# 2. Start a mongo server. May need to create C://data/db. Server port is 27017 by default
-#      mongod
+# 2. Start a mongo server. Server port is 27017 by default
+#      sudo service mongod start
 # 
 # 3. Create a new database using the mongoimport utility in the mongo bin (via cmd from ~/TwoRavens/)
 #      mongoimport -d eventdata -c samplePhox --type csv --file ./data/samplePhox.csv --headerline
@@ -38,6 +38,11 @@
 #       b. Mozilla Firefox: in about:config settings
 #             security.fileuri.strict_origin_policy - set to False
 
+# NOTE: Use quit() to close the R server. Otherwise the ports will not correctly be released.
+#       If you use Rstudio, modify the IDE config so that it won't share the same port as the R server
+
+library(RMongo)
+
 eventdata.app <- function(env) {
   production <- FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
   warning <- FALSE
@@ -51,16 +56,12 @@ eventdata.app <- function(env) {
   print("Request received")
 
   if (request$options()) {
-    print(request$options())
     print("Pre-flight")
     response <- Response$new(status = 200L)
     response$header("Access-Control-Allow-Origin", "*")
     response$header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
     response$header("Access-Control-Allow-Headers", "origin, content-type, accept")
-
-    response$header("localhost:8888")
-    response$finish()
-    return()
+    return(response$finish())
   }
   response <- Response$new(headers = list("Access-Control-Allow-Origin" = "*"))
   response$header("Access-Control-Allow-Origin", "*")
@@ -68,8 +69,9 @@ eventdata.app <- function(env) {
   solajson = request$POST()$solaJSON
   if (is.null(solajson)) {
     warning <- TRUE
-    result <- "EventData R App is loaded, but no json sent. Please send solaJSON in the POST body."
+    result <- '{"warning": "EventData R App is loaded, but no json sent. Please send solaJSON in the POST body."}'
   }
+
   if (!warning) {
     valid <- jsonlite::validate(solajson)
 
@@ -78,25 +80,23 @@ eventdata.app <- function(env) {
       result <- list(warning = "The request is not valid json. Check for special characters.")
     }
   }
-
   
   if (!warning) {
     everything <- jsonlite::fromJSON(request$POST()$solaJSON)
-    subsets = everything$subsets
-    variables = everything$variables
+    subsets = toString(jsonlite::toJSON(everything$subsets))
+    variables = toString(jsonlite::toJSON(everything$variables))
     
-    cursor <- RMongo:::mongoDbConnect('eventdata', 'localhost', 27017)
-    query <- RMongo:::dbGetQueryForKeys(cursor, 'eventdata', subsets, variables)
+    mongo <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)
+    query <- RMongo::dbGetQueryForKeys(mongo, 'samplePhox', subsets, variables)
     
-    summary(query)
-    result <- jsonlite:::toJSON(query)
+    print(query)
+    result <- jsonlite::toJSON(query)
   }
   
   if (production) {
     sink()
   }
-  
-  response$header("localhost:8888")
+
   
   response$write(result)
   response$finish()

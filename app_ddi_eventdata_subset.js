@@ -13,7 +13,7 @@ $('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin h
 //This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
 
 let subsetURL = rappURL + 'eventdataapp';
-let query = {'subsets': {}, 'variables': {}};
+let query = {'subsets': {}, 'variables': {'Source': 1}};
 let response = {'subsets': {}, 'variables': {}};
 
 let variables = {};
@@ -22,21 +22,64 @@ let variablesSelected = {};
 let subsetKeys = ["Date", "Location", "Action", "Actor"]; // Used to label buttons in the left panel
 
 // Initial load of preprocessed data
-getData(url = subsetURL, post = query, callback = pageSetup);
+makeCorsRequest(subsetURL, query, pageSetup);
 
-function getData(url, post, callback = null) {
-    d3.json(url, function (error, jsondata) {
+function makeCorsRequest(url, post, callback) {
+    let xhr = new XMLHttpRequest();
+    if ("withCredentials" in xhr) {
+        // XHR for Chrome/Firefox/Opera/Safari.
+        xhr.open('POST', url, true);
+    } else if (typeof XDomainRequest != "undefined") {
+        // XDomainRequest for IE.
+        xhr = new XDomainRequest();
+        xhr.open('POST', url);
+    } else {
+        // CORS not supported.
+        xhr = null;
+    }
+    xhr.setRequestHeader('Content-Type', 'text/json');
 
-        if (error) return console.warn(error);
-        if (callback) callback(JSON.parse(jsondata));
+    if (!xhr) {
+        alert('CORS not supported');
+        return;
+    }
 
-    }).post({'solaJSON': JSON.stringify(post)});
+    xhr.onload = function () {
+        let text = xhr.responseText;
+
+        try {
+            let json = JSON.parse(text);
+            let names = Object.keys(json);
+
+
+            if (names[0] === "warning") {
+                alert("Warning: " + json.warning);
+            } else {
+                callback(json);
+            }
+        }
+        catch (err) {
+            estimateLadda.stop();
+            selectLadda.stop();
+            alert('Error: Could not parse incoming JSON.');
+        }
+    };
+
+    xhr.onerror = function () {
+        // note: xhr.readystate should be 4, and status should be 200.
+        if (xhr.status == 0) {
+            // occurs when the url becomes too large
+            alert('There was an error making the request. xmlhttprequest status is 0.');
+        }
+        else if (xhr.readyState != 4) {
+            alert('There was an error making the request. xmlhttprequest readystate is not 4.');
+        }
+        else {
+            alert('There was an error making the request.');
+        }
+    };
+    xhr.send('solaJSON='+ JSON.stringify(post));
 }
-
-// d3.json("data/samplePhoxPreprocess.json", function (error, jsondata) {
-//     if (error) return console.warn(error);
-//     pageSetup(jsondata);
-// });
 
 function pageSetup(jsondata) {
     console.log(jsondata);
