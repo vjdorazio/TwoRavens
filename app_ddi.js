@@ -757,23 +757,32 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         .style('font-size', '75%')
         .style("width", "280px")
         .style("position", "absolute")
-        .style("left", (14 * margin_cross.left + padding_cross) + "px")
+        .style("left", (12 * margin_cross.left + padding_cross) + "px")
         .style("top", "300px")
+
 
     d3.select("#btnDiv")[0][0].innerHTML = [
         '<h5>Data Selection</h5>',
-        '<p>Enter the number to specify the distribution of the cross-tabs.</p>',
+        '<p>Enter the numbers for both plots respectively to specify the distribution of the cross-tabs.</p>',
         '<p>Select between Equidistant and Equimass.</p>'
 
     ].join('\n')
-
 
     d3.select("#btnDiv")
         .append("input")
         .attr({
             "id": "a",
-            "value": 0
+            "placeholder": PlotNameA,
+            "size": 20
         })
+    d3.select("#btnDiv")
+        .append("input")
+        .attr({
+            "id": "b",
+            "placeholder": PlotNameB,
+            "size": 20
+        })
+
 
 
     // style both of the inputs at once
@@ -806,8 +815,9 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
         if (this.innerText === "EQUIDISTANCE")
         {
-            var size= parseInt(d3.select("input#a")[0][0].value);
-            equidistance(PlotNameA,PlotNameB,size);
+            var plotA_size= parseInt(d3.select("input#a")[0][0].value);
+            var plotB_size= parseInt(d3.select("input#b")[0][0].value);
+            equidistance(PlotNameA,PlotNameB,plotA_size,plotB_size);
         }
         else if (this.innerText === "EQUIMASS") {
 
@@ -1160,13 +1170,16 @@ var data2=[];
 
     }
 
-    function equidistance(A,B,a)
+    function equidistance(A,B,a,b)
     {
         // json object to be sent to r server
         var obj = new Object();
         obj.plotNameA = A;
         obj.equidistance = a;
+
         obj.plotNameB=B;
+        obj.equidistance = b;
+
 
 
 //convert object to json string
@@ -1189,10 +1202,10 @@ var data2=[];
                 }
             } else if (plot_nodes[i].name === B) {
                 if (plot_nodes[i].plottype === "continuous") {
-                    density_cross(plot_nodes[i],a);
+                    density_cross(plot_nodes[i],b);
                 }
                 else if (plot_nodes[i].plottype === "bar") {
-                    bar_cross(plot_nodes[i],a);
+                    bar_cross(plot_nodes[i],b);
                 }
             }
 
