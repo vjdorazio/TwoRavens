@@ -166,6 +166,7 @@ function makeCorsRequest(url, post, callback) {
 }
 
 function pageSetup(jsondata) {
+    console.log(jsondata)
 
     dateData.length = 0;
     for (let idx in jsondata.date_data) {

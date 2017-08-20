@@ -42,81 +42,135 @@
 #       If you use Rstudio, modify the IDE config so that it won't share the same port as the R server
 
 eventdata.app <- function(env) {
-  production <- FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
-  
-  if (production) {
-    sink(file = stderr(), type = "output")
-  }
-  
-  request <- Request$new(env)
-  print("Request received")
+    production <- FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
 
-  if (request$options()) {
-    print("Preflight")
-    response <- Response$new(status = 200L)
-    response$header("Access-Control-Allow-Origin", "*")
-    response$header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-    response$header("Access-Control-Allow-Headers", "origin, content-type, accept")
-    return(response$finish())
-  }
+    if (production) {
+        sink(file = stderr(), type = "output")
+    }
 
-  response <- Response$new(headers = list("Access-Control-Allow-Origin" = "*"))
-  response$header("Access-Control-Allow-Origin", "*")
-  
-  solajson = request$POST()$solaJSON
+    request <- Request$new(env)
+    response <- Response$new()
+    response$header("Access-Control-Allow-Origin", "*")  # Enable CORS
 
-  if (is.null(solajson)) {
-    response$write('{"warning": "EventData R App is loaded, but no json sent. Please send solaJSON in the POST body."}')
-    return(response$finish())
-  }
+    print("Request received")
 
-  # Ensure that text is valid json
-  valid <- jsonlite::validate(solajson)
+    if (request$options()) {
+        print("Preflight")
+        response$status = 200L
 
-  if (!valid) {
-    response$write('{"warning": "The request is not valid json. Check for special characters."}')
-    return(response$finish())
-  }
+        # Ensures CORS header is permitted
+        response$header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+        response$header("Access-Control-Allow-Headers", "origin, content-type, accept")
+        return(response$finish())
+    }
 
-  everything <- jsonlite::fromJSON(request$POST()$solaJSON)
-  subsets = toString(jsonlite::toJSON(everything$subsets))
-  variables = toString(jsonlite::toJSON(everything$variables))
+    # Ensure solaJSON is posted
+    solajson = request$POST()$solaJSON
+    if (is.null(solajson)) {
+        response$write('{"warning": "EventData R App is loaded, but no json sent. Please send solaJSON in the POST body."}')
+        return(response$finish())
+    }
 
-  connection <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)
-  query <- RMongo::dbGetQueryForKeys(connection, 'samplePhox', subsets, variables)
+    # Ensure that solaJSON is valid
+    valid <- jsonlite::validate(solajson)
+    if (!valid) {
+        response$write('{"warning": "The request is not valid json. Check for special characters."}')
+        return(response$finish())
+    }
 
-  result <- jsonlite::toJSON(query)
+    everything <- jsonlite::fromJSON(request$POST()$solaJSON)
+    subsets = toString(jsonlite::toJSON(everything$subsets))
+    variables = toString(jsonlite::toJSON(everything$variables))
 
-  # Collect frequency data necessary for subset plot
-  date_frequencies = RMongo::dbAggregate(connection, 'samplePhox', c(
-    paste('{$match: ', subsets, '}'),                                      # First, match based on data subset
-    '{$project: {monthyear: {$substrBytes: ["$Date", 0, 6]}, _id: 0}}',    # Cull to first six characters of Date
-    '{$group: { _id: "$monthyear", total: {$sum:1}}}',                     # Compute frequencies of each bin
-    '{$project: {"_id": 0, "datebin": "$_id", "total": "$total"}}',        # Rename fields
-    '{$sort: {datebin: 1}}'))                                              # Sort
+    table <- 'samplePhox'
 
-  # Collect frequency data necessary for country plot
-  country_frequencies = RMongo::dbAggregate(connection, 'samplePhox', c(
-    paste('{$match: ', subsets, '}'),                                      # First, match based on data subset
-    '{$project: {ccode: "$AdminInfo", _id: 0}}',                           # Cull to just AdminInfo field
-    '{$group: { _id: {country: "$ccode"}, country: {$sum:1}}}',            # Compute frequencies of each bin
-    '{$project: {state:"$_id.country", total:"$country", _id: 0}}'))       # Rename fields
+    connection <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)
+    query <- RMongo::dbGetQueryForKeys(connection, table, subsets, variables)
 
-  # Collect frequency data necessary for action plot
-  action_frequencies = RMongo::dbAggregate(connection, 'samplePhox', c(
-    paste('{$match: ', subsets, '}'),                                      # First, match based on data subset
-    '{$project: {rcode: "$RootCode", _id: 0}}',                            # Cull to just RootCode field
-    '{$group: { _id: {action: "$rcode"}, action: {$sum:1}}}',              # Compute frequencies of each bin
-    '{$project: {action:"$_id.action", total:"$action", _id: 0}}',         # Rename fields
-    '{$sort: {action: 1}}'))                                               # Sort
+    result <- jsonlite::toJSON(query)
 
-  if (production) {
-    sink()
-  }
-  result = toString(jsonlite::toJSON(list(
-    date_data = date_frequencies,
-    country_data = country_frequencies,
-    action_data = action_frequencies)))
-  response$write(result)
-  response$finish()
+    # Collect frequency data necessary for subset plot
+    date_frequencies = RMongo::dbAggregate(connection, table, c(
+        paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
+        '{$project: {monthyear: {$substrBytes: ["$Date", 0, 6]}, _id: 0}}', # Cull to first six characters of Date
+        '{$group: { _id: "$monthyear", total: {$sum:1}}}',                  # Compute frequencies of each bin
+        '{$project: {"_id": 0, "datebin": "$_id", "total": "$total"}}',     # Rename fields
+        '{$sort: {datebin: 1}}'))                                           # Sort
+
+    # Collect frequency data necessary for country plot
+    country_frequencies = RMongo::dbAggregate(connection, table, c(
+        paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
+        '{$project: {ccode: "$AdminInfo", _id: 0}}',                        # Cull to just AdminInfo field
+        '{$group: { _id: {country: "$ccode"}, country: {$sum:1}}}',         # Compute frequencies of each bin
+        '{$project: {state:"$_id.country", total:"$country", _id: 0}}'))    # Rename fields
+
+    # Collect frequency data necessary for action plot
+    action_frequencies = RMongo::dbAggregate(connection, table, c(
+        paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
+        '{$project: {rcode: "$RootCode", _id: 0}}',                         # Cull to just RootCode field
+        '{$group: { _id: {action: "$rcode"}, action: {$sum:1}}}',           # Compute frequencies of each bin
+        '{$project: {action:"$_id.action", total:"$action", _id: 0}}',      # Rename fields
+        '{$sort: {action: 1}}'))                                            # Sort
+
+    # Collect unique values in for sources page
+    actor_source = RMongo::dbGetDistinct(connection, table, 'Source', subsets)
+    actor_source_entities = RMongo::dbGetDistinct(connection, table, 'SrcActor', subsets)
+    actor_source_role = RMongo::dbGetDistinct(connection, table, 'SrcAgent', subsets)
+    actor_source_attributes = RMongo::dbGetDistinct(connection, table, 'SOthAgent', subsets)
+    actor_source_attributes = RMongo::dbAggregate(connection, table, c(
+        paste('{$match: ', subsets, '}'),                                        # First, match based on data subset
+        '{$project: {SOthAgent: "$SOthAgent"}}',                                 # Cull to TOthAgent field
+        '{$match: {"SOthAgent": {"$ne": ""}}}',                                  # Remove empty TOthAgent records
+        '{$project: { attributes: { "$split": [ "$SOthAgent", ";" ]}, _id: 0}}', # Split TOthAgent by semicolon
+        '{$unwind: "$attributes"}',                                              # Unwind string lists into individual records
+        '{$group: { _id: "$attributes", tags: {$sum:1}}}',                       # Group by string to get distinct
+        '{$project: {_id: 0, attribute: "$_id"}}',                               # Reformat/clean output
+        '{$sort: { attribute: 1}}'                                               # Sort
+    ))
+
+    actor_source_values = list(
+        sources = actor_source,
+        entities = actor_source_entities,
+        roles = actor_source_role,
+        attributes = actor_source_attributes
+    )
+
+    actor_target = RMongo::dbGetDistinct(connection, table, 'Target', subsets)
+    actor_target_entities = RMongo::dbGetDistinct(connection, table, 'TgtActor', subsets)
+    actor_target_role = RMongo::dbGetDistinct(connection, table, 'TgtAgent', subsets)
+    actor_target_attributes = RMongo::dbAggregate(connection, table, c(
+        paste('{$match: ', subsets, '}'),                                        # First, match based on data subset
+        '{$project: {TOthAgent: "$TOthAgent"}}',                                 # Cull to SOthAgent field
+        '{$match: {"TOthAgent": {"$ne": ""}}}',                                  # Remove empty SOthAgent records
+        '{$project: { attributes: { "$split": [ "$TOthAgent", ";" ]}, _id: 0}}', # Split SOthAgent by semicolon
+        '{$unwind: "$attributes"}',                                              # Unwind string lists into individual records
+        '{$group: { _id: "$attributes", tags: {$sum:1}}}',                       # Group by string to get distinct
+        '{$project: {_id: 0, attribute: "$_id"}}',                               # Reformat/clean output
+        '{$sort: { attribute: 1}}'                                               # Sort
+    ))
+
+    actor_target_values = list(
+        targets = actor_target,
+        entities = actor_target_entities,
+        roles = actor_target_role,
+        attributes = actor_target_attributes
+    )
+
+    # Package actor data
+    actor_values = list(
+        source = actor_source_values,
+        target = actor_target_values
+    )
+
+
+    if (production) {
+        sink()
+    }
+    result = toString(jsonlite::toJSON(list(
+        date_data = date_frequencies,
+        country_data = country_frequencies,
+        action_data = action_frequencies,
+        actor_data = actor_values)))
+    response$write(result)
+    response$finish()
 }
