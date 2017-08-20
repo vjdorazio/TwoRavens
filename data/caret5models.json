@@ -7,26 +7,19 @@
     "library":  ["fastAdaboost"] , 
     "description":  ["AdaBoost Classification Trees"] },
 
-"AdaBoost.M1":{
-    "parameters":  ["mfinal, maxdepth, coeflearn"] , 
-    "type":  ["Classification"] , 
-    "name":  ["AdaBoost.M1"] , 
-    "library":  ["adabag, plyr"] , 
-    "description":  ["AdaBoost.M1"] },
+"knn":{
+    "parameters":  ["k"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["knn"] , 
+    "library":  [""] , 
+    "description":  ["k-Nearest Neighbors"] },
 
-"amdai":{
-    "parameters":  ["model"] , 
-    "type":  ["Classification"] , 
-    "name":  ["amdai"] , 
-    "library":  ["adaptDA"] , 
-    "description":  ["Adaptive Mixture Discriminant Analysis"] },
-
-"ANFIS":{
-    "parameters":  ["num.labels, max.iter"] , 
-    "type":  ["Regression"] , 
-    "name":  ["ANFIS"] , 
-    "library":  ["frbs"] , 
-    "description":  ["Adaptive-Network-Based Fuzzy Inference System"] },
+"rf":{
+    "parameters":  ["mtry"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["rf"] , 
+    "library":  ["randomForest"] , 
+    "description":  ["Random Forest"] },
 
 "vglmAdjCat":{
     "parameters":  ["parallel, link"] , 
@@ -34,6 +27,13 @@
     "name":  ["vglmAdjCat"] , 
     "library":  ["VGAM"] , 
     "description":  ["Adjacent Categories Probability Model for Ordinal Data"] },
+
+"gbm":{
+    "parameters":  ["n.trees, interaction.depth, shrinkage, n.minobsinnode"] , 
+    "type":  ["Classification and Regression"] , 
+    "name":  ["gbm"] , 
+    "library":  ["gbm, plyr"] , 
+    "description":  ["Stochastic Gradient Boosting"] },
 
 "AdaBag":{
     "parameters":  ["mfinal, maxdepth"] , 
@@ -56,47 +56,12 @@
     "library":  ["earth"] , 
     "description":  ["Bagged FDA using gCV Pruning"] },
 
-"bagFDA":{
-    "parameters":  ["degree, nprune"] , 
-    "type":  ["Classification"] , 
-    "name":  ["bagFDA"] , 
-    "library":  ["earth, mda"] , 
-    "description":  ["Bagged Flexible Discriminant Analysis"] },
-
-"logicBag":{
-    "parameters":  ["nleaves, ntrees"] , 
-    "type":  ["Classification and Regression"] , 
-    "name":  ["logicBag"] , 
-    "library":  ["logicFS"] , 
-    "description":  ["Bagged Logic Regression"] },
-
-"bagEarth":{
-    "parameters":  ["nprune, degree"] , 
-    "type":  ["Classification and Regression"] , 
-    "name":  ["bagEarth"] , 
-    "library":  ["earth"] , 
-    "description":  ["Bagged MARS"] },
-
-"bagEarthGCV":{
-    "parameters":  ["degree"] , 
-    "type":  ["Classification and Regression"] , 
-    "name":  ["bagEarthGCV"] , 
-    "library":  ["earth"] , 
-    "description":  ["Bagged MARS using gCV Pruning"] },
-
 "bag":{
     "parameters":  ["vars"] , 
     "type":  ["Classification and Regression"] , 
     "name":  ["bag"] , 
     "library":  ["caret"] , 
     "description":  ["Bagged Model"] },
-
-"bartMachine":{
-    "parameters":  ["num_trees, k, alpha, beta, nu"] , 
-    "type":  ["Classification and Regression"] , 
-    "name":  ["bartMachine"] , 
-    "library":  ["bartMachine"] , 
-    "description":  ["Bayesian Additive Regression Trees"] },
 
 "bayesglm":{
     "parameters":  ["None"] , 
@@ -105,26 +70,12 @@
     "library":  ["arm"] , 
     "description":  ["Bayesian Generalized Linear Model"] },
 
-"brnn":{
-    "parameters":  ["neurons"] , 
-    "type":  ["Regression"] , 
-    "name":  ["brnn"] , 
-    "library":  ["brnn"] , 
-    "description":  ["Bayesian Regularized Neural Networks"] },
-
 "bridge":{
     "parameters":  ["None"] , 
     "type":  ["Regression"] , 
     "name":  ["bridge"] , 
     "library":  ["monomvn"] , 
     "description":  ["Bayesian Ridge Regression"] },
-
-"blassoAveraged":{
-    "parameters":  ["None"] , 
-    "type":  ["Regression"] , 
-    "name":  ["blassoAveraged"] , 
-    "library":  ["monomvn"] , 
-    "description":  ["Bayesian Ridge Regression (Model Averaged)"] },
 
 "binda":{
     "parameters":  ["lambda.freqs"] , 
@@ -140,26 +91,12 @@
     "library":  ["ada, plyr"] , 
     "description":  ["Boosted Classification Trees"] },
 
-"gamboost":{
-    "parameters":  ["mstop, prune"] , 
-    "type":  ["Classification and Regression"] , 
-    "name":  ["gamboost"] , 
-    "library":  ["mboost, plyr"] , 
-    "description":  ["Boosted Generalized Additive Model"] },
-
 "glmboost":{
     "parameters":  ["mstop, prune"] , 
     "type":  ["Classification and Regression"] , 
     "name":  ["glmboost"] , 
     "library":  ["plyr, mboost"] , 
     "description":  ["Boosted Generalized Linear Model"] },
-
-"BstLm":{
-    "parameters":  ["mstop, nu"] , 
-    "type":  ["Classification and Regression"] , 
-    "name":  ["BstLm"] , 
-    "library":  ["bst, plyr"] , 
-    "description":  ["Boosted Linear Model"] },
 
 "LogitBoost":{
     "parameters":  ["nIter"] , 
@@ -168,12 +105,6 @@
     "library":  ["caTools"] , 
     "description":  ["Boosted Logistic Regression"] },
 
-"bstSm":{
-    "parameters":  ["mstop, nu"] , 
-    "type":  ["Classification and Regression"] , 
-    "name":  ["bstSm"] , 
-    "library":  ["bst, plyr"] , 
-    "description":  ["Boosted Smoothing Spline"] },
 
 "blackboost":{
     "parameters":  ["mstop, maxdepth"] , 
@@ -188,13 +119,6 @@
     "name":  ["bstTree"] , 
     "library":  ["bst, plyr"] , 
     "description":  ["Boosted Tree"] },
-
-"J48":{
-    "parameters":  ["C, M"] , 
-    "type":  ["Classification"] , 
-    "name":  ["J48"] , 
-    "library":  ["RWeka"] , 
-    "description":  ["C4.5-like Trees"] },
 
 "C5.0":{
     "parameters":  ["trials, model, winnow"] , 
@@ -223,20 +147,6 @@
     "name":  ["rpart2"] , 
     "library":  ["rpart"] , 
     "description":  ["CART"] },
-
-"rpartScore":{
-    "parameters":  ["cp, split, prune"] , 
-    "type":  ["Classification"] , 
-    "name":  ["rpartScore"] , 
-    "library":  ["rpartScore, plyr"] , 
-    "description":  ["CART or Ordinal Responses"] },
-
-"chaid":{
-    "parameters":  ["alpha2, alpha3, alpha4"] , 
-    "type":  ["Classification"] , 
-    "name":  ["chaid"] , 
-    "library":  ["CHAID"] , 
-    "description":  ["CHi-squared Automated Interaction Detection"] },
 
 "cforest":{
     "parameters":  ["mtry"] , 
@@ -593,13 +503,6 @@
     "type":  ["Classification and Regression"] , 
     "name":  ["kknn"] , 
     "library":  ["kknn"] , 
-    "description":  ["k-Nearest Neighbors"] },
-
-"knn":{
-    "parameters":  ["k"] , 
-    "type":  ["Classification and Regression"] , 
-    "name":  ["knn"] , 
-    "library":  [""] , 
     "description":  ["k-Nearest Neighbors"] },
 
 "pythonKnnReg":{
@@ -1162,13 +1065,6 @@
     "library":  ["Rborist"] , 
     "description":  ["Random Forest"] },
 
-"rf":{
-    "parameters":  ["mtry"] , 
-    "type":  ["Classification and Regression"] , 
-    "name":  ["rf"] , 
-    "library":  ["randomForest"] , 
-    "description":  ["Random Forest"] },
-
 "extraTrees":{
     "parameters":  ["mtry, numRandomCuts"] , 
     "type":  ["Classification and Regression"] , 
@@ -1469,13 +1365,6 @@
     "name":  ["sddaQDA"] , 
     "library":  ["SDDA"] , 
     "description":  ["Stepwise Diagonal Quadratic Discriminant Analysis"] },
-
-"gbm":{
-    "parameters":  ["n.trees, interaction.depth, shrinkage, n.minobsinnode"] , 
-    "type":  ["Classification and Regression"] , 
-    "name":  ["gbm"] , 
-    "library":  ["gbm, plyr"] , 
-    "description":  ["Stochastic Gradient Boosting"] },
 
 "SBC":{
     "parameters":  ["r.a, eps.high, eps.low"] , 
