@@ -508,33 +508,15 @@ function submitQuery() {
     qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
 
-    console.log(JSON.stringify(subsetQuery, null, '  '));
+    console.log(JSON.stringify(subsetQuery));
     console.log(JSON.stringify(variableQuery, null, '  '));
 
-    let queryjson = JSON.stringify({'subsets': subsetQuery, 'variables': variableQuery});
+    query = {'subsets': subsetQuery, 'variables': variableQuery};
 
-    function downloadSuccess(btn, json) {
-
-        if (json["nrws"] === 0) {
-            alert("No records found");
-        }
-        else {
-            alert(json["nrws"] + " records found");
-        }
-    }
-    function downloadFail(btn) {
-        // btn.stop();
-    }
-    // The cors request was failing, so I switched to a simple post instead.
-    let urlcall = rappURL + "eventdataapp";
-    $.post(urlcall, {'solaJSON': queryjson}).done(function (data) {
-        alert("Response: " + data);
-    });
-    // let solajsonout = "solaJSON=" + queryjson;
-    // makeCorsRequest(urlcall, submitLadda, downloadSuccess, downloadFail, solajsonout);
+    makeCorsRequest(subsetURL, query, pageSetup);
 }
 
-// Construct mongoDB projection (subsets columns)
+// Construct mongoDB selection (subsets columns)
 function buildVariables(){
     let fieldQuery = {};
     let variablelist = [...variablesSelected];

@@ -97,13 +97,26 @@ eventdata.app <- function(env) {
 
   # Collect frequency data necessary for country plot
   country_frequencies = RMongo::dbAggregate(connection, 'samplePhox', c(
-  paste('{$match: ', subsets, '}'),
-  '{$group: { _id: {country: "$AdminInfo"}, country: {$sum:1}}}'))
+    paste('{$match: ', subsets, '}'),                                      # First, match based on data subset
+    '{$project: {ccode: "$AdminInfo", _id: 0}}',                           # Cull to just AdminInfo field
+    '{$group: { _id: {country: "$ccode"}, country: {$sum:1}}}',            # Compute frequencies of each bin
+    '{$project: {state:"$_id.country", total:"$country", _id: 0}}'))       # Rename fields
+
+  # Collect frequency data necessary for action plot
+  action_frequencies = RMongo::dbAggregate(connection, 'samplePhox', c(
+    paste('{$match: ', subsets, '}'),                                      # First, match based on data subset
+    '{$project: {rcode: "$RootCode", _id: 0}}',                            # Cull to just RootCode field
+    '{$group: { _id: {action: "$rcode"}, action: {$sum:1}}}',              # Compute frequencies of each bin
+    '{$project: {action:"$_id.action", total:"$action", _id: 0}}',         # Rename fields
+    '{$sort: {action: 1}}'))                                               # Sort
 
   if (production) {
     sink()
   }
-  result = toString(jsonlite::toJSON(list(date_data = date_frequencies, country_data = country_frequencies)))
+  result = toString(jsonlite::toJSON(list(
+    date_data = date_frequencies,
+    country_data = country_frequencies,
+    action_data = action_frequencies)))
   response$write(result)
   response$finish()
 }
