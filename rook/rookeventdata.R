@@ -78,7 +78,7 @@ eventdata.app <- function(env) {
         return(response$finish())
     }
 
-    everything <- jsonlite::fromJSON(request$POST()$solaJSON)
+    everything <- jsonlite::fromJSON(request$POST()$solaJSON, simplifyDataFrame = FALSE)
     subsets = toString(jsonlite::toJSON(everything$subsets))
     variables = toString(jsonlite::toJSON(everything$variables))
 

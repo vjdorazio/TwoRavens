@@ -69,6 +69,7 @@ if(!production){
     myPort <- "8000"
     myInterface <- "0.0.0.0"
     status <- -1
+    # The call to start the server is "tools::startHTTPD" on older versions of R.
     status<-.Call(tools:::C_startHTTPD, myInterface, myPort)
 
 
