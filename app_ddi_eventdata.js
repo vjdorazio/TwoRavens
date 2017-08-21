@@ -27,14 +27,32 @@ let selVarColor = '#fa8072';    //d3.rgb("salmon");
 let dateData = [];
 let countryData = [];
 
-d3.select("#variableList").selectAll("p")
-    .data(variables)
-    .enter()
-    .append("p")
-    .text(function (d) {return d;})
-    .style('background-color', varColor)
-    .on("click", function () {
-        d3.select(this).style('background-color', function () {
+renderVariables();
+$("#searchvar").keyup(renderVariables);
+
+function renderVariables() {
+    // Subset variable list by search term. Empty string returns all.
+    let search_term = $("#searchvar").val().toUpperCase();
+    let matchedVariables = [];
+
+    for (let idx in variables) {
+        if (variables[idx].toUpperCase().indexOf(search_term) !== -1) {
+            matchedVariables.push(variables[idx])
+        }
+    }
+
+    $('#variableList').empty();
+    d3.select("#variableList").selectAll("p")
+        .data(matchedVariables)
+        .enter()
+        .append("p")
+        .text(function (d) {return d;})
+        .style('background-color', function () {
+            if (variablesSelected.has(d3.select(this).text())) return selVarColor;
+            return varColor
+        })
+        .on("click", function () {
+            d3.select(this).style('background-color', function () {
 
                 let text = d3.select(this).text();
                 if (variablesSelected.has(text)) {
@@ -47,9 +65,10 @@ d3.select("#variableList").selectAll("p")
                 }
             });
 
-        reloadVariables()
-    });
+            reloadVariables()
+        });
 
+}
 
 d3.select("#subsetList").selectAll("p")
     .data(subsetKeys)
@@ -377,6 +396,7 @@ function reloadVariables() {
             show_op: false
         })
     });
+    console.log(variableData);
 
     let qtree = $('#variableTree');
     let state = qtree.tree('getState');
