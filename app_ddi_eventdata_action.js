@@ -3,6 +3,59 @@
  * ACTION
  *
  */
+
+var d3action_draw = false;
+function d3action() {
+
+    if(!d3action_draw) {
+        d3action_draw = true;
+        drawMainGraphAction();
+    }
+}
+
+
+/**
+ * Draw the main graph for Action
+ *
+ **/
+var map_action_lookup = new Map();
+var map_rootcode_lookup = new Map();
+var arr_action_data = [];
+var arr_rootcode_data = [];
+var map_action_pid_pname = new Map();
+var mapActionGraphSVG = new Object();
+function drawMainGraphAction() {
+
+
+    $("#subsetAction").append('<div class="container"><div id="subsetAction_panel" class="row"></div></div>');
+
+    $("#subsetAction_panel").append("<div class='col-xs-4 location_left' id='subsetActionDivL'></div>");
+    $("#subsetAction_panel").append("<div class='col-xs-4 location_right'><div class='affix' id='subsetActionDivR'></div></div>");
+
+    $("#subsetActionDivL").append("<table id='svg_graph_table_action' border='0' align='center'><tr><td id='main_graph_action_td_1' class='graph_config'></td></tr><tr><td id='main_graph_action_td_2' class='graph_config'></td></tr></table>");
+
+    //actionGraphLabel("main_graph_action_td_1");
+    //actionGraphLabel("main_graph_action_td_2");
+
+    var svg1 = d3.select("#main_graph_action_td_1").append("svg:svg")
+        .attr("width",  480)
+        .attr("height", 350)
+        .attr("id", "main_graph_action_svg_1");
+
+    var svg2 = d3.select("#main_graph_action_td_2").append("svg:svg")
+        .attr("width",  480)
+        .attr("height", 350)
+        .attr("id", "main_graph_action_svg_2");
+
+    mapActionGraphSVG["main_graph_action_1"] = svg1;
+    mapActionGraphSVG["main_graph_action_2"] = svg2;
+
+    renderActionGraph(svg1, 1);
+    renderActionGraph(svg2, 2);
+
+
+}
+
 function getMapActionLookup() {
 
     d3.csv("data/actionlookup.csv", function(data) {

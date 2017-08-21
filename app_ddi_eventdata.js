@@ -809,7 +809,11 @@ function buildSubset(){
         if (node.name.indexOf('Group') !== -1 && 'children' in node && node.children.length !== 0) {
             // Recursively process subgroups
             return processGroup(node);
-        } else {
+        } else if (node.name.indexOf('Query') !== -1 && 'children' in node && node.children.length !== 0) {
+            // Recursively process query
+            return processGroup(node);
+        }
+        else {
             // Explicitly process rules
             return processRule(node);
         }
@@ -910,12 +914,7 @@ function buildSubset(){
             if ('not' in rule) {
                 rule_query_inner = {'$not': rule_query_inner}
             }
-
-            // Wrap with conjunction operator if specified.
-            if ('operation' in rule) {
-                rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
-            }
-            rule_query['AdminInfo'] = rule_query_inner;
+            rule_query['AdminInfo'] = {'$in': rule_query_inner};
         }
 
         if (rule.name === 'Actor Subset'){
