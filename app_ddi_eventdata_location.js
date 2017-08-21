@@ -20,17 +20,6 @@ function d3action() {
 }
 
 
-function getMapLocationLookup() {
-
-    d3.csv("data/locationlookup.csv", function(data) {
-
-        data.forEach(function(d) {
-            map_location_lookup.set(d.cname , d.rname);
-            map_location_lookup.set(d.fullcname , d.rname);
-        });
-    });
-}
-
 /**
  * Variables declared for location
  *
@@ -162,36 +151,52 @@ function render(blnIsSubgraph, cid){
             .attr("y2", y.bandwidth()/20)
             .attr("style", "stroke:brown;stroke-width:5;");
 
-        d3.tsv("data/locationplot.tsv", getMapLocationLookup(), function(data) {
+
+        d3.csv("data/locationlookup.csv", function(data) {
+            let map_fullname_lookup = new Map();
+
+            data.forEach(function(d) {
+                map_location_lookup.set(d.cname , d.rname);
+                map_location_lookup.set(d.fullcname , d.rname);
+
+                map_fullname_lookup.set(d.cname, d.fullcname);
+            });
 
             var rid = -1;
-            data.forEach(function(d) {
+            let cid = 1;
+            for (let key in countryData) {
 
                 var region = "Other";
-
-                if(map_location_lookup.has(d.cname)) {
-
-                    region = map_location_lookup.get(d.cname);
+                if(map_location_lookup.has(key)) {
+                    region = map_location_lookup.get(key);
                 }
-                else if(map_location_lookup.has(d.fullcname)) {
 
-                    region = map_location_lookup.get(d.fullcname);
+                let fullname = key;
+                if (map_fullname_lookup.has(key)) {
+                    fullname = map_fullname_lookup.get(key);
                 }
+
+                let country = {
+                    'id': "" + cid++,
+                    'cname': key,
+                    'freq': "" + countryData[key],
+                    'fullcname': map_fullname_lookup.get(key)
+                };
 
                 if(!map_location_rid_rname.has(region)) {
 
                     rid++;
                     var arr_countries = [];
-                    arr_countries.push(d);
+                    arr_countries.push(country);
 
                     var arr_country_names = [];
-                    arr_country_names.push(d.cname);
+                    arr_country_names.push(country.cname);
 
                     var rdata = new Object();
                     rdata.rid = rid;
                     rdata.rname = region;
-                    rdata.freq = parseInt(d.freq);
-                    rdata.maxCFreq = parseInt(d.freq);
+                    rdata.freq = parseInt(country.freq);
+                    rdata.maxCFreq = parseInt(country.freq);
                     rdata.countries = arr_countries;
                     rdata.country_names = arr_country_names;
 
@@ -205,15 +210,16 @@ function render(blnIsSubgraph, cid){
 
                     var currrid = map_location_rid_rname.get(region);
                     var rdata = arr_location_region_data[currrid];
-                    var freq = rdata.freq + parseInt(d.freq);
+                    var freq = rdata.freq + parseInt(country.freq);
                     rdata.freq = freq;
-                    rdata.countries.push(d);
-                    rdata.country_names.push(d.cname);
+                    rdata.countries.push(country);
+                    rdata.country_names.push(country.cname);
 
-                    var cFreq = parseInt(d.freq);
+                    var cFreq = parseInt(country.freq);
                     if(cFreq > rdata.maxCFreq) {
                         rdata.maxCFreq = cFreq;
                     }
+                    console.log(currrid)
 
                     arr_location_region_data[currrid] = rdata;
 
@@ -221,16 +227,13 @@ function render(blnIsSubgraph, cid){
                         maxDomainX = freq;
                     }
                 }
-
-            });
-
+            }
 
             x.domain([0, maxDomainX]);
             y.domain(arr_location_region_data.map(function(d) {return d.rname;})).padding(0.1);
 
             var g = svg.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
             g.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
@@ -287,7 +290,6 @@ function render(blnIsSubgraph, cid){
                 .attr("transform", "translate("+ (width/2) +","+(height+30)+")")
                 .attr("class", "graph_axis_label")
                 .text("Frequency");
-
 
         });
     }

@@ -26,6 +26,8 @@ let selVarColor = '#fa8072';    //d3.rgb("salmon");
 
 let dateData = [];
 let countryData = [];
+let actorData = [];
+let actionData = {};
 
 renderVariables();
 $("#searchvar").keyup(renderVariables);
@@ -101,7 +103,6 @@ d3.select("#subsetList").selectAll("p")
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
-            d3loc();
         }
 
         else if (subsetKeySelected === "Actor") {
@@ -110,7 +111,6 @@ d3.select("#subsetList").selectAll("p")
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
-            d3actor();
         }
 
         else if (subsetKeySelected === "Action") {
@@ -119,8 +119,6 @@ d3.select("#subsetList").selectAll("p")
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
-            d3action();
-
         }
         rightpanelMargin();
     });
@@ -185,14 +183,31 @@ function makeCorsRequest(url, post, callback) {
 }
 
 function pageSetup(jsondata) {
-    console.log(jsondata)
+    console.log(jsondata);
 
     dateData.length = 0;
     for (let idx in jsondata.date_data) {
         dateData.push(JSON.parse(jsondata.date_data[idx]))
     }
-    createDateplot()
+    d3date();
 
+    countryData = {};
+    for (let idx in jsondata.country_data) {
+        let parsed = JSON.parse(jsondata.country_data[idx]);
+        countryData[parsed['state']] = parsed['total']
+    }
+    d3loc();
+
+
+    actionData = {};
+    for (let idx in jsondata.action_data) {
+        let parsed = JSON.parse(jsondata.action_data[idx]);
+        actionData[parsed['action']] = parsed['total']
+    }
+    d3action();
+
+    actorData = jsondata.actor_data;
+    d3actor();
 }
 
 
@@ -396,7 +411,6 @@ function reloadVariables() {
             show_op: false
         })
     });
-    console.log(variableData);
 
     let qtree = $('#variableTree');
     let state = qtree.tree('getState');

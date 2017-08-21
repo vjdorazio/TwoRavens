@@ -15,7 +15,7 @@ var dateSetup = true;
 var plotSelection;
 
 
-function createDateplot() {
+function d3date() {
     $("#dateSVG").empty();
     var dateSVG = d3.select("#dateSVG");
 
@@ -250,7 +250,7 @@ $("#fromdate").datepicker({
             $('#todate').focus();
         }, 100);
 
-        createDateplot();
+        d3date();
         $("#todate").datepicker("show");
     }
 });
@@ -270,7 +270,7 @@ $("#todate").datepicker({
         todatestring = datemaxUser.getFullYear() + "" + ('0' + (datemaxUser.getMonth() + 1)).slice(-2) + "" + ('0' + datemaxUser.getDate()).slice(-2);
     },
     onClose: function () {
-        createDateplot();
+        d3date();
     }
 });
 
@@ -285,5 +285,5 @@ function setDatefromSlider() {
     $('#todate').val(format(datemaxUser));
 
     // Update plot
-    createDateplot()
+    d3date()
 }
