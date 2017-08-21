@@ -745,6 +745,16 @@ function submitQuery() {
     // localStorage.setItem('nodeId', nodeId);
     // localStorage.setItem('groupId', groupId);
 
+    // Only construct and submit the query if new subsets have been added since last query
+    let newSubsets = false;
+    for (let idx in subsetData) {
+        if (subsetData[idx].name.indexOf('Query') === -1) {
+            newSubsets = true;
+            break
+        }
+    }
+    if (!newSubsets) return;
+
     let variableQuery = buildVariables();
     let subsetQuery = buildSubset();
 
@@ -791,7 +801,7 @@ function buildVariables(){
     let fieldQuery = {};
     let variablelist = [...variablesSelected];
     for (let idx in variablelist) {
-        fieldQuery[variablelist][idx].name = 1;
+        fieldQuery[variablelist[idx]] = 1;
     }
     return fieldQuery;
 }
@@ -886,21 +896,18 @@ function buildSubset(){
             for (let child_id in rule.children) {
                 let child = rule.children[child_id];
                 if ('fromDate' in child) {
+                    console.log(child);
                     let date = child.fromDate.getFullYear().toString() +
                         pad(child.fromDate.getMonth()) +
                         pad(child.fromDate.getDay());
-                    rule_query_inner['$gte'] = date;
+                    rule_query_inner['$gte'] = parseInt(date);
                 }
                 if ('toDate' in child) {
                     let date = child.toDate.getFullYear().toString() +
                         pad(child.toDate.getMonth()) +
                         pad(child.toDate.getDay());
-                    rule_query_inner['$lte'] = date;
+                    rule_query_inner['$lte'] = parseInt(date);
                 }
-            }
-            // Wrap with conjunction operator if specified.
-            if ('operation' in rule) {
-                rule_query_inner = operatorWrap(rule.operation, rule_query_inner)
             }
             rule_query['Date'] = rule_query_inner;
         }

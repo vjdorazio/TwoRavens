@@ -99,7 +99,6 @@ function render(blnIsSubgraph, cid){
             arr_location_region_data = [];
             map_location_rid_rname = new Map();
             resetLocationVariables();
-
             let map_fullname_lookup = new Map();
 
             data.forEach(function(d) {
@@ -166,7 +165,6 @@ function render(blnIsSubgraph, cid){
                     if(cFreq > rdata.maxCFreq) {
                         rdata.maxCFreq = cFreq;
                     }
-                    console.log(currrid)
 
                     arr_location_region_data[currrid] = rdata;
 
@@ -257,7 +255,7 @@ function render(blnIsSubgraph, cid){
         var x = d3.scaleLinear().range([0, width]);
         var y = d3.scaleBand().range([height, 0]);
 
-        console.log(maxDomainX);
+        // console.log(maxDomainX);
 
         x.domain([0, maxDomainX]);
         y.domain(arr_countries.map(function(d) {return d.cname;})).padding(0.1);
