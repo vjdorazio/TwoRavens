@@ -274,8 +274,8 @@ if (dataurl) {
         // console.log("test is true");
     }
     else
-        console.log("loading fearonLaitinpreprocess8.json");
-    pURL = "data/fearonLaitinpreprocess8.json";
+        console.log("loading fearonLaitin.json");
+    pURL = "data/fearonLaitin.json";
 
     // console.log("yo value of test",test);
     /*$.ajax({
@@ -683,7 +683,7 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
         }
         ;
 
-        //  console.log("allNodes: ", allNodes);
+          console.log("allNodes: ", allNodes);
         // Reading the zelig models and populating the model list in the right panel.
         d3.json("data/explore.json", function (error, json) {
             if (error) return console.warn(error);
