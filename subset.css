@@ -457,7 +457,7 @@ td {
 
 
 #searchvar{
-  background: #fff url(icoX.gif) no-repeat right -10px center;
+  background: #fff url(images/icoX.gif) no-repeat right -10px center;
   border: 1px solid #999;
   padding: 3px 18px 3px 4px;     /* Use the same right padding (18) in jQ! */
   border-radius: 3px;
@@ -1307,7 +1307,7 @@ div.actorTab button.active {
 	vertical-align: middle;
 	outline: none;
 
-	background-image: url(expand.png);
+	background-image: url(images/expand.png);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 	border: none;
@@ -1357,7 +1357,7 @@ div.actorTab button.active {
 	outline: none;
 	background-color: #F9F9F9;
 
-	background-image: url(delete.png);
+	background-image: url(images/delete.png);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 	border: none;

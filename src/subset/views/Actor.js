@@ -111,7 +111,7 @@ var changeID = 0;						//number that is updated whenever a node is added/changed
 var actorSVG = d3.select("#actorLinkSVG");
 
 var actorWidth = actorSVG.node().getBoundingClientRect().width;		//not yet set since window has not yet been displayed; defaults to 0
-var actorHeight = actorSVG.node().getBoundingClientRect().height;	//this code is here to remind what is under app_ddi_eventdata.js
+var actorHeight = actorSVG.node().getBoundingClientRect().height;	//this code is here to remind what is under app.js
 
 
 var boundaryLeft = Math.floor(actorWidth/2) - 20;		//max x coordinate source nodes can move
