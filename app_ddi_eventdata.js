@@ -3020,37 +3020,35 @@ function d3action() {
 
 var actorDisplayed = false;
 function d3actor() {
-	if (!actorDisplayed) {
+	if (!actorDisplayed) {				//run this only once
 		$(document).ready(function() {
-			if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded) {			//if .js file has loaded, this variable will be true and defined
-				//update display variables
-				$("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
+			$("#actorSelectionDiv").css("height", $("#actorContainer").css("height"));
+			while (!actorDisplayed) {
+				if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded) {			//if .js file has loaded, this variable will be true and defined
+					//update display variables
+					$("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
 
-				actorWidth = actorSVG.node().getBoundingClientRect().width;
-				actorHeight = actorSVG.node().getBoundingClientRect().height;
+					actorWidth = actorSVG.node().getBoundingClientRect().width;
+					actorHeight = actorSVG.node().getBoundingClientRect().height;
 
-				boundaryLeft = Math.floor(actorWidth/2) - 20;
-				boundaryRight = Math.ceil(actorHeight/2) + 20;
+					boundaryLeft = Math.floor(actorWidth/2) - 40;
+					boundaryRight = Math.ceil(actorWidth/2) + 40;
 
-				actorSVG.append("path").attr("d", function() {
-					return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;
-				}).attr("stroke", "black");
-				
-				//~ actorForce.stop();
-				actorForce.force("x", d3.forceX().x(function(d) {
-					if (d.actor == "source")
-						return Math.floor(actorWidth/3);
-					return Math.floor(2*actorWidth/3);
-				}).strength(0.06))
-				.force("y", d3.forceY().y(function(d) {
-					return Math.floor(actorHeight/2);
-				}).strength(0.05));
-				//~ actorForce = actorForce.force('X', d3.forceX(actorWidth))
-							  //~ .force('Y', d3.forceY(actorHeight))
-							  //~ .restart();
-				//~ actorForce.force("center", d3.forceCenter(Math.floor(actorWidth/2), Math.floor(actorHeight/2))).restart();
-				updateAll();
-				actorDisplayed = true;
+					actorSVG.append("path").attr("id", "centerLine").attr("d", function() {
+						return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;
+					}).attr("stroke", "black");
+					
+					actorForce.force("x", d3.forceX().x(function(d) {
+						if (d.actor == "source")
+							return Math.floor(actorWidth/3);
+						return Math.floor(2*actorWidth/3);
+					}).strength(0.06))
+					.force("y", d3.forceY().y(function(d) {
+						return Math.floor(actorHeight/2);
+					}).strength(0.05));
+					updateAll();
+					actorDisplayed = true;
+				}
 			}
 		});
 	}
@@ -3780,6 +3778,24 @@ window.onresize = rightpanelMargin;
 rightpanelMargin();
 
 function rightpanelMargin() {
+	//actor resize on window resize handled here
+	if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded) {	//handle only if actor code is loaded
+		$("#actorSelectionDiv").css("height", $("#actorContainer").css("height"));
+		console.log("in height manage");
+		console.log(sourceSize + " " + targetSize + " " + calcCircleNum());
+		if (sourceSize <= calcCircleNum() && targetSize <= calcCircleNum()) {		//if link div is empty enough, maintain height alignment
+			console.log("change");
+		//~ $("#actorLinkDiv").height(function(n, c){return c + actorNodeR;});
+		//~ actorSVG.attr("height", actorHeight);
+		
+			$("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
+			console.log("SVG height: " + $("#actorLinkSVG").css("height"));
+			actorHeight = actorSVG.node().getBoundingClientRect().height;
+			//~ d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+		}
+	}
+
+	//original code
     main = $("#main");
     if (main.get(0).scrollHeight > main.get(0).clientHeight) {
         // Vertical scrollbar

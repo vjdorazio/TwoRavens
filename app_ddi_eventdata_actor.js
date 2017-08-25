@@ -65,7 +65,7 @@ var sourceCurrentNode = null;			//current source node that is selected
 var targetCurrentNode = null;
 var currentSize = 0;					//total number of nodes
 var sourceSize = 0;						//total number of source nodes
-var targetSize = 0;
+var targetSize = 0;						//total number of target nodes
 var changeID = 0;						//number that is updated whenever a node is added/changed, set to actorID
 
 //begin force definitions
@@ -83,10 +83,8 @@ var actorPadding = 5;
 var actorColors = d3.scaleOrdinal(d3.schemeCategory20);
 var pebbleBorderColor = '#fa8072';
 
-//var actorForce = d3.layout.force().nodes(actorNodes).links(actorLinks).size([actorWidth, actorHeight]).linkDistance(150).charge(-600).start();		//defines the force layout
-
 var actorForce = d3.forceSimulation()
-    .force("link", d3.forceLink().distance(150).strength(0.9))	//link force to keep nodes together
+    .force("link", d3.forceLink().distance(100).strength(0.5))	//link force to keep nodes together
     .force("x", d3.forceX().x(function(d) {					//grouping by nodes
 		if (d.actor == "source")
 			return Math.floor(actorWidth/3);
@@ -245,7 +243,7 @@ function updateSVG(){
 	nodeGroup.exit().remove();		//remove any nodes that are not part of the display
 
 	//define circle for node
-	nodeGroup = nodeGroup.enter().append("g").attr("id", function(d){return d.name + "Group";}).call(node_drag)
+	nodeGroup = nodeGroup.enter().append("g").attr("id", function(d){return d.name.replace(/\s/g,'') + "Group";}).call(node_drag)
 		.each(function(d) {
 			d3.select(this).append("circle").attr("class", "actorNode").attr("r", actorNodeR)
 				.style('fill', function(d){return d.nodeCol;})
@@ -305,11 +303,7 @@ function updateSVG(){
 				})
 				.on("mousemove", function(d){		//display tooltip
 					if (!dragStarted)
-						//~ tooltipSVG.style("display", "block").style("left", (d3.event.pageX - 250) + "px").style("top", (d3.event.pageY - 75) + "px");
 						tooltipSVG.style("display", "block").style("left", (d.x + 350) + "px").style("top", (d.y) + "px");
-						console.log(this);
-						console.log($(this).offset().top - $(window).scrollTop());
-						console.log($(this).offset().left - $(window).scrollLeft());
 				});
 
 			d3.select(this).append('svg:text').attr('x', 0).attr('y', 15).attr('class', 'id').text(function(d){	//add text to nodes
@@ -400,8 +394,6 @@ function tick() {
 
 	//node movement and display constrained here
 	nodeGroup.attr("transform", function(d) {
-		console.log("transform D: ");
-		console.log(d);
 		d.x = Math.max(actorNodeR, Math.min(actorWidth - actorNodeR, d.x));		//test SVG boundary conditions
 		d.y = Math.max(actorNodeR, Math.min(actorHeight - actorNodeR, d.y));
 		if (d.actor == "source" && d.x > boundaryLeft)		//test source/target boundary conditions
@@ -497,10 +489,29 @@ function updateAll() {
 	resetMouseVars();
 }
 
-
 //end force functions, begin actor code
 
-//rename group on click, initialize groups
+//calculates the max number of nodes that can be fit in a quarter of the SVG (prefer at most half of each side of the SVG to be filled)
+function calcCircleNum() {
+	var numWidth = Math.floor((actorWidth/2 + actorPadding) / (2 * actorNodeR + actorPadding));
+	var numHeight = Math.floor((actorHeight + actorPadding) / (2 * actorNodeR + actorPadding));
+	var numCircle1 = Math.floor(numWidth * numHeight / 2);		//total number of circles by rectangular packing / 2
+
+	var numHeightTri = Math.floor(((actorHeight - (2*actorNodeR)) + ((actorNodeR + actorPadding/2) * Math.sqrt(3))) / ((actorNodeR + (actorPadding/2)) * Math.sqrt(3)));
+	var numCircle2;
+	if (Math.floor((actorWidth/2) - ((numWidth * 2 * actorNodeR) + ((numWidth - 1) * actorPadding))) >= actorNodeR)
+		numCircle2 = Math.ceil(numHeightTri/2) * numWidth + Math.floor(numHeightTri/2) * (numWidth - 1);
+	else
+		numCircle2 = Math.ceil(numHeightTri/2) * numWidth + Math.floor(numHeightTri/2) * (numWidth - 2);
+
+	numCircle2 = Math.floor(numCircle2/2);		//total number of circles by triangular/hexagonal packing /2
+
+	if (numCircle1 > numCircle2)
+		return numCircle1;
+	return numCircle2;
+}
+
+//rename group on click, initialize groups, allow deletion of groups
 $(document).ready(function() {
 	//default group display on page load, adds default source/target to nodes and SVG
 	$("#editGroupName").ready(function() {
@@ -1081,6 +1092,13 @@ $(".actorNewGroup").click(function(event) {
 	$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
 	$("." + currentTab + "Chk:checked").prop("checked", false);
 	//update svg
+	//change dimensions of SVG if needed (exceeds half of the space)
+	if (window[currentTab + "Size"] > calcCircleNum()) {
+		actorHeight += actorNodeR;
+		$("#actorLinkDiv").height(function(n, c){return c + actorNodeR;});
+		actorSVG.attr("height", actorHeight);
+		d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+	}
 	updateAll();
 });
 
