@@ -757,8 +757,8 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         .style('font-size', '75%')
         .style("width", "280px")
         .style("position", "absolute")
-        .style("left", (12 * margin_cross.left + padding_cross) + "px")
-        .style("top", "300px")
+        .style("left", (11.5 * margin_cross.left + padding_cross) + "px")
+        .style("top", "320px")
 
 
     d3.select("#btnDiv")[0][0].innerHTML = [
