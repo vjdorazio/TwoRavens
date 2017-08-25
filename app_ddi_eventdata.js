@@ -48,17 +48,10 @@ if (fileid && !dataurl) {
 
 if (!production) {
     // base URL for the R apps:
-    var rappURL = "http://0.0.0.0:8000/custom/";
+    var rappURL = "http://localhost:8000/custom/";
 } else {
     var rappURL = "https://beta.dataverse.org/custom/"; //this will change when/if the production host changes
 }
-
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//This part of the code reads in the date-frequency csv file, and reads that data to show the distribution graph, and defines all the variables and functions for this
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 var logArray = [];
 
@@ -78,8 +71,8 @@ var rightClickLast = false;
 
 
 // this is the initial color scale that is used to establish the initial colors of the nodes.  allNodes.push() below establishes a field for the master node array allNodes called "nodeCol" and assigns a color from this scale to that field.  everything there after should refer to the nodeCol and not the color scale, this enables us to update colors and pass the variable type to R based on its coloring
-// var colors = d3.scaleOrdinal(d3.schemeCategory20);
-var colors = d3.scale.category20();
+var colors = d3.scaleOrdinal(d3.schemeCategory20);
+//var colors = d3.scale.category20();
 
 var colorTime=false;
 var timeColor = '#2d6ca2';
@@ -102,11 +95,29 @@ var taggedColor = '#f5f5f5';    //d3.rgb("whitesmoke");
 var d3Color = '#1f77b4';  // d3's default blue
 var grayColor = '#c0c0c0';
 
-var lefttab = "tab1"; //global for current tab in left panel
 var subsetSelection = "";
+
 var righttab = "btnModels"; // global for current tab in right panel
 
-var zparams = { zdata:[], zedges:[], ztime:[], znom:[], zcross:[], zmodel:"", zvars:[], zdv:[], zdataurl:"", zsubset:[], zsetx:[], zmodelcount:0, zplot:[], zsessionid:"", zdatacite:"", zmetadataurl:"", zusername:""};
+var zparams = {
+    zdata: [],
+    zedges: [],
+    ztime: [],
+    znom: [],
+    zcross: [],
+    zmodel: "",
+    zvars: [],
+    zdv: [],
+    zdataurl: "",
+    zsubset: [],
+    zsetx: [],
+    zmodelcount: 0,
+    zplot: [],
+    zsessionid: "",
+    zdatacite: "",
+    zmetadataurl: "",
+    zusername: ""
+};
 
 
 // Radius of circle
@@ -154,7 +165,7 @@ var arc4 = d3.arc()
 // From .csv
 var dataset2 = [];
 var valueKey = [];
-var variableSubsetKeys = ["Date","Location","Action","Actor"];
+var variableSubsetKeys = ["Date","Location","Action","Actor"]; // Used to label buttons in the left panel
 var lablArray = [];
 var hold = [];
 var allNodes = [];
@@ -162,7 +173,7 @@ var newallNodes=[];
 var allResults = [];
 var subsetNodes = [];
 var links = [];
-var nodes = [];
+var nodes = [];  // Stores selected variables in leftpanel
 var transformVar = "";
 var summaryHold = false;
 var selInteract = false;
@@ -183,31 +194,28 @@ var trans = []; //var list for each space contain variables in original data plu
 
 // collapsable user log
 $('#collapseLog').on('shown.bs.collapse', function () {
-                     d3.select("#collapseLog div.panel-body").selectAll("p")
-                     .data(logArray)
-                     .enter()
-                     .append("p")
-                     .text(function(d){
-                           return d;
-                           });
-                     //$("#logicon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
-                     });
+    d3.select("#collapseLog div.panel-body").selectAll("p")
+        .data(logArray)
+        .enter()
+        .append("p")
+        .text(function (d) {
+            return d;
+        });
+    //$("#logicon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+});
 
 $('#collapseLog').on('hidden.bs.collapse', function () {
-                     d3.select("#collapseLog div.panel-body").selectAll("p")
-                     .remove();
-                     //$("#logicon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
-                     });
+    d3.select("#collapseLog div.panel-body").selectAll("p")
+        .remove();
+    //$("#logicon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+});
 
 
 // text for the about box
 // note that .textContent is the new way to write text to a div
-$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cumulative guidance and meta-analysis.'); //This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
+$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cumulative guidance and meta-analysis.');
+//This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
 
-
-
-
-//
 // read DDI metadata with d3:
 var metadataurl = "";
 if (ddiurl) {
@@ -233,247 +241,160 @@ if (ddiurl) {
     //metadataurl="data/0000.xml"; // zero vars in metadata
 }
 
-// Reading the pre-processed metadata:
 // Pre-processed data:
-var pURL = "";
+let pURL = "";
 
 if (dataurl) {
     // data url is supplied
     pURL = dataurl+"&format=prep";
-    console.log("TEst")
-
+    console.log("Test")
 } else {
     // no dataurl/file id supplied; use one of the sample data files distributed with the app in the "data" directory:
     pURL="data/samplePhoxPreprocess.json";
     datepath="data/dateplot.csv";
-
-
-    //This is testing whether a newer json file exists or not. if yes, we will use that file, else use the default file
-   //var test=UrlExists(purltest);
-   //if(test==true){
-     // pURL = purltest;
-     // console.log("test is true");
-    //}
-   //else
-   	//pURL = "data/fearonLaitinpreprocess8.json";
-
-  // console.log("yo value of test",test);
-   /*$.ajax({
-    url:purltest,
-    type:'HEAD',
-    error: function()
-    {
-    	console.log("error");
-    	pURL = "data/fearonLaitinPreprocess4.json";
-        //file not exists
-    },
-    success: function()
-    {
-    	console.log("success");
-    	pURL = purltest;
-        //file exists
-    }
-	});*/
-		function UrlExists(url)
-		{
-		    var http = new XMLHttpRequest();
-		    http.open('HEAD', url, false);
-		    http.send();
-		    return http.status!=404;
-		}
-    //console.log(purltest);
-   // console.log(pURL);
 }
 
- // .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-var preprocess = {};
-var mods = new Object;
-// console.log("Value of username: ",username);
+// Holds the list of all variables
+let preprocess = {};
+let mods = {};
 
-//This function finds whether a key is present in the json file, and sends the key's value if present.
-function findValue(json, key) {
-		 if (key in json) return json[key];
-		 else {
-			    var otherValue;
-			    for (var otherKey in json) {
-			      if (json[otherKey] && json[otherKey].constructor === Object) {
-			        otherValue = findValue(json[otherKey], key);
-			        if (otherValue !== undefined) return otherValue;
-			      }
-			    }
-			  }
-		}
+// Load preprocessed data
+// Prepare zparams for full data query
+readPreprocess(url = pURL, p = preprocess, callback = pageSetup);
 
 
-
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//end of distribution graph
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
-
-//});
-
-
-// this is the function and callback routine that loads all external data: metadata (DVN's ddi), preprocessed (for plotting distributions), and zeligmodels (produced by Zelig) and initiates the data download to the server
- readPreprocess(url=pURL, p=preprocess, v=null, callback=function(){
-               //console.log(UrlExists(metadataurl));
-
-
-               	//if(UrlExists(metadataurl)){
-                //d3.xml(metadataurl, "application/xml", function(xml) {
-
- 				//				  d3.json(url, function(error, json) {
-                d3.json(url,function(json){
-
-                   var jsondata=json;
-                    // console.log(jsondata);
-                     //console.log("Findvalue: ",findValue(jsondata,"fileName"));
-                     //  var vars = xml.documentElement.getElementsByTagName("var");
-                       var vars=jsondata.variables;
- 					  //console.log("value of vars");
-               //        console.log(vars);
-                      // var temp = xml.documentElement.getElementsByTagName("fileName");
-                       var temp = findValue(jsondata,"fileName");
-                 //      console.log("value of temp");
-                   //    console.log(temp);
-                     //
-                       zparams.zdata = temp;//[0].childNodes[0].nodeValue;
-                     //  console.log("value of zdata: ",zparams.zdata);
-                       // function to clean the citation so that the POST is valid json
-                       function cleanstring(s) {
-                         s=s.replace(/\&/g, "and");
-                         s=s.replace(/\;/g, ",");
-                         s=s.replace(/\%/g, "-");
-                         return s;
-                      }
-
-                      // var cite = xml.documentElement.getElementsByTagName("biblCit");
-                       var cite=findValue(jsondata,"biblCit");
-                       zparams.zdatacite=cite;//[0].childNodes[0].nodeValue;
-                      // console.log("value of zdatacite: ",zparams.zdatacite);
-                       if(zparams.zdatacite!== undefined){
-                         zparams.zdatacite=cleanstring(zparams.zdatacite);
-                       }
-                       //console.log("value of zdatacite: ",zparams.zdatacite);
-                       //
-
-                       // dataset name trimmed to 12 chars
-                       var dataname = zparams.zdata.replace( /\.(.*)/, "") ;  // regular expression to drop any file extension
-                       // Put dataset name, from meta-data, into top panel
-                       d3.select("#dataName")
-                       .html(dataname);
-
-                       $('#cite div.panel-body').text(zparams.zdatacite);
-
-                       // Put dataset name, from meta-data, into page title
-                       d3.select("title").html("TwoRavens " +dataname)
-                       //d3.select("#title").html("blah");
-
-                       // temporary values for hold that correspond to histogram bins
-                       hold = [.6, .2, .9, .8, .1, .3, .4];
-                       var myvalues = [0, 0, 0, 0, 0];
-                        //console.log("length: ",vars.length);
-                       // console.log(vars);
-
- 						//var tmp=vars.ccode;
- 						//console.log("tmp= ",tmp);
- 						var i=0;
- 										for(var key in vars) {
- 										//	console.log(vars[key]);
- 							                //p[key] = jsondata["variables"][key];
- 							                valueKey[i]=key;
-
- 							                if(vars[key].labl.length===0){lablArray[i]="no label";}
- 							                else{lablArray[i]=vars[key].labl;}
-
-
- 							                i++;
-
- 							            }
- 							            //console.log("test=",ccode.labl.);
- 					//console.log("lablArray=",lablArray);
-
-
-                       for (i=0;i<valueKey.length;i++) {
-
-
-                       //valueKey[i] = vars[i].attributes.name.nodeValue;
-
-                       //if(vars[i].getElementsByTagName("labl").length === 0) {lablArray[i]="no label";}
-                       //else {lablArray[i] = vars[i].getElementsByTagName("labl")[0].childNodes[0].nodeValue;}
-
-                     //  var datasetcount = d3.layout.histogram()
-                     //  .bins(barnumber).frequency(false)
-                     //  (myvalues);
-
-                       // this creates an object to be pushed to allNodes. this contains all the preprocessed data we have for the variable, as well as UI data pertinent to that variable, such as setx values (if the user has selected them) and pebble coordinates
-                       var obj1 = {id:i, reflexive: false, "name": valueKey[i], "labl": lablArray[i], data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false};
-
-                       jQuery.extend(true, obj1, preprocess[valueKey[i]]);
-                       allNodesColors(obj1);
-
-                       // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
-                       allNodes.push(obj1);
-
-                       };
-
-                       //console.log("allNodes: ", allNodes);
-                       // Reading the zelig models and populating the model list in the right panel.
-                       d3.json("data/zelig5models.json", function(error, json) {
-                               if (error) return console.warn(error);
-                               var jsondata = json;
-
-                               //console.log("zelig models json: ", jsondata);
-                               for(var key in jsondata.zelig5models) {
-                               if(jsondata.zelig5models.hasOwnProperty(key)) {
-                               mods[jsondata.zelig5models[key].name[0]] = jsondata.zelig5models[key].description[0];
-                               }
-                               }
-
-                               d3.json("data/zelig5choicemodels.json", function(error, json) {
-                                       if (error) return console.warn(error);
-                                       var jsondata = json;
-                                       //console.log("zelig choice models json: ", jsondata);
-                                       for(var key in jsondata.zelig5choicemodels) {
-                                       if(jsondata.zelig5choicemodels.hasOwnProperty(key)) {
-                                       mods[jsondata.zelig5choicemodels[key].name[0]] = jsondata.zelig5choicemodels[key].description[0];
-                                       }
-                                       }
-
-                                       scaffolding();
-                       //                dataDownload();
-                                       });
-                               });
-                       });
-
-                });
-
-
-////////////////////////////////////////////
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++
 // everything below this point is a function
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+// Load external data:
+//      metadata (DVN's ddi)
+//      preprocessed (for plotting distributions)
+//      zeligmodels (produced by Zelig)
 
+function readPreprocess(url, variabledict, callback) {
 
+    d3.json(url, function (error, jsondata) {
+        if (error) return console.warn(error);
 
+        if (jsondata.dataset.private) {
+            private = jsondata["dataset"]["private"];
+        }
 
+        //copying the object
+        for (let key in jsondata["variables"]) {
+            variabledict[key] = jsondata["variables"][key];
+        }
 
+        if (typeof callback === "function") {
+            callback(jsondata);
+        }
+    });
+}
 
+function pageSetup(jsondata) {
+    zparams.zdata = findValue(jsondata, "fileName");
 
-// scaffolding is called after all external data are guaranteed to have been read to completion. this populates the left panel with variable names, the right panel with model names, the transformation tool, an the associated mouseovers. its callback is layout(), which initializes the modeling space
+    // function to clean the citation so that the POST is valid json
+    function cleanstring(s) {
+        s = s.replace(/\&/g, "and");
+        s = s.replace(/\;/g, ",");
+        s = s.replace(/\%/g, "-");
+        return s;
+    }
+
+    zparams.zdatacite = findValue(jsondata, "biblcit");
+    if (zparams.zdatacite !== undefined) {
+        zparams.zdatacite = cleanstring(zparams.zdatacite);
+    }
+
+    // dataset name trimmed to 12 chars
+    let dataname = zparams.zdata.replace(/\.(.*)/, "");  // regular expression to drop any file extension
+
+    // Put dataset name, from meta-data, into top panel
+    d3.select("#dataName").html(dataname);
+    // Put dataset name, from meta-data, into page title
+    d3.select("title").html("TwoRavens " + dataname);
+
+    $('#cite div.panel-body').text(zparams.zdatacite);
+
+    // temporary values for hold that correspond to histogram bins
+    hold = [.6, .2, .9, .8, .1, .3, .4];
+
+    let vars = jsondata.variables;
+
+    let i = 0;
+    for (let key in vars) {
+        //	console.log(vars[key]);
+        //p[key] = jsondata["variables"][key];
+        valueKey[i] = key;
+
+        if (vars[key].labl.length === 0) {
+            lablArray[i] = "no label";
+        }
+
+        else {
+            lablArray[i] = vars[key].labl;
+        }
+        i++;
+    }
+
+    for (i = 0; i < valueKey.length; i++) {
+        // this creates an object to be pushed to allNode that contains:
+        //      preprocessed data we have for the variable
+        //      UI data pertinent to that variable, such as setx values (if the user has selected them)
+        //      pebble coordinates
+        let obj1 = {
+            id: i,
+            reflexive: false,
+            "name": valueKey[i],
+            "labl": lablArray[i],
+            data: [5, 15, 20, 0, 5, 15, 20],
+            count: hold,
+            "nodeCol": colors(i),
+            "baseCol": colors(i),
+            "strokeColor": selVarColor,
+            "strokeWidth": "1",
+            "subsetplot": false,
+            "subsetrange": ["", ""],
+            "setxplot": false,
+            "setxvals": ["", ""],
+            "grayout": false
+        };
+
+        jQuery.extend(true, obj1, preprocess[valueKey[i]]);
+        allNodesColors(obj1);
+
+        // console.log(vars[i].childNodes[4].attributes.type.ownerElement.firstChild.data);
+        allNodes.push(obj1);
+    }
+
+    // Now that page is setup and data saved to node list, render the gui
+    scaffolding();
+}
+
+//This function finds whether a key is present in the json file, and sends the key's value if present.
+function findValue(json, key) {
+    if (key in json) return json[key];
+    else {
+        var otherValue;
+        for (var otherKey in json) {
+            if (json[otherKey] && json[otherKey].constructor === Object) {
+                otherValue = findValue(json[otherKey], key);
+                if (otherValue !== undefined) return otherValue;
+            }
+        }
+    }
+}
+
+// scaffolding is called after all external data are guaranteed to have been read to completion.
+// this populates the left panel with variable names, the transformation tool, an the associated mouseovers.
+// its callback is layout(), which initializes the modeling space
 function scaffolding(callback) {
-
 
     //jquery does this well
     $('#tInput').click(function() {
@@ -541,6 +462,16 @@ function scaffolding(callback) {
 
 //alert("scaffoldingflag"+flag);
 
+    let splice = (color, text, ...args) => {
+        args.forEach(x => {
+            if (color != x[0])
+                return;
+            let idx = zparams[x[1]].indexOf(text);
+            idx > -1 && zparams[x[1]].splice(idx, 1);
+        });
+    };
+
+
 eventlist=new Array(20)
     .join().split(',')
     .map(function(item, index){ return ++index;})
@@ -571,14 +502,24 @@ eventlist=new Array(20)
 
     // console.log(valueKey);
     d3.select("#variableList").selectAll("p") 			//do something with this..
-		.data(valueKey)
-		.enter()
-		.append("p")
-		.attr("id",function(d){
-			  return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
-			  }) // perhapse ensure this id is unique by adding '_' to the front?
-		.text(function(d){return d;})
-		.style('background-color', varColor)
+        .data(valueKey)
+        .enter()
+        .append("p")
+        .attr("id", function (d) {
+            return d.replace(/\W/g, "_"); // replace non-alphanumerics for selection purposes
+        }) // perhapse ensure this id is unique by adding '_' to the front?
+        .text(function (d) {
+            return d;
+        })
+        .style('background-color', function () {
+            let self_name = d3.select(this).text();
+            for (let node in nodes) {
+                if (self_name === node.name) {
+                    return hexToRgba(selVarColor)
+                }
+            }
+            return hexToRgba(varColor);
+        })
         .attr("data-container", "body")
         .attr("data-toggle", "popover")
         .attr("data-trigger", "hover")
@@ -587,8 +528,33 @@ eventlist=new Array(20)
         .attr("data-html", "true")
         .attr("onmouseover", "$(this).popover('toggle');")
         .attr("onmouseout", "$(this).popover('toggle');")
-        .attr("data-original-title", "Summary Statistics");
+        .attr("data-original-title", "Summary Statistics")
+        .on("click", function () {
+            d3.select(this)
+                .style('background-color', function(d) {
+                    zparams.zvars = [];
+                    let text = d3.select(this).text();
+                    if (d3.rgb(d3.select(this).style('background-color')).toString().replace(/\s/g, '') == hexToRgba(varColor)) { // we are adding a var
+                        nodes.push(findNode(text));
+                        if (nodes.length == 0) nodes[0].reflexive = true;
 
+                        return hexToRgba(selVarColor);
+                    } else {
+                        // dropping a variable
+                        nodes.splice(findNode(text).index, 1);
+                        spliceLinksForNode(findNode(text));
+                        splice(text, [dvColor, 'zdv'], [csColor, 'zcross'], [timeColor, 'ztime'], [nomColor, 'znom']);
+                        nodeReset(allNodes[findNodeIndex(text)]);
+                        borderState();
+
+                        return hexToRgba(varColor);
+                    }
+                });
+            fakeClick();
+            // This updates the listing in the right panel
+            reloadVariables();
+        })
+        .attr("data-original-title", "Summary Statistics");
 
 
     d3.select("#tab2").selectAll("p") 			//do something with this..
@@ -606,7 +572,7 @@ eventlist=new Array(20)
     .attr("data-trigger", "hover")
     .attr("data-placement", "right")
     .attr("data-html", "true")
-    .on("click", function varClick(){
+    .on("click", function (){
         if(d3.select(this).text()=="Date") {
             document.getElementById("subsetDate").style.display = 'inline';
 
@@ -614,7 +580,7 @@ eventlist=new Array(20)
             document.getElementById("subsetActor").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
 
-			selectionMade("Date");
+			selectionMadeSubset("Date");
             d3date();
             rightpanelMargin();
         }
@@ -624,7 +590,7 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
-			selectionMade("Location");
+			selectionMadeSubset("Location");
             d3loc();
             rightpanelMargin();
         }
@@ -634,7 +600,7 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
-			selectionMade("Actor");
+			selectionMadeSubset("Actor");
             d3actor();
             rightpanelMargin();
         }
@@ -644,23 +610,23 @@ eventlist=new Array(20)
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetActor").style.display = 'none';
-			selectionMade("Action");
+			selectionMadeSubset("Action");
             d3action();
             rightpanelMargin();
         }
         });
 
-    function selectionMade(n) {
+
+    function selectionMadeSubset(n) {
         subsetSelection = n;
 
-    	d3.select("#tab2").selectAll("p").style('background-color',function(d) {
-    		if(d==n)
-    			return hexToRgba(selVarColor);
-    		else
-    			return varColor;
-    	})
+        d3.select("#tab2").selectAll("p").style('background-color',function(d) {
+            if(d==n)
+                return hexToRgba(selVarColor);
+            else
+                return varColor;
+        })
     }
-
 
 
     d3.select("#models")
@@ -720,9 +686,6 @@ $(document).on('input', '#searchvar', function() {
 });
 
 
-
-
-
 	var srchid=[];
 	var vkey=[];
 	$("#searchvar").on("keyup",function search(e) {
@@ -763,6 +726,8 @@ $(document).on('input', '#searchvar', function() {
 
 		//console.log(srchid);
 		lngth=srchid.length;
+
+
 	if(k==0){
 			vkey=valueKey;
 
@@ -838,11 +803,17 @@ $(document).on('input', '#searchvar', function() {
     .attr("onmouseout", "$(this).popover('toggle');")
     .attr("data-original-title", "Summary Statistics");
 
-	fakeClick();
+    var nodename = [];
+    var bordercol = '#000000';
+    var borderstyle = 'solid';
+    for (var i = 0; i < nodes.length; i++) {
+        nodename[i] = nodes[i].name;
+    }
 
 	$("#tab1").children().popover('hide');
 	populatePopover();
 
+        //Mike had previously commented this line out
 	addlistener(nodes);
 
 
@@ -868,42 +839,47 @@ $(document).on('input', '#searchvar', function() {
 
 
 
-
-
         $(document).ready(function(){
 
         		$("#btnSave").hide();
         });
 
 
+//Write to JSON Function, to write new metadata file after the user has tagged a variable as a time variable
+function writetojson(btn) {
 
-
-  //Write to JSON Function, to write new metadata file after the user has tagged a variable as a time variable
-	function writetojson(btn){
-
-		//var jsonallnodes=JSON.stringify(allNodes);
+    //var jsonallnodes=JSON.stringify(allNodes);
 
     var outtypes = [];
-    for(var j=0; j < allNodes.length; j++) {
-        outtypes.push({varnamesTypes:allNodes[j].name, nature:allNodes[j].nature, numchar:allNodes[j].numchar, binary:allNodes[j].binary, interval:allNodes[j].interval,time:allNodes[j].time});
+    for (var j = 0; j < allNodes.length; j++) {
+        outtypes.push({
+            varnamesTypes: allNodes[j].name,
+            nature: allNodes[j].nature,
+            numchar: allNodes[j].numchar,
+            binary: allNodes[j].binary,
+            interval: allNodes[j].interval,
+            time: allNodes[j].time
+        });
     }
 
-   // console.log("Outtypes:"+outtypes);
-		writeout={outtypes:outtypes}
-				writeoutjson=JSON.stringify(writeout);
-				//console.log(jsonallnodes);
-				urlcall = rappURL+"writeapp";
 
-				//base.concat(jsonout);
-    	function cleanstring(s) {
-                        s=s.replace(/\&/g, "and");
-                        s=s.replace(/\;/g, ",");
-                        s=s.replace(/\%/g, "-");
-                        return s;
-                      }
-                      var properjson=cleanstring(writeoutjson);
+    // console.log("Outtypes:"+outtypes);
+    writeout = {outtypes: outtypes}
+    writeoutjson = JSON.stringify(writeout);
+    //console.log(jsonallnodes);
+    urlcall = rappURL + "writeapp";
 
-    var solajsonout = "solaJSON="+properjson;
+    //base.concat(jsonout);
+    function cleanstring(s) {
+        s = s.replace(/\&/g, "and");
+        s = s.replace(/\;/g, ",");
+        s = s.replace(/\%/g, "-");
+        return s;
+    }
+
+    var properjson = cleanstring(writeoutjson);
+
+    var solajsonout = "solaJSON=" + properjson;
 //console.log(properjson);
 
 function writesuccess(btn,json){
@@ -911,32 +887,31 @@ function writesuccess(btn,json){
 	selectLadda.stop();
 
       $('#btnSave').hide();
-
-
-
-
 }
 
 function writefail(btn)
 {
 	selectLadda.stop();
 
-}
+    var properjson = cleanstring(writeoutjson);
 
-selectLadda.start();
+    var solajsonout = "solaJSON=" + properjson;
+    //console.log(properjson);
 
+    function writesuccess(btn, json) {
+        selectLadda.stop();
+        $('#btnSave').hide();
+    }
 
-makeCorsRequest(urlcall, btn, writesuccess, writefail, solajsonout);
+    function writefail(btn) {
+        selectLadda.stop();
 
+    }
 
-}
-//end of write to json
-
-
-
-
-
-
+    selectLadda.start();
+    makeCorsRequest(urlcall, btn, writesuccess, writefail, solajsonout);
+    }
+}//end of write to json
 
 		// init D3 force layout
 		function forced3layout(nodes, links,  width,  height,tick)
@@ -974,8 +949,7 @@ makeCorsRequest(urlcall, btn, writesuccess, writefail, solajsonout);
 										//Remove the tooltip
 											//d3.select("#tooltip").style("display", "none");
         })
-
-
+     
     .on("click", function varClick(){
         if(allNodes[findNodeIndex(this.id)].grayout) {return null;}
 
@@ -1130,6 +1104,7 @@ function zPop() {
 
 function estimate(btn) {
 
+
     if(production && zparams.zsessionid=="") {
         alert("Warning: Data download is not complete. Try again soon.");
         return;
@@ -1140,12 +1115,12 @@ function estimate(btn) {
 
     //package the output as JSON
     // add call history and package the zparams object as JSON
-    zparams.callHistory=callHistory;
+    zparams.callHistory = callHistory;
     var jsonout = JSON.stringify(zparams);
 
     //var base = rappURL+"zeligapp?solaJSON="
-    urlcall = rappURL+"zeligapp"; //base.concat(jsonout);
-    var solajsonout = "solaJSON="+jsonout;
+    urlcall = rappURL + "zeligapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON=" + jsonout;
     //console.log("urlcall out: ", urlcall);
     //console.log("POST out: ", solajsonout);
 
@@ -1158,13 +1133,14 @@ function estimate(btn) {
     function estimateSuccess(btn,json) {
         estimateLadda.stop();  // stop spinner
         allResults.push(json);
-       // console.log(allResults);
+        // console.log(allResults);
         //console.log("json in: ", json);
 
         var myparent = document.getElementById("results");
-        if(estimated==false) {
+        if (estimated == false) {
             myparent.removeChild(document.getElementById("resultsHolder"));
         }
+
 
         estimated=true;
         d3.select("#results")
@@ -1174,7 +1150,7 @@ function estimate(btn) {
         .style("display", "block");
 
         d3.select("#modelView")
-        .style("display", "block");
+            .style("display", "block");
 
 
         // programmatic click on Results button
@@ -1186,27 +1162,27 @@ function estimate(btn) {
 
         function modCol() {
             d3.select("#modelView")
-            .selectAll("p")
-            .style('background-color', hexToRgba(varColor));
+                .selectAll("p")
+                .style('background-color', hexToRgba(varColor));
         }
 
         modCol();
 
         d3.select("#modelView")
-        .insert("p",":first-child") // top stack for results
-        .attr("id",model)
-        .text(model)
-        .style('background-color', hexToRgba(selVarColor))
-        .on("click", function(){
-            var a = this.style.backgroundColor.replace(/\s*/g, "");
-            var b = hexToRgba(selVarColor).replace(/\s*/g, "");
-            if(a.substr(0,17)===b.substr(0,17)) {
-                return; //escapes the function early if the displayed model is clicked
-            }
-            modCol();
-            d3.select(this)
-            .style('background-color', hexToRgba(selVarColor));
-            viz(this.id);
+            .insert("p", ":first-child") // top stack for results
+            .attr("id", model)
+            .text(model)
+            .style('background-color', hexToRgba(selVarColor))
+            .on("click", function () {
+                var a = this.style.backgroundColor.replace(/\s*/g, "");
+                var b = hexToRgba(selVarColor).replace(/\s*/g, "");
+                if (a.substr(0, 17) === b.substr(0, 17)) {
+                    return; //escapes the function early if the displayed model is clicked
+                }
+                modCol();
+                d3.select(this)
+                    .style('background-color', hexToRgba(selVarColor));
+                viz(this.id);
             });
 
         var rCall = [];
@@ -1219,13 +1195,13 @@ function estimate(btn) {
 
     function estimateFail(btn) {
         estimateLadda.stop();  // stop spinner
-      estimated=true;
+        estimated = true;
     }
 
     function selectorSuccess(btn, json) {
         d3.select("#ticker")
-        .text("Suggested variables and percent improvement on RMSE: " + json.vars);
-       // console.log("selectorSuccess: ", json);
+            .text("Suggested variables and percent improvement on RMSE: " + json.vars);
+        // console.log("selectorSuccess: ", json);
     }
 
     function selectorFail(btn) {
@@ -1233,6 +1209,7 @@ function estimate(btn) {
     }
 
     estimateLadda.start();  // start spinner
+
     makeCorsRequest(urlcall,btn, estimateSuccess, estimateFail, solajsonout);
     //makeCorsRequest(selectorurlcall, btn, selectorSuccess, selectorFail, solajsonout);
 
@@ -1247,38 +1224,41 @@ function dataDownload() {
     //package the output as JSON
     // add call history and package the zparams object as JSON
     //console.log("inside datadownload, zparams= ",zparams);
-    zparams.zmetadataurl=metadataurl;
-    zparams.zusername=username;
+    zparams.zmetadataurl = metadataurl;
+    zparams.zusername = username;
     var jsonout = JSON.stringify(zparams);
+
     var btn="nobutton";
 
     //var base = rappURL+"zeligapp?solaJSON="
-    urlcall = rappURL+"dataapp"; //base.concat(jsonout);
-    var solajsonout = "solaJSON="+jsonout;
+    urlcall = rappURL + "dataapp"; //base.concat(jsonout);
+    var solajsonout = "solaJSON=" + jsonout;
     //console.log("urlcall out: ", urlcall);
+
    // console.log("POST out: ", solajsonout);
 
     function downloadSuccess(btn, json) {
         //console.log("dataDownload json in: ", json);
         zparams.zsessionid=json.sessionid[0];
 
+
         // set the link URL
-        if(production){
-            var logURL=rappURL+"log_dir/log_"+zparams.zsessionid+".txt";
-            document.getElementById("logID").href=logURL;
+        if (production) {
+            var logURL = rappURL + "log_dir/log_" + zparams.zsessionid + ".txt";
+            document.getElementById("logID").href = logURL;
         }
-        else{
-            var logURL="rook/log_"+zparams.zsessionid+".txt";
-            document.getElementById("logID").href=logURL;
+        else {
+            var logURL = "rook/log_" + zparams.zsessionid + ".txt";
+            document.getElementById("logID").href = logURL;
         }
 
     }
 
     function downloadFail(btn) {
         console.log("Data have not been downloaded");
-    }
 
     makeCorsRequest(urlcall,btn, downloadSuccess, downloadFail, solajsonout);
+    }
 }
 
 
@@ -1462,9 +1442,18 @@ function transform(n,t, typeTransform) {
 
 
     //package the output as JSON
-    var transformstuff = {zdataurl:dataurl, zvars:n, zsessionid:zparams.zsessionid, transform:t, callHistory:callHistory, typeTransform:typeTransform, typeStuff:outtypes};
+    var transformstuff = {
+        zdataurl: dataurl,
+        zvars: n,
+        zsessionid: zparams.zsessionid,
+        transform: t,
+        callHistory: callHistory,
+        typeTransform: typeTransform,
+        typeStuff: outtypes
+    };
     var jsonout = JSON.stringify(transformstuff);
     //var base = rappURL+"transformapp?solaJSON="
+
 
     urlcall = rappURL+"transformapp"; //base.concat(jsonout);
     var solajsonout = "solaJSON="+jsonout;
@@ -1476,6 +1465,7 @@ function transform(n,t, typeTransform) {
     function transformSuccess(btn, json) {
         estimateLadda.stop();
         //console.log("json in: ", json);
+
 
         if(json.typeTransform[0]) {
 
@@ -1506,11 +1496,13 @@ function transform(n,t, typeTransform) {
 
             callHistory.push({func:"transform", zvars:n, transform:t});
 
+
             var subseted = false;
             var rCall = [];
             rCall[0] = json.call;
             var newVar = rCall[0][0];
             trans.push(newVar);
+
 
             d3.json(json.url, function(error, json) {
                     if (error) return console.warn(error);
@@ -1520,6 +1512,7 @@ function transform(n,t, typeTransform) {
                     for(var key in vars) {
                         var myIndex = findNodeIndex(key);
                     if(typeof myIndex !== "undefined") {
+
                         alert("Invalid transformation: this variable name already exists.");
                         return;
                     }
@@ -1539,78 +1532,80 @@ function transform(n,t, typeTransform) {
                     if(allNodes[i].plottype === "continuous") {
                         densityNode(allNodes[i]);
                     }
-                        else if (allNodes[i].plottype === "bar") {
+                    else if (allNodes[i].plottype === "bar") {
                         barsNode(allNodes[i]);
+
                         }
                     }//for
 
 
                     });
 
+
             // update the log
             logArray.push("transform: ".concat(rCall[0]));
             showLog();
 
             /*
-                    // NOTE: below is the carousel portion that needs to be revised as of May 29 2015
+             // NOTE: below is the carousel portion that needs to be revised as of May 29 2015
 
-            // add transformed variable to all spaces
-            // check if myspace callHistory contains a subset
-            for(var k0=0; k0<callHistory.length; k0++) {
-                if(callHistory[k0].func==="subset") {
-                    var subseted = true;
-                }
-            }
+             // add transformed variable to all spaces
+             // check if myspace callHistory contains a subset
+             for(var k0=0; k0<callHistory.length; k0++) {
+             if(callHistory[k0].func==="subset") {
+             var subseted = true;
+             }
+             }
 
-        loopJ:
-            for(var j in spaces) {
-                if(j===myspace) {continue;}
-                var i = spaces[j].allNodes.length;
-                if(subseted===true) { // myspace has been subseted
-                    offspaceTransform(j);
-                    continue loopJ;
-                }
-            loopK:
-                for(var k=0; k<spaces[j].callHistory.length; k++) { // gets here if myspace has not been subseted
-                    if(spaces[j].callHistory[k].func==="subset") { // check if space j has been subseted
-                        offspaceTransform(j);
-                        continue loopJ;
-                    }
-                }
-                // if there is a subset in the callHistory of the current space, transformation is different
-                function offspaceTransform(j) {
-                    transformstuff = {zdataurl:dataurl, zvars:n, zsessionid:zparams.zsessionid, transform:t, callHistory:spaces[j].callHistory};
-                    var jsonout = JSON.stringify(transformstuff);
-                    //var base = rappURL+"transformapp?solaJSON="
-                    urlcall = rappURL+"transformapp"; //base.concat(jsonout);
-                    var solajsonout = "solaJSON="+jsonout;
-                    console.log("urlcall out: ", urlcall);
-                    console.log("POST out: ", solajsonout);
+             loopJ:
+             for(var j in spaces) {
+             if(j===myspace) {continue;}
+             var i = spaces[j].allNodes.length;
+             if(subseted===true) { // myspace has been subseted
+             offspaceTransform(j);
+             continue loopJ;
+             }
+             loopK:
+             for(var k=0; k<spaces[j].callHistory.length; k++) { // gets here if myspace has not been subseted
+             if(spaces[j].callHistory[k].func==="subset") { // check if space j has been subseted
+             offspaceTransform(j);
+             continue loopJ;
+             }
+             }
+             // if there is a subset in the callHistory of the current space, transformation is different
+             function offspaceTransform(j) {
+             transformstuff = {zdataurl:dataurl, zvars:n, zsessionid:zparams.zsessionid, transform:t, callHistory:spaces[j].callHistory};
+             var jsonout = JSON.stringify(transformstuff);
+             //var base = rappURL+"transformapp?solaJSON="
+             urlcall = rappURL+"transformapp"; //base.concat(jsonout);
+             var solajsonout = "solaJSON="+jsonout;
+             console.log("urlcall out: ", urlcall);
+             console.log("POST out: ", solajsonout);
 
 
-                    function offspaceSuccess(btn, json) {
-                        spaces[j].callHistory.push({func:"transform", zvars:n, transform:t});
-                        spaces[j].logArray.push("transform: ".concat(rCall[0]));
-                        readPreprocess(json.url, p=spaces[j].preprocess, v=newVar, callback=null);
+             function offspaceSuccess(btn, json) {
+             spaces[j].callHistory.push({func:"transform", zvars:n, transform:t});
+             spaces[j].logArray.push("transform: ".concat(rCall[0]));
+             readPreprocess(json.url, p=spaces[j].preprocess, v=newVar, callback=null);
 
-                        spaces[j].allNodes.push({id:i, reflexive: false, "name": rCall[0][0], "labl": "transformlabel", data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "interval":json.types.interval[0], "numchar":json.types.numchar[0], "nature":json.types.nature[0], "binary":json.types.binary[0], "defaultInterval":json.types.interval[0], "defaultNumchar":json.types.numchar[0], "defaultNature":json.types.nature[0], "defaultBinary":json.types.binary[0], "min":json.sumStats.min[0], "median":json.sumStats.median[0], "sd":json.sumStats.sd[0], "mode":(json.sumStats.mode[0]).toString(), "freqmode":json.sumStats.freqmode[0],"fewest":(json.sumStats.fewest[0]).toString(), "freqfewest":json.sumStats.freqfewest[0], "mid":(json.sumStats.mid[0]).toString(), "freqmid":json.sumStats.freqmid[0], "uniques":json.sumStats.uniques[0], "herfindahl":json.sumStats.herfindahl[0],
-                        "valid":json.sumStats.valid[0], "mean":json.sumStats.mean[0], "max":json.sumStats.max[0], "invalid":json.sumStats.invalid[0], "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false});
-                    }
-                    function offspaceFail(btn) {
-                        alert("transform fail");
-                    }
-                    makeCorsRequest(urlcall,btn, offspaceSuccess, offspaceFail, solajsonout);
-                }
+             spaces[j].allNodes.push({id:i, reflexive: false, "name": rCall[0][0], "labl": "transformlabel", data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "interval":json.types.interval[0], "numchar":json.types.numchar[0], "nature":json.types.nature[0], "binary":json.types.binary[0], "defaultInterval":json.types.interval[0], "defaultNumchar":json.types.numchar[0], "defaultNature":json.types.nature[0], "defaultBinary":json.types.binary[0], "min":json.sumStats.min[0], "median":json.sumStats.median[0], "sd":json.sumStats.sd[0], "mode":(json.sumStats.mode[0]).toString(), "freqmode":json.sumStats.freqmode[0],"fewest":(json.sumStats.fewest[0]).toString(), "freqfewest":json.sumStats.freqfewest[0], "mid":(json.sumStats.mid[0]).toString(), "freqmid":json.sumStats.freqmid[0], "uniques":json.sumStats.uniques[0], "herfindahl":json.sumStats.herfindahl[0],
+             "valid":json.sumStats.valid[0], "mean":json.sumStats.mean[0], "max":json.sumStats.max[0], "invalid":json.sumStats.invalid[0], "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false});
+             }
+             function offspaceFail(btn) {
+             alert("transform fail");
+             }
+             makeCorsRequest(urlcall,btn, offspaceSuccess, offspaceFail, solajsonout);
+             }
 
-                // if myspace and space j have not been subseted, append the same transformation
-                spaces[j].callHistory.push({func:"transform", zvars:n, transform:t});
-                spaces[j].logArray.push("transform: ".concat(rCall[0]));
+             // if myspace and space j have not been subseted, append the same transformation
+             spaces[j].callHistory.push({func:"transform", zvars:n, transform:t});
+             spaces[j].logArray.push("transform: ".concat(rCall[0]));
 
-                spaces[j].allNodes.push({id:i, reflexive: false, "name": rCall[0][0], "labl": "transformlabel", data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "interval":json.types.interval[0], "numchar":json.types.numchar[0], "nature":json.types.nature[0], "binary":json.types.binary[0], "defaultInterval":json.types.interval[0], "defaultNumchar":json.types.numchar[0], "defaultNature":json.types.nature[0], "defaultBinary":json.types.binary[0], "min":json.sumStats.min[0], "median":json.sumStats.median[0], "sd":json.sumStats.sd[0], "mode":(json.sumStats.mode[0]).toString(), "freqmode":json.sumStats.freqmode[0],"fewest":(json.sumStats.fewest[0]).toString(), "freqfewest":json.sumStats.freqfewest[0], "mid":(json.sumStats.mid[0]).toString(), "freqmid":json.sumStats.freqmid[0], "uniques":json.sumStats.uniques[0], "herfindahl":json.sumStats.herfindahl[0],
-                "valid":json.sumStats.valid[0], "mean":json.sumStats.mean[0], "max":json.sumStats.max[0], "invalid":json.sumStats.invalid[0], "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false});
+             spaces[j].allNodes.push({id:i, reflexive: false, "name": rCall[0][0], "labl": "transformlabel", data: [5,15,20,0,5,15,20], count: hold, "nodeCol":colors(i), "baseCol":colors(i), "strokeColor":selVarColor, "strokeWidth":"1", "interval":json.types.interval[0], "numchar":json.types.numchar[0], "nature":json.types.nature[0], "binary":json.types.binary[0], "defaultInterval":json.types.interval[0], "defaultNumchar":json.types.numchar[0], "defaultNature":json.types.nature[0], "defaultBinary":json.types.binary[0], "min":json.sumStats.min[0], "median":json.sumStats.median[0], "sd":json.sumStats.sd[0], "mode":(json.sumStats.mode[0]).toString(), "freqmode":json.sumStats.freqmode[0],"fewest":(json.sumStats.fewest[0]).toString(), "freqfewest":json.sumStats.freqfewest[0], "mid":(json.sumStats.mid[0]).toString(), "freqmid":json.sumStats.freqmid[0], "uniques":json.sumStats.uniques[0], "herfindahl":json.sumStats.herfindahl[0],
+             "valid":json.sumStats.valid[0], "mean":json.sumStats.mean[0], "max":json.sumStats.max[0], "invalid":json.sumStats.invalid[0], "subsetplot":false, "subsetrange":["", ""],"setxplot":false, "setxvals":["", ""], "grayout":false});
 
-                readPreprocess(json.url, p=spaces[j].preprocess, v=newVar, callback=null);
-            }   */
+             readPreprocess(json.url, p=spaces[j].preprocess, v=newVar, callback=null);
+             }   */
         }
     }
 
@@ -1620,6 +1615,7 @@ function transform(n,t, typeTransform) {
     }
 
     estimateLadda.start();  // start spinner
+
     makeCorsRequest(urlcall,btn, transformSuccess, transformFail, solajsonout);
 
 }
@@ -1712,7 +1708,7 @@ function createCORSRequest(method, url, callback) {
         // CORS not supported.
         xhr = null;
     }
-  // xhr.setRequestHeader('Content-Type', 'text/json');
+    // xhr.setRequestHeader('Content-Type', 'text/json');
 //xhr.setRequestHeader('Content-Type', 'multipart/form-data');
 
 
@@ -1723,9 +1719,9 @@ function createCORSRequest(method, url, callback) {
 
 
 // Make the actual CORS request.
-function makeCorsRequest(url,btn,callback, warningcallback, jsonstring) {
+function makeCorsRequest(url, btn, callback, warningcallback, jsonstring) {
     var xhr = createCORSRequest('POST', url);
-	//console.log("inside cors json size:"+jsonstring.length);
+    //console.log("inside cors json size:"+jsonstring.length);
     if (!xhr) {
         alert('CORS not supported');
         return;
@@ -1733,35 +1729,35 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonstring) {
     // Response handlers for asynchronous load
     // onload or onreadystatechange?
 
-    xhr.onload = function() {
+    xhr.onload = function () {
 
-      var text = xhr.responseText;
-      //console.log("text ", text);
+        var text = xhr.responseText;
+        //console.log("text ", text);
 
         try {
             var json = JSON.parse(text);   // should wrap in try / catch
             var names = Object.keys(json);
         }
-        catch(err) {
+        catch (err) {
             estimateLadda.stop();
             selectLadda.stop();
             //console.log(err);
             alert('Error: Could not parse incoming JSON.');
         }
 
-      if (names[0] == "warning"){
-        warningcallback(btn);
-        alert("Warning: " + json.warning);
-      }else{
-        callback(btn, json);
-      }
+        if (names[0] == "warning") {
+            warningcallback(btn);
+            alert("Warning: " + json.warning);
+        } else {
+            callback(btn, json);
+        }
     };
-    xhr.onerror = function() {
+    xhr.onerror = function () {
         // note: xhr.readystate should be 4, and status should be 200.  a status of 0 occurs when the url becomes too large
-        if(xhr.status==0) {
+        if (xhr.status == 0) {
             alert('There was an error making the request. xmlhttprequest status is 0.');
         }
-        else if(xhr.readyState!=4) {
+        else if (xhr.readyState != 4) {
             alert('There was an error making the request. xmlhttprequest readystate is not 4.');
         }
         else {
@@ -1771,6 +1767,7 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonstring) {
         estimateLadda.stop();
         selectLadda.stop();
     };
+    console.log(jsonstring);
     xhr.send(jsonstring);
 }
 
@@ -1963,7 +1960,6 @@ function tabLeft(tab) {
 
     }//end of switch
 
-    console.log("Tab:"+tab);
     document.getElementById(tab).style.display = 'block';
 }
 
@@ -2240,18 +2236,11 @@ function leftpanelMedium() {
     .attr("class", "sidepanel container clearfix");
 }
 
-// function to convert color codes
-function hexToRgba(hex) {
-    var h=hex.replace('#', '');
-
-    var bigint = parseInt(h, 16);
-    var r = (bigint >> 16) & 255;
-    var g = (bigint >> 8) & 255;
-    var b = bigint & 255;
-    var a = '0.5';
-
-    return "rgba(" + r + "," + g + "," + b + "," + a + ")";
-}
+// converts color codes
+let hexToRgba = hex => {
+    let int = parseInt(hex.replace('#', ''), 16);
+    return `rgba(${[(int >> 16) & 255, (int >> 8) & 255, int & 255, '0.5'].join(',')})`;
+};
 
 // function takes a node and a color and updates zparams
 function setColors (n, c) {
@@ -2427,8 +2416,9 @@ function nodeReset (n) {
 
 function subsetSelect(btn) {
     if (dataurl) {
-	zparams.zdataurl = dataurl;
+        zparams.zdataurl = dataurl;
     }
+
 
     if(production && zparams.zsessionid=="") {
         alert("Warning: Data download is not complete. Try again soon.");
@@ -2441,21 +2431,24 @@ function subsetSelect(btn) {
     var subsetEmpty = true;
 
     // is this the same as zPop()?
-    for(var j =0; j < nodes.length; j++ ) { //populate zvars and zsubset arrays
+    for (var j = 0; j < nodes.length; j++) { //populate zvars and zsubset arrays
         zparams.zvars.push(nodes[j].name);
         var temp = nodes[j].id;
         zparams.zsubset[j] = allNodes[temp].subsetrange;
-        if(zparams.zsubset[j].length>0) {
-            if(zparams.zsubset[j][0]!="") {
+        if (zparams.zsubset[j].length > 0) {
+            if (zparams.zsubset[j][0] != "") {
                 zparams.zsubset[j][0] = Number(zparams.zsubset[j][0]);
             }
-            if(zparams.zsubset[j][1]!="") {
+            if (zparams.zsubset[j][1] != "") {
                 zparams.zsubset[j][1] = Number(zparams.zsubset[j][1]);
             }
         }
         zparams.zplot.push(allNodes[temp].plottype);
-        if(zparams.zsubset[j][1] != "") {subsetEmpty=false;} //only need to check one
+        if (zparams.zsubset[j][1] != "") {
+            subsetEmpty = false;
+        } //only need to check one
     }
+
 
     if(subsetEmpty==true) {
         alert("Warning: No new subset selected.");
@@ -2463,9 +2456,17 @@ function subsetSelect(btn) {
     }
 
     var outtypes = [];
-    for(var j=0; j < allNodes.length; j++) {
-        outtypes.push({varnamesTypes:allNodes[j].name, nature:allNodes[j].nature, numchar:allNodes[j].numchar, binary:allNodes[j].binary, interval:allNodes[j].interval,time:allNodes[j].time});
+    for (var j = 0; j < allNodes.length; j++) {
+        outtypes.push({
+            varnamesTypes: allNodes[j].name,
+            nature: allNodes[j].nature,
+            numchar: allNodes[j].numchar,
+            binary: allNodes[j].binary,
+            interval: allNodes[j].interval,
+            time: allNodes[j].time
+        });
     }
+
 
     var subsetstuff = {zdataurl:zparams.zdataurl, zvars:zparams.zvars, zsubset:zparams.zsubset, zsessionid:zparams.zsessionid, zplot:zparams.zplot, callHistory:callHistory, typeStuff:outtypes};
 
@@ -2477,7 +2478,8 @@ function subsetSelect(btn) {
     console.log("POST out: ", solajsonout);
 
 
-    function subsetSelectSuccess(btn,json) {
+
+    function subsetSelectSuccess(btn, json) {
         console.log(json);
         selectLadda.stop(); // stop motion
         $("#btnVariables").trigger("click"); // programmatic clicks
@@ -2499,7 +2501,9 @@ function subsetSelect(btn) {
         var myLog = jQuery.extend(true, [], logArray);
         var myHistory = jQuery.extend(true, [], callHistory);
 
+
         spaces[myspace] = {"allNodes":myNodes, "zparams":myParams, "trans":myTrans, "force":myForce, "preprocess":myPreprocess, "logArray":myLog, "callHistory":myHistory};
+
 
         // remove pre-subset svg
         var selectMe = "#m".concat(myspace);
@@ -2530,12 +2534,12 @@ function subsetSelect(btn) {
             // if in nodes, remove
             // gray out in left panel
             // make unclickable in left panel
-            for(var i=0; i < v.length; i++) {
-                var selectMe=v[i].replace(/\W/g, "_");
-                document.getElementById(selectMe).style.color=hexToRgba(grayColor);
+            for (var i = 0; i < v.length; i++) {
+                var selectMe = v[i].replace(/\W/g, "_");
+                document.getElementById(selectMe).style.color = hexToRgba(grayColor);
                 selectMe = "p#".concat(selectMe);
                 d3.select(selectMe)
-                .on("click", null);
+                    .on("click", null);
             }
         }
 
@@ -2544,13 +2548,13 @@ function subsetSelect(btn) {
         reWriteLog();
 
         d3.select("#innercarousel")
-        .append('div')
-        .attr('class', 'item active')
-        .attr('id', function(){
-              return "m".concat(myspace.toString());
-              })
-        .append('svg')
-        .attr('id', 'whitespace');
+            .append('div')
+            .attr('class', 'item active')
+            .attr('id', function () {
+                return "m".concat(myspace.toString());
+            })
+            .append('svg')
+            .attr('id', 'whitespace');
         svg = d3.select("#whitespace");
 
 
@@ -2603,7 +2607,6 @@ function subsetSelect(btn) {
 
     selectLadda.start(); //start button motion
     makeCorsRequest(urlcall,btn, subsetSelectSuccess, subsetSelectFail, solajsonout);
-
 }
 
 function readPlotLines(url,callback){
@@ -2613,36 +2616,6 @@ if(typeof callback === "function") {
             }
 
 
-}
-
-
-
-function readPreprocess(url, p, v, callback) {
-    //console.log(url);
-    //console.log("purl:",url);
-    d3.json(url, function(error, json) {
-            if (error) return console.warn(error);
-            var jsondata = json;
-
-            //console.log("inside readPreprocess function");
-            //console.log(jsondata);
-            //console.log(jsondata["variables"]);
-
-            if(jsondata.dataset.private){
-              private = jsondata["dataset"]["private"];
-            };
-
-            //copying the object
-            for(var key in jsondata["variables"]) {
-                p[key] = jsondata["variables"][key];
-            }
-            // console.log("we're here")
-            // console.log(p);
-
-            if(typeof callback === "function") {
-                callback();
-            }
-            });
 }
 
 /*
@@ -3022,45 +2995,64 @@ function fakeClick() {
 
 
 function d3date() {
+//    Code is located in app_ddi_eventdata_date.js
 }
 
+var d3loc_draw = false;
 function d3loc() {
-
-	drawMainGraph();
+//<<<<<<< HEAD
+	if(!d3loc_draw) {
+		d3loc_draw = true;
+		drawMainGraphLocation();
+	}
 }
 
+
+var d3action_draw = false;
 function d3action() {
+
+    if(!d3action_draw) {
+        d3action_draw = true;
+        drawMainGraphAction();
+    }
 }
+
 
 var actorDisplayed = false;
 function d3actor() {
-	if (!actorDisplayed) {
+	if (!actorDisplayed) {				//run this only once
 		$(document).ready(function() {
-			if (actorCodeLoaded) {			//if .js file has loaded, this variable will be true and defined
-				//update display variables
-				$("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
+			$("#actorSelectionDiv").css("height", $("#actorContainer").css("height"));
+			while (!actorDisplayed) {
+				if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded) {			//if .js file has loaded, this variable will be true and defined
+					//update display variables
+					$("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
 
-				actorWidth = actorSVG.node().getBoundingClientRect().width;
-				actorHeight = actorSVG.node().getBoundingClientRect().height;
+					actorWidth = actorSVG.node().getBoundingClientRect().width;
+					actorHeight = actorSVG.node().getBoundingClientRect().height;
 
-				boundaryLeft = Math.floor(actorWidth/2) - 20;
-				boundaryRight = Math.ceil(actorHeight/2) + 20;
+					boundaryLeft = Math.floor(actorWidth/2) - 40;
+					boundaryRight = Math.ceil(actorWidth/2) + 40;
 
-				actorSVG.append("path").attr("d", function() {
-					return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;
-				}).attr("stroke", "black");
-
-				//~ actorSVG.append("path").attr("d", function() {
-					//~ return "M0,1H" + actorWidth;
-				//~ }).attr("stroke", "black");
-				
-				actorForce.stop();
-				actorForce = actorForce.size([actorWidth, actorHeight]).start();
-				updateAll();
-				actorDisplayed = true;
+					actorSVG.append("path").attr("id", "centerLine").attr("d", function() {
+						return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;
+					}).attr("stroke", "black");
+					
+					actorForce.force("x", d3.forceX().x(function(d) {
+						if (d.actor == "source")
+							return Math.floor(actorWidth/3);
+						return Math.floor(2*actorWidth/3);
+					}).strength(0.06))
+					.force("y", d3.forceY().y(function(d) {
+						return Math.floor(actorHeight/2);
+					}).strength(0.05));
+					updateAll();
+					actorDisplayed = true;
+				}
 			}
 		});
 	}
+
 }
 //actor code moved to app_ddi_eventdata_actor.js
 
@@ -3081,33 +3073,29 @@ function d3actor() {
 
 
 /**
- * Draw the main graph
+ * Draw the main graph for Location
  *
  **/
 
-function drawMainGraph() {
-
-	if(mapGraphSVG["main_graph"] != null) {
-		return;
-	}
-
+function drawMainGraphLocation() {
+	
 	$("#subsetLocation").append('<div class="container"><div id="subsetLocation_panel" class="row"></div></div>');
 
-	$("#subsetLocation_panel").append("<div class='col-xs-4' id='subsetLocationDivL'></div>");
+	$("#subsetLocation_panel").append("<div class='col-xs-4 location_left' id='subsetLocationDivL'></div>");
 	$("#subsetLocation_panel").append("<div class='col-xs-4 location_right'><div class='affix' id='subsetLocationDivR'></div></div>");
 
-	$("#subsetLocationDivL").append("<table id='svg_graph_table' border='1' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
+	$("#subsetLocationDivL").append("<table id='svg_graph_table' border='0' align='center'><tr><td id='main_graph_td' class='graph_config'></td></tr></table>");
 
-	$("#subsetLocationDivR").append('<div align="center"><table id="country_table" border="1" align="center"><tr><td>Location: <label style="cursor:pointer"><span class="glyphicon glyphicon-repeat glyphicon_border" onclick="javascript:removeFromCountryList(\'reset_all\')"></span></label></td></tr><tr><th>List of Selected Countries</th></tr><tr><td id="country_list"></td></tr></table></div>');
+	$("#subsetLocationDivR").append('<div align="center"><table id="country_table" border="0" align="center"><tr><th id="country_table_th" class="country_table_odd"></th></tr><tr><td id="country_list" class="country_table_config country_table_even"></td></tr></table></div>');
+    $("#country_table_th").append('<label align="right" id="Expand_Collapse_Country_Text" class="hide_label">Collapse</label>');
+    $("#country_table_th").append('<label>Selected Countries &nbsp;&nbsp;</label><label style="cursor:pointer"  onclick = "javascript:countryTableAction(\'Expand_Collapse\')"><span id="Exp_Col_Country_Icon" class="glyphicon glyphicon-resize-small btn btn-default"></span></label>');
 
-	$("#country_list").append("<div style='height:300px; overflow-y: scroll;'><table align='center' id='country_list_tab'></table></div>");
-
-	$("#subsetLocationDivR").append('<div align="center"><br/><br/><button onclick="javascript:locationStage();">Stage</button></div>');
+	$("#country_list").append("<div style='height:300px; width:220px; overflow-y: scroll;'><table align='center' id='country_list_tab'></table></div>");
 
 	mainGraphLabel();
 
 	var svg = d3.select("#main_graph_td").append("svg:svg")
-        .attr("width",  500)
+        .attr("width",  480)
         .attr("height", 350)
 		.attr("id", "main_graph_svg");
 
@@ -3116,6 +3104,48 @@ function drawMainGraph() {
 	render(false, 0);
 }
 
+
+/**
+ * Draw the main graph for Action
+ *
+ **/
+var map_action_lookup = new Map();
+var map_rootcode_lookup = new Map();
+var arr_action_data = [];
+var arr_rootcode_data = [];
+var map_action_pid_pname = new Map();
+var mapActionGraphSVG = new Object();
+function drawMainGraphAction() {
+
+
+    $("#subsetAction").append('<div class="container"><div id="subsetAction_panel" class="row"></div></div>');
+
+    $("#subsetAction_panel").append("<div class='col-xs-4 location_left' id='subsetActionDivL'></div>");
+    $("#subsetAction_panel").append("<div class='col-xs-4 location_right'><div class='affix' id='subsetActionDivR'></div></div>");
+
+    $("#subsetActionDivL").append("<table id='svg_graph_table_action' border='0' align='center'><tr><td id='main_graph_action_td_1' class='graph_config'></td></tr><tr><td id='main_graph_action_td_2' class='graph_config'></td></tr></table>");
+
+    //actionGraphLabel("main_graph_action_td_1");
+    //actionGraphLabel("main_graph_action_td_2");
+
+    var svg1 = d3.select("#main_graph_action_td_1").append("svg:svg")
+        .attr("width",  480)
+        .attr("height", 350)
+        .attr("id", "main_graph_action_svg_1");
+
+    var svg2 = d3.select("#main_graph_action_td_2").append("svg:svg")
+        .attr("width",  480)
+        .attr("height", 350)
+        .attr("id", "main_graph_action_svg_2");
+
+    mapActionGraphSVG["main_graph_action_1"] = svg1;
+    mapActionGraphSVG["main_graph_action_2"] = svg2;
+
+    renderActionGraph(svg1, 1);
+    renderActionGraph(svg2, 2);
+
+
+}
 
 /**
  * render to render/draw the main/sub graph with the data provided in form of array of Objects
@@ -3185,8 +3215,8 @@ function render(blnIsSubgraph, cid){
 					var rdata = new Object();
 					rdata.rid = rid;
 					rdata.rname = region;
-					rdata.freq = 1;
-					rdata.maxCFreq = d.freq;
+					rdata.freq = parseInt(d.freq);
+					rdata.maxCFreq = parseInt(d.freq);
 					rdata.countries = arr_countries;
 					rdata.country_names = arr_country_names;
 
@@ -3200,7 +3230,7 @@ function render(blnIsSubgraph, cid){
 
 					var currrid = map_location_rid_rname.get(region);
 					var rdata = arr_location_region_data[currrid];
-					var freq = rdata.freq + 1;
+					var freq = rdata.freq + parseInt(d.freq);
 					rdata.freq = freq;
 					rdata.countries.push(d);
 					rdata.country_names.push(d.cname);
@@ -3232,6 +3262,7 @@ function render(blnIsSubgraph, cid){
 			.call(d3.axisBottom(x).ticks(5).tickFormat(function(d) { return parseInt(d); }).tickSizeInner([-height]));
 
 			g.append("g")
+                .attr("id", "y_axis_main")
 			.attr("class", "y axis")
 			.call(d3.axisLeft(y));
 
@@ -3247,6 +3278,17 @@ function render(blnIsSubgraph, cid){
 				.attr("width", function(d) { return x(d.freq); })
 				.attr("onclick",  function (d) { mapGraphSVG[d.rid] = null; return "javascript:constructSubgraph('"+d.rid+"')"; })
 				.attr("id", function(d) { return "tg_rect_" + d.rid; });
+
+            g.selectAll(".bar_click")
+                .data(arr_location_region_data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar_click")
+                .attr("height", y.bandwidth())
+                .attr("width", function(d) { return width - x(d.freq); })
+                .attr("x", function (d) { return x(d.freq);})
+                .attr("y", function (d) { return y(d.rname);})
+                .attr("onclick",  function (d) { return "javascript:constructSubgraph('"+d.rid+"')"; });
 
 			g.selectAll(".bar_label")
 				.data(arr_location_region_data)
@@ -3318,12 +3360,23 @@ function render(blnIsSubgraph, cid){
 			.attr("y", function(d) {
 			mapSubGraphIdCname[d.cname] = cid + "_" + d.id;
 			if(mapListCountriesSelected[d.cname] == null) {mapListCountriesSelected[d.cname] = false;}
-			return y(d.cname) +  + (y.bandwidth() - d3.min([y.bandwidth(), MAX_HEIGHT]))/2; })
+			return y(d.cname) +  (y.bandwidth() - d3.min([y.bandwidth(), MAX_HEIGHT]))/2; })
 			.attr("width", function(d) { return x(d.freq); })
 			.attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; })
 			.attr("id", function(d) { return "tg_rect_" + cid + "_" + d.id; })
 			.append("svg:title")
 			.text(function(d) { return d.fullcname; });
+
+            g.selectAll(".bar_click")
+            .data(arr_countries)
+            .enter()
+            .append("rect")
+            .attr("class", "bar_click")
+            .attr("height", d3.min([y.bandwidth(), MAX_HEIGHT]))
+            .attr("width", function(d) { return width - x(d.freq); })
+            .attr("x", function (d) { return x(d.freq);})
+            .attr("y", function (d) { return y(d.cname) +  (y.bandwidth() - d3.min([y.bandwidth(), MAX_HEIGHT]))/2;})
+                .attr("onclick",  function (d) { return "javascript:subgraphYLabelClicked('"+d.cname+"')"; });
 
 			g.selectAll(".bar_label")
 			.data(arr_countries)
@@ -3382,7 +3435,7 @@ function constructSubgraph(cid) {
 	subGraphLabel(cid);
 
 	var svg = d3.select("#sub_graph_td_"+cid).append("svg:svg")
-       .attr("width",  500)
+       .attr("width",  480)
        .attr("height", 350)
 	   .attr("id", "sub_graph_td_svg_"+cid);
 
@@ -3454,6 +3507,39 @@ function maingraphAction(action) {
 	}
 }
 
+/**
+ * countryTableAction -> to map the header function {All, None, Expand/Collapse} for the countryTable
+ *
+ **/
+function countryTableAction(action) {
+
+    if(action == 'Expand_Collapse') {
+
+        action = $('#Expand_Collapse_Country_Text').text();
+    }
+
+    if(action == 'Collapse') {
+
+        $("#Expand_Collapse_Country_Text").text("Expand");
+
+        $("#Exp_Col_Country_Icon").removeClass("glyphicon-resize-small");
+        $("#Exp_Col_Country_Icon").addClass("glyphicon-resize-full");
+
+
+        $("#country_list").removeClass('country_table_config');
+        $("#country_list").addClass('country_table_collapse');
+    }
+    else if(action == 'Expand') {
+
+        $("#Expand_Collapse_Country_Text").text("Collapse");
+
+        $("#Exp_Col_Country_Icon").removeClass("glyphicon-resize-full");
+        $("#Exp_Col_Country_Icon").addClass("glyphicon-resize-small");
+
+        $("#country_list").removeClass('country_table_collapse');
+        $("#country_list").addClass('country_table_config');
+    }
+}
 
 /**
  * subgraphAction-> to map the subgraph function {All, None, Expand/Collapse}
@@ -3569,8 +3655,8 @@ function mainGraphLabel() {
 	$("#main_graph_td_div").append("&nbsp; &nbsp; &nbsp;");
 
 
-	var label11 = $('<label title="Expand All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" id="Main_All" onclick = "javascript:maingraphAction(\'All\')">All</label></span></label>');
-	var label12 = $('<label title="Collapse All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" id="Main_None" onclick = "javascript:maingraphAction(\'None\')">None</label></span></label>');
+	var label11 = $('<label title="Expand All" onclick = "javascript:maingraphAction(\'All\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right" id="Main_All">All</label></span></label>');
+	var label12 = $('<label title="Collapse All"  onclick = "javascript:maingraphAction(\'None\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right" id="Main_None">None</label></span></label>');
 	$("#main_graph_td_div").append(label11);
 	$("#main_graph_td_div").append("&nbsp; &nbsp; &nbsp;");
 	$("#main_graph_td_div").append(label12);
@@ -3578,7 +3664,7 @@ function mainGraphLabel() {
 
 	var label2 = $('<label align="right" id="Expand_Collapse_Main_Text" class="hide_label">Collapse</label>');
 	$("#main_graph_td_div").append(label2);
-	var label3 = $('<label style="cursor:pointer"><span class="glyphicon glyphicon-resize-small gi-2x glyphicon_border" id="Exp_Col_Icon" onclick = "javascript:maingraphAction(\'Expand_Collapse\')"></span></label>');
+	var label3 = $('<label style="cursor:pointer"  onclick = "javascript:maingraphAction(\'Expand_Collapse\')"><span class="glyphicon glyphicon-resize-small btn btn-default" id="Exp_Col_Icon"></span></label>');
 	$("#main_graph_td_div").append(label3);
 
 }
@@ -3596,15 +3682,15 @@ function subGraphLabel(cid) {
 	$("#sub_graph_td_div_"+cid).append(label1);
 	$("#sub_graph_td_div_"+cid).append("&nbsp;&nbsp;&nbsp;");
 
-	var label11 = $('<label title="Select All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" onclick = "javascript:subgraphAction(\'All_'+cid+'\')">All</label></span></label>');
-	var label12 = $('<label title="Remove All"><span class="glyphicon gi-2x glyphicon_border"><label style="cursor:pointer; text-align:center; width:100px;" align="right" onclick = "javascript:subgraphAction(\'None_'+cid+'\')">None</label></span></label>');
+	var label11 = $('<label title="Select All"  onclick = "javascript:subgraphAction(\'All_'+cid+'\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right">All</label></span></label>');
+	var label12 = $('<label title="Remove All"  onclick = "javascript:subgraphAction(\'None_'+cid+'\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right">None</label></span></label>');
 	$("#sub_graph_td_div_"+cid).append(label11);
 	$("#sub_graph_td_div_"+cid).append("&nbsp; &nbsp; &nbsp;");
 	$("#sub_graph_td_div_"+cid).append(label12);
 	$("#sub_graph_td_div_"+cid).append("&nbsp; &nbsp; &nbsp;");
 
 
-	var label2 = $('<label style="cursor:pointer"><span class="glyphicon glyphicon-resize-small gi-2x glyphicon_border" id="Exp_Col_Icon_'+cid+'" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cid+'\')"></span></label>');
+	var label2 = $('<label style="cursor:pointer" onclick="javascript:subgraphAction(\'expand_collapse_text_'+cid+'\')"><span class="glyphicon glyphicon-resize-small btn btn-default" id="Exp_Col_Icon_'+cid+'"></span></label>');
 	$("#sub_graph_td_div_"+cid).append(label2);
 
 	var label = $('<label class="hide_label" id="expand_collapse_text_'+cid+'">Collapse</label>');
@@ -3634,10 +3720,8 @@ function updateCountryList() {
 			$("#country_list_tab").append('<tr><td><label class="strike_through" style="cursor:pointer" onclick="javascript:removeFromCountryList(\''+country+'\');">' + country +'</label></td></tr>');
 			$("#tg_rect_"+ main_subGraphId).attr("class", "bar_all_selected");
 			mapLocalMainGraphIdWithSubGraphCnameList[mainGraphId].push(country);
-
 		}
 		else {
-
 			$("#tg_rect_"+ main_subGraphId).attr("class", "bar");
 		}
 	}
@@ -3667,7 +3751,6 @@ function removeFromCountryList(cname) {
 		for(var country in mapListCountriesSelected) {
 			mapListCountriesSelected[country] = false;
 		}
-
 	}
 	else {
 
@@ -3695,6 +3778,24 @@ window.onresize = rightpanelMargin;
 rightpanelMargin();
 
 function rightpanelMargin() {
+	//actor resize on window resize handled here
+	if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded) {	//handle only if actor code is loaded
+		$("#actorSelectionDiv").css("height", $("#actorContainer").css("height"));
+		console.log("in height manage");
+		console.log(sourceSize + " " + targetSize + " " + calcCircleNum());
+		if (sourceSize <= calcCircleNum() && targetSize <= calcCircleNum()) {		//if link div is empty enough, maintain height alignment
+			console.log("change");
+		//~ $("#actorLinkDiv").height(function(n, c){return c + actorNodeR;});
+		//~ actorSVG.attr("height", actorHeight);
+		
+			$("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
+			console.log("SVG height: " + $("#actorLinkSVG").css("height"));
+			actorHeight = actorSVG.node().getBoundingClientRect().height;
+			//~ d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+		}
+	}
+
+	//original code
     main = $("#main");
     if (main.get(0).scrollHeight > main.get(0).clientHeight) {
         // Vertical scrollbar
@@ -3734,4 +3835,346 @@ function getMapLocationLookup() {
 			map_location_lookup.set(d.fullcname , d.rname);
 		});
 	});
+}
+
+/**
+ * ACTION
+ *
+ */
+function getMapActionLookup() {
+
+    d3.csv("data/actionlookup.csv", function(data) {
+
+        data.forEach(function(d) {
+
+            map_action_lookup.set(d.EventRootCode + "" , d.PentaClass + "");
+
+            var obj = new Object();
+            obj.EventRootCode = d.EventRootCode;
+            obj.PentaClass = d.PentaClass;
+            obj.Description = d.Description;
+
+            var lst = [];
+            if(map_rootcode_lookup.has(d.PentaClass)) {
+
+                lst = map_rootcode_lookup.get(d.PentaClass)
+            }
+            lst.push(obj);
+            map_rootcode_lookup.set(d.PentaClass, lst);
+
+        });
+
+        var itr = map_rootcode_lookup.keys();
+
+        var key = itr.next();
+        var id = -1;
+        do {
+
+            if (key.value != undefined) {
+                var lst = map_rootcode_lookup.get(key.value+"");
+
+                var obj = new Object();
+                obj.PentaClass = key.value + "";
+                obj.freq = lst.length;
+
+                arr_rootcode_data[++id] = obj;
+            }
+
+            key = itr.next();
+
+        }while(key.value != undefined);
+    });
+}
+
+/**
+ * actionGraphLabel - to put the header Labels in the main graph of Action
+ *
+ **/
+function actionGraphLabel(tdId) {
+
+    $("#"+tdId).append('<div id="main_graph_action_td_div"></div>');
+
+    var label = $('<label align="right" id="EventRootCode">EventRootCode:</label>');
+
+    var divId = tdId + "_div";
+
+    $("#"+divId).append(label);
+    $("#"+divId).append("&nbsp; &nbsp; &nbsp;");
+
+
+    var label11 = $('<label title="Expand All" onclick = "javascript:actionGraphAction(\'All\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right" id="Action_Main_All">All</label></span></label>');
+    var label12 = $('<label title="Collapse All"  onclick = "javascript:actionGraphAction(\'None\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right" id="Action_Main_None">None</label></span></label>');
+    $("#"+divId).append(label11);
+    $("#"+divId).append("&nbsp; &nbsp; &nbsp;");
+    $("#"+divId).append(label12);
+    $("#"+divId).append("&nbsp; &nbsp; &nbsp;");
+
+    var label2 = $('<label align="right" id="Expand_Collapse_ACtion_Text" class="hide_label">Collapse</label>');
+    $("#"+divId).append(label2);
+    var label3 = $('<label style="cursor:pointer"  onclick = "javascript:actionGraphAction(\'Expand_Collapse\')"><span class="glyphicon glyphicon-resize-small btn btn-default" id="Action_Exp_Col_Icon"></span></label>');
+    $("#"+divId).append(label3);
+
+}
+
+/**
+ * render Action Graph
+ * @param blnIsSubgraph
+ * @param cid
+ */
+function renderActionGraph(svg, gid){
+
+
+        console.log("Rendering Main Action Graph...");
+
+        var maxDomainX = 1;
+
+        var margin = {top: 20, right: 20, bottom: 30, left: 135},
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom;
+
+        var x = d3.scaleLinear().range([0, width]);
+        var y = d3.scaleBand().range([height, 0]);
+
+    if(gid == 1) {
+
+        d3.tsv("data/actionplot.tsv", getMapActionLookup(), function (data) {
+
+            var pid = -1;
+            data.forEach(function (d) {
+
+                var eventRootCode = (d.RootCode).toString();
+                var eventRootCode_2Ch = eventRootCode.length < 2 ? "0" + eventRootCode : eventRootCode.substr(0, 2);
+
+                var pentaClass = "-1";
+
+                if (map_action_lookup.has(eventRootCode_2Ch)) {
+
+                    pentaClass = map_action_lookup.get(eventRootCode_2Ch) + "";
+                }
+
+
+                if (!map_action_pid_pname.has(pentaClass)) {
+
+                    pid++;
+                    var arr_data = [];
+                    arr_data.push(d);
+
+                    var pdata = new Object();
+                    pdata.pid = pid;
+                    pdata.pentaClass = pentaClass + "";
+                    pdata.freq = parseInt(d.freq);
+                    pdata.maxCFreq = parseInt(d.freq);
+                    pdata.arr_data = arr_data;
+
+                    arr_action_data[pid] = pdata;
+
+                    map_action_pid_pname.set(pentaClass, pid);
+                    map_action_pid_pname.set(pid, pentaClass);
+
+                }
+                else {
+
+                    var currPid = map_action_pid_pname.get(pentaClass);
+                    var pdata = arr_action_data[currPid];
+
+                    var freq = pdata.freq + parseInt(d.freq);
+                    pdata.freq = freq;
+                    pdata.arr_data.push(d);
+
+                    var cFreq = parseInt(d.freq);
+                    if (cFreq > pdata.maxCFreq) {
+                        pdata.maxCFreq = cFreq;
+                    }
+
+                    arr_action_data[currPid] = pdata;
+
+                    if (freq > maxDomainX) {
+                        maxDomainX = freq;
+                    }
+                }
+
+            });
+
+
+            x.domain([0, maxDomainX]);
+            y.domain(arr_action_data.map(function (d) {
+                return d.pentaClass;
+            })).padding(0.1);
+
+            var g = svg.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            g.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x).ticks(5).tickFormat(function (d) {
+                    return parseInt(d);
+                }).tickSizeInner([-height]));
+
+            g.append("g")
+                .attr("class", "y axis")
+                .call(d3.axisLeft(y));
+
+
+            g.selectAll(".bar")
+                .data(arr_action_data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", 0)
+                .attr("height", y.bandwidth())
+                .attr("y", function (d) {
+                    return y(d.pentaClass);
+                })
+                .attr("width", function (d) {
+                    return x(d.freq);
+                })
+                .attr("onclick", function (d) {
+                    mapActionGraphSVG[d.pid] = null;
+                    return "javascript:alert('" + d.pid + "')";
+                })
+                .attr("id", function (d) {
+                    return "tg_rect_action_" + d.pid;
+                });
+
+            g.selectAll(".bar_click")
+                .data(arr_action_data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar_click")
+                .attr("height", y.bandwidth())
+                .attr("width", function (d) {
+                    return width - x(d.freq);
+                })
+                .attr("x", function (d) {
+                    return x(d.freq);
+                })
+                .attr("y", function (d) {
+                    return y(d.pentaClass);
+                })
+                .attr("onclick", function (d) {
+                    return "javascript:alert('" + d.pid + "')";
+                });
+
+            g.selectAll(".bar_label")
+                .data(arr_action_data)
+                .enter()
+                .append("text")
+                .attr("class", "bar_label")
+                .attr("x", function (d) {
+                    return x(d.freq) + 5;
+                })
+                .attr("y", function (d) {
+                    return y(d.pentaClass) + y.bandwidth() / 2 + 4;
+                })
+                .text(function (d) {
+                    return "" + d.freq;
+                });
+
+            g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate(" + (-115) + "," + (height / 2) + ")rotate(-90)")
+                .attr("class", "graph_axis_label")
+                .text("PentaClass");
+
+
+            g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate(" + (width / 2) + "," + (height + 30) + ")")
+                .attr("class", "graph_axis_label")
+                .text("Frequency");
+
+
+        });
+    }
+
+    else if (gid == 2) {
+
+
+        d3.csv("data/actionlookup.csv", function (data) {
+
+            x.domain([0, d3.max(data, function(d) { return d.freq; })]);
+            y.domain(arr_rootcode_data.map(function (d) {
+                return d.PentaClass + "";
+            })).padding(0.1);
+
+            var g = svg.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            g.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x).ticks(5).tickFormat(function (d) {
+                    return parseInt(d);
+                }).tickSizeInner([-height]));
+
+            g.append("g")
+                .attr("class", "y axis")
+                .call(d3.axisLeft(y));
+
+
+            g.selectAll(".bar")
+                .data(arr_rootcode_data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", 0)
+                .attr("height", y.bandwidth())
+                .attr("y", function (d) {
+                    return y(d.PentaClass);
+                })
+                .attr("width", function (d) {
+                    return x(d.freq);
+                });
+
+
+
+            g.selectAll(".bar_click")
+                .data(arr_rootcode_data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar_click")
+                .attr("height", y.bandwidth())
+                .attr("width", function (d) {
+                    return width - x(d.freq);
+                })
+                .attr("x", function (d) {
+                    return x(d.freq);
+                })
+                .attr("y", function (d) {
+                    return y(d.PentaClass);
+                });
+
+
+            g.selectAll(".bar_label")
+                .data(arr_rootcode_data)
+                .enter()
+                .append("text")
+                .attr("class", "bar_label")
+                .attr("x", function (d) {
+                    return x(d.freq) + 5;
+                })
+                .attr("y", function (d) {
+                    return y(d.PentaClass) + y.bandwidth() / 2 + 4;
+                })
+                .text(function (d) {
+                    return "" + d.freq;
+                });
+
+            g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate(" + (-115) + "," + (height / 2) + ")rotate(-90)")
+                .attr("class", "graph_axis_label")
+                .text("PentaClass");
+
+
+            g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate(" + (width / 2) + "," + (height + 30) + ")")
+                .attr("class", "graph_axis_label")
+                .text("Frequency");
+
+
+        });
+    }
 }

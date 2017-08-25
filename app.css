@@ -195,7 +195,10 @@ table tr td{
 #rightpanel #rightContentArea div.active {display:block;}
 
 #rightpanel.closepanel {width:1px;}
-#rightpanel.closepanel #rightpaneltitle, #rightpanel.closepanel #queryTree, #rightpanel.closepanel #rightpanelButtonBar {display:none;}
+#rightpanel.closepanel #rightpaneltitle,
+#rightpanel.closepanel #queryVariables,
+#rightpanel.closepanel #querySubsets,
+#rightpanel.closepanel #rightpanelButtonBar {display:none;}
 
 
 div.sidepanel div.panelbar {
@@ -237,7 +240,6 @@ div.sidepanel div.panelbar span {
     background-color: #428bca;
     border-color: #357ebd;
 }
-
 
 #main {
     margin-left:270px;
@@ -1022,6 +1024,22 @@ display: inline;}
 	-webkit-transition: all 1s ease;
 }
 
+.country_table_collapse {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 0px;
+    width:auto;
+    -webkit-transition: all 1s ease;
+}
+
+.country_table_config {
+    overflow: hidden;
+    display:inline-block; /* or float:left; */
+    height: 300px;
+    width:auto;
+    -webkit-transition: all 1s ease;
+}
+
 .hide_label {
 	display:none;
 }
@@ -1037,6 +1055,13 @@ display: inline;}
 	fill: steelblue;
 	cursor: pointer;
 }
+
+.bar_click {
+    fill:white;
+    cursor: pointer;
+    opacity: 0;
+}
+
 
 .bar_all_selected {
 	fill: brown;
@@ -1086,15 +1111,33 @@ display: inline;}
 .location_right {
 	width:auto;
 	position:absolute;
-	top:10%;
+    top:11px;
 	left:50%;
 }
 
+.location_left {
+    top:11px;
+    width:220px;
+}
+
+#svg_graph_table tr:nth-child(odd) {
+    background: #ADADAD;
+}
+
+#svg_graph_table tr:nth-child(even) {
+    background: #ADADAD;
+}
+
+.country_table_odd {
+    background: #ADADAD;
+}
+
+.country_table_even {
+    background: #F9F9F9;
+}
 
 .strike_through:hover {
 	text-decoration: line-through;
-	background-color: steelblue;
-	color: white;
 }
 
 /*begin styling for actor*/
@@ -1211,29 +1254,68 @@ div.actorTab button.active {
 }
 
 #actorContainer {
+/*
 	width: calc(100% - 335px);
+*/
+	width: 1100px;
+
 	height: calc(100% - 20px);
 	margin-top:10px;
 }
 
 #actorSelectionDiv {
+/*
+position:relative;
+display:inline-block;
+left:-350px;
+*/
+/*
 	float: left;
+*/
+	position: fixed;
+/*
+	float:left;
+*/
+
 	width: 350px;
+/*
 	height: 100%;
+*/
 	border: 1px solid #ADADAD;
 	background: #F9F9F9;
 	margin-bottom: 3px;
 }
 
 #actorLinkDiv {
+/*
+position:relative;
+display:inline-block;
+*/
+/*
+vertical-align:top;
+*/
+/*
+top:0px;					/*no float in order to keep margin*/
+
+/*
 	margin-left: 350px;
+*/
+/*
+margin-left:-350px;
+*/
+	margin-left:350px;
+	float:left;
+	margin-right: 100px;
+
 	width: 640px;
 	height: 627px;
 	border: 1px solid #ADADAD;
 }
 
 .actorBottom {
-	margin-top:-2px;
+	margin-top: -5px;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 .actorNewGroup {
@@ -1330,8 +1412,8 @@ div.actorTab button.active {
 	-ms-user-select: none;
 	-o-user-select: none;
 	user-select: none;
-	height: calc(100% - 19px);
-	width: 100%;
+	height: calc(100% - 19px) !important;
+	width: 100% !important;
 }
 
 path.link {

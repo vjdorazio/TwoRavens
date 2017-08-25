@@ -65,7 +65,7 @@ var sourceCurrentNode = null;			//current source node that is selected
 var targetCurrentNode = null;
 var currentSize = 0;					//total number of nodes
 var sourceSize = 0;						//total number of source nodes
-var targetSize = 0;
+var targetSize = 0;						//total number of target nodes
 var changeID = 0;						//number that is updated whenever a node is added/changed, set to actorID
 
 //begin force definitions
@@ -80,12 +80,23 @@ var boundaryRight = Math.ceil(actorWidth/2) + 20;		//max x coordinate target nod
 
 var actorNodeR = 40;									//various definitions for node display
 var actorPadding = 5;
-var actorColors = d3.scale.category20();
+var actorColors = d3.scaleOrdinal(d3.schemeCategory20);
 var pebbleBorderColor = '#fa8072';
 
-var actorForce = d3.layout.force().nodes(actorNodes).links(actorLinks).size([actorWidth, actorHeight]).linkDistance(150).charge(-600).start();		//defines the force layout
+var actorForce = d3.forceSimulation()
+    .force("link", d3.forceLink().distance(100).strength(0.5))	//link force to keep nodes together
+    .force("x", d3.forceX().x(function(d) {					//grouping by nodes
+		if (d.actor == "source")
+			return Math.floor(actorWidth/3);
+		return Math.floor(2*actorWidth/3);
+	}).strength(0.06))
+	.force("y", d3.forceY().y(function(d) {					//cluster nodes
+		return Math.floor(actorHeight/2);
+	}).strength(0.05))
+	.force('charge', d3.forceManyBody().strength(-100));	//prevent tight clustering
 
-var node_drag = d3.behavior.drag().on("dragstart", dragstart).on("drag", dragmove).on("dragend", dragend);		//defines the drag
+
+var node_drag = d3.drag().on("start", dragstart).on("drag", dragmove).on("end", dragend);		//defines the drag
 
 var dragStarted = false;		//determines if dragging
 var dragSelect = null;			//node that has started the drag
@@ -185,10 +196,12 @@ function dragend(d, i) {
 		//now set gui to show dragTarget data
 		window[dragTarget.actor + "CurrentNode"] = dragTarget;
 		$("#" + dragTarget.actor + "TabBtn").trigger("click");
+		currentTab = dragTarget.actor;								//sanity check
 		updateGroupName(window[currentTab + "CurrentNode"].name);
 		$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
 
-		$("#" + currentTab + "ShowSelected").trigger("click");
+		$("#" + currentTab + "ShowSelected").prop("checked", true);
+		showSelected($("#" + currentTab + "ShowSelected")[0]);
 		
 		updateAll();
 	}
@@ -197,7 +210,7 @@ function dragend(d, i) {
 	dragTarget = null;
 	dragTargetHTML = null;
 	tick();
-	actorForce.start();
+	actorForce.alpha(1).restart();
 }
 
 //updates elements in SVG, nodes updated on actorID
@@ -205,7 +218,10 @@ function updateSVG(){
 	//update links
 	linkGroup = linkGroup.data(actorLinks);
 
-	linkGroup.enter().append('svg:path')
+	// remove old links
+	linkGroup.exit().remove();
+	
+	linkGroup = linkGroup.enter().append('svg:path')
 		.attr('class', 'link')
 		.style('marker-start', function(d) { return d.source.actor == "target" ? 'url(#start-arrow)' : ''; })
 		.style('marker-end', function(d) { return d.target.actor == "target" ? 'url(#end-arrow)' : ''; })
@@ -217,78 +233,91 @@ function updateSVG(){
 				}
 			}
 			updateAll();
-		});
+		})
+		.merge(linkGroup);
 		
-	// remove old links
-	linkGroup.exit().remove();
 
 	//now update nodes
 	nodeGroup = nodeGroup.data(actorNodes, function(d){return d.actorID;});
 
+	nodeGroup.exit().remove();		//remove any nodes that are not part of the display
+
 	//define circle for node
-	var innerNode = nodeGroup.enter().append("g").attr("id", function(d){return d.name + "Group";}).call(node_drag);
-	innerNode.append("circle").attr("class", "actorNode").attr("r", actorNodeR)
-		.style('fill', function(d){return d.nodeCol;})
-		.style('opacity', "0.5")
-		.style('stroke', pebbleBorderColor)
-		.style("pointer-events", "all")
-		.on("contextmenu", function(d){		//begins drag line drawing for linking nodes
-			d3.event.preventDefault();
-			d3.event.stopPropagation();		//prevents mouseup on node
+	nodeGroup = nodeGroup.enter().append("g").attr("id", function(d){return d.name.replace(/\s/g,'') + "Group";}).call(node_drag)
+		.each(function(d) {
+			d3.select(this).append("circle").attr("class", "actorNode").attr("r", actorNodeR)
+				.style('fill', function(d){return d.nodeCol;})
+				.style('opacity', "0.5")
+				.style('stroke', pebbleBorderColor)
+				.style("pointer-events", "all")
+				.on("contextmenu", function(d){		//begins drag line drawing for linking nodes
+					d3.event.preventDefault();
+					d3.event.stopPropagation();		//prevents mouseup on node
 
-			originNode = d;
+					originNode = d;
 
-			drag_line.style('marker-end', function(){		//displays arrow in proper direction (source->target and target->source)
-					if (d.actor == "source")
-						return 'url(#end-arrow)';
-					else
-						return '';
+					drag_line.style('marker-end', function(){		//displays arrow in proper direction (source->target and target->source)
+							if (d.actor == "source")
+								return 'url(#end-arrow)';
+							else
+								return '';
+						})
+						.style('marker-start', function(){
+							if (d.actor == "target")
+								return 'url(#start-arrow)';
+							else
+								return '';
+						})
+						.classed('hidden', false).attr('d', 'M' + originNode.x + ',' + originNode.y + 'L' + originNode.x + ',' + originNode.y);
+
+					actorSVG.on('mousemove', lineMousemove);
 				})
-				.style('marker-start', function(){
-					if (d.actor == "target")
-						return 'url(#start-arrow)';
-					else
-						return '';
+				.on("mouseup", function(d){			//creates link		//for some reason, this no longer fires
+					d3.event.stopPropagation();		//prevents mouseup on svg
+					createLink(d);
+					nodeClick(d);
+					mousedownNode = null;
 				})
-				.classed('hidden', false).attr('d', 'M' + originNode.x + ',' + originNode.y + 'L' + originNode.x + ',' + originNode.y);
+				.on("mousedown", function(d){		//creates link if mouseup did not catch
+					createLink(d);
+					nodeClick(d);
+				})
+				.on("mouseover", function(d){		//displays animation for visual indication of mouseover while dragging and sets tooltip
+					if(dragSelect && dragSelect != d && dragSelect.actor == d.actor) {
+						d3.select(this).transition().attr("r", actorNodeR + 10);
+						dragTarget = d;
+						dragTargetHTML = this;
+					}
 
-			actorSVG.on('mousemove', lineMousemove);
-		})
-		.on("mouseup", function(d){			//creates link
-			d3.event.stopPropagation();		//prevents mouseup on svg
-			createLink(d);
-			nodeClick(d);
-			mousedownNode = null;
-		})
-		.on("mousedown", function(d){		//creates link if mouseup did not catch
-			createLink(d);
-			mousedownNode = d;
-		})
-		.on("mouseover", function(d){		//displays animation for visual indication of mouseover while dragging and sets tooltip
-			if(dragSelect && dragSelect != d && dragSelect.actor == d.actor) {
-				d3.select(this).transition().attr("r", actorNodeR + 10);
-				dragTarget = d;
-				dragTargetHTML = this;
-			}
+					if (!dragStarted) {
+						tooltipSVG.html(d.name).style("display", "block");
+						tooltipSVG.transition().duration(200).style("opacity", 1);
+					}
+				})
+				.on("mouseout", function(d){		//display animation for visual indication of mouseout and resets dragTarget variables
+					d3.select(this).transition().attr("r", actorNodeR);
+					dragTarget = null;
+					dragTargetHTML = null;
 
-			if (!dragStarted) {
-				tooltipSVG.html(d.name).style("display", "block");
-				tooltipSVG.transition().duration(200).style("opacity", 1);
-			}
-		})
-		.on("mouseout", function(d){		//display animation for visual indication of mouseout and resets dragTarget variables
-			d3.select(this).transition().attr("r", actorNodeR);
-			dragTarget = null;
-			dragTargetHTML = null;
+					tooltipSVG.transition().duration(200).style("opacity", 0).style("display", "none");		//reset tooltip
+				})
+				.on("mousemove", function(d){		//display tooltip
+					if (!dragStarted)
+						tooltipSVG.style("display", "block").style("left", (d.x + 350) + "px").style("top", (d.y) + "px");
+				});
 
-			tooltipSVG.transition().duration(200).style("opacity", 0).style("display", "none");		//reset tooltip
+			d3.select(this).append('svg:text').attr('x', 0).attr('y', 15).attr('class', 'id').text(function(d){	//add text to nodes
+				if (d.name.length > 12)
+					return d.name.substring(0, 9) + "...";
+				else
+					return d.name;
+			});
 		})
-		.on("mousemove", function(d){		//display tooltip
-			if (!dragStarted)
-				tooltipSVG.style("display", "block").style("left", (d3.event.pageX - 250) + "px").style("top", (d3.event.pageY - 75) + "px");
-		});
+		.merge(nodeGroup);
 
-	//performs on "click" of node, shows actor selection on node click
+				
+
+	//performs on "click" of node, shows actor selection on node click; call moved to mousedown because click() did not fire for Chrome
 	function nodeClick(d) {
 		if (window[d.actor + "CurrentNode"] === d) {
 			$("#" + d.actor + "TabBtn").trigger("click");
@@ -345,15 +374,6 @@ function updateSVG(){
 		resetMouseVars();
 	}	//end of createLink()
 
-	innerNode.append('svg:text').attr('x', 0).attr('y', 15).attr('class', 'id').text(function(d){	//add text to nodes
-		if (d.name.length > 12)
-			return d.name.substring(0, 9) + "...";
-		else
-			return d.name;
-	});
-	
-	nodeGroup.exit().remove();		//remove any nodes that are not part of the display
-	
 	//update all names of nodes - changeID and actorID are not updated on name change to save room for other changes; probably unneccesary for a normal user (unlikely they will perform so many changes)
 	actorSVG.selectAll("text").text(function(d) {
 		if (d.name.length > 12)
@@ -364,14 +384,12 @@ function updateSVG(){
 }
 
 //function that is called on every animated step of the SVG, handles boundary and node collision
-function tick(e) {
-	if (e) {	//if not dragging
-		actorNodes.forEach(function(o, i) {		//o = object, i = index
-			o.x += (o.actor == "source") ? e.alpha * -5 : e.alpha * 5;			//groups same actors together
-		});
-
-		var q = d3.geom.quadtree(actorNodes), i = 0, n = actorNodes.length;		//prevent node collisions
-		while( ++i < n) q.visit(collide(actorNodes[i]));
+function tick() {
+	if (!dragStarted) {
+		var q = d3.quadtree().x((d) => d.x).y((d) => d.y).addAll(actorNodes);
+		for (var x = 0; x < actorNodes.length; x ++) {
+			q.visit(collide(actorNodes[x]));
+		}
 	}
 
 	//node movement and display constrained here
@@ -424,15 +442,15 @@ function tick(e) {
 function collide(node) {
 	var r = actorNodeR + actorPadding, nx1 = node.x - r, nx2 = node.x + r, ny1 = node.y - r, ny2 = node.y + r;
 	return function(quad, x1, y1, x2, y2) {
-		if (quad.point && (quad.point !== node)) {
-			var x = node.x - quad.point.x, y = node.y - quad.point.y, l = Math.sqrt(x * x + y * y), r = actorNodeR + actorNodeR + actorPadding;
+		if (quad.data && (quad.data !== node)) {
+			var x = node.x - quad.data.x, y = node.y - quad.data.y, l = Math.sqrt(x * x + y * y), r = actorNodeR + actorNodeR + actorPadding;
 
 			if (l < r) {
 				l = (l - r) / l * .5;
 				node.x -= x *= l;
 				node.y -= y *= l;
-				quad.point.x += x;
-				quad.point.y += y;
+				quad.data.x += x;
+				quad.data.y += y;
 			}
 		}
 		return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
@@ -465,15 +483,35 @@ function resetMouseVars() {
 
 //function to handle force and SVG updates
 function updateAll() {
-	actorForce.stop();
-	actorForce = actorForce.nodes(actorNodes).links(actorLinks).start();
-	resetMouseVars();
 	updateSVG();
+	actorForce.nodes(actorNodes).force("link").links(actorLinks);
+	actorForce.alpha(1).restart();
+	resetMouseVars();
 }
 
 //end force functions, begin actor code
 
-//rename group on click, initialize groups
+//calculates the max number of nodes that can be fit in a quarter of the SVG (prefer at most half of each side of the SVG to be filled)
+function calcCircleNum() {
+	var numWidth = Math.floor((actorWidth/2 + actorPadding) / (2 * actorNodeR + actorPadding));
+	var numHeight = Math.floor((actorHeight + actorPadding) / (2 * actorNodeR + actorPadding));
+	var numCircle1 = Math.floor(numWidth * numHeight / 2);		//total number of circles by rectangular packing / 2
+
+	var numHeightTri = Math.floor(((actorHeight - (2*actorNodeR)) + ((actorNodeR + actorPadding/2) * Math.sqrt(3))) / ((actorNodeR + (actorPadding/2)) * Math.sqrt(3)));
+	var numCircle2;
+	if (Math.floor((actorWidth/2) - ((numWidth * 2 * actorNodeR) + ((numWidth - 1) * actorPadding))) >= actorNodeR)
+		numCircle2 = Math.ceil(numHeightTri/2) * numWidth + Math.floor(numHeightTri/2) * (numWidth - 1);
+	else
+		numCircle2 = Math.ceil(numHeightTri/2) * numWidth + Math.floor(numHeightTri/2) * (numWidth - 2);
+
+	numCircle2 = Math.floor(numCircle2/2);		//total number of circles by triangular/hexagonal packing /2
+
+	if (numCircle1 > numCircle2)
+		return numCircle1;
+	return numCircle2;
+}
+
+//rename group on click, initialize groups, allow deletion of groups
 $(document).ready(function() {
 	//default group display on page load, adds default source/target to nodes and SVG
 	$("#editGroupName").ready(function() {
@@ -1054,6 +1092,13 @@ $(".actorNewGroup").click(function(event) {
 	$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
 	$("." + currentTab + "Chk:checked").prop("checked", false);
 	//update svg
+	//change dimensions of SVG if needed (exceeds half of the space)
+	if (window[currentTab + "Size"] > calcCircleNum()) {
+		actorHeight += actorNodeR;
+		$("#actorLinkDiv").height(function(n, c){return c + actorNodeR;});
+		actorSVG.attr("height", actorHeight);
+		d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+	}
 	updateAll();
 });
 

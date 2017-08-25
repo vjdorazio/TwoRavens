@@ -22,12 +22,13 @@
     <!--Used for right panel query tree-->
     <script src="jqtree/tree.jquery.js"></script>
     <link rel="stylesheet" href="jqtree/jqtree.css">
+    <link rel="stylesheet" href="jqtree/jqtree.style.css">
 
     <!--NOTE: JQuery-ui must be loaded before bootstrap-->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="d3.v3.min.js"></script>
+  <!--  <script type="text/javascript" src="d3.v3.min.js"></script> -->
     <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
     <!-- <script type="text/javascript" src="plots.js"></script> -->
 </head>
@@ -73,13 +74,13 @@
 
         <div id="toggleLpanelicon" class="panelbar"><span>&#9679;<br/>&#9679;<br/>&#9679;<br/>&#9679;</span></div>
         <div class="panel-heading text-center" id="leftpaneltitle">
-            <h3 class="panel-title">Variable Selection</h3>
+            <h3 class="panel-title">Data Selection</h3>
         </div>
 
         <div class="btn-toolbar" role="toolbar" style="margin-left:6px;">
             <div class="btn-group" style="width:calc(100% - 12px)">
                 <button type="button" class="btn active" id="btnVariables" title="Click variable name to add or remove the variable pebble from the modeling space." onclick="tabLeft('tab1');">Variables</button>
-                <button type="button" class="btn btn-default" id="btnSubset" onclick="tabLeft('tab2');">Subset</button>
+                <button type="button" class="btn btn-default" id="btnSubset" onclick="tabLeft('tab2');">Subsets</button>
             </div>
             <button type="button" class="btn btn-default ladda-button" id="btnSelect" title="Subset data by the intersection of all selected values." style="display:none; float:right; margin-right:10px" onclick="subsetSelect('btnSelect');" data-spinner-color="#000000" data-style="zoom-in"><span class="ladda-label" style="pointer-events:none;">Select</span></button>
         </div>
@@ -103,18 +104,25 @@
         <div id="toggleRpanelicon" class="panelbar"><span>&#9679;<br/>&#9679;<br/>&#9679;<br/>&#9679;</span></div>
 
         <div class="panel-heading text-center" id="rightpaneltitle">
-            <h3 class="panel-title">Query Listing</h3>
+            <h3 class="panel-title">Query Summary</h3>
         </div>
 
-        <div id="queryTree" style="width:232px">
+        <div id="queryVariables" style="margin-left:5px;width:232px;height:calc(50% - 39px);overflow-y:auto">
+            <h4 class="panel-title">Variables</h4>
+            <div id="variableTree" style="margin-left:10px;width:calc(100% - 15px);height:calc(100% - 19px);overflow-y:auto"></div>
+        </div>
+
+        <div id="querySubsets" style="width:232px;height:calc(50% - 39px);">
+            <h4 class="panel-title" style="margin-left:5px;">Subsets</h4>
+            <div id="subsetTree" style="height:calc(100% - 19px);overflow-y:auto"></div>
         </div>
         <div id="rightpanelButtonBar" style="width:232px;position:absolute;bottom:5px">
             <button id="buttonAddGroup" class="btn btn-default ladda-button" data-spinner-color="#000000"
                     onclick="addGroup()" type="button"
-                    style="float:left;margin-left:6px;">Add Subgroup
+                    style="float:left;margin-left:6px;">Group
             </button>
             <button id="buttonSubmitQuery" class="btn btn-default ladda-button" data-spinner-color="#000000"
-                    onclick="buildQuery()" type="button"
+                    onclick="submitQuery()" type="button"
                     style="float:right;margin-right:5px">Submit
             </button>
         </div>
@@ -134,7 +142,7 @@
             <svg id="dateSVG" width="500" height="500"></svg>
 
             <div id="dateInterval" class="form-group" style="display: inline-block;vertical-align:top;width:20%;margin:20px">
-                <button id="setDatefromSlider" type="button" class="btn" onclick="setDatefromSlider()" style="margin-top:10px;text-align:center;">Bring Date from Slider</button>
+                <button id="setDatefromSlider" type="button" class="btn btn-default" onclick="setDatefromSlider()" style="margin-top:10px;text-align:center;">Bring Date from Slider</button>
                 <label id="dateFromLab" for="fromdate" style="text-align:left;width:100%;margin-top:10px;" >From:</label>
                 <input id="fromdate" class="form-control" type="text">
                 <label id="dateToLab" for="todate" style="text-align:left;width:100%;margin-top:10px;">To:</label>
@@ -218,7 +226,7 @@
 
 						<button id="sourceClearSel" class="actorBottom actorClearAll" type="button" data-toggle="tooltip" title="Clears all sources that match the filter criteria">Clear All</button>
 
-						<button id="sourceNew" class="actorBottom actorNewGroup" type="button" data-toggle="tooltip" title="Create new source group">New Source Group</button>
+						<button id="sourceNew" class="actorBottom actorNewGroup" type="button" data-toggle="tooltip" title="Create new source group">New Group</button>
 					</div>
 
 					<div id="targetDiv" class="actorTabContent">
@@ -270,7 +278,7 @@
 
 						<button id="targetClearSel" class="actorBottom actorClearAll" type="button" data-toggle="tooltip" title="Clears all targets that match the filter criteria">Clear All</button>
 
-						<button id="targetNew" class="actorBottom actorNewGroup" type="button" data-toggle="tooltip" title="Create new target group">New Target Group</button>
+						<button id="targetNew" class="actorBottom actorNewGroup" type="button" data-toggle="tooltip" title="Create new target group">New Group</button>
 					</div>
                 </div>
             </div>
@@ -281,7 +289,7 @@
 					<h3 id="linkTitleRight" class="panel-title text-center">Targets</h3>
 				</div>
 				
-				<svg id="actorLinkSVG"></svg>
+				<svg id="actorLinkSVG" style="border:1px solid blue;"></svg>
             </div>
         </div>
         </div>
@@ -450,9 +458,9 @@ function closeRightPanel() {
     <script src="app_ddi_eventdata_date.js"></script>
     <script src="app_ddi_eventdata_query.js"></script>
 
-    <script type="text/javascript" src="d3.v3.min.js"></script>
+    <!-- <script type="text/javascript" src="d3.v3.min.js"></script> -->
     <script id="actorCodeJS" type="text/javascript" src="app_ddi_eventdata_actor.js"></script>
-
+    
   </body>
 </html>
 
