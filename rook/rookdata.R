@@ -70,12 +70,15 @@ data.app <- function(env){
       outconfig=rjson::toJSON(config)
       write(outconfig,file="config.json")
     }
-  if(!warning){
-      datacite=everything$zdatacite
-      if(length(datacite) == 0){
-          warning <- TRUE
-          result<-list(warning="No data file citation.")
-      }
+  if(!warning)
+  {
+      datacite="No datacite provided"
+      #datacite=everything$zdatacite
+     # if(length(datacite) == 0)
+      #     warning <- TRUE
+       #   result<-list(warning="No data file citation.")
+      #}
+
   }
     
     
