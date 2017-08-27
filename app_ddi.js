@@ -758,13 +758,13 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         .style("width", "280px")
         .style("position", "absolute")
         .style("left", (11.5 * margin_cross.left + padding_cross) + "px")
-        .style("top", "320px")
+        .style("top", "290px")
 
 
     d3.select("#btnDiv")[0][0].innerHTML = [
         '<h5>Data Selection</h5>',
         '<p>Enter the numbers for both plots respectively to specify the distribution of the cross-tabs.</p>',
-        '<p>Select between Equidistant and Equimass.</p>'
+        '<p id="boldstuff" style="color: #2a6496">Select between Equidistant and Equimass.</p>'
 
     ].join('\n')
 
@@ -773,15 +773,10 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         .attr({
             "id": "a",
             "placeholder": PlotNameA,
+
             "size": 20
         })
-    d3.select("#btnDiv")
-        .append("input")
-        .attr({
-            "id": "b",
-            "placeholder": PlotNameB,
-            "size": 20
-        })
+
 
 
 
@@ -811,19 +806,88 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
     btns.on("click", getData);
 
+
+
+
+    d3.select(mydiv).append("g")
+        .attr("id", "btnDiv1")
+        .style('font-size', '75%')
+        .style("width", "280px")
+        .style("position", "absolute")
+        .style("left", (11.5 * margin_cross.left + padding_cross) + "px")
+        .style("top", "400px")
+
+
+
+
+    d3.select("#btnDiv1")
+        .append("input")
+        .attr({
+            "id": "b",
+            "placeholder": PlotNameB,
+            "size": 20
+        })
+
+
+
+    // style both of the inputs at once
+    // more on HTML5 <input> at https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
+    d3.selectAll("input")
+        .attr({
+            "type": "text",
+            "size": 3,
+            "autofocus": "true",
+            "inputmode": "numeric"
+        })
+        .style({
+            "text-align": "center",
+            "display": "inline-block",
+            "margin-right": "10px"
+        });
+
+
+    var btns1 = d3.select("#btnDiv1").selectAll("button").data(["EQUIDISTANCE", "EQUIMASS"])
+    btns1 = btns1.enter().append("button").style("display", "inline-block")
+
+    // fill the buttons with the year from the data assigned to them
+    btns1.each(function (d) {
+        this.innerText = d;
+    });
+
+    btns1.on("click", getData1);
+
     function getData() {
 
         if (this.innerText === "EQUIDISTANCE")
         {
+
             var plotA_size= parseInt(d3.select("input#a")[0][0].value);
-            var plotB_size= parseInt(d3.select("input#b")[0][0].value);
-            equidistance(PlotNameA,PlotNameB,plotA_size,plotB_size);
+
+            equidistance(PlotNameA,plotA_size);
         }
         else if (this.innerText === "EQUIMASS") {
 
         }
 
     }
+    function getData1() {
+
+        if (this.innerText === "EQUIDISTANCE")
+        {
+
+
+            var plotB_size= parseInt(d3.select("input#b")[0][0].value);
+            equidistance(PlotNameB,plotB_size);
+        }
+        else if (this.innerText === "EQUIMASS") {
+
+        }
+
+    }
+
+    /*
+    trail
+     */
 
 
 // this is the function to add  the density plot if any
@@ -916,13 +980,9 @@ var data2=[];
             })
             .interpolate("monotone");
 
-         plotsvg = d3.select(mydiv)
+     var plotsvg = d3.select(mydiv)
              .append("svg")
-            .attr("id", function () {
-              var   myname = density_env.name.toString();
-                myname = myname.replace(/\(|\)/g, "");
-                return myname.concat("_", mydiv.substr(1), "_", density_env.id);
-            })
+            .attr("id", "plotsvg_id")
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
             .style("height", height_cross + margin_cross.top + margin_cross.bottom)
             .append("g")
@@ -988,6 +1048,7 @@ var data2=[];
 // this is the function to add the bar plot if any
     function bar_cross(bar_env,a) {
         console.log("welcome to : " + bar_env.name);
+
 
 
 
@@ -1091,11 +1152,7 @@ var data2=[];
 
          var plotsvg1 = d3.select(mydiv)
             .append("svg")
-            .attr("id", function () {
-                 var myname1 = bar_env.name.toString();
-                myname1 = myname1.replace(/\(|\)/g, "");
-                return myname1.concat("_", mydiv.substr(1), "_", bar_env.id);
-            })
+            .attr("id","plotsvg1_id")
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
             .style("height", height_cross + margin_cross.top + margin_cross.bottom)
             .append("g")
@@ -1170,15 +1227,13 @@ var data2=[];
 
     }
 
-    function equidistance(A,B,a,b)
+    function equidistance(A,a)
     {
         // json object to be sent to r server
         var obj = new Object();
         obj.plotNameA = A;
         obj.equidistance = a;
 
-        obj.plotNameB=B;
-        obj.equidistance = b;
 
 
 
@@ -1188,25 +1243,31 @@ var data2=[];
 //convert string to Json Object
         console.log(JSON.parse(string)); // this is your requirement.
 
-        d3.select("#resultsView_tabular").selectAll("svg").remove();
-        d3.select("plotsvg1").remove();
-        d3.select("#line1").remove();
-        d3.select("#line2").remove();
+
+
         for (var i = 0; i < plot_nodes.length; i++) {
             if (plot_nodes[i].name === A) {
                 if (plot_nodes[i].plottype === "continuous") {
+                    $("#plotsvg_id").remove();
+                    d3.select("#line1").remove();
+
                     density_cross(plot_nodes[i],a);
                 }
                 else if (plot_nodes[i].plottype === "bar") {
+                    $("#plotsvg1_id").remove();
+                    d3.select("#line2").remove();
                     bar_cross(plot_nodes[i],a);
                 }
-            } else if (plot_nodes[i].name === B) {
+            } else {
+                /*
                 if (plot_nodes[i].plottype === "continuous") {
                     density_cross(plot_nodes[i],b);
                 }
                 else if (plot_nodes[i].plottype === "bar") {
                     bar_cross(plot_nodes[i],b);
                 }
+                */
+                console.log("not found")
             }
 
 
