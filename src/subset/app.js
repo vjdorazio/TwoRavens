@@ -367,9 +367,7 @@ function buttonDelete(id) {
 function callbackDelete(id) {
     let node = $('#subsetTree').tree('getNodeById', id);
     if ('cancel_prompt' in node && node.cancel_prompt) {
-        if (confirm("You are deleting a query. This will return your subsetting to an earlier state.")) {
-            // TODO: update data and redraw all plots
-        } else {
+        if (!confirm("You are deleting a query. This will return your subsetting to an earlier state.")) {
             return;
         }
     }
@@ -388,6 +386,17 @@ function callbackDelete(id) {
     let state = qtree.tree('getState');
     qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
+
+    if ('cancel_prompt' in node && node.cancel_prompt) {
+        let variableQuery = buildVariables();
+        let subsetQuery = buildSubset();
+
+        console.log(JSON.stringify(subsetQuery));
+        console.log(JSON.stringify(variableQuery, null, '  '));
+
+        query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery)};
+        makeCorsRequest(subsetURL, query, pageSetup);
+    }
 }
 
 // Variables menu
