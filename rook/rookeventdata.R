@@ -21,6 +21,8 @@
 #            use eventdata
 #       c. Return all data from the samplePhox table
 #            db.samplePhox.find()
+#       d. If Date field is string, run
+#            db.samplePhox.find({}).forEach( function (x) { x.Date = parseInt(x.Date); db.samplePhox.save(x); });
 # 
 # 4. Start a local R server to make this file available here: (should prompt for solajson)
 #      http://localhost:8000/custom/eventdataapp
@@ -79,9 +81,11 @@ eventdata.app <- function(env) {
     }
 
     everything <- jsonlite::fromJSON(request$POST()$solaJSON, simplifyDataFrame = FALSE)
-    subsets = toString(jsonlite::toJSON(everything$subsets))
-    variables = toString(jsonlite::toJSON(everything$variables))
+    subsets = everything$subsets
+    variables = everything$variables
 
+    print(subsets)
+    print(variables)
     table <- 'samplePhox'
 
     connection <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)
@@ -92,10 +96,10 @@ eventdata.app <- function(env) {
     # Collect frequency data necessary for subset plot
     date_frequencies = RMongo::dbAggregate(connection, table, c(
         paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
-        '{$project: {monthyear: {$substrBytes: ["$Date", 0, 6]}, _id: 0}}', # Cull to first six characters of Date
-        '{$group: { _id: "$monthyear", total: {$sum:1}}}',                  # Compute frequencies of each bin
+        '{$project: {Year: "$Year", Month: "$Month", _id: 0}}',             # Cull to just Year and Month fields
+        '{$group: { _id: { year: "$Year", month: "$Month" }, total: {$sum: 1} }}', # Group by years and months
         '{$project: {"_id": 0, "datebin": "$_id", "total": "$total"}}',     # Rename fields
-        '{$sort: {datebin: 1}}'))                                           # Sort
+        '{$sort: {"datebin.year": 1, "datebin.month": 1}}'))                # Sort
 
     # Collect frequency data necessary for country plot
     country_frequencies = RMongo::dbAggregate(connection, table, c(

@@ -9,7 +9,7 @@ if (!production) {
 }
 
 let subsetURL = rappURL + 'eventdataapp';
-let query = {'subsets': {}, 'variables': {'Source': 1}};
+let query = {'subsets': JSON.stringify({}), 'variables': JSON.stringify({'Source': 1})};
 let response = {};
 
 let variables = ["X","GID","Date","Year","Month","Day","Source","SrcActor","SrcAgent","SOthAgent","Target","TgtActor",
@@ -189,7 +189,7 @@ function pageSetup(jsondata) {
     for (let idx in jsondata.date_data) {
         dateData.push(JSON.parse(jsondata.date_data[idx]))
     }
-    d3date();
+    d3date(true);
 
     countryData = {};
     for (let idx in jsondata.country_data) {
@@ -620,7 +620,6 @@ function getSubsetPreferences() {
         // For mapping numerical months to strings in the child node name
         let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
             "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
         return {
             id: String(nodeId++),
             name: 'Date Subset',
@@ -628,14 +627,14 @@ function getSubsetPreferences() {
                 {
                     id: String(nodeId++),
                     name: 'From: ' + monthNames[dateminUser.getMonth()] + ' ' + String(dateminUser.getFullYear()),
-                    fromDate: dateminUser,
+                    fromDate: new Date(dateminUser.getTime()),
                     cancellable: false,
                     show_op: false
                 },
                 {
                     id: String(nodeId++),
                     name: 'To:   ' + monthNames[datemaxUser.getMonth()] + ' ' + String(datemaxUser.getFullYear()),
-                    toDate: datemaxUser,
+                    toDate: new Date(datemaxUser.getTime()),
                     cancellable: false,
                     show_op: false
                 }
@@ -680,7 +679,6 @@ function getSubsetPreferences() {
         }
     }
     if (subsetKeySelected === 'Actor') {
-        console.log("ACTOR TRIGGERED");
         // Make parent node
         let subset = {
             id: String(nodeId++),
@@ -688,7 +686,6 @@ function getSubsetPreferences() {
             operation: 'and',
             children: []
         };
-        console.log(actorLinks);
         // Add each link to the parent node as another rule
         for (let linkId in actorLinks) {
             let link = {
@@ -791,7 +788,7 @@ function submitQuery() {
     console.log(JSON.stringify(subsetQuery));
     console.log(JSON.stringify(variableQuery, null, '  '));
 
-    query = {'subsets': subsetQuery, 'variables': variableQuery};
+    query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery)};
 
     makeCorsRequest(subsetURL, query, pageSetup);
 }
@@ -896,13 +893,20 @@ function buildSubset(){
             for (let child_id in rule.children) {
                 let child = rule.children[child_id];
                 if ('fromDate' in child) {
-                    console.log(child);
+
+                    // There is an implicit cast somewhere in the code, and I cannot find it.
+                    child.fromDate = new Date(child.fromDate);
+
                     let date = child.fromDate.getFullYear().toString() +
                         pad(child.fromDate.getMonth()) +
                         pad(child.fromDate.getDay());
                     rule_query_inner['$gte'] = parseInt(date);
                 }
                 if ('toDate' in child) {
+
+                    // There is an implicit cast somewhere in the code, and I cannot find it.
+                    child.toDate = new Date(child.toDate);
+
                     let date = child.toDate.getFullYear().toString() +
                         pad(child.toDate.getMonth()) +
                         pad(child.toDate.getDay());

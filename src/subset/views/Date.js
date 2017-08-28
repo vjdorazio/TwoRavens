@@ -5,8 +5,8 @@ var datemax = new Date();
 var datemin = d3.timeYear.offset(datemax, -5);
 
 // Stubs for user preference
-var dateminUser = datemin;
-var datemaxUser = datemax;
+var dateminUser = new Date(datemin.getTime());
+var datemaxUser = new Date(datemax.getTime());
 
 // Only true on page setup
 var dateSetup = true;
@@ -15,7 +15,7 @@ var dateSetup = true;
 var plotSelection;
 
 
-function d3date() {
+function d3date(init=false) {
     $("#dateSVG").empty();
     var dateSVG = d3.select("#dateSVG");
 
@@ -110,11 +110,11 @@ function d3date() {
         datecontext.select(".brush").call(datebrush.move, datex.range().map(t.invertX, t));
     }
 
-    let parseDate = d3.timeParse("%Y%m");
     let data = [];
 
     for (let idx in dateData) {
-        let bin = {'Date': parseDate(dateData[idx].datebin), 'Freq': dateData[idx].total};
+        let binLabel = dateData[idx].datebin;
+        let bin = {'Date': new Date(binLabel.year, binLabel.month + 1, 0), 'Freq': dateData[idx].total};
         data.push(bin)
     }
 
@@ -126,6 +126,11 @@ function d3date() {
     datemax = d3.max(data, function (d) {
         return d.Date;
     });
+
+    if (init) {
+        dateminUser = new Date(datemin.getTime());
+        datemaxUser = new Date(datemax.getTime());
+    }
 
     var freqmax = d3.max(data, function (d) {
         return d.Freq;
@@ -239,7 +244,7 @@ $("#fromdate").datepicker({
     maxDate: datemax,
     orientation: top,
     onSelect: function () {
-        dateminUser = $(this).datepicker('getDate');
+        dateminUser = new Date($(this).datepicker('getDate').getTime());
         $("#todate").datepicker('option', 'minDate', dateminUser);
         $("#todate").datepicker('option', 'defaultDate', datemax);
         $("#todate").datepicker('option', 'maxDate', datemax);
@@ -266,7 +271,7 @@ $("#todate").datepicker({
     maxDate: datemax,
     orientation: top,
     onSelect: function () {
-        datemaxUser = $(this).datepicker('getDate');
+        datemaxUser = new Date($(this).datepicker('getDate').getTime());
         todatestring = datemaxUser.getFullYear() + "" + ('0' + (datemaxUser.getMonth() + 1)).slice(-2) + "" + ('0' + datemaxUser.getDate()).slice(-2);
     },
     onClose: function () {
@@ -277,7 +282,8 @@ $("#todate").datepicker({
 
 function setDatefromSlider() {
     // Update user preference
-    [dateminUser, datemaxUser] = plotSelection;
+    dateminUser = new Date(plotSelection[0].getTime());
+    datemaxUser = new Date(plotSelection[1].getTime());
 
     // Update gui
     var format = d3.timeFormat("%m-%d-%Y");
