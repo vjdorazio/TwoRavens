@@ -64,7 +64,7 @@ var map_location_lookup = new Map();
 
 function render(blnIsSubgraph, cid){
 
-    console.log(cid);
+    // console.log(cid);
 
     if(!blnIsSubgraph) {
 
@@ -240,7 +240,7 @@ function render(blnIsSubgraph, cid){
     }
     else {
 
-        console.log("Rendering Sub Graph...");
+        // console.log("Rendering Sub Graph...");
 
         var MAX_HEIGHT = 35;
         var arr_countries = arr_location_region_data[cid].countries;
@@ -332,7 +332,7 @@ function render(blnIsSubgraph, cid){
  **/
 function constructSubgraph(cid) {
 
-    console.log("constructSubgraph for cid : " + cid);
+    // console.log("constructSubgraph for cid : " + cid);
 
     if(mapGraphSVG[cid] != null) {
 

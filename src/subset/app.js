@@ -207,7 +207,7 @@ function pageSetup(jsondata) {
     d3action();
 
     actorData = jsondata.actor_data;
-    d3actor();
+    actorDataLoad();
 }
 
 

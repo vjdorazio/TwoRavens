@@ -133,7 +133,7 @@ eventdata.app <- function(env) {
     ))
 
     actor_source_values = list(
-        sources = actor_source,
+        full = actor_source,
         entities = actor_source_entities,
         roles = actor_source_role,
         attributes = actor_source_attributes
@@ -154,7 +154,7 @@ eventdata.app <- function(env) {
     ))
 
     actor_target_values = list(
-        targets = actor_target,
+        full = actor_target,
         entities = actor_target_entities,
         roles = actor_target_role,
         attributes = actor_target_attributes

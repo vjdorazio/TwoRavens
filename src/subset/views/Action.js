@@ -139,7 +139,7 @@ function actionGraphLabel(tdId) {
 function renderActionGraph(svg, gid) {
 
 
-    console.log("Rendering Main Action Graph...");
+    // console.log("Rendering Main Action Graph...");
 
     var maxDomainX = 1;
 

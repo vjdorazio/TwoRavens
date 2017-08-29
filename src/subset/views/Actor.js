@@ -45,12 +45,12 @@ $(document).ready(function() {
 	$(".filterExpand").click(function() {
 		if (this.value == "expand") {
 			this.value = "collapse";
-			$(this).css("background-image", "url(collapse.png)");
+			$(this).css("background-image", "url(images/collapse.png)");
 			$(this).next().next("div.filterContainer").show("fast");
 		}
 		else {
 			this.value = "expand";
-			$(this).css("background-image", "url(expand.png)");
+			$(this).css("background-image", "url(images/expand.png)");
 			$(this).next().next("div.filterContainer").hide("fast");
 		}
 	});
@@ -77,6 +77,9 @@ var targetOrgSelect = 0, targetCountrySelect = 0;
 
 var actorType = ["source", "target"];		//these arrays are to help loop through actor loading
 var actorOrder = ["Full", "Entity", "Role", "Attr"];
+
+// Hack to read data from JSON returned by server
+var actorOrderJSON = ["full", "entities", "roles", "attributes"];
 
 //definition of a node
 function nodeObj(name, group, groupIndices, color, actorType, actorID) {
@@ -678,8 +681,8 @@ function actorTabSwitch(origin, tab) {
 	tick();
 }
 
-//load dictionary and data
-window.onload = function(){
+// This code is called when data is loaded. It populates the dictionary and source/target lists
+function actorDataLoad(){
 	//read dictionary and store for fast retrieval
 	var dict;
 
@@ -695,77 +698,81 @@ window.onload = function(){
 	};
 
 	//loads the data
-	var loadData = function() {
-		var defer = $.Deferred();
-		for (var m = 0; m < actorType.length; m++) {
-			var orgList;
-			if (m == 0) {
-				orgList = document.getElementById("orgSourcesList");
-			}
-			else {
-				orgList = document.getElementById("orgTargetsList");
-			}
-			for (var y = 0; y < orgs.length; y ++) {
-				createElement(true, actorType[m], "Org", orgs[y], y, orgList);
-			}
+    var loadData = function () {
+        var defer = $.Deferred();
+        for (var m = 0; m < actorType.length; m++) {
+            var orgList;
+            if (m == 0) {
+                orgList = document.getElementById("orgSourcesList");
+            }
+            else {
+                orgList = document.getElementById("orgTargetsList");
+            }
+            for (var y = 0; y < orgs.length; y++) {
+                createElement(true, actorType[m], "Org", orgs[y], y, orgList);
+            }
 
-			for (var i = 0; i < actorOrder.length; i++) {
-				loadDataHelper(i, m);
-			}
-		}
-		return defer.resolve();
-	};
+            for (var i = 0; i < actorOrder.length; i++) {
+                loadDataHelper(i, m);
+            }
+        }
+        return defer.resolve();
+    };
 
-	loadDictionary().then(loadData);		//force dict to load first then load everything else
-	$("#sourceTabBtn").trigger("click");
+    loadDictionary().then(loadData);		//force dict to load first then load everything else
+    $("#sourceTabBtn").trigger("click");
 
-	//handles data selection and read asynchronously to help speed up load
-	function loadDataHelper(i,m) {
-		$.get('data/' + actorType[m] + actorOrder[i] + '.csv', function(data) {
-			var lines = data.split('\n');
-			var displayList;
-			var chkSwitch = true;		//enables code for filter
-			switch (i) {
-				case 0:
-					displayList = document.getElementById("searchList" + capitalizeFirst(actorType[m]) + "s");
-					chkSwitch = false;
-					break;
-				case 1:
-					displayList = document.getElementById("country" + capitalizeFirst(actorType[m]) + "sList");
-					lines = lines.filter(function(val) {
-						return (orgs.indexOf(val) == -1);
-					});
-					window[actorType[m] + "CountryLength"] = lines.length;
-					actorOrder[i] = "Country";
-					break;
-				case 2:
-					displayList = document.getElementById("role" + capitalizeFirst(actorType[m]) + "sList");
-					break;
-				case 3:
-					displayList = document.getElementById("attribute" + capitalizeFirst(actorType[m]) + "sList");
-					break;
-				}
+    //handles data selection and read asynchronously to help speed up load
+    function loadDataHelper(i, m) {
+        let lines = actorData[actorType[m]][actorOrderJSON[i]];
+        var displayList;
+        var chkSwitch = true;		//enables code for filter
+        switch (i) {
+            case 0:
+                displayList = document.getElementById("searchList" + capitalizeFirst(actorType[m]) + "s");
+                chkSwitch = false;
+                break;
+            case 1:
+                displayList = document.getElementById("country" + capitalizeFirst(actorType[m]) + "sList");
+                lines = lines.filter(function (val) {
+                    return (orgs.indexOf(val) == -1);
+                });
+                window[actorType[m] + "CountryLength"] = lines.length;
+                actorOrder[i] = "Country";
+                break;
+            case 2:
+                displayList = document.getElementById("role" + capitalizeFirst(actorType[m]) + "sList");
+                break;
+            case 3:
+                displayList = document.getElementById("attribute" + capitalizeFirst(actorType[m]) + "sList");
+                let attributes = [];
+                for (let idx in lines) {
+                    attributes.push(JSON.parse(lines[idx]).attribute);
+                }
+                lines = attributes.slice();
+                break;
+        }
 
-			for (var x = 0; x < lines.length - 1; x++) {
-				var lineData = lines[x].replace(/["]+/g, '');
-				createElement(chkSwitch, actorType[m], actorOrder[i], lineData, x, displayList);
 
-				switch (actorType[m] + actorOrder[i]) {
-					case "sourceFull":
-						sourceFullList.push(lineData);
-						currentScreen.push(x);
-						break;
-					case "targetFull":
-						targetFullList.push(lineData);
-						currentScreen.push(x);
-						break;
-				}
-			}
-			if (actorOrder[i] == "Country") {
-				actorOrder[i] = "Entity";
-			}
-		});
-	}
+        for (var x = 0; x < lines.length - 1; x++) {
+            var lineData = lines[x].replace(/["]+/g, '');
+            createElement(chkSwitch, actorType[m], actorOrder[i], lineData, x, displayList);
+
+            switch (actorType[m] + actorOrder[i]) {
+                case "sourceFull":
+                    sourceFullList.push(lineData);
+                    currentScreen.push(x);
+                    break;
+                case "targetFull":
+                    targetFullList.push(lineData);
+                    currentScreen.push(x);
+                    break;
+            }
+        }
+        if (actorOrder[i] == "Country") {
+            actorOrder[i] = "Entity";
+        }
+    }
 
 	//creates elements and adds to display
 	function createElement(chkSwitch = true, type, order, value, x, displayList) {
