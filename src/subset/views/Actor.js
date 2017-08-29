@@ -681,46 +681,46 @@ function actorTabSwitch(origin, tab) {
 	tick();
 }
 
+//read dictionary and store for fast retrieval
+var dict;
+
+//loads the dictionary for translation
+var loadDictionary = function() {
+    var defer = $.Deferred();
+    $.get('data/dict_sorted.txt', function (data) {
+        dict = data.split('\n');
+        dict.length--;	//remove last element(empty line)
+        defer.resolve();
+    });
+    return defer;		//return dictionary load completed
+};
+
+// Load dictionary on page open
+loadDictionary();
+
 // This code is called when data is loaded. It populates the dictionary and source/target lists
 function actorDataLoad(){
-	//read dictionary and store for fast retrieval
-	var dict;
 
-	//loads the dictionary for translation
-	var loadDictionary = function() {
-		var defer = $.Deferred();
-		$.get('data/dict_sorted.txt', function (data) {
-			dict = data.split('\n');
-			dict.length--;	//remove last element(empty line)
-			defer.resolve();
-		});
-		return defer;		//return dictionary load completed
-	};
-
-	//loads the data
-    var loadData = function () {
-        var defer = $.Deferred();
-        for (var m = 0; m < actorType.length; m++) {
-            var orgList;
-            if (m == 0) {
-                orgList = document.getElementById("orgSourcesList");
-            }
-            else {
-                orgList = document.getElementById("orgTargetsList");
-            }
-            for (var y = 0; y < orgs.length; y++) {
-                createElement(true, actorType[m], "Org", orgs[y], y, orgList);
-            }
-
-            for (var i = 0; i < actorOrder.length; i++) {
-                loadDataHelper(i, m);
-            }
-        }
-        return defer.resolve();
-    };
-
-    loadDictionary().then(loadData);		//force dict to load first then load everything else
     $("#sourceTabBtn").trigger("click");
+
+	var defer = $.Deferred();
+	for (var m = 0; m < actorType.length; m++) {
+		var orgList;
+		if (m == 0) {
+			orgList = document.getElementById("orgSourcesList");
+		}
+		else {
+			orgList = document.getElementById("orgTargetsList");
+		}
+		for (var y = 0; y < orgs.length; y++) {
+			createElement(true, actorType[m], "Org", orgs[y], y, orgList);
+		}
+
+		for (var i = 0; i < actorOrder.length; i++) {
+			loadDataHelper(i, m);
+		}
+	}
+	defer.resolve();
 
     //handles data selection and read asynchronously to help speed up load
     function loadDataHelper(i, m) {
@@ -730,10 +730,12 @@ function actorDataLoad(){
         switch (i) {
             case 0:
                 displayList = document.getElementById("searchList" + capitalizeFirst(actorType[m]) + "s");
+                displayList.innerHTML = "";
                 chkSwitch = false;
                 break;
             case 1:
                 displayList = document.getElementById("country" + capitalizeFirst(actorType[m]) + "sList");
+                displayList.innerHTML = "";
                 lines = lines.filter(function (val) {
                     return (orgs.indexOf(val) == -1);
                 });
@@ -742,9 +744,11 @@ function actorDataLoad(){
                 break;
             case 2:
                 displayList = document.getElementById("role" + capitalizeFirst(actorType[m]) + "sList");
+                displayList.innerHTML = "";
                 break;
             case 3:
                 displayList = document.getElementById("attribute" + capitalizeFirst(actorType[m]) + "sList");
+                displayList.innerHTML = "";
                 let attributes = [];
                 for (let idx in lines) {
                     attributes.push(JSON.parse(lines[idx]).attribute);

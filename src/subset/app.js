@@ -111,6 +111,7 @@ d3.select("#subsetList").selectAll("p")
             document.getElementById("subsetDate").style.display = 'none';
             document.getElementById("subsetLocation").style.display = 'none';
             document.getElementById("subsetAction").style.display = 'none';
+            d3actor();
         }
 
         else if (subsetKeySelected === "Action") {
@@ -718,14 +719,14 @@ function getSubsetPreferences() {
             for (let sourceId in actorLinks[linkId].source.group) {
                 link['children'][0]['children'].push({
                     id: String(nodeId++),
-                    name: actorLinks[linkId].source.group[sourceId].value,
+                    name: actorLinks[linkId].source.group[sourceId],
                     show_op: false
                 });
             }
             for (let targetId in actorLinks[linkId].target.group) {
                 link['children'][1]['children'].push({
                     id: String(nodeId++),
-                    name: actorLinks[linkId].source.group[targetId].value,
+                    name: actorLinks[linkId].source.group[targetId],
                     show_op: false
                 });
             }
@@ -939,24 +940,24 @@ function buildSubset(){
 
         if (rule.name === 'Actor Subset'){
             let link_list = [];
-            for (let link in rule.children) {
+            for (let idx in rule.children) {
                 let link_rule = {};
 
                 let sourceList = [];
-                for (let source in link.children[0].children) {
-                    sourceList.push(source.name);
+                for (let idxsource in rule.children[idx].children[0].children) {
+                    sourceList.push(rule.children[idx].children[0].children[idxsource].name);
                 }
                 link_rule['Source'] = {'$in': sourceList};
 
                 let targetList = [];
-                for (let target in link.children[1].children) {
-                    targetList.push(target.name)
+                for (let idxtarget in rule.children[idx].children[1].children) {
+                    targetList.push(rule.children[idx].children[0].children[idxtarget].name)
                 }
                 link_rule['Target'] = {'$in': targetList};
 
-                link_list.append(link_rule)
+                link_list.push(link_rule)
             }
-            rule_query['$and'] = rule_query_inner;
+            rule_query['$and'] = link_list;
         }
 
         return rule_query;
