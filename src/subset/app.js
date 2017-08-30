@@ -36,7 +36,6 @@ let subsetData = [];
 if (localStorage.getItem("subsetData") !== null) {
     // Since the user has already submitted a query, restore the previous preferences from local data
     // All stored data is cleared on reset
-    console.log(JSON.parse(localStorage.getItem('variablesSelected')));
     variablesSelected = new Set(JSON.parse(localStorage.getItem('variablesSelected')));
     subsetData = JSON.parse(localStorage.getItem('subsetData'));
 }
@@ -624,11 +623,15 @@ function addRule() {
 function getSubsetPreferences() {
     if (subsetKeySelected === 'Date') {
 
-        // There is a small bug here, but the case isn't very important in the first place
-        // // Don't add a rule if the dates have not been changed
-        // if (dateminUser.getTime() === datemin.getTime() && datemaxUser.getTime() === datemax.getTime()){
-        //     return {}
-        // }
+        // If the dates have not been modified, force bring the date from the slider
+        if (dateminUser - datemin === 0 && datemaxUser - datemax === 0){
+            setDatefromSlider();
+
+            // Ignore the rule if still dates are still not modified
+            if (dateminUser - datemin === 0 && datemaxUser - datemax === 0) {
+                return {};
+            }
+        }
 
         // For mapping numerical months to strings in the child node name
         let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
@@ -746,6 +749,9 @@ function getSubsetPreferences() {
 }
 
 function reset() {
+    // suppress server queries from the reset button when the webpage is already reset
+    let suppress = variablesSelected.size === 0 && subsetData.length === 0;
+
     localStorage.removeItem('variablesSelected');
     localStorage.removeItem('subsetData');
     localStorage.removeItem('nodeId');
@@ -760,8 +766,10 @@ function reset() {
     reloadLeftpanelVariables();
     reloadRightPanelVariables();
 
-    let query = {'subsets': JSON.stringify({}), 'variables': JSON.stringify({})};
-    makeCorsRequest(subsetURL, query, pageSetup);
+    if (!suppress) {
+        let query = {'subsets': JSON.stringify({}), 'variables': JSON.stringify({})};
+        makeCorsRequest(subsetURL, query, pageSetup);
+    }
 }
 
 /**
@@ -787,9 +795,6 @@ function submitQuery() {
     addGroup(true);
 
     // Store user preferences in local data (must be stored after adding the query group)
-    console.log("WHAT")
-    console.log([...variablesSelected]);
-    console.log(variablesSelected);
     localStorage.setItem('variablesSelected', JSON.stringify([...variablesSelected]));
 
     localStorage.setItem('subsetData', $('#subsetTree').tree('toJson'));
