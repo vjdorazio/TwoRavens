@@ -9,8 +9,6 @@ if (!production) {
 }
 
 let subsetURL = rappURL + 'eventdataapp';
-let query = {'subsets': JSON.stringify({}), 'variables': JSON.stringify({'Source': 1})};
-let response = {};
 
 let variables = ["X","GID","Date","Year","Month","Day","Source","SrcActor","SrcAgent","SOthAgent","Target","TgtActor",
     "TgtAgent","TOthAgent","CAMEO","RootCode","QuadClass","Goldstein","None","Lat","Lon","Geoname","CountryCode",
@@ -32,10 +30,29 @@ let actionData = {};
 // This is set once data is loaded and the graphs can be drawn. Subset menus will not be shown until this is set
 let initialLoad = false;
 
-renderVariables();
-$("#searchvar").keyup(renderVariables);
+let subsetData = [];
 
-function renderVariables() {
+// Attempt to load stored settings
+if (localStorage.getItem("subsetData") !== null) {
+    // Since the user has already submitted a query, restore the previous preferences from local data
+    // All stored data is cleared on reset
+    console.log(JSON.parse(localStorage.getItem('variablesSelected')));
+    variablesSelected = new Set(JSON.parse(localStorage.getItem('variablesSelected')));
+    subsetData = JSON.parse(localStorage.getItem('subsetData'));
+}
+
+let variableQuery = buildVariables();
+let subsetQuery = buildSubset();
+
+console.log(JSON.stringify(subsetQuery));
+console.log(JSON.stringify(variableQuery, null, '  '));
+
+let query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery)};
+
+reloadLeftpanelVariables();
+$("#searchvar").keyup(reloadLeftpanelVariables);
+
+function reloadLeftpanelVariables() {
     // Subset variable list by search term. Empty string returns all.
     let search_term = $("#searchvar").val().toUpperCase();
     let matchedVariables = [];
@@ -70,7 +87,7 @@ function renderVariables() {
                 }
             });
 
-            reloadVariables()
+            reloadRightPanelVariables()
         });
 
 }
@@ -263,10 +280,9 @@ function rightpanelMargin() {
 }
 
 
-// Right panel of subsetting menu
+// Right panel of subset menu
 
-
-// This is the subset node format
+// This is the subset node format for creating the jqtrees
 // {
 //     id: String(nodeId++),    // Node number with post-increment
 //     name: '[title]',         // 'Subsets', 'Group #', '[Selection] Subset' or tag name
@@ -279,25 +295,20 @@ function rightpanelMargin() {
 //     cancel_prompt: false     // If exists and true, prompt before deletion, and un-subset data
 // }
 
-// Delete stored tree (debug)
-localStorage.removeItem('subsetData');
-
-// variableData is used to render into the tree gui
-// variable names come from 'variablesSelected' variable
+// variableData is used to create the tree gui on the right panel
+// names of variables comes from 'variablesSelected' variable
 var variableData = [];
 
-var subsetData = [];
 var nodeId = 1;
 var groupId = 1;
 var queryId = 1;
 
-// Create the rightpanel data tree
-// if (localStorage.getItem("subsetData") !== null) {
-//     // If the user has already submitted a query, restore the previous query from local data
-//     subsetData = JSON.parse(localStorage.getItem('subsetData'));
-//     nodeId = localStorage.getItem('nodeId');
-//     groupId = localStorage.getItem('groupId');
-// }
+if (localStorage.getItem("nodeId") !== null) {
+    // If the user has already submitted a query, restore the previous query from local data
+    nodeId = localStorage.getItem('nodeId');
+    groupId = localStorage.getItem('groupId');
+    queryId = localStorage.getItem('queryId');
+}
 
 
 // Define negation toggle, logic dropdown and delete button, as well as their callbacks
@@ -404,7 +415,7 @@ $(function () {
 });
 
 // Updates the rightpanel variables menu
-function reloadVariables() {
+function reloadRightPanelVariables() {
     variableData.length = 0;
     [...variablesSelected].forEach(function(element){
         variableData.push({
@@ -421,7 +432,7 @@ function reloadVariables() {
 }
 
 // Load stored variables into the rightpanel variable tree on initial page load
-reloadVariables();
+reloadRightPanelVariables();
 
 // Create the query tree
 $(function () {
@@ -734,16 +745,30 @@ function getSubsetPreferences() {
     }
 }
 
+function reset() {
+    localStorage.removeItem('variablesSelected');
+    localStorage.removeItem('subsetData');
+    localStorage.removeItem('nodeId');
+    localStorage.removeItem('groupId');
+    localStorage.removeItem('queryId');
+
+    subsetData.length = 0;
+    $('#subsetTree').tree('loadData', subsetData, 0);
+
+    variablesSelected.clear();
+
+    reloadLeftpanelVariables();
+    reloadRightPanelVariables();
+
+    let query = {'subsets': JSON.stringify({}), 'variables': JSON.stringify({})};
+    makeCorsRequest(subsetURL, query, pageSetup);
+}
+
 /**
  * Makes web request for rightpanel preferences
  */
 function submitQuery() {
     console.log(subsetData);
-
-    // Store user preferences in local data
-    // localStorage.setItem('subsetData', $('#subsetTree').tree('toJson'));
-    // localStorage.setItem('nodeId', nodeId);
-    // localStorage.setItem('groupId', groupId);
 
     // Only construct and submit the query if new subsets have been added since last query
     let newSubsets = false;
@@ -760,6 +785,17 @@ function submitQuery() {
 
     // True for adding a query group, all existing preferences are grouped under a 'query group'
     addGroup(true);
+
+    // Store user preferences in local data (must be stored after adding the query group)
+    console.log("WHAT")
+    console.log([...variablesSelected]);
+    console.log(variablesSelected);
+    localStorage.setItem('variablesSelected', JSON.stringify([...variablesSelected]));
+
+    localStorage.setItem('subsetData', $('#subsetTree').tree('toJson'));
+    localStorage.setItem('nodeId', nodeId);
+    localStorage.setItem('groupId', groupId);
+    localStorage.setItem('queryId', queryId);
 
     // Add all nodes to selection
     let qtree = $('#subsetTree');
