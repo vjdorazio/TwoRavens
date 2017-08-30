@@ -1153,37 +1153,6 @@ display: inline;}
 	margin-right: 5px;
 }
 
-#sourceTabBtn {
-	width: 50%;
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	margin-left: 0;
-
-}
-
-#targetTabBtn {
-	width: 50%;
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
-	margin-left: -1px;
-}
-
-/* style the buttons inside the tab */
-div.actorTab button {
-    position: relative;
-	float: left;
-	border: none !important;
-	outline: none !important;
-}
-
-/* create an active/current tablink class */
-div.actorTab button.active {
-    background-image: none;
-	outline: 0;
-	-webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-	box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-}
-
 /* style the tab content */
 .actorTabContent {
     display: none;
@@ -1364,12 +1333,6 @@ div.actorTab button.active {
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 	border: none;
-}
-
-#linkTitleLeft, #linkTitleRight {
-	width: 50%;
-	float: left;
-	border-bottom: 1px solid #ADADAD;
 }
 
 /*styling for link SVG*/

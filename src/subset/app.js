@@ -211,14 +211,13 @@ function pageSetup(jsondata) {
     actorDataLoad();
 }
 
-
 // Select which tab is shown in the left panel
 function tabLeft(tab) {
 
     document.getElementById('variableTab').style.display = 'none';
     document.getElementById('subsetTab').style.display = 'none';
 
-    $(".btn-group").children().addClass("btn btn-default").removeClass("active");
+    $("#leftpanelButtons").children().addClass("btn btn-default").removeClass("active");
 
     switch (tab) {
         case "variableTab":

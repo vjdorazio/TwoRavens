@@ -59,15 +59,19 @@
         <h3 class="panel-title">Data Selection</h3>
     </div>
 
-    <div id="leftpanelButtons" class="btn-group" style="margin-left:6px; width:calc(100% - 12px)">
-        <button type="button" class="btn active" id="btnVariables" style="width:50%;"
-                title="Click variable name to add variables to data subset (select columns)."
-                onclick="tabLeft('variableTab');">Variables
-        </button>
-        <button type="button" class="btn btn-default" id="btnSubset" style="width:50%;"
-                title="Click subset name to configure subset options (select rows)."
-                onclick="tabLeft('subsetTab');">Subsets
-        </button>
+    <div id="leftpanelButtons" class="btn-group" data-toggle="buttons" style="margin-left:6px; width:calc(100% - 12px)">
+
+        <label class="btn btn-default active" style="width:50%" onclick="tabLeft('variableTab');"
+               title="Click variable name to add variables to data subset (select columns).">
+            <input type="radio" id="btnVariables" style="width:50%;"
+                    name="options" autocomplete="off" checked>Variables</input>
+        </label>
+
+        <label class="btn btn-default" style="width:50%" onclick="tabLeft('subsetTab');"
+               title="Click subset name to configure subset options (select rows).">
+            <input type="radio" id="btnSubset" style="width:50%;"
+                    name="options" autocomplete="off">Subsets</input>
+        </label>
     </div>
     <div id="leftpanelContent">
         <div id="variableTab" style="display:block;padding:10px 8px;text-align:center;width:100%;">
@@ -77,8 +81,7 @@
                  style="display:inline;text-align:center;position:absolute;left:6px;top:128px;height:calc(100% - 128px);width:226px;overflow-y:scroll"></div>
         </div>
         <div id="subsetTab" style="display:none;padding:10px 8px;text-align:center;width:100%;height:100%;">
-            <div id="subsetList"
-                 style="display:inline;text-align:center;position:absolute;left:6px;width:226px"></div>
+            <div id="subsetList" style="display:inline;text-align:center;position:absolute;left:6px;width:226px"></div>
         </div>
     </div>
 </div>
@@ -147,13 +150,15 @@
                 </div>
 
                 <div id="tabDiv" style="overflow:hidden;">
-                    <div class="actorTab">
-                        <button id="sourceTabBtn" class="actorTabLink btn active" type="button"
-                                onclick="actorTabSwitch('sourceTabBtn', 'sourceDiv')" title="Select sources">Sources
-                        </button>
-                        <button id="targetTabBtn" class="actorTabLink btn btn-default" type="button"
-                                onclick="actorTabSwitch('targetTabBtn', 'targetDiv')" title="Select targets">Targets
-                        </button>
+                    <div id="actorRadio" class="btn-group" data-toggle="buttons" style="margin-left:6px; width:calc(100% - 12px)">
+                        <label class="btn btn-default active" style="width:50%" title="Select sources">
+                            <input type="radio" id="sourceTabBtn" onclick="actorTabSwitch('sourceTabBtn', 'sourceDiv')"
+                                    name="actorSet" autocomplete="off" checked>Sources</label>
+                        </label>
+                        <label class="btn btn-default" style="width:50%" title="Select targets">
+                            <input type="radio" id="targetTabBtn" onclick="actorTabSwitch('targetTabBtn', 'targetDiv')"
+                                   name="actorSet" autocomplete="off">Targets</label>
+                        </label>
                     </div>
                 </div>
 
