@@ -63,9 +63,11 @@ var currentTab = "source";
 
 var sourceCurrentNode = null;			//current source node that is selected
 var targetCurrentNode = null;
-var currentSize = 0;					//total number of nodes
-var sourceSize = 0;						//total number of source nodes
-var targetSize = 0;						//total number of target nodes
+var currentSize = 0;					//total number of nodes created; this is never decremented
+var sourceSize = 0;						//total number of source nodes created; this is never decremented 
+var targetSize = 0;						//total number of target nodes created; this is never decremented
+var sourceActualSize = 0;				//total number of source nodes present
+var targetActualSize = 0;				//total number of target nodes present
 var changeID = 0;						//number that is updated whenever a node is added/changed, set to actorID
 
 //begin force definitions
@@ -82,13 +84,14 @@ var actorNodeR = 40;									//various definitions for node display
 var actorPadding = 5;
 var actorColors = d3.scaleOrdinal(d3.schemeCategory20);
 var pebbleBorderColor = '#fa8072';
+var fillRatio = 0.6;
 
 var actorForce = d3.forceSimulation()
     .force("link", d3.forceLink().distance(100).strength(0.5))	//link force to keep nodes together
     .force("x", d3.forceX().x(function(d) {					//grouping by nodes
 		if (d.actor == "source")
-			return Math.floor(actorWidth/3);
-		return Math.floor(2*actorWidth/3);
+			return Math.floor(actorWidth/4);
+		return Math.floor(3*actorWidth/4);
 	}).strength(0.06))
 	.force("y", d3.forceY().y(function(d) {					//cluster nodes
 		return Math.floor(actorHeight/2);
@@ -143,7 +146,7 @@ var destNode = null;				//node that is the end of the drag link line
 
 updateSVG();						//updates SVG elements
 
-actorForce.on("tick", tick);		//custom tick function
+actorForce.on("tick", actorTick);		//custom tick function
 
 //end force definitions, begin force functions
 
@@ -160,7 +163,7 @@ function dragstart(d, i) {
 function dragmove(d, i) {
 	d.x = Math.max(actorNodeR, Math.min(actorWidth - actorNodeR, d3.event.x));
 	d.y = Math.max(actorNodeR, Math.min(actorHeight - actorNodeR, d3.event.y));
-	tick();
+	actorTick();
 }
 
 //function called at end of drag, merges dragSelect and dragTarget if dragTarget exists
@@ -209,7 +212,7 @@ function dragend(d, i) {
 	dragSelect = null;
 	dragTarget = null;
 	dragTargetHTML = null;
-	tick();
+	actorTick();
 	actorForce.alpha(1).restart();
 }
 
@@ -384,7 +387,7 @@ function updateSVG(){
 }
 
 //function that is called on every animated step of the SVG, handles boundary and node collision
-function tick() {
+function actorTick() {
 	if (!dragStarted) {
 		var q = d3.quadtree().x((d) => d.x).y((d) => d.y).addAll(actorNodes);
 		for (var x = 0; x < actorNodes.length; x ++) {
@@ -438,7 +441,7 @@ function tick() {
 	});
 }
 
-//function called per tick() to prevent collisions among nodes
+//function called per actorTick() to prevent collisions among nodes
 function collide(node) {
 	var r = actorNodeR + actorPadding, nx1 = node.x - r, nx2 = node.x + r, ny1 = node.y - r, ny2 = node.y + r;
 	return function(quad, x1, y1, x2, y2) {
@@ -491,37 +494,39 @@ function updateAll() {
 
 //end force functions, begin actor code
 
-//calculates the max number of nodes that can be fit in a quarter of the SVG (prefer at most half of each side of the SVG to be filled)
-function calcCircleNum() {
+//calculates the max number of nodes that can be fit in the fillRatio of the SVG
+function calcCircleNum(curHeight) {
 	var numWidth = Math.floor((actorWidth/2 + actorPadding) / (2 * actorNodeR + actorPadding));
-	var numHeight = Math.floor((actorHeight + actorPadding) / (2 * actorNodeR + actorPadding));
-	var numCircle1 = Math.floor(numWidth * numHeight / 2);		//total number of circles by rectangular packing / 2
+	var numHeight = Math.floor((curHeight + actorPadding) / (2 * actorNodeR + actorPadding));
+	var numCircle1 = Math.floor(numWidth * numHeight * fillRatio);		//total number of circles by rectangular packing by fillRatio
 
-	var numHeightTri = Math.floor(((actorHeight - (2*actorNodeR)) + ((actorNodeR + actorPadding/2) * Math.sqrt(3))) / ((actorNodeR + (actorPadding/2)) * Math.sqrt(3)));
+	var numHeightTri = Math.floor(((curHeight - (2*actorNodeR)) + ((actorNodeR + actorPadding/2) * Math.sqrt(3))) / ((actorNodeR + (actorPadding/2)) * Math.sqrt(3)));
 	var numCircle2;
 	if (Math.floor((actorWidth/2) - ((numWidth * 2 * actorNodeR) + ((numWidth - 1) * actorPadding))) >= actorNodeR)
 		numCircle2 = Math.ceil(numHeightTri/2) * numWidth + Math.floor(numHeightTri/2) * (numWidth - 1);
 	else
 		numCircle2 = Math.ceil(numHeightTri/2) * numWidth + Math.floor(numHeightTri/2) * (numWidth - 2);
 
-	numCircle2 = Math.floor(numCircle2/2);		//total number of circles by triangular/hexagonal packing /2
+	numCircle2 = Math.floor(numCircle2 * fillRatio);		//total number of circles by triangular/hexagonal packing by fillRatio
 
 	if (numCircle1 > numCircle2)
 		return numCircle1;
 	return numCircle2;
 }
 
-//rename group on click, initialize groups, allow deletion of groups
+//rename group on click, initialize groups
 $(document).ready(function() {
 	//default group display on page load, adds default source/target to nodes and SVG
 	$("#editGroupName").ready(function() {
 		actorNodes.push(new nodeObj("Source 0", [], [], actorColors(currentSize), "source", changeID));
 		currentSize ++;
 		sourceSize ++;
+		sourceActualSize ++;
 		changeID ++;
 		actorNodes.push(new nodeObj("Target 0", [], [], actorColors(currentSize), "target", changeID));
 		currentSize ++;
 		targetSize ++;
+		targetActualSize ++;
 		changeID ++;
 		sourceCurrentNode = actorNodes[0];
 		targetCurrentNode = actorNodes[1];
@@ -555,71 +560,6 @@ $(document).ready(function() {
 
 		updateAll();		//update force
 	});
-
-	//remove a group if possible
-	$("#deleteGroup").click(function() {
-		var cur = actorNodes.indexOf(window[currentTab + "CurrentNode"]);
-		var prev = cur - 1;
-		var next = cur + 1;
-		while (true) {
-			if (actorNodes[prev] && actorNodes[prev].actor == currentTab) {
-				//set previous node to current and remove old
-				window[currentTab + "CurrentNode"] = actorNodes[prev];
-				updateGroupName(actorNodes[prev].name);
-
-				$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
-				//update actor selection checks
-				$("." + currentTab + "Chk:checked").prop("checked", false);
-				for (var x = 0; x < actorNodes[prev].groupIndices.length; x ++)
-					$("#" + actorNodes[prev].groupIndices[x]).prop("checked", true);
-				$("#" + currentTab + "ShowSelected").trigger("click");
-
-				//update links
-				for (var x = 0; x < actorLinks.length; x ++) {
-					if (actorLinks[x].source == actorNodes[cur])
-						actorLinks.splice(x, 1);
-					else if (actorLinks[x].target == actorNodes[cur])
-						actorLinks.splice(x , 1);
-				}
-				actorNodes.splice(cur, 1);
-				updateAll();
-				return;
-			}
-			else if (actorNodes[next] && actorNodes[next].actor == currentTab) {
-				//set next node to current and remove old
-				window[currentTab + "CurrentNode"] = actorNodes[next];
-				updateGroupName(actorNodes[next].name);
-
-				$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
-				//update actor selection checks
-				$("." + currentTab + "Chk:checked").prop("checked", false);
-				for (var x = 0; x < actorNodes[next].groupIndices.length; x ++)
-					$("#" + actorNodes[next].groupIndices[x]).prop("checked", true);
-				$("#" + currentTab + "ShowSelected").trigger("click");
-
-				//update links
-				for (var x = 0; x < actorLinks.length; x ++) {
-					if (actorLinks[x].source == actorNodes[cur])
-						actorLinks.splice(x, 1);
-					else if (actorLinks[x].target == actorNodes[cur])
-						actorLinks.splice(x , 1);
-				}
-				actorNodes.splice(cur, 1);
-				updateAll();
-				return;
-			}
-			else {
-				//update search in both directions
-				if (prev > -1)
-					prev --;
-				if (next < actorNodes.length)
-					next ++;
-				if (prev == -1 && next == actorNodes.length)
-					break;
-			}
-		}
-		alert("Need at least one " + currentTab + " node!");
-	});
 });
 
 //update display of group name
@@ -647,7 +587,7 @@ function actorTabSwitch(origin, tab) {
 
 	updateGroupName(window[currentTab + "CurrentNode"].name);
 	document.getElementById(tab).style.display = "inline-block";
-	tick();
+	actorTick();
 }
 
 //load dictionary and data
@@ -1083,6 +1023,7 @@ $(".actorClearAll").click(function(event) {
 $(".actorNewGroup").click(function(event) {
 	actorNodes.push(new nodeObj(capitalizeFirst(currentTab) + " " + window[currentTab + "Size"], [], [], actorColors(currentSize), currentTab, changeID));
 	window[currentTab + "Size"] ++;
+	window[currentTab + "ActualSize"] ++;
 	currentSize ++;
 	changeID ++;
 	
@@ -1093,13 +1034,92 @@ $(".actorNewGroup").click(function(event) {
 	$("." + currentTab + "Chk:checked").prop("checked", false);
 	//update svg
 	//change dimensions of SVG if needed (exceeds half of the space)
-	if (window[currentTab + "Size"] > calcCircleNum()) {
+	if (window[currentTab + "ActualSize"] > calcCircleNum(actorHeight)) {
 		actorHeight += actorNodeR;
 		$("#actorLinkDiv").height(function(n, c){return c + actorNodeR;});
 		actorSVG.attr("height", actorHeight);
 		d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
 	}
 	updateAll();
+	actorTick();
+	actorForce.alpha(1).restart();
+});
+
+//remove a group if possible
+$("#deleteGroup").click(function() {
+	var cur = actorNodes.indexOf(window[currentTab + "CurrentNode"]);
+	var prev = cur - 1;
+	var next = cur + 1;
+	while (true) {
+		if (actorNodes[prev] && actorNodes[prev].actor == currentTab) {
+			performUpdate(prev);
+			return;
+		}
+		else if (actorNodes[next] && actorNodes[next].actor == currentTab) {
+			performUpdate(next);
+			return;
+		}
+		else {
+			//update search in both directions
+			if (prev > -1)
+				prev --;
+			if (next < actorNodes.length)
+				next ++;
+			if (prev == -1 && next == actorNodes.length)
+				break;
+		}
+	}
+	alert("Need at least one " + currentTab + " node!");
+
+	function performUpdate(index) {
+		//set index node to current
+		window[currentTab + "CurrentNode"] = actorNodes[index];
+		updateGroupName(actorNodes[index].name);
+
+		$("#clearAll" + capitalizeFirst(currentTab) + "s").click();
+		//update actor selection checks
+		$("." + currentTab + "Chk:checked").prop("checked", false);
+		for (var x = 0; x < actorNodes[index].groupIndices.length; x ++)
+			$("#" + actorNodes[index].groupIndices[x]).prop("checked", true);
+		$("#" + currentTab + "ShowSelected").trigger("click");
+
+		//update links
+		for (var x = 0; x < actorLinks.length; x ++) {
+			if (actorLinks[x].source == actorNodes[cur]) {
+				actorLinks.splice(x, 1);
+				x --;
+			}
+			else if (actorLinks[x].target == actorNodes[cur]) {
+				actorLinks.splice(x , 1);
+				x --;
+			}
+		}
+		actorNodes.splice(cur, 1);
+		window[currentTab + "ActualSize"] --;
+
+		var curHeight = $("#actorContainer").height();		//this is the height of the container
+		var titleHeight = $("#linkTitle").height();			//this is the height of the title div above the SVG
+
+		if (sourceActualSize <= calcCircleNum(curHeight - titleHeight) && targetActualSize <= calcCircleNum(curHeight - titleHeight)) {		//if link div is empty enough, maintain height alignment
+			$("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
+			actorHeight = actorSVG.node().getBoundingClientRect().height;
+			actorSVG.attr("height", actorHeight);
+			d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+		}
+		else {	//if deleting the element and shrinking the SVG will cause the height of the SVG to be less than the height of the container, do nothing; else shrink SVG
+			if (actorHeight - actorNodeR < curHeight - titleHeight)
+				return;
+
+			if (window[currentTab + "ActualSize"] <= calcCircleNum(actorHeight - actorNodeR)) {
+				actorHeight -= actorNodeR;
+				$("#actorLinkDiv").height(function(n, c){return c - actorNodeR;});
+				actorSVG.attr("height", actorHeight);
+				d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+			}
+		}
+		updateAll();
+		return;
+	}
 });
 
 //searches for the specified text and filters (maybe implement escape characters for text search?), and sets currentScreen as an array of items matching criteria

@@ -3780,18 +3780,32 @@ rightpanelMargin();
 function rightpanelMargin() {
 	//actor resize on window resize handled here
 	if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded) {	//handle only if actor code is loaded
-		$("#actorSelectionDiv").css("height", $("#actorContainer").css("height"));
-		console.log("in height manage");
-		console.log(sourceSize + " " + targetSize + " " + calcCircleNum());
-		if (sourceSize <= calcCircleNum() && targetSize <= calcCircleNum()) {		//if link div is empty enough, maintain height alignment
-			console.log("change");
-		//~ $("#actorLinkDiv").height(function(n, c){return c + actorNodeR;});
-		//~ actorSVG.attr("height", actorHeight);
-		
+		var curHeight = $("#actorContainer").height();		//this is the height of the container
+		var titleHeight = $("#linkTitle").height();			//this is the height of the title div above the SVG
+		//~ var trySize = actorSVG.attr("height");
+		var trySize = actorHeight;
+		$("#actorSelectionDiv").css("height", curHeight);	//this constrains the left side
+		if (sourceActualSize <= calcCircleNum(curHeight - titleHeight) && targetActualSize <= calcCircleNum(curHeight - titleHeight)) {		//if link div is empty enough, maintain height alignment		
 			$("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
-			console.log("SVG height: " + $("#actorLinkSVG").css("height"));
 			actorHeight = actorSVG.node().getBoundingClientRect().height;
-			//~ d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+			actorSVG.attr("height", actorHeight);
+			d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+			updateAll();
+		}
+		else if (trySize > curHeight){		//note this is a slow implementation, especially if dragging to resize
+			console.log("in try");
+			console.log(trySize + " " + actorHeight);
+			while (sourceActualSize <= calcCircleNum(trySize) && targetActualSize <= calcCircleNum(trySize)) {		//reduce the size of the SVG to a comfortable viewing size
+				console.log("trySize = " + trySize + " attempt: " + calcCircleNum(trySize));
+				trySize -= 20;		//try half of actorNodeR
+			}
+
+			console.log(trySize + " " + actorHeight);
+			$("#actorLinkDiv").height(function(n, c){return c - (actorHeight - trySize);});
+			actorHeight = trySize;
+			actorSVG.attr("height", actorHeight);
+			d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+			updateAll();
 		}
 	}
 
@@ -3801,17 +3815,25 @@ function rightpanelMargin() {
         // Vertical scrollbar
         document.getElementById("rightpanel").style.right = "27px";
         if ($('#rightpanel').hasClass('closepanel')) {
-            document.getElementById("stageButton").style.right = "56px"
+            document.getElementById("stageButton").style.right = "56px";
+            $("#actorContainer").css("width", "1100px");
+            $("#actorLinkDiv").css("margin-right", "100px");
         } else {
-            document.getElementById("stageButton").style.right = "286px"
+            document.getElementById("stageButton").style.right = "286px";
+            $("#actorContainer").css("width", "1330px");
+            $("#actorLinkDiv").css("margin-right", "330px");
         }
     } else {
         // No vertical scrollbar
         document.getElementById("rightpanel").style.right = "10px";
         if ($('#rightpanel').hasClass('closepanel')) {
-            document.getElementById("stageButton").style.right = "40px"
+            document.getElementById("stageButton").style.right = "40px";
+            $("#actorContainer").css("width", "1100px");
+            $("#actorLinkDiv").css("margin-right", "100px");
         } else {
-            document.getElementById("stageButton").style.right = "270px"
+            document.getElementById("stageButton").style.right = "270px";
+            $("#actorContainer").css("width", "1330px");
+            $("#actorLinkDiv").css("margin-right", "330px");
         }
     }
 

@@ -1254,9 +1254,6 @@ div.actorTab button.active {
 }
 
 #actorContainer {
-/*
-	width: calc(100% - 335px);
-*/
 	width: 1100px;
 
 	height: calc(100% - 20px);
@@ -1264,45 +1261,14 @@ div.actorTab button.active {
 }
 
 #actorSelectionDiv {
-/*
-position:relative;
-display:inline-block;
-left:-350px;
-*/
-/*
-	float: left;
-*/
 	position: fixed;
-/*
-	float:left;
-*/
-
 	width: 350px;
-/*
-	height: 100%;
-*/
 	border: 1px solid #ADADAD;
 	background: #F9F9F9;
 	margin-bottom: 3px;
 }
 
 #actorLinkDiv {
-/*
-position:relative;
-display:inline-block;
-*/
-/*
-vertical-align:top;
-*/
-/*
-top:0px;					/*no float in order to keep margin*/
-
-/*
-	margin-left: 350px;
-*/
-/*
-margin-left:-350px;
-*/
 	margin-left:350px;
 	float:left;
 	margin-right: 100px;
