@@ -288,8 +288,6 @@ function rightpanelMargin() {
 // Delete stored tree (debug)
 localStorage.removeItem('subsetData');
 
-var submitLadda = Ladda.create(document.getElementById("buttonSubmitQuery"));
-
 // variableData is used to render into the tree gui
 // variable names come from 'variablesSelected' variable
 var variableData = [];
@@ -300,12 +298,12 @@ var groupId = 1;
 var queryId = 1;
 
 // Create the rightpanel data tree
-if (localStorage.getItem("subsetData") !== null) {
-    // If the user has already submitted a query, restore the previous query from local data
-    subsetData = JSON.parse(localStorage.getItem('subsetData'));
-    nodeId = localStorage.getItem('nodeId');
-    groupId = localStorage.getItem('groupId');
-}
+// if (localStorage.getItem("subsetData") !== null) {
+//     // If the user has already submitted a query, restore the previous query from local data
+//     subsetData = JSON.parse(localStorage.getItem('subsetData'));
+//     nodeId = localStorage.getItem('nodeId');
+//     groupId = localStorage.getItem('groupId');
+// }
 
 
 // Define negation toggle, logic dropdown and delete button, as well as their callbacks
@@ -746,6 +744,7 @@ function getSubsetPreferences() {
  * Makes web request for rightpanel preferences
  */
 function submitQuery() {
+    console.log(subsetData);
 
     // Store user preferences in local data
     // localStorage.setItem('subsetData', $('#subsetTree').tree('toJson'));

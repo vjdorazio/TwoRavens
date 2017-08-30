@@ -84,8 +84,8 @@ eventdata.app <- function(env) {
     subsets = everything$subsets
     variables = everything$variables
 
-    print(subsets)
-    print(variables)
+    # print(subsets)
+    # print(variables)
     table <- 'samplePhox'
 
     connection <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)

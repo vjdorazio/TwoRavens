@@ -179,8 +179,11 @@ table tr td{
 #leftpanel #leftContentArea div {display:none;}
 #leftpanel #leftContentArea div.active {display:block;}
 
+/* Elements to enable/disable on open/close left panel */
 #leftpanel.closepanel {width:1px;}
-#leftpanel.closepanel #leftpaneltitle, #leftpanel.closepanel div.btn-toolbar, #leftpanel.closepanel div.row-fluid.closepanel {display:none;}
+#leftpanel.closepanel #leftpaneltitle,
+#leftpanel.closepanel #leftpanelButtons,
+#leftpanel.closepanel #leftpanelContent {display:none;}
 
 #rightpanel {
     border:1px solid #ADADAD;
