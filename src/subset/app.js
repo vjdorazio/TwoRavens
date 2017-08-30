@@ -29,6 +29,9 @@ let countryData = [];
 let actorData = [];
 let actionData = {};
 
+// This is set once data is loaded and the graphs can be drawn. Subset menus will not be shown until this is set
+let initialLoad = false;
+
 renderVariables();
 $("#searchvar").keyup(renderVariables);
 
@@ -80,8 +83,8 @@ d3.select("#subsetList").selectAll("p")
     .style("text-align", "center")
     .style('background-color', varColor)
     .on("click", function () {
-        subsetKeySelected = d3.select(this).text();
 
+        subsetKeySelected = d3.select(this).text();
         d3.select('#subsetList').selectAll("p").style('background-color', function (d) {
             if (d === subsetKeySelected)
                 return selVarColor;
@@ -89,40 +92,25 @@ d3.select("#subsetList").selectAll("p")
                 return varColor;
         });
 
-        if (subsetKeySelected === "Date") {
-            document.getElementById("subsetDate").style.display = 'inline';
-
-            document.getElementById("subsetLocation").style.display = 'none';
-            document.getElementById("subsetActor").style.display = 'none';
-            document.getElementById("subsetAction").style.display = 'none';
+        if (!initialLoad) {
+            alert("Resources are still being loaded from the server. The plots will render once resources have been loaded");
+        } else {
+            showSubset(subsetKeySelected);
         }
 
-        else if (subsetKeySelected === "Location") {
-            document.getElementById("subsetLocation").style.display = 'inline';
+    });
 
-            document.getElementById("subsetDate").style.display = 'none';
-            document.getElementById("subsetActor").style.display = 'none';
-            document.getElementById("subsetAction").style.display = 'none';
-        }
 
-        else if (subsetKeySelected === "Actor") {
-            document.getElementById("subsetActor").style.display = 'inline';
-
-            document.getElementById("subsetDate").style.display = 'none';
-            document.getElementById("subsetLocation").style.display = 'none';
-            document.getElementById("subsetAction").style.display = 'none';
+function showSubset(subsetKeySelected) {
+    if (subsetKeySelected !== ""){
+        $("#main").children().hide();
+        $("#subset" + subsetKeySelected).css('display', 'inline');
+        if (subsetKeySelected === "Actor") {
             d3actor();
         }
-
-        else if (subsetKeySelected === "Action") {
-            document.getElementById("subsetAction").style.display = 'inline';
-
-            document.getElementById("subsetDate").style.display = 'none';
-            document.getElementById("subsetLocation").style.display = 'none';
-            document.getElementById("subsetActor").style.display = 'none';
-        }
         rightpanelMargin();
-    });
+    }
+}
 
 // Initial load of preprocessed data
 makeCorsRequest(subsetURL, query, pageSetup);
@@ -209,6 +197,13 @@ function pageSetup(jsondata) {
 
     actorData = jsondata.actor_data;
     actorDataLoad();
+
+    // If first load of data, user may have selected a subset and is waiting. Render page now that data is available
+    if (!initialLoad) {
+        initialLoad = true;
+        // In the case where the user has not yet made a subset selection, this is ignored
+        showSubset(subsetKeySelected);
+    }
 }
 
 // Select which tab is shown in the left panel
