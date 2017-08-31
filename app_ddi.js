@@ -726,8 +726,9 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
     var plot_nodes = nodes.slice();
 
-
-
+    for(var i=0;i<plot_nodes.length;i++) {
+        console.log("this is the main fearonLatin.json : " + plot_nodes[i].cdfplotx);
+    }
     var margin_cross = {top: 30, right: 15, bottom: 40, left: 50}
         , width_cross = 285 - margin_cross.left - margin_cross.right
         , height_cross = 160 - margin_cross.top - margin_cross.bottom;
@@ -866,6 +867,9 @@ function crossTabPlots(PlotNameA, PlotNameB) {
             equidistance(PlotNameA,plotA_size);
         }
         else if (this.innerText === "EQUIMASS") {
+            var plotA_sizem= parseInt(d3.select("input#a")[0][0].value);
+
+            equimass(PlotNameA,plotA_sizem);
 
         }
 
@@ -880,7 +884,8 @@ function crossTabPlots(PlotNameA, PlotNameB) {
             equidistance(PlotNameB,plotB_size);
         }
         else if (this.innerText === "EQUIMASS") {
-
+            var plotB_sizem= parseInt(d3.select("input#b")[0][0].value);
+            equimass(PlotNameB,plotB_sizem);
         }
 
     }
@@ -891,7 +896,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
 
 // this is the function to add  the density plot if any
-    function density_cross(density_env,a) {
+    function density_cross(density_env,a,method_name) {
 
 
 
@@ -915,7 +920,7 @@ var data2=[];
             d.x = +d.x;
             d.y = +d.y;
         });
-        console.log(data2);
+      //  console.log(data2);
 
         var min_x = d3.min(data2, function (d, i) {
             return data2[i].x;
@@ -1010,43 +1015,62 @@ var data2=[];
             console.log("do nothing #bar")
         }
         else {
+            if (method_name === "equidistance") {
 
-            var upper_limit = d3.max(xVals);
-            var lower_limit = d3.min(xVals);
-
-
-            //console.log(upper_limit +" and " + lower_limit);
-            var diff = upper_limit - lower_limit;
-            var buffer = diff / a;
-            var x_cord = [];
-            console.log("diff : " + diff);
-            console.log("buffer : " + buffer);
-            var push_data = lower_limit;
-            for (var i = 0; i < a-1; i++) {
-                push_data = push_data + buffer;
-                x_cord.push(push_data);
-                console.log("x_cord : " + x(x_cord[i]));
+                var upper_limit = d3.max(xVals);
+                var lower_limit = d3.min(xVals);
 
 
-                plotsvg.append("line")
-                    .attr("id", "line1")
-                    .attr("x1", x(x_cord[i]))
-                    .attr("x2", x(x_cord[i]))
-                    .attr("y1", y(d3.min(yVals)))
-                    .attr("y2", y(d3.max(yVals)))
-                    .style("stroke", "#212121")
-                    .style("stroke-dasharray", "3");
+                //console.log(upper_limit +" and " + lower_limit);
+                var diff = upper_limit - lower_limit;
+                var buffer = diff / a;
+                var x_cord = [];
+                console.log("diff : " + diff);
+                console.log("buffer : " + buffer);
+                var push_data = lower_limit;
+                for (var i = 0; i < a - 1; i++) {
+                    push_data = push_data + buffer;
+                    x_cord.push(push_data);
+                   console.log("x_cord : " + x_cord);
+
+
+                    plotsvg.append("line")
+                        .attr("id", "line1")
+                        .attr("x1", x(x_cord[i]))
+                        .attr("x2", x(x_cord[i]))
+                        .attr("y1", y(d3.min(yVals)))
+                        .attr("y2", y(d3.max(yVals)))
+                        .style("stroke", "#212121")
+                        .style("stroke-dasharray", "3");
+                }
+
+            }
+
+            else if (method_name === "equimass")
+            {
+            console.log(" density equimass called ");
+          var temp=[];
+          temp=equimassCalculation(density_env,a);
+console.log("temp for density : "+ temp);
+                for (var i = 1; i < a ; i++) {
+                    plotsvg.append("line")
+                        .attr("id", "line1")
+                        .attr("x1", x(temp[i]))
+                        .attr("x2", x(temp[i]))
+                        .attr("y1", y(d3.min(yVals)))
+                        .attr("y2", y(d3.max(yVals)))
+                        .style("stroke", "#212121")
+                        .style("stroke-dasharray", "3");
+                }
             }
 
         }
-
-
 
     }
 
 
 // this is the function to add the bar plot if any
-    function bar_cross(bar_env,a) {
+    function bar_cross(bar_env,a,method_name) {
         console.log("welcome to : " + bar_env.name);
 
 
@@ -1066,7 +1090,7 @@ var data2=[];
         var xVals = new Array;
         var yValKey = new Array;
 
-        console.log(keys);
+       // console.log(keys);
 
 
 //    var mydiv = "#resultsView_tabular";
@@ -1197,29 +1221,36 @@ var data2=[];
             console.log("do nothing #bar")
         }
         else {
+            if (method_name === "equidistance") {
 
-            var upper_limit1=maxX;
-            var lower_limit1=minX;
-            var diff1=upper_limit1-lower_limit1;
-            var buffer1= diff1/a;
-            var x_cord1=[];
-            console.log("diff1 : "+ diff1);
-            console.log("buffer1 : "+buffer1);
-            var push_data1=lower_limit1;
-            for (var i = 0; i < a-1; i++) {
-                push_data1 = push_data1 + buffer1;
-                x_cord1.push(push_data1);
+                var upper_limit1 = maxX;
+                var lower_limit1 = minX;
+                var diff1 = upper_limit1 - lower_limit1;
+                var buffer1 = diff1 / a;
+                var x_cord1 = [];
+                console.log("diff1 : " + diff1);
+                console.log("buffer1 : " + buffer1);
+                var push_data1 = lower_limit1;
+                for (var i = 0; i < a - 1; i++) {
+                    push_data1 = push_data1 + buffer1;
+                    x_cord1.push(push_data1);
 
-                console.log("x_cord1 : "+ x_1(x_cord1[i]));
+                   // console.log("x_cord1 : " + x_1(x_cord1[i]));
 //console.log("maxY : "+ maxY);
-                plotsvg1.append("line")
-                    .attr("id", "line2")
-                    .attr("x1", x_1(x_cord1[i]))
-                    .attr("x2", x_1(x_cord1[i]))
-                    .attr("y1", y_1(0))
-                    .attr("y2", y_1(maxY))
-                    .style("stroke", "#212121")
-                    .style("stroke-dasharray", "3");
+                    plotsvg1.append("line")
+                        .attr("id", "line2")
+                        .attr("x1", x_1(x_cord1[i]))
+                        .attr("x2", x_1(x_cord1[i]))
+                        .attr("y1", y_1(0))
+                        .attr("y2", y_1(maxY))
+                        .style("stroke", "#212121")
+                        .style("stroke-dasharray", "3");
+                }
+            }
+            else if (method_name==="equimass")
+            {
+                console.log(" bar equimass called ");
+
             }
         }
 
@@ -1229,6 +1260,8 @@ var data2=[];
 
     function equidistance(A,a)
     {
+        var method_name= "equidistance";
+
         // json object to be sent to r server
         var obj = new Object();
         obj.plotNameA = A;
@@ -1251,12 +1284,12 @@ var data2=[];
                     $("#plotsvg_id").remove();
                     d3.select("#line1").remove();
 
-                    density_cross(plot_nodes[i],a);
+                    density_cross(plot_nodes[i],a,method_name);
                 }
                 else if (plot_nodes[i].plottype === "bar") {
                     $("#plotsvg1_id").remove();
                     d3.select("#line2").remove();
-                    bar_cross(plot_nodes[i],a);
+                    bar_cross(plot_nodes[i],a,method_name);
                 }
             } else {
                 /*
@@ -1273,7 +1306,117 @@ var data2=[];
 
         }
     }
+function equimass(A,a)
+{
+    var method_name= "equimass";
 
+    // json object to be sent to r server
+    var obj = new Object();
+    obj.plotNameA = A;
+    obj.equidistance = a;
+
+
+
+
+//convert object to json string
+    var string = JSON.stringify(obj);
+
+//convert string to Json Object
+    console.log(JSON.parse(string)); // this is your requirement.
+
+
+
+    for (var i = 0; i < plot_nodes.length; i++) {
+        if (plot_nodes[i].name === A) {
+            if (plot_nodes[i].plottype === "continuous") {
+                $("#plotsvg_id").remove();
+                d3.select("#line1").remove();
+
+                density_cross(plot_nodes[i],a,method_name);
+            }
+            else if (plot_nodes[i].plottype === "bar") {
+                $("#plotsvg1_id").remove();
+                d3.select("#line2").remove();
+                bar_cross(plot_nodes[i],a,method_name);
+            }
+        } else {
+            /*
+            if (plot_nodes[i].plottype === "continuous") {
+                density_cross(plot_nodes[i],b);
+            }
+            else if (plot_nodes[i].plottype === "bar") {
+                bar_cross(plot_nodes[i],b);
+            }
+            */
+            console.log("not found")
+        }
+
+
+    }
+
+}
+
+function equimassCalculation(plot_ev,n)
+{
+    //var n =v-1;
+    var arr_y=[];
+    var arr_x=[];
+
+        arr_y=plot_ev.cdfploty;
+        arr_x=plot_ev.cdfplotx;
+
+
+
+//console.log("The value of arr_y is "+ arr_y);
+  //  console.log("The value of arr_x is "+ arr_x);
+
+    var Upper_limitY= d3.max(arr_y);
+    var Lower_limitY=d3.min(arr_y);
+var diffy=Upper_limitY-Lower_limitY;
+    var e=(diffy)/50;
+
+    console.log("Upper_limitY ;"+Upper_limitY);
+    console.log("Lower_limitX :"+Lower_limitY);
+    console.log("e "+e );
+
+    var arr_c=[];
+    var push_data=arr_y[0];
+    for(var i=0;i<n;i++)
+    {
+       push_data=push_data+e;
+       arr_c.push(push_data);
+
+    }
+
+    console.log("arr_c : "+ arr_c);
+
+    var temp=[];
+    var val_temp=0;
+    for(var i=0; i<n;i++)
+    {
+        val_temp=(arr_c[i]-arr_y[0])/diffy;
+        temp.push(val_temp);
+    }
+    console.log("temp : "+ temp);
+
+
+    var temp_2=[];
+    var Upper_limitX=d3.max(arr_x);
+    var Lower_limitX=d3.min(arr_x);
+
+    var diffx=Upper_limitX-Lower_limitX;
+    var val_temp2=0;
+    for (var i=0; i<n;i++)
+    {
+        val_temp2= (temp[i]*10*diffx) + arr_x[0];
+        temp_2.push(val_temp2);
+
+    }
+console.log("diffx: "+ diffx);
+    console.log("temp_2 : "+ temp_2);
+
+    return temp_2;
+}
 /*
     function equidistance(a)
     {
