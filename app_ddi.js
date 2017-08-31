@@ -1046,7 +1046,7 @@ var data2=[];
 
             }
 
-            else if (method_name === "equimass")
+            else if (method_name === "equimass") // here we use the data from equimassCalculation to draw lines
             {
             console.log(" density equimass called ");
           var temp=[];
@@ -1306,7 +1306,7 @@ console.log("temp for density : "+ temp);
 
         }
     }
-function equimass(A,a)
+function equimass(A,a) //equimass function to call the plot function
 {
     var method_name= "equimass";
 
@@ -1356,14 +1356,14 @@ function equimass(A,a)
 
 }
 
-function equimassCalculation(plot_ev,n)
+function equimassCalculation(plot_ev,n) // here we find the coordinates using CDF values
 {
     //var n =v-1;
     var arr_y=[];
     var arr_x=[];
 
-        arr_y=plot_ev.cdfploty;
-        arr_x=plot_ev.cdfplotx;
+        arr_y=plot_ev.cdfploty;// cdfploty data stored
+        arr_x=plot_ev.cdfplotx;// cdfplotx data stored
 
 
 
@@ -1373,13 +1373,13 @@ function equimassCalculation(plot_ev,n)
     var Upper_limitY= d3.max(arr_y);
     var Lower_limitY=d3.min(arr_y);
 var diffy=Upper_limitY-Lower_limitY;
-    var e=(diffy)/50;
+    var e=(diffy)/50; // e is the variable to store the average distance between the points in the cdfy in order to divide the cdfy
 
     console.log("Upper_limitY ;"+Upper_limitY);
     console.log("Lower_limitX :"+Lower_limitY);
     console.log("e "+e );
 
-    var arr_c=[];
+    var arr_c=[]; //array to store the cdfy divided coordinates data
     var push_data=arr_y[0];
     for(var i=0;i<n;i++)
     {
@@ -1390,7 +1390,7 @@ var diffy=Upper_limitY-Lower_limitY;
 
     console.log("arr_c : "+ arr_c);
 
-    var temp=[];
+    var temp=[]; // to store the distance percentage of each division point from the first point in cdfy
     var val_temp=0;
     for(var i=0; i<n;i++)
     {
@@ -1400,7 +1400,7 @@ var diffy=Upper_limitY-Lower_limitY;
     console.log("temp : "+ temp);
 
 
-    var temp_2=[];
+    var temp_2=[]; // in order to store the corresponding cdfy points in cdfx
     var Upper_limitX=d3.max(arr_x);
     var Lower_limitX=d3.min(arr_x);
 
@@ -1408,14 +1408,14 @@ var diffy=Upper_limitY-Lower_limitY;
     var val_temp2=0;
     for (var i=0; i<n;i++)
     {
-        val_temp2= (temp[i]*10*diffx) + arr_x[0];
+        val_temp2= (temp[i]*10*diffx) + arr_x[0]; //equation to calculate the cdfx required points
         temp_2.push(val_temp2);
 
     }
 console.log("diffx: "+ diffx);
     console.log("temp_2 : "+ temp_2);
 
-    return temp_2;
+    return temp_2; // the required array to plot in pdf
 }
 /*
     function equidistance(a)
