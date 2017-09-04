@@ -1052,7 +1052,7 @@ var data2=[];
           var temp=[];
           temp=equimassCalculation(density_env,a);
 console.log("temp for density : "+ temp);
-                for (var i = 1; i < a ; i++) {
+                for (var i = 0; i < a ; i++) {
                     plotsvg.append("line")
                         .attr("id", "line1")
                         .attr("x1", x(temp[i]))
