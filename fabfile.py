@@ -51,7 +51,7 @@ def check_config():
 
     config_cnt = AppConfiguration.objects.count()
     if config_cnt == 0:
-        local('python manage.py loaddata tworaven_apps/configurations/fixtures/intial_configs.json')
+        local('python manage.py loaddata tworaven_apps/configurations/fixtures/initial_configs.json')
     else:
         print('Configs exist in the db: %d' % config_cnt)
 
