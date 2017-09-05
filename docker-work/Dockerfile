@@ -55,7 +55,7 @@ RUN cd /srv/webapps/TwoRavens/setup/r-setup && \
 # Virtualenv install
 # ---------------------------------------------
 RUN pip3 install virtualenvwrapper && \
-    mkdir ~/.virtualenvs && \
+    mkdir /srv/.virtualenvs && \
     cp ~/.bashrc ~/.bashrc-org && \
     echo 'export WORKON_HOME=/srv/.virtualenvs' >> ~/.bashrc && \
     echo 'export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3' >> ~/.bashrc && \
