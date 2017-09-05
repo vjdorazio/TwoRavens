@@ -50,9 +50,11 @@ function nodeObj(name, group, groupIndices, color, actorType, actorID) {
 }
 
 //definition of a link
-function linkObj(source, target){
+function linkObj(source, target, rev, dup){
 	this.source = source;
 	this.target = target;
+	this.rev = rev;
+	this.dup = dup;
 }
 
 var actorNodes = [];
@@ -185,12 +187,47 @@ function dragend(d, i) {
 			$("#" + dragTarget.groupIndices[x]).prop("checked", "true");
 
 		//merge dragSel links to dragTarg
-		for (var x = 0; x < actorLinks.length;x ++) {
-			if (actorLinks[x].source == dragSelect)
+		//~ for (var x = 0; x < actorLinks.length;x ++) {
+			//~ if (actorLinks[x].source == dragSelect)
+				//~ actorLinks[x].source = dragTarget;
+			//~ else if (actorLinks[x].target == dragSelect)
+				//~ actorLinks[x].target = dragTarget;
+		//~ }
+		for (var x = 0; x < actorLinks.length; x ++) {
+			if (actorLinks[x].source == dragSelect) {
 				actorLinks[x].source = dragTarget;
-			else if (actorLinks[x].target == dragSelect)
+			}
+			else if (actorLinks[x].target == dragSelect) {
 				actorLinks[x].target = dragTarget;
+			}
 		}
+
+		//~ console.log('begin clean');
+		for (var x = 0; x < actorLinks.length; x ++) {
+			//~ console.log(x);
+			if (actorLinks[x] == undefined) {
+				//~ console.log("removing");
+				actorLinks.splice(x, 1);
+				x --;
+				continue;
+			}
+			
+			for (var y = x + 1; y < actorLinks.length; y ++) {
+				if (!actorLinks[y])
+					continue;
+				if (actorLinks[x].source == actorLinks[y].source && actorLinks[x].target == actorLinks[y].target) {
+					//~ console.log("matched " + x + " " + y);
+					actorLinks[y] = undefined;
+					continue;
+				}
+				else if (actorLinks[x].source == actorLinks[y].target && actorLinks[x].target == actorLinks[y].source) {
+					actorLinks[x].dup = true;
+					actorLinks[y].dup = true;
+					//do not need to set rev flag because this is preserved
+				}
+			}
+		}
+		//~ console.log(actorLinks);
 
 		actorNodes.splice(actorNodes.indexOf(dragSelect), 1);		//remove the old node
 
@@ -217,7 +254,7 @@ function dragend(d, i) {
 }
 
 //updates elements in SVG, nodes updated on actorID
-function updateSVG(){
+function updateSVG() {
 	//update links
 	linkGroup = linkGroup.data(actorLinks);
 
@@ -226,13 +263,41 @@ function updateSVG(){
 	
 	linkGroup = linkGroup.enter().append('svg:path')
 		.attr('class', 'link')
-		.style('marker-start', function(d) { return d.source.actor == "target" ? 'url(#start-arrow)' : ''; })
-		.style('marker-end', function(d) { return d.target.actor == "target" ? 'url(#end-arrow)' : ''; })
+		//~ .style('marker-start', function(d) { return d.source.actor == "target" ? 'url(#start-arrow)' : ''; })
+		//~ .style('marker-end', function(d) { return d.target.actor == "target" ? 'url(#end-arrow)' : ''; })
+		.style('marker-start', function(d) {
+			if (!d.rev) {
+				return d.source.actor == "target" ? 'url(#start-arrow)' : '';
+			}
+			return 'url(#start-arrow)';
+		})
+		.style('marker-end', function(d) {
+			if (!d.rev) {
+				return d.target.actor == "target" ? 'url(#end-arrow)' : '';
+			}
+			return 'url(#end-arrow)';
+		})
+		.style('stroke', function(d) {
+			if (d.rev) {
+				return '#00cc00';
+			}
+			return '#000';
+		})
 		.on('mousedown', function(d) {							//delete link
-			var obj1 = JSON.stringify(d);
-			for(var j = 0; j < actorLinks.length; j++) {		//this removes the links on click
-				if(obj1 === JSON.stringify(actorLinks[j])) {
-					actorLinks.splice(j,1);
+			//~ var obj1 = JSON.stringify(d);
+			//~ console.log("link: " + obj1);
+			//~ for(var j = 0; j < actorLinks.length; j++) {		//this removes the links on click
+				//~ if(obj1 === JSON.stringify(actorLinks[j])) {
+					//~ actorLinks.splice(j,1);
+				//~ }
+			//~ }
+			for (var x = 0; x < actorLinks.length; x ++) {
+				if (d.dup && actorLinks[x].target == d.source && actorLinks[x].source == d.target) {
+					actorLinks[x].dup = false;
+				}
+				
+				if (actorLinks[x].source == d.source && actorLinks[x].target == d.target) {
+					actorLinks.splice(x, 1);
 				}
 			}
 			updateAll();
@@ -364,15 +429,27 @@ function updateSVG(){
 		var actualSource = originNode.actor == "source" ? originNode : destNode;	//choose the node that is a source
 		var actualTarget = destNode.actor == "target" ? destNode : originNode;
 
-		if (actorLinks.filter(function(linkItem){return (linkItem.source == actualSource && linkItem.target == actualTarget);})[0]){
-			//link exists, no need to make it again
-			return;
+		var linkExist = actorLinks.filter(function(linkItem){return (linkItem.source == actualSource && linkItem.target == actualTarget);})[0];
+
+		if (linkExist){
+			//link exists for source -> target, check if origin is a target and link does not exist yet
+			if (originNode.actor == "target" && !(actorLinks.filter(function(linkItem){return (linkItem.source == actualTarget && linkItem.target == actualSource);})[0])) {
+				actorLinks[actorLinks.indexOf(linkExist)].dup = true;
+				actorLinks.push(new linkObj(actualTarget, actualSource, true, true));
+				updateAll();
+			}
 		}
 		else {
 			//add link
-			actorLinks.push(new linkObj(actualSource, actualTarget));
+			actorLinks.push(new linkObj(actualSource, actualTarget, false, false));
 			updateAll();
 		}
+
+		//~ console.log("links:");
+		//~ for (var x = 0; x < actorLinks.length; x ++) {
+			//~ console.log(actorLinks[x].source.name + "\t" + actorLinks[x].target.name);
+		//~ }
+		//~ console.log("end links");
 
 		resetMouseVars();
 	}	//end of createLink()
@@ -429,10 +506,21 @@ function actorTick() {
 		deltaY = d.target.y - d.source.y,
 		dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
 		normX = deltaX / dist,
-		normY = deltaY / dist,
-		sourcePadding = (d.source.actor == "target") ? actorNodeR+5 : actorNodeR,		//spacing on the line before arrow head
-		targetPadding = (d.target.actor == "target") ? actorNodeR+5 : actorNodeR,
-		sourceX = d.source.x + (sourcePadding * normX),
+		normY = deltaY / dist;
+		
+		//~ sourcePadding = (d.source.actor == "target") ? actorNodeR+5 : actorNodeR,		//spacing on the line before arrow head
+		//~ targetPadding = (d.target.actor == "target") ? actorNodeR+5 : actorNodeR,
+		var sourcePadding, targetPadding;
+		if (d.dup) {
+			sourcePadding = actorNodeR + 5;
+			targetPadding = actorNodeR + 5;
+		}
+		else {
+			sourcePadding = (d.source.actor == "target") ? actorNodeR+5 : actorNodeR;		//spacing on the line before arrow head
+			targetPadding = (d.target.actor == "target") ? actorNodeR+5 : actorNodeR;
+		}
+		
+		var sourceX = d.source.x + (sourcePadding * normX),
 		sourceY = d.source.y + (sourcePadding * normY),
 		targetX = d.target.x - (targetPadding * normX),
 		targetY = d.target.y - (targetPadding * normY);

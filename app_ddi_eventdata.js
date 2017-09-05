@@ -3782,7 +3782,6 @@ function rightpanelMargin() {
 	if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded) {	//handle only if actor code is loaded
 		var curHeight = $("#actorContainer").height();		//this is the height of the container
 		var titleHeight = $("#linkTitle").height();			//this is the height of the title div above the SVG
-		//~ var trySize = actorSVG.attr("height");
 		var trySize = actorHeight;
 		$("#actorSelectionDiv").css("height", curHeight);	//this constrains the left side
 		if (sourceActualSize <= calcCircleNum(curHeight - titleHeight) && targetActualSize <= calcCircleNum(curHeight - titleHeight)) {		//if link div is empty enough, maintain height alignment		
@@ -3793,14 +3792,10 @@ function rightpanelMargin() {
 			updateAll();
 		}
 		else if (trySize > curHeight){		//note this is a slow implementation, especially if dragging to resize
-			console.log("in try");
-			console.log(trySize + " " + actorHeight);
 			while (sourceActualSize <= calcCircleNum(trySize) && targetActualSize <= calcCircleNum(trySize)) {		//reduce the size of the SVG to a comfortable viewing size
-				console.log("trySize = " + trySize + " attempt: " + calcCircleNum(trySize));
 				trySize -= 20;		//try half of actorNodeR
 			}
 
-			console.log(trySize + " " + actorHeight);
 			$("#actorLinkDiv").height(function(n, c){return c - (actorHeight - trySize);});
 			actorHeight = trySize;
 			actorSVG.attr("height", actorHeight);
