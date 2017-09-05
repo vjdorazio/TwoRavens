@@ -79,7 +79,17 @@ pip freeze
 echo ">> fab init_db"
 # ------------------------------------
 fab init_db
+
+# ------------------------------------
+echo ">> Rook setup"
+# ------------------------------------
 fab ubuntu_help
+
 # ------------------------------------
-echo ">> Rook setup (coming)"
+echo ">> Apache config"
 # ------------------------------------
+cp setup/apache-setup/003-tworavens.conf /etc/apache2/sites-available
+cp setup/apache-setup/ports.conf /etc/apache2/
+a2dissite 000-default
+a2ensite 003-tworavens.conf
+service apache2 reload

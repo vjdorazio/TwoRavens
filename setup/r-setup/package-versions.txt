@@ -1,6 +1,6 @@
 Rcpp 0.12.9
 R2HTML 2.3.2
-Rserve 1.7-3
+#Rserve 1.7-3
 VGAM 1.0-3
 minqa 1.2.4
 nloptr 1.0.4

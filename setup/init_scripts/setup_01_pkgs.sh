@@ -25,9 +25,23 @@ echo "# ---------------------------------------------"
 apt-get -y install uuid-runtime
 
 echo "# ---------------------------------------------"
+echo "--> Install RApache"
+echo "# ---------------------------------------------"
+apt-get install software-properties-common python-software-properties
+add-apt-repository ppa:opencpu/rapache
+apt-get install libapache2-mod-r-base
+
+echo "# ---------------------------------------------"
+echo "--> Install Additional R packages"
+echo "# ---------------------------------------------"
+cd /srv/webapps/TwoRavens/setup/r-setup && \
+    ./r-setup.sh
+
+echo "# ---------------------------------------------"
 echo "--> apache (fix later: apache2-dev - to get the apxs package for mod_wsgi)"
 # --------------------------------------------
-apt-get -y install apache2 apache2-dev apache2-doc apache2-utils
+#apt-get -y install apache2 apache2-dev apache2-doc apache2-utils
+
 
 echo "# ---------------------------------------------"
 echo "--> python3"

@@ -1,4 +1,4 @@
-FROM docker1:latest
+FROM 2raven-docker1:latest
 MAINTAINER Raman Prasad (raman_prasad@harvard.edu)
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -7,6 +7,16 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN /bin/bash -c "cd /srv/webapps/TwoRavens && git pull"
 RUN ["chmod", "+x", "/srv/webapps/TwoRavens/setup/init_scripts/setup_2ravens_ubuntu.sh"]
 RUN /bin/bash -c "/srv/webapps/TwoRavens/setup/init_scripts/setup_2ravens_ubuntu.sh"
+
+# ---------------------------------------------
+# Configure Apache
+# Put new .conf files in place and restart
+# ---------------------------------------------
+COPY setup/apache-setup/003-tworavens.conf /etc/apache2/sites-available
+COPY setup/apache-setup/ports.conf /etc/apache2/
+
+RUN a2dissite 000-default; a2ensite 003-tworavens.conf; service apache2 reload
+
 
 EXPOSE 8080
 

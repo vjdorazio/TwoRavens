@@ -11,23 +11,23 @@ Notes:
 
 - Most of the apt-get packages (but not RApache)
   ```
-  docker build -f docker-work/docker1 -t docker1 .
+  docker build -f docker-work/docker1 -t 2raven-docker1 .
   ```
 
   - run a temp container with this image:
       ```
-      docker run -ti --rm --name=ok_ravens1 docker1:latest
+      docker run -ti --rm --name=ok_ravens1 2raven-docker1  
       ```
 
 ## Docker 2
 
 ```
-docker build -f docker-work/docker2 -t docker2 .
+docker build -f docker-work/docker2 -t 2raven-docker2 .
 ```
 
 - run a temp container with this image:
     ```
-    docker run -ti --rm --name=ok_ravens2 docker2:latest
+    docker run -ti --rm --name=ok_ravens2 2raven-docker2:latest
     ```
 
   - Running the virtualenv:

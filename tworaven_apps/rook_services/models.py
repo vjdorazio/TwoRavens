@@ -24,6 +24,8 @@ class TestCallCapture(TimeStampedModel):
 
     class Meta:
         ordering = ('-created',)
+        verbose_name = 'Rook Call Request'
+        verbose_name_plural = 'Rook Call Requests'
 
     def request_json(self):
         return format_json_for_admin(self.request)
