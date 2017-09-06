@@ -7,7 +7,7 @@
 #       Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at http://localhost:8000/custom/eventdataapp. (Reason: CORS header ‘Access-Control-Allow-Origin’ missing).
 #
 # 1. Install mongodb
-# 
+#
 # 2. Start a mongo server. Server port is 27017 by default
 #      sudo service mongod start
 # 

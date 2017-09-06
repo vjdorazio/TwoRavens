@@ -1146,11 +1146,62 @@ display: inline;}
 	text-decoration: line-through;
 }
 
+#svg_graph_table tr:nth-child(odd) {
+    background: #ADADAD;
+}
+
+#svg_graph_table tr:nth-child(even) {
+    background: #ADADAD;
+}
+
+.country_table_odd {
+    background: #ADADAD;
+}
+
+.country_table_even {
+    background: #F9F9F9;
+}
+
+.strike_through:hover {
+	text-decoration: line-through;
+}
+
 /*begin styling for actor*/
 
 #tabDiv {
 	margin-left: 5px;
 	margin-right: 5px;
+}
+
+#sourceTabBtn {
+    width: 50%;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-left: 0;
+
+}
+
+#targetTabBtn {
+    width: 50%;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
+}
+
+/* style the buttons inside the tab */
+div.actorTab button {
+    position: relative;
+    float: left;
+    border: none !important;
+    outline: none !important;
+}
+
+/* create an active/current tablink class */
+div.actorTab button.active {
+    background-image: none;
+    outline: 0;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
 }
 
 /* style the tab content */
@@ -1229,22 +1280,25 @@ display: inline;}
 }
 
 #actorContainer {
-	width: calc(100% - 335px);
+	width: 1100px;
+
 	height: calc(100% - 20px);
 	margin-top:10px;
 }
 
 #actorSelectionDiv {
-	float: left;
+	position: fixed;
 	width: 350px;
-	height: 100%;
 	border: 1px solid #ADADAD;
 	background: #F9F9F9;
 	margin-bottom: 3px;
 }
 
 #actorLinkDiv {
-	margin-left: 350px;
+	margin-left:350px;
+	float:left;
+	margin-right: 100px;
+
 	width: 640px;
 	height: 627px;
 	border: 1px solid #ADADAD;
@@ -1334,6 +1388,13 @@ display: inline;}
 	background-position: 0px 0px;
 	border: none;
 }
+
+#linkTitleLeft, #linkTitleRight {
+    width: 50%;
+    float: left;
+    border-bottom: 1px solid #ADADAD;
+}
+
 
 /*styling for link SVG*/
 #actorLinkSVG {
