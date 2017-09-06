@@ -1,6 +1,6 @@
 # variation on http://jeffreyhorner.tumblr.com/post/33814488298/deploy-rook-apps-part-ii
 
-source('rooksource.R')
+source('rooksource_nonstop.R')
 
 # Now make the console go to sleep. Of course the web server will still be
 # running.
