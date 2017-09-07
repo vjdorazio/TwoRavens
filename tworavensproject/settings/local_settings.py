@@ -49,8 +49,8 @@ TIME_ZONE = 'America/New_York'
 
 # TwoRavens R service test
 
-#R_DEV_SERVER_BASE = 'http://0.0.0.0:8000/custom/'
-R_DEV_SERVER_BASE = 'http://0.0.0.0:8060/custom/'
+R_DEV_SERVER_BASE = 'http://0.0.0.0:8000/custom/'
+#R_DEV_SERVER_BASE = 'http://0.0.0.0:8060/custom/'
 
 RECORD_R_SERVICE_ROUTING = True # log R service requests/response JSON to db
 
