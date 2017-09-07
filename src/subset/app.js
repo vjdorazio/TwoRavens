@@ -248,12 +248,13 @@ window.onresize = rightpanelMargin;
 rightpanelMargin();
 
 function rightpanelMargin() {
-    main = $("#main");
+    actorSVG.attr("height", actorHeight);
+    let main = $("#main");
     if (main.get(0).scrollHeight > main.get(0).clientHeight) {
         // Vertical scrollbar
         document.getElementById("rightpanel").style.right = "27px";
         if ($('#rightpanel').hasClass('closepanel')) {
-            document.getElementById("stageButton").style.right = "56px"
+            document.getElementById("stageButton").style.right = "56px";
         } else {
             document.getElementById("stageButton").style.right = "286px"
         }

@@ -1259,7 +1259,6 @@ $("#deleteGroup").click(function() {
 			}
 		}
 		updateAll();
-		return;
 	}
 });
 
