@@ -243,9 +243,6 @@ function tabLeft(tab) {
     document.getElementById(tab).style.display = 'block';
 }
 
-// Keep right panel closed on initial load
-toggleRightPanel();
-
 window.onresize = rightpanelMargin;
 
 function rightpanelMargin() {
@@ -310,6 +307,10 @@ if (localStorage.getItem("nodeId") !== null) {
     queryId = localStorage.getItem('queryId');
 }
 
+// Close rightpanel if no prior queries have been submitted
+if (queryId === 1) {
+    toggleRightPanel();
+}
 
 // Define negation toggle, logic dropdown and delete button, as well as their callbacks
 function buttonNegate(id, state) {
@@ -766,6 +767,9 @@ function reset() {
     $('#subsetTree').tree('loadData', subsetData, 0);
 
     variablesSelected.clear();
+    nodeId = 1;
+    groupId = 1;
+    queryId = 1;
 
     reloadLeftpanelVariables();
     reloadRightPanelVariables();
@@ -1001,19 +1005,5 @@ function buildSubset(){
         return rule_query;
     }
 
-    function operatorWrap(operation, json) {
-        // If no operator is specified, mongoDB will assume 'and'
-        let temp = {};
-
-        // NAND is not explicitly defined in mongoDB, but there is an equivalent:
-        // { '$nand': [content] } === { '$not': { '$and': [content] } }
-
-        if (operation.indexOf('nand') === -1) {
-            temp['$' + operation] = json;
-        } else {
-            temp['$not'] = {'$and': json};
-        }
-        return temp;
-    }
     return subsetQuery;
 }
