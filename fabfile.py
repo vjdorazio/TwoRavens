@@ -149,8 +149,9 @@ def create_django_superuser():
         print('A "%s" superuser already exists' % dev_admin_username)
         return
 
-    admin_pw = ''.join(random.choice(string.ascii_lowercase + string.digits)
-                       for _ in range(7))
+    admin_pw = 'admin'
+    #''.join(random.choice(string.ascii_lowercase + string.digits)
+    #                   for _ in range(7))
 
     new_user = User(username=dev_admin_username,
                     first_name='Dev',
