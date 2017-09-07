@@ -15,12 +15,12 @@ let variables = ["X","GID","Date","Year","Month","Day","Source","SrcActor","SrcA
     "AdminInfo","ID","URL","sourcetxt"];
 let variablesSelected = new Set();
 
-let subsetKeys = ["Date", "Location", "Action", "Actor"]; // Used to label buttons in the left panel
-let subsetKeySelected = '';
+let subsetKeys = ["Actor", "Date", "Action", "Location"]; // Used to label buttons in the left panel
+let subsetKeySelected = 'Actor';
 
 
-let varColor = '#f0f8ff';   //d3.rgb("aliceblue");
-let selVarColor = '#fa8072';    //d3.rgb("salmon");
+let varColor = 'rgba(240,248,255, 1.0)';   //d3.rgb("aliceblue");
+let selVarColor = 'rgba(250,128,114, 0.5)';    //d3.rgb("salmon");
 
 let dateData = [];
 let countryData = [];
@@ -97,15 +97,16 @@ d3.select("#subsetList").selectAll("p")
     .append("p")
     .text(function (d) {return d;})
     .style("text-align", "center")
-    .style('background-color', varColor)
+    .style('background-color', function() {
+        if (d3.select(this).text() === subsetKeySelected) return selVarColor;
+        else return varColor;
+    })
     .on("click", function () {
 
         subsetKeySelected = d3.select(this).text();
         d3.select('#subsetList').selectAll("p").style('background-color', function (d) {
-            if (d === subsetKeySelected)
-                return selVarColor;
-            else
-                return varColor;
+            if (d === subsetKeySelected) return selVarColor;
+            else return varColor;
         });
 
         if (!initialLoad) {
@@ -115,7 +116,6 @@ d3.select("#subsetList").selectAll("p")
         }
 
     });
-
 
 function showSubset(subsetKeySelected) {
     if (subsetKeySelected !== ""){
@@ -243,12 +243,12 @@ function tabLeft(tab) {
     document.getElementById(tab).style.display = 'block';
 }
 
+// Keep right panel closed on initial load
+toggleRightPanel();
 
 window.onresize = rightpanelMargin;
-rightpanelMargin();
 
 function rightpanelMargin() {
-    actorSVG.attr("height", actorHeight);
     let main = $("#main");
     if (main.get(0).scrollHeight > main.get(0).clientHeight) {
         // Vertical scrollbar
@@ -599,8 +599,11 @@ function addRule() {
 
         // Don't add an empty preference
         if (Object.keys(preferences).length === 0) {
+            alert("No options have been selected. Please make a selection.");
             return;
         }
+
+        if ($('#rightpanel').hasClass('closepanel')) toggleRightPanel();
 
         // Don't show the boolean operator on the first element
         if (subsetData.length === 0) {

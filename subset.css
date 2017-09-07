@@ -1298,7 +1298,8 @@ div.actorTab button.active {
 
 #actorLinkDiv {
     display: inline-block;
-    width: calc(100% - 350px);
+    width: calc(100% - 362px);
+    margin-left:5px;
     float:left;
 	border: 1px solid #ADADAD;
 }
