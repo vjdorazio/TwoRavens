@@ -101,6 +101,14 @@ let rightpanel = function() {
                    m(`#models[style=display: ${or('right', 'btnModels')}; padding: 6px 12px; text-align: center]`)))));
 };
 
+let ticker = mode => {
+    let link = name => m(`a${name === mode ? '.active' : ''}[href=/${name}][style=margin-right: 0.5em]`, {oncreate: m.route.link}, name[0].toUpperCase() + name.slice(1));
+    return m('#ticker[style=background: #F9F9F9; bottom: 0; height: 40px; position: fixed; width: 100%; border-top: 1px solid #ADADAD]',
+        link('model'),
+        link('explore'),
+        m("a#logID[href=somelink][target=_blank][style=margin-right: 0.5em]", "Replication"));
+};
+
 class Body {
     oninit() {
         this.about = false;
@@ -134,7 +142,8 @@ class Body {
             extract('apikey', 'key', 4));
     }
 
-    view() {
+    view(vnode) {
+        let {mode} = vnode.attrs;
         return m('main',
                  m("nav#navbar.navbar.navbar-default.navbar-fixed-top[role=navigation]",
                    m("a.navbar-brand[style=margin-left: 0]",
@@ -152,20 +161,15 @@ class Body {
                          m(".panel-body")),
                        m("button#btnEstimate.btn.btn-default.ladda-button.navbar-right[data-spinner-color=#000000][data-style=zoom-in][style=margin-left: 2em; margin-right: 1em]", {
                          onclick: _ => app.estimate('btnEstimate')},
-                         m("span.ladda-label", "Estimate")),
+                         m("span.ladda-label", mode ? 'Explore' : 'Estimate')),
                        m("button#btnTA2.btn.btn-default.ladda-button.navbar-right[data-spinner-color=#000000][data-style=zoom-in][style=margin-left: 15em; margin-right: 1em]", {
-                           onclick: _ => app.ta2stuff('btnTA2')},"TA2"),
+                           onclick: _ => app.ta2stuff('btnTA2')}, 
+                           'TA2'),
                        m("button#btnReset.btn.btn-default.navbar-right[title=Reset][style=margin-left: 2.0em]", {
                          onclick: app.reset},
                          m("span.glyphicon.glyphicon-repeat[style=color: #818181; font-size: 1em; pointer-events: none]")),
                        m('#transformations.transformTool', {
                          title: 'Construct transformations of existing variables using valid R syntax. For example, assuming a variable named d, you can enter "log(d)" or "d^2".'}))),
-                   /*m('.text-center', {
-                     style: {margin: '5px'}
-                     }, m(".btn-group", [
-                     m(`a.btn.btn-default${location.href.endsWith('model') ? '.active' : ''}[href=/model][role=button]`, {oncreate: m.route.link}, "Model"),
-                     m(`a.btn.btn-default${location.href.endsWith('explore') ? '.active' : ''}[href=/explore][role=button]`, {oncreate: m.route.link}, "Explore")
-                     ]))*/
                    m(`#about.panel.panel-default[style=display: ${this.about ? 'block' : 'none'}; left: 140px; position: absolute; width: 500px; z-index: 50]`,
                      m('.panel-body',
                        'TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed. In the Norse, their names were "Thought" and "Memory". In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cummulative guidance and meta-analysis.'))),
@@ -186,16 +190,17 @@ class Body {
                        ['timeButton', 'ztime', 'Time'],
                        ['csButton', 'zcross', 'Cross Sec'],
                        ['dvButton', 'zdv', 'Dep Var'],
-                       ['nomButton', 'znom', 'Nom Var']]}),
+                       ['nomButton', 'znom', 'Nom Var'],
+                       ['gr1Button', 'zgroup1', 'Group 1'],
+                       ['gr2Button', 'zgroup2', 'Group 2']]}),
                    m(Subpanel, {title: "History"}),
-                   m('#ticker[style=background: #F9F9F9; bottom: 0; height: 40px; position: fixed; width: 100%; border-top: 1px solid #ADADAD]',
-                     m("a#logID[href=somelink][target=_blank]", "Replication")),
+                   ticker(mode),
                    leftpanel(),
                    rightpanel()));
     }
 }
 
 m.route(document.body, '/model', {
-    '/model': Body,
-    '/explore': Body
+    '/model': {render: () => m(Body)},
+    '/explore': {render: () => m(Body, {mode: 'explore'})}
 });
