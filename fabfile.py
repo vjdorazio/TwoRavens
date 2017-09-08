@@ -72,8 +72,17 @@ def check_config():
     else:
         print('Configs exist in the db: %d' % config_cnt)
 
-def run():
-    """Run the django dev server and webpack--webpack watches the assets directory and rebuilds when appTwoRavens changes"""
+
+def run_with_rook():
+    """In addition to the django dev server and webpack, run rook via the Terminal"""
+    run(with_rook=True)
+
+
+def run(with_rook=False):
+    """Run the django dev server and webpack--webpack watches the assets directory and rebuilds when appTwoRavens changes
+
+    with_rook=True - runs rook in "nonstop" mode
+    """
     clear_js()  # clear any dev css/js files
     check_config()  # make sure the db has something
 
@@ -84,6 +93,10 @@ def run():
         #'python manage.py runserver 8080'
         #'celery -A firmament worker --loglevel=info -B'
     ]
+
+    if with_rook:
+        rook_run_cmd = 'cd rook; Rscript rook_nonstop.R'
+        commands.append(rook_run_cmd)
 
     proc_list = [subprocess.Popen(command, shell=True, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr) for command in commands]
     try:
