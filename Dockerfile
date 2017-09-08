@@ -13,6 +13,10 @@ RUN apt-get update && \
 #ENV DJANGO_SETTINGS_MODULE=tworavensproject.settings.dev_container
 ENV DJANGO_SETTINGS_MODULE=tworavensproject.settings.dev_container2
 
+# Set the R_DEV_SERVER_BASE to the rook-service docker container
+#
+ENV R_DEV_SERVER_BASE=http://rook-service:8000/custom/
+
 RUN mkdir -p /var/webapps/TwoRavens
 
 # Copy over the repository
@@ -23,7 +27,8 @@ WORKDIR /var/webapps/TwoRavens
 # Install requirements
 RUN pip3 install --no-cache-dir -r requirements/dev.txt && \
     fab init_db && \
-    fab create_django_superuser
+    fab create_django_superuser && \
+    fab load_docker_config
 
 
 EXPOSE 8080
@@ -31,5 +36,5 @@ EXPOSE 8080
 WORKDIR /var/webapps/TwoRavens
 
 # Run dev server
-CMD fab init_db && python manage.py runserver 8080
+CMD fab init_db && python manage.py runserver 0.0.0.0:8080
 # python manage.py runserver 0.0.0.0:8080
