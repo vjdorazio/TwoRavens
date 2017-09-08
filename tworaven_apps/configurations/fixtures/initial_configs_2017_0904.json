@@ -42,9 +42,9 @@
         "production": false,
         "d3m_mode": false,
         "privacy_mode": false,
-        "rook_app_url": "http://0.0.0.0:8000/rook-custom/",
+        "rook_app_url": "http://0.0.0.0:8060/rook-custom/",
         "dataverse_url": "https://beta.dataverse.org",
-        "description": "Basic dev configuration within docker compose.  Rook calls are routed through nginx."
+        "description": "Basic dev configuration within docker compose.  Rook calls are routed through nginx which is running on 8060"
     }
 }
 ]
