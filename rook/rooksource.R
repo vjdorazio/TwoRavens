@@ -69,9 +69,9 @@ if(!production){
     myPort <- "8000"
     myInterface <- "0.0.0.0"
     status <- -1
-    # The call to start the server is "tools::startHTTPD" on older versions of R.
-    status<-.Call(tools:::C_startHTTPD, myInterface, myPort)
 
+    # The call to start the server is "tools::startHTTPD" on older versions of R.
+    status <- .Call(tools:::C_startHTTPD, myInterface, myPort)
 
     if( status!=0 ){
         print("WARNING: Error setting interface or port")
@@ -90,7 +90,6 @@ if(!production){
     R.server$start(listen=myInterface, port=myPort)
     R.server$listenAddr <- myInterface
     R.server$listenPort <- myPort
-
 }
 
 

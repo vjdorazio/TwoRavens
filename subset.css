@@ -1280,27 +1280,27 @@ div.actorTab button.active {
 }
 
 #actorContainer {
-    float:left;
-    width: calc(100% - 27px);
+    width: 1100px;
+
 	height: calc(100% - 20px);
 	margin-top:10px;
 }
 
 #actorSelectionDiv {
-    display: inline-block;
-    float:left;
+    position: fixed;
 	width: 350px;
-    height: 100%;
 	border: 1px solid #ADADAD;
 	background: #F9F9F9;
 	margin-bottom: 3px;
 }
 
 #actorLinkDiv {
-    display: inline-block;
-    width: calc(100% - 362px);
-    margin-left:5px;
-    float:left;
+    margin-left:350px;
+	float:left;
+	margin-right: 100px;
+
+	width: 640px;
+	height: 627px;
 	border: 1px solid #ADADAD;
 }
 
