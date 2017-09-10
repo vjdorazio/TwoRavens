@@ -720,19 +720,27 @@ function crossTabPlots(PlotNameA, PlotNameB) {
     var mydiv = "#resultsView_tabular";
     d3.select("#resultsView_tabular").html("");
 
-
-
-
+   // document.getElementById('plotA').style.display = "block";
+   // document.getElementById('plotB').style.display = "block";
 
     var plot_nodes = nodes.slice();
 
-    for(var i=0;i<plot_nodes.length;i++) {
-        console.log("this is the main fearonLatin.json : " + plot_nodes[i].cdfplotx);
+ /*   for(var i=0;i<plot_nodes.length;i++) {
+        console.log("plot values yo:"+plot_nodes[i].plotvalues.length)
+        for(var j=0; j<plot_nodes[i].plotvalues.length;j++)
+        {
+
+            console.log("plot values : " + plot_nodes[i].plotvalues[j]);
+        }
     }
-    var margin_cross = {top: 30, right: 15, bottom: 40, left: 50}
+    */
+    var margin_cross = {top: 30, right: 35, bottom: 40, left: 50},
+    margin_cross2 = {top: 30, right: 15, bottom: 40, left: 150}
         , width_cross = 285 - margin_cross.left - margin_cross.right
-        , height_cross = 160 - margin_cross.top - margin_cross.bottom;
-    var padding_cross = 80;
+        , width_cross2 = 285 - margin_cross2.left - margin_cross2.right
+        , height_cross = 160 - margin_cross.top - margin_cross.bottom
+        , height_cross2 = 160 - margin_cross2.top - margin_cross2.bottom;
+    var padding_cross = 100;
 
     for (var i = 0; i < plot_nodes.length; i++) {
         if (plot_nodes[i].name === PlotNameA) {
@@ -757,12 +765,12 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         .attr("id", "btnDiv")
         .style('font-size', '75%')
         .style("width", "280px")
-        .style("position", "absolute")
-        .style("left", (11.5 * margin_cross.left + padding_cross) + "px")
-        .style("top", "290px")
+        .style("position","relative")
+        .style("left", (margin_cross.left+ (padding_cross/2)) + "px")
+        .style("top", "18px")
 
 
-    d3.select("#btnDiv")[0][0].innerHTML = [
+    d3.select("#btnDiv")[0][0].innerHTML =[
         '<h5>Data Selection</h5>',
         '<p>Enter the numbers for both plots respectively to specify the distribution of the cross-tabs.</p>',
         '<p id="boldstuff" style="color: #2a6496">Select between Equidistant and Equimass.</p>'
@@ -814,9 +822,9 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         .attr("id", "btnDiv1")
         .style('font-size', '75%')
         .style("width", "280px")
-        .style("position", "absolute")
-        .style("left", (11.5 * margin_cross.left + padding_cross) + "px")
-        .style("top", "400px")
+        .style("position","relative")
+        .style("left", (margin_cross.left-(padding_cross*1.47)) + "px")
+        .style("top", "50px")
 
 
 
@@ -855,7 +863,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         this.innerText = d;
     });
 
-    btns1.on("click", getData1);
+    btns1.on("click", getData);
 
     function getData() {
 
@@ -865,11 +873,15 @@ function crossTabPlots(PlotNameA, PlotNameB) {
             var plotA_size= parseInt(d3.select("input#a")[0][0].value);
 
             equidistance(PlotNameA,plotA_size);
+            var plotB_size= parseInt(d3.select("input#b")[0][0].value);
+            equidistance(PlotNameB,plotB_size);
         }
         else if (this.innerText === "EQUIMASS") {
             var plotA_sizem= parseInt(d3.select("input#a")[0][0].value);
 
             equimass(PlotNameA,plotA_sizem);
+            var plotB_sizem= parseInt(d3.select("input#b")[0][0].value);
+            equimass(PlotNameB,plotB_sizem);
 
         }
 
@@ -893,6 +905,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
     /*
     trail
      */
+
 
 
 // this is the function to add  the density plot if any
@@ -991,10 +1004,11 @@ var data2=[];
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
             .style("height", height_cross + margin_cross.top + margin_cross.bottom)
             .append("g")
-            .attr("transform", "translate(" + (margin_cross.left )+ "," + margin_cross.top + ")");
+            .attr("transform", "translate(0," + margin_cross.top + ")");
 
 
         plotsvg.append("path")
+            .attr("id","path1")
             .datum(data2)
             .attr("class", "area")
             .attr("d", area);
@@ -1050,9 +1064,10 @@ var data2=[];
             {
             console.log(" density equimass called ");
           var temp=[];
+
           temp=equimassCalculation(density_env,a);
 console.log("temp for density : "+ temp);
-                for (var i = 0; i < a ; i++) {
+                for (var i = 1; i < a ; i++) {
                     plotsvg.append("line")
                         .attr("id", "line1")
                         .attr("x1", x(temp[i]))
@@ -1174,20 +1189,22 @@ console.log("temp for density : "+ temp);
             .scale(y_1)
             .orient("left");
 
-         var plotsvg1 = d3.select(mydiv)
+      var    plotsvg1 = d3.select(mydiv)
             .append("svg")
             .attr("id","plotsvg1_id")
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
             .style("height", height_cross + margin_cross.top + margin_cross.bottom)
             .append("g")
-            .attr("transform", "translate(" + margin_cross.left + "," + margin_cross.top + ")");
+            .attr("transform", "translate(0," + margin_cross.top + ")");
 
         var rectWidth = x_1(minX + 0.5 - 2 * barPadding); //the "width" is the coordinate of the end of the first bar
 
         plotsvg1.selectAll("rect")
+
             .data(yVals)
             .enter()
             .append("rect")
+            .attr("id","path2")
             .attr("x", function (d, i) {
                 return x_1(xVals[i] - 0.5 + barPadding);
             })
@@ -1282,13 +1299,13 @@ console.log("temp for density : "+ temp);
             if (plot_nodes[i].name === A) {
                 if (plot_nodes[i].plottype === "continuous") {
                     $("#plotsvg_id").remove();
-                    d3.select("#line1").remove();
+                    //d3.select("#line1").remove();
 
                     density_cross(plot_nodes[i],a,method_name);
                 }
                 else if (plot_nodes[i].plottype === "bar") {
                     $("#plotsvg1_id").remove();
-                    d3.select("#line2").remove();
+                   // d3.select("#line2").remove();
                     bar_cross(plot_nodes[i],a,method_name);
                 }
             } else {
@@ -1308,6 +1325,7 @@ console.log("temp for density : "+ temp);
     }
 function equimass(A,a) //equimass function to call the plot function
 {
+
     var method_name= "equimass";
 
     // json object to be sent to r server
@@ -1329,14 +1347,14 @@ function equimass(A,a) //equimass function to call the plot function
     for (var i = 0; i < plot_nodes.length; i++) {
         if (plot_nodes[i].name === A) {
             if (plot_nodes[i].plottype === "continuous") {
-                $("#plotsvg_id").remove();
-                d3.select("#line1").remove();
+              $("#plotsvg_id").remove();
+                //d3.select("#line1").remove();
 
                 density_cross(plot_nodes[i],a,method_name);
             }
             else if (plot_nodes[i].plottype === "bar") {
-                $("#plotsvg1_id").remove();
-                d3.select("#line2").remove();
+               $("#plotsvg1_id").remove();
+               // d3.select("#line2").remove();
                 bar_cross(plot_nodes[i],a,method_name);
             }
         } else {
@@ -1373,7 +1391,7 @@ function equimassCalculation(plot_ev,n) // here we find the coordinates using CD
     var Upper_limitY= d3.max(arr_y);
     var Lower_limitY=d3.min(arr_y);
 var diffy=Upper_limitY-Lower_limitY;
-    var e=(diffy)/50; // e is the variable to store the average distance between the points in the cdfy in order to divide the cdfy
+    var e=(diffy)/n; // e is the variable to store the average distance between the points in the cdfy in order to divide the cdfy
 
     console.log("Upper_limitY ;"+Upper_limitY);
     console.log("Lower_limitX :"+Lower_limitY);
@@ -1389,12 +1407,12 @@ var diffy=Upper_limitY-Lower_limitY;
     }
 
     console.log("arr_c : "+ arr_c);
-
+/*
     var temp=[]; // to store the distance percentage of each division point from the first point in cdfy
     var val_temp=0;
     for(var i=0; i<n;i++)
     {
-        val_temp=(arr_c[i]-arr_y[0])/diffy;
+        val_temp=((arr_c[i]-arr_y[0])*100)/diffy;
         temp.push(val_temp);
     }
     console.log("temp : "+ temp);
@@ -1408,14 +1426,91 @@ var diffy=Upper_limitY-Lower_limitY;
     var val_temp2=0;
     for (var i=0; i<n;i++)
     {
-        val_temp2= (temp[i]*10*diffx) + arr_x[0]; //equation to calculate the cdfx required points
+        val_temp2= (temp[i]*diffx) + arr_x[0]; //equation to calculate the cdfx required points
         temp_2.push(val_temp2);
 
     }
+    console.log(" arr_x[0] : "+ arr_x[0]);
 console.log("diffx: "+ diffx);
     console.log("temp_2 : "+ temp_2);
 
     return temp_2; // the required array to plot in pdf
+
+    */
+
+var temp_cdfx=[];
+var temp=[];
+var store=[];
+
+for (var i=0; i<n; i++)//to get through each arr_c
+{
+
+    console.log("test arcc_c" + arr_c[i]);
+    for (var j = 0; j < 50; j++)// to compare with cdfy or arr_y
+    {
+        if (arr_c[i] === arr_y[j]) {
+
+            store.push({val: i, coor1: j, coor2: j, diff1: 0.34, diff2: 0});
+
+
+        }
+    }
+}
+    for(var i=0; i<n;i++)
+    {
+        var diff_val1, diff_val2;
+        var x1, x2, x3,x4;
+        for (var j = 0; j < 50; j++) {
+          //  console.log(" j out"+ j );
+
+            if (arr_y[j] < arr_c[i] && arr_c[i] < arr_y[j + 1]) {
+
+                x1 = arr_c[i];
+                x2 = arr_c[i]-arr_y[j];
+                x3 = arr_y[j+1]-arr_c[i];
+                x4=arr_y[j+1]-arr_y[j];
+                console.log(" val1 : " +x1 + " val2 : " + arr_y[j] + " val3: " + arr_y[j+1]);
+                console.log(" x1-x2 : " +x2 + " x3-x1 : " + x3 + " x3-x2: " + x4);
+
+            // console.log(" j in"+ j );
+
+                diff_val1 = x2/ x4;
+                diff_val2 = x3 / x4;
+console.log("diff_val1: "+ diff_val1 +  " diff_val2: "+ diff_val2);
+                store.push({val: i, coor1: j, coor2: j + 1, diff1: diff_val1, diff2: diff_val2});
+
+            }
+
+        }
+    }
+
+
+for(var i=0; i<n; i++) {
+    console.log(" store : " + store[i].val + " " + store[i].coor1 + " "+ store[i].coor2 + " diff1 " + store[i].diff1 + " diff2 "+ store[i].diff2);
+}
+
+for(var i=0; i<n; i++)
+{
+var y1,y2,y3,diffy1,diffy2;
+y1=store[i].val;
+y2= store[i].coor1;
+y3= store[i].coor2;
+diffy1=store[i].diff1;
+diffy2=store[i].diff2;
+
+var x_coor1= arr_x[y2];
+var x_coor2=arr_x[y3];
+
+var x_diff=x_coor2-x_coor1;
+
+var distance1= x_diff*diffy1;
+
+var val_x=x_coor1+distance1;
+
+temp.push(val_x);
+console.log(" val_x"+ val_x);
+}
+return temp;
 }
 /*
     function equidistance(a)
