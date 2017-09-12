@@ -721,7 +721,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
     d3.select("#resultsView_tabular").html("");
 
    // document.getElementById('plotA').style.display = "block";
-   // document.getElementById('plotB').style.display = "block";
+    //document.getElementById('plotB').style.display = "block";
 
     var plot_nodes = nodes.slice();
 
@@ -863,7 +863,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         this.innerText = d;
     });
 
-    btns1.on("click", getData);
+    btns1.on("click", getData1);
 
     function getData() {
 
@@ -873,15 +873,13 @@ function crossTabPlots(PlotNameA, PlotNameB) {
             var plotA_size= parseInt(d3.select("input#a")[0][0].value);
 
             equidistance(PlotNameA,plotA_size);
-            var plotB_size= parseInt(d3.select("input#b")[0][0].value);
-            equidistance(PlotNameB,plotB_size);
+
         }
         else if (this.innerText === "EQUIMASS") {
             var plotA_sizem= parseInt(d3.select("input#a")[0][0].value);
 
             equimass(PlotNameA,plotA_sizem);
-            var plotB_sizem= parseInt(d3.select("input#b")[0][0].value);
-            equimass(PlotNameB,plotB_sizem);
+
 
         }
 
@@ -1251,8 +1249,8 @@ console.log("temp for density : "+ temp);
                 for (var i = 0; i < a - 1; i++) {
                     push_data1 = push_data1 + buffer1;
                     x_cord1.push(push_data1);
-
-                   // console.log("x_cord1 : " + x_1(x_cord1[i]));
+//console.log("x_cord1 equidis : "+ x_cord1);
+                  // console.log("x_cord1 actual: " + x_1(x_cord1[i]));
 //console.log("maxY : "+ maxY);
                     plotsvg1.append("line")
                         .attr("id", "line2")
@@ -1264,10 +1262,24 @@ console.log("temp for density : "+ temp);
                         .style("stroke-dasharray", "3");
                 }
             }
-            else if (method_name==="equimass")
-            {
-                console.log(" bar equimass called ");
+            else if (method_name==="equimass") {
+                var x_cord2 = [];
+                x_cord2 = equimass_bar(bar_env, a);
+                //console.log("x_cord2 equidis : " + x_cord2);
 
+                console.log(" bar equimass called ");
+                for (var i = 0; i < a - 1; i++) {
+                   // console.log("x_cord1 actual: " + x_1(x_cord2[i]));
+                    plotsvg1.append("line")
+                        .attr("id", "line2")
+                        .attr("x1", x_1(x_cord2[i] ))
+                        .attr("x2", x_1(x_cord2[i] ))
+                        .attr("y1", y_1(0))
+                        .attr("y2", y_1(maxY))
+                        .style("stroke", "#212121")
+                        .style("stroke-dasharray", "3");
+
+                }
             }
         }
 
@@ -1511,6 +1523,83 @@ temp.push(val_x);
 console.log(" val_x"+ val_x);
 }
 return temp;
+}
+
+
+
+
+function equimass_bar(plot_ev,n) {
+    var keys = Object.keys(plot_ev.plotvalues);
+    var k = keys.length;
+    var temp = [];
+    var count = 0;
+
+    if (k < n) {
+        alert("error enter vaild size");
+        console.log("error enter vaild size")
+    }
+
+    else {
+        while (k > 0) {
+
+            temp.push({pos: count, val: k});
+//console.log("k:"+ k+ " and n: "+count );
+            count++;
+            k--;
+            if (count >= n) {
+                count = 0;
+            }
+
+        }
+
+        var temp2 = new Array(n);
+
+        for (var i = 0; i < temp2.length; i++) {
+            temp2[i] = 0;
+            //
+
+        }
+        for (var i = 0; i < keys.length; i++) {
+            keys[i] = (keys[i] + 5) / 10;// to get the increase in the actual values by 0.5 according to the xaxis in plot
+            //
+
+        }
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < temp.length; j++) {
+
+                if (temp[j].pos === i) {
+                    temp2[i] = temp2[i] + 1;
+                }
+
+            }
+
+        }
+
+        for (var i = 0; i < temp.length; i++) {
+            // console.log("temp2 : "+temp2[i] );
+            console.log("n : " + temp[i].pos + " and k: " + temp[i].val);
+            //console.log("keys : " + keys[i]);
+
+        }
+        console.log(" the divison of the bar plot : " + temp2);
+
+        var j = 0, k = 0;
+        var temp_final = new Array(n);
+        for (var i = 0; i < keys.length; i++) {
+            temp2[j] = temp2[j] - 1;
+
+            if (temp2[j] === 0) {
+                j++;
+                temp_final[k] = keys[i];
+                k++;
+
+            }
+
+
+        }
+        console.log("temp_final: " + temp_final);
+        return temp_final;
+    }
 }
 /*
     function equidistance(a)
