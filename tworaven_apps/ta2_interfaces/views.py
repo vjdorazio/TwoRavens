@@ -5,7 +5,8 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.http import JsonResponse, HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from tworaven_apps.ta2_interfaces.ta2_proxy import start_session
+from tworaven_apps.ta2_interfaces.ta2_proxy import start_session,\
+    update_problem_schema
 
 
 def get_grpc_test_json(request, grpc_json_file, info_dict={}):
@@ -49,13 +50,22 @@ def view_startsession(request):
 
 
 @csrf_exempt
-def view_updateproblemschema(request):
+def view_update_problem_schema(request):
     """gRPC: Call from UI to update the problem schema"""
 
-    info = dict(status=dict(code="ok",
-                            details="update problem schema message ok"))
+    info = dict(status=dict(\
+                code="ok",
+                details="update problem schema message ok"))
 
-    return JsonResponse(info)
+    #return JsonResponse(info)
+
+    # Let's call the TA2 and start the session!
+    json_str = update_problem_schema()
+
+    # Convert JSON str to python dict - err catch here
+    json_dict = json.loads(json_str)
+
+    return JsonResponse(json_dict, safe=False)
 
 
 @csrf_exempt

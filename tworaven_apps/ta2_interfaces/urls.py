@@ -13,8 +13,8 @@ urlpatterns = (
         name='view_startsession'),
 
     url(r'^updateproblemschema/?$',
-        views.view_updateproblemschema,
-        name='view_updateproblemschema'),
+        views.view_update_problem_schema,
+        name='view_update_problem_schema'),
 
     url(r'^',
         views.view_test_call,
