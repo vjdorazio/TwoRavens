@@ -74,6 +74,7 @@ var ind2 = [(allR+30) * Math.cos(1.1), -1*(allR+30) * Math.sin(1.1),5] // cx, cy
 var myspace = 0;
 
 var forcetoggle = ["true"];
+var locktoggle = true;
 var priv = true;
 
 export let logArray = [];
@@ -408,19 +409,31 @@ export function main(fileid, hostname, ddiurl, dataurl, apikey) {
                 
                 if(data.taskType in d3mTaskType) {
                     UpdateProblemSchemaRequest.task_type = data.taskType;//[d3mTaskType[data.taskType][2],d3mTaskType[data.taskType][1]]; console.log(UpdateProblemSchemaRequest);
-                } else {alert("Specified task type, " + data.taskType + ", is not valid.")}
+                } else {
+                    UpdateProblemSchemaRequest.task_type = "taskTypeUndefined";
+                    alert("Specified task type, " + data.taskType + ", is not valid.");
+                }
                 if(data.taskSubType in d3mTaskSubtype) {
                     UpdateProblemSchemaRequest.task_subtype = data.taskSubtype;//[d3mTaskSubtype[data.taskSubType][2],d3mTaskSubtype[data.taskSubType][1]];
-                    } else {alert("Specified task subtype, " + data.taskSubType + ", is not valid.")}
+                    } else {
+                        UpdateProblemSchemaRequest.task_subtype = "taskSubtypeUndefined";
+                        alert("Specified task subtype, " + data.taskSubType + ", is not valid.")
+                    }
                 if(data.metric in d3mMetrics) {
                     UpdateProblemSchemaRequest.metric_type = data.metric;//[d3mMetrics[data.metric][2],d3mMetrics[data.metric][1]];
-                } else {alert("Specified metric type, " + data.metric + ", is not valid.")}
+                } else {
+                    UpdateProblemSchemaRequest.matric_type = "metricUndefined";
+                    alert("Specified metric type, " + data.metric + ", is not valid.");
+                    }
                 if(data.outputType in d3mOutputType) {
                     UpdateProblemSchemaRequest.output_type = data.outputType;//[d3mOutputType[data.outputType][2],d3mOutputType[data.outputType][1]];
-                } else {alert("Specified output type, " + data.outputType + ", is not valid.")}
+                } else {
+                    UpdateProblemSchemaRequest.output_type = "outputUndefined";
+                    alert("Specified output type, " + data.outputType + ", is not valid.");
+                }
                
                 // clicks off the Models button and makes right panel blank on load?  
-                // document.getElementById("btnType").click();
+                 document.getElementById("btnType").click();
                 
                 startsession();
                 scaffolding(layout);
@@ -562,13 +575,14 @@ function scaffolding(callback) {
         .append("p")
         .attr("id", d => d + ".types")
         .text(d => d)
-        .style('background-color', d => {
-               if (UpdateProblemSchemaRequest.task_type == d.toString()){
-               return hexToRgba(selVarColor);
-               } else {
-               return varColor;
-               }
-               })
+        .attr('class', d=> {
+              if (UpdateProblemSchemaRequest.task_type == d.toString()){
+              return 'item-select';
+              } else {
+              if(locktoggle) return 'item-default item-lineout';
+              return 'item-default';
+              }
+              })
         .attr("data-container", "body")
         .attr("data-toggle", "popover")
         .attr("data-trigger", "hover")
@@ -585,13 +599,14 @@ function scaffolding(callback) {
         .append("p")
         .attr("id", d => d + ".subtypes")
         .text(d => d)
-        .style('background-color', d => {
-               if (UpdateProblemSchemaRequest.task_subtype == d.toString()){
-               return hexToRgba(selVarColor);
-               } else {
-               return varColor;
-               }
-               })
+        .attr('class', d=> {
+              if (UpdateProblemSchemaRequest.task_subtype == d.toString()){
+              return 'item-select';
+              } else {
+              if(locktoggle) return 'item-default item-lineout';
+              return 'item-default';
+              }
+              })
         .attr("data-container", "body")
         .attr("data-toggle", "popover")
         .attr("data-trigger", "hover")
@@ -608,13 +623,14 @@ function scaffolding(callback) {
         .append("p")
         .attr("id", d => d + ".metrics")
         .text(d => d)
-        .style('background-color', d => {
-               if (UpdateProblemSchemaRequest.metric_type == d.toString()){
-               return hexToRgba(selVarColor);
-               } else {
-               return varColor;
-               }
-               })
+        .attr('class', d=> {
+              if (UpdateProblemSchemaRequest.metric_type == d.toString()){
+                return 'item-select';
+              } else {
+                if(locktoggle) return 'item-default item-lineout';
+                return 'item-default';
+              }
+              })
         .attr("data-container", "body")
         .attr("data-toggle", "popover")
         .attr("data-trigger", "hover")
@@ -631,13 +647,14 @@ function scaffolding(callback) {
         .append("p")
         .attr("id", d => d + ".outputs")
         .text(d => d)
-        .style('background-color', d => {
-               if (UpdateProblemSchemaRequest.output_type == d.toString()){
-               return hexToRgba(selVarColor);
-               } else {
-               return varColor;
-               }
-               })
+        .attr('class', d=> {
+              if (UpdateProblemSchemaRequest.output_type == d.toString()){
+              return 'item-select';
+              } else {
+              if(locktoggle) return 'item-default item-lineout';
+              return 'item-default';
+              }
+              })
         .attr("data-container", "body")
         .attr("data-toggle", "popover")
         .attr("data-trigger", "hover")
@@ -1095,77 +1112,62 @@ function layout(v,v2) {
     d3.select("#types").selectAll("p") // models tab
     //  d3.select("#Display_content")
     .on("click", function() {
-        var myColor = d3.select(this).style('background-color');
-        d3.select("#types").selectAll("p")
-        .style('background-color', varColor);
-        d3.select(this)
-        .style('background-color', d => {
-               if (d3.rgb(myColor).toString() === varColor.toString()) {
-               UpdateProblemSchemaRequest.task_type = d.toString();
-               return hexToRgba(selVarColor);
-               } else {
-               UpdateProblemSchemaRequest.task_type = "";
-               return varColor;
-               }
-               });
+        if(locktoggle) return;
+        if(this.className=="item-select") {
+            return;
+        } else {
+            d3.select("#types").select("p.item-select")
+            .attr('class', 'item-default');
+            UpdateProblemSchemaRequest.task_type = this.innerHTML.toString();
+            d3.select(this).attr('class',"item-select");
+        }
         restart();
         updateSchema("task_type", UpdateProblemSchemaRequest, d3mTaskType);
         });
     
     d3.select("#subtypes").selectAll("p")
     .on("click", function() {
-        var myColor = d3.select(this).style('background-color');
-        d3.select("#subtypes").selectAll("p")
-        .style('background-color', varColor);
-        d3.select(this)
-        .style('background-color', d => {
-               if (d3.rgb(myColor).toString() === varColor.toString()) {
-               UpdateProblemSchemaRequest.task_subtype = d.toString();
-               return hexToRgba(selVarColor);
-               } else {
-               UpdateProblemSchemaRequest.task_subtype = "";
-               return varColor;
-               }
-               });
+        if(locktoggle) return;
+        if(this.className=="item-select") {
+            return;
+        } else {
+            d3.select("#subtypes").select("p.item-select")
+            .attr('class', 'item-default');
+            UpdateProblemSchemaRequest.task_subtype = this.innerHTML.toString();
+            d3.select(this).attr('class',"item-select");
+        }
         restart();
         updateSchema("task_subtype", UpdateProblemSchemaRequest, d3mTaskSubtype);
         });
     
-    d3.select("#metrics").selectAll("p") // models tab
-    //  d3.select("#Display_content")
+    d3.select("#metrics").selectAll("p")
     .on("click", function() {
-        var myColor = d3.select(this).style('background-color');
-        d3.select("#metrics").selectAll("p")
-        .style('background-color', varColor);
-        d3.select(this)
-        .style('background-color', d => {
-               if (d3.rgb(myColor).toString() === varColor.toString()) {
-               UpdateProblemSchemaRequest.metric_type = d.toString();
-               return hexToRgba(selVarColor);
-               } else {
-               UpdateProblemSchemaRequest.metric_type = ["",""];
-               return varColor;
-               }
-               });
+        if(locktoggle) return;
+        if(this.className=="item-select") {
+            return;
+   //         UpdateProblemSchemaRequest.metric_type = ["",""];
+    //        this.className="item-default";
+        } else {
+            d3.select("#metrics").select("p.item-select")
+            .attr('class', 'item-default');
+            UpdateProblemSchemaRequest.metric_type = this.innerHTML.toString();
+            d3.select(this).attr('class',"item-select");
+        }
         restart();
         updateSchema("metric_type", UpdateProblemSchemaRequest, d3mMetrics);
         });
     
     d3.select("#outputs").selectAll("p")
     .on("click", function() {
-        var myColor = d3.select(this).style('background-color');
-        d3.select("#outputs").selectAll("p")
-        .style('background-color', varColor);
-        d3.select(this)
-        .style('background-color', d => {
-               if (d3.rgb(myColor).toString() === varColor.toString()) {
-               UpdateProblemSchemaRequest.output_type = d.toString();
-               return hexToRgba(selVarColor);
-               } else {
-               UpdateProblemSchemaRequest.ouptput_type = ["",""];
-               return varColor;
-               }
-               });
+        if(locktoggle) return;
+        if(this.className=="item-select") {
+            return;
+        } else {
+            d3.select("#outputs").select("p.item-select")
+            .attr('class', 'item-default');
+            UpdateProblemSchemaRequest.output_type = this.innerHTML.toString();
+            d3.select(this).attr('class',"item-select");
+        }
         restart();
         updateSchema("output_type", UpdateProblemSchemaRequest, d3mOutputType);
         });
@@ -1662,6 +1664,39 @@ export function forceSwitch() {
     }
 }
 
+export function lockDescription() {
+    locktoggle = locktoggle ? false : true;
+    let temp;
+    let i;
+    if (!locktoggle) {
+        document.getElementById('btnLock').setAttribute("class", "btn btn-default");
+        temp = document.getElementById('rightContentArea').querySelectorAll("p.item-lineout");
+        for (i = 0; i < temp.length; i++) {
+            temp[i].classList.remove("item-lineout");
+        }
+    } else {
+        document.getElementById('btnLock').setAttribute("class", "btn active");
+        temp = document.getElementById('metrics').querySelectorAll("p.item-default");
+        console.log(temp);
+        for (i = 0; i < temp.length; i++) {
+            temp[i].classList.add("item-lineout");
+        }
+        temp = document.getElementById('types').querySelectorAll("p.item-default");
+        for (i = 0; i < temp.length; i++) {
+            temp[i].classList.add("item-lineout");
+        }
+        temp = document.getElementById('subtypes').querySelectorAll("p.item-default");
+        for (i = 0; i < temp.length; i++) {
+            temp[i].classList.add("item-lineout");
+        }
+        temp = document.getElementById('outputs').querySelectorAll("p.item-default");
+        for (i = 0; i < temp.length; i++) {
+            temp[i].classList.add("item-lineout");
+        }
+        fakeClick();
+    }
+}
+
 export let spliceLinksForNode = node => links
     .filter(l => l.source === node || l.target === node)
     .map(x => links.splice(links.indexOf(x), 1));
@@ -1687,6 +1722,7 @@ function zPop() {
 }
 
 export function estimate(btn) {
+    if(!d3m_mode){
     if (production && zparams.zsessionid == '') {
         alert("Warning: Data download is not complete. Try again soon.");
         return;
@@ -1778,6 +1814,54 @@ export function estimate(btn) {
 
     estimateLadda.start(); // start spinner
     makeCorsRequest(urlcall, btn, estimateSuccess, estimateFail, solajsonout);
+    } else { // we are in d3m_mode
+            zPop();
+            zparams.callHistory = callHistory;
+            var jsonout = JSON.stringify(zparams);
+        console.log(jsonout);
+        
+            var urlcall = rappURL + "pipelineapp";
+            var solajsonout = "solaJSON=" + jsonout;
+            cdb("urlcall out: ", urlcall);
+            cdb("POST out: ", solajsonout);
+        
+            function createPipelineSuccess(btn, json) {
+                estimateLadda.stop(); // stop spinner
+                
+                let train_features=json.predictors;
+                let target_features=json.depvar;
+                let task = d3mTaskType[UpdateProblemSchemaRequest.task_type][1];
+                let task_subtype = d3mTaskSubtype[UpdateProblemSchemaRequest.task_subtype][1];
+                let output = d3mOutputType[UpdateProblemSchemaRequest.output_type][1];
+                let metrics = d3mMetrics[UpdateProblemSchemaRequest.metric_type][1];
+
+                let PipelineRequest={train_features, target_features, task, task_subtype, output, metrics};
+                
+                let jsonout = JSON.stringify(PipelineRequest);
+                
+                let urlcall = d3mURL + "/createpipeline";
+                var solajsonout = "CreatePipelines=" + jsonout;
+                
+                console.log(solajsonout);
+                function sendPipelineSuccess(btn, json) {
+                    console.log(json);
+                }
+                
+                function sendPipelineFail(btn) {
+                    console.log("pipeline to django failed");
+                }
+                
+                makeCorsRequest(urlcall, "nobutton", sendPipelineSuccess, sendPipelineFail, solajsonout);
+            }
+            
+            function createPipelineFail(btn) {
+                estimateLadda.stop(); // stop spinner
+                estimated = true;
+            }
+            
+            estimateLadda.start(); // start spinner
+            makeCorsRequest(urlcall, btn, createPipelineSuccess, createPipelineFail, solajsonout);
+    }
 }
 
 export function runPreprocess(dataloc, targetloc, preprocessloc) {
