@@ -30,6 +30,8 @@ def view_startsession(request):
 
     User agent and version id can originate on the server
     """
+    django_session_key = request.session._get_or_create_session_key()
+
     if settings.TA2_STATIC_TEST_MODE:     # return hardcoded message
         rnd_session_id = ''.join(random.choice(string.ascii_lowercase + string.digits)
                          for _ in range(7))
@@ -39,8 +41,15 @@ def view_startsession(request):
         else:
             return get_grpc_test_json(request, 'test_responses/startsession_ok.json', d)
 
+    # look for the "solaJSON" variable in the POST
+    #
+    if (not request.POST) or (not 'solaJSON' in request.POST):
+        return JsonResponse(dict(status="ERROR", message="solaJSON key not found"))
+
+    raven_data_text = request.POST['solaJSON']
+
     # Let's call the TA2 and start the session!
-    json_str = start_session()
+    json_str = start_session(raven_data_text)
 
     # Convert JSON str to python dict - err catch here
     json_dict = json.loads(json_str)

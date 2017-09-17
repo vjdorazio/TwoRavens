@@ -158,6 +158,6 @@ WEBPACK_LOADER = {
 ## D3M - TA2 settings
 #
 # Test work...
-TA2_STATIC_TEST_MODE = True    # return canned responses
-TA2_TEST_SERVER_URL = os.environ.get('TA2_TEST_SERVER_URL', None)
+TA2_STATIC_TEST_MODE = False    # return canned responses
+TA2_TEST_SERVER_URL = os.environ.get('TA2_TEST_SERVER_URL', None)   # localhost:50051
 TA2_GPRC_USER_AGENT = os.environ.get('TA2_GPRC_USER_AGENT', 'tworavens')
