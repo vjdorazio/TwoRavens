@@ -407,16 +407,16 @@ export function main(fileid, hostname, ddiurl, dataurl, apikey) {
                 aTag.textContent = "Problem Description";
                 document.getElementById("ticker").appendChild(aTag);
 
-                console.log('d3mTaskType');
-                console.log(d3mTaskType);
                 if(data.taskType in d3mTaskType) {
                     UpdateProblemSchemaRequest.task_type = data.taskType;//[d3mTaskType[data.taskType][2],d3mTaskType[data.taskType][1]]; console.log(UpdateProblemSchemaRequest);
                 } else {
                     UpdateProblemSchemaRequest.task_type = "taskTypeUndefined";
                     alert("Specified task type, " + data.taskType + ", is not valid.");
                 }
+
                 if(data.taskSubType in d3mTaskSubtype) {
-                    UpdateProblemSchemaRequest.task_subtype = data.taskSubtype;//[d3mTaskSubtype[data.taskSubType][2],d3mTaskSubtype[data.taskSubType][1]];
+                    UpdateProblemSchemaRequest.task_subtype = data.taskSubType;
+                    //[d3mTaskSubtype[data.taskSubType][2],d3mTaskSubtype[data.taskSubType][1]];
                     } else {
                         UpdateProblemSchemaRequest.task_subtype = "taskSubtypeUndefined";
                         alert("Specified task subtype, " + data.taskSubType + ", is not valid.")
