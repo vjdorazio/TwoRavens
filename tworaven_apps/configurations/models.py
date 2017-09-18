@@ -113,35 +113,3 @@ class AppConfiguration(TimeStampedModel):
             else:
                 js_dict[k] = val
         return js_dict
-
-class D3MConfiguration(TimeStampedModel):
-    """
-    Allow settings of javascript global variables via the database.
-    These are used within the index.html template (for now)
-    """
-    name = models.CharField(max_length=255,
-                            help_text='Test data',
-                            unique=True)
-
-    dataset_schema = models.TextField(\
-                        help_text='Input: Path to the dataset schema')
-
-    problem_schema = models.TextField(\
-                        help_text='Input: Path to the problem schema')
-
-    training_data_root = models.TextField(\
-                        help_text=('Input: Path to the root directory of the'
-                                   ' dataset described by dataset_schema'))
-
-    executables_root = models.TextField(\
-                        blank=True,
-                        help_text=('Output: Directory in which to write'
-                                   ' the Test Executables.'))
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ('name', '-modified')
-        verbose_name = 'D3M Configuration'
-        verbose_name_plural = 'D3M Configurations'

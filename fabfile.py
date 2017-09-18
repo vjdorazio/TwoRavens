@@ -9,6 +9,7 @@ import sys
 from fabric.api import local
 
 import django
+from django.conf import settings
 import subprocess
 
 import re
@@ -44,6 +45,51 @@ def restart():
     """Kill any python/npm processes and then run"""
     stop()
     run()
+
+def load_d3m_config():
+    """Make a D3M config based on local files in the /data directory"""
+
+    from tworaven_apps.configurations.models_d3m import D3MConfiguration
+    from os.path import abspath, isdir, join
+
+    # Does this data exist in the repository?
+    #
+    data_dir = abspath(join(FAB_BASE_DIR, 'data', 'd3m', 'o_196seed'))
+    if not os.path.isdir(data_dir):
+        print('Data directory doesn\'t exist: %s' % data_dir)
+        print('> D3M config not loaded')
+        return
+
+    # Is it already in the database?
+    #
+    config_name = 'o_196seed'
+    if D3MConfiguration.objects.filter(name=config_name).first():
+        print('> A config already exists in the db for: %s' % config_name)
+        return
+
+    # create an output directory in the LOCAL_SETUP_DIR
+    #
+    d3m_output_base = abspath(join(settings.LOCAL_SETUP_DIR, 'd3m_output'))
+    for folder_name in ['pipeline_logs', 'executables', 'temp']:
+        d3m_output_dir = join(d3m_output_base, folder_name)
+        if not isdir(d3m_output_dir):
+            print('Create D3M output dir: %s' % d3m_output_dir)
+            os.makedirs(d3m_output_dir)
+
+    # create a D3MConfiguration object
+    #
+    d3m_config = D3MConfiguration(\
+        name=config_name,
+        dataset_schema=join(data_dir, 'data', 'dataSchema.json'),
+        problem_schema=join(data_dir, 'problemSchema.json'),
+        training_data_root=join(data_dir, 'data'),
+        pipeline_logs_root=d3m_output_dir,
+        executables_root=d3m_output_dir,
+        temp_storage_root=d3m_output_dir,
+        )
+
+    d3m_config.save()
+    print('D3M config added for: %s' % config_name)
 
 def load_docker_config():
     """Load config pk=3, name 'Docker Default configuration'"""
