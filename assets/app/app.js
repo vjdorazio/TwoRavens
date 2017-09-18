@@ -411,7 +411,7 @@ export function main(fileid, hostname, ddiurl, dataurl, apikey) {
                     UpdateProblemSchemaRequest.task_type = data.taskType;//[d3mTaskType[data.taskType][2],d3mTaskType[data.taskType][1]]; console.log(UpdateProblemSchemaRequest);
                 } else {
                     UpdateProblemSchemaRequest.task_type = "taskTypeUndefined";
-                    alert("Specified task type, " + data.taskType + ", is not valid.");
+                 //   alert("Specified task type, " + data.taskType + ", is not valid.");
                 }
 
                 if(data.taskSubType in d3mTaskSubtype) {
@@ -419,24 +419,23 @@ export function main(fileid, hostname, ddiurl, dataurl, apikey) {
                     //[d3mTaskSubtype[data.taskSubType][2],d3mTaskSubtype[data.taskSubType][1]];
                     } else {
                         UpdateProblemSchemaRequest.task_subtype = "taskSubtypeUndefined";
-                        alert("Specified task subtype, " + data.taskSubType + ", is not valid.")
+                   //     alert("Specified task subtype, " + data.taskSubType + ", is not valid.")
                     }
                 if(data.metric in d3mMetrics) {
                     UpdateProblemSchemaRequest.metric_type = data.metric;//[d3mMetrics[data.metric][2],d3mMetrics[data.metric][1]];
                 } else {
                     UpdateProblemSchemaRequest.matric_type = "metricUndefined";
-                    alert("Specified metric type, " + data.metric + ", is not valid.");
+                   // alert("Specified metric type, " + data.metric + ", is not valid.");
                     }
                 if(data.outputType in d3mOutputType) {
                     UpdateProblemSchemaRequest.output_type = data.outputType;//[d3mOutputType[data.outputType][2],d3mOutputType[data.outputType][1]];
                 } else {
                     UpdateProblemSchemaRequest.output_type = "outputUndefined";
-                    alert("Specified output type, " + data.outputType + ", is not valid.");
+                  //  alert("Specified output type, " + data.outputType + ", is not valid.");
                 }
 
-                // clicks off the Models button and makes right panel blank on load?
-                 document.getElementById("btnType").click();
-
+                
+                document.getElementById("btnType").click();
                 startsession();
                 scaffolding(layout);
                 dataDownload();
@@ -1843,10 +1842,14 @@ export function estimate(btn) {
 
                 let urlcall = d3mURL + "/createpipeline";
                 var solajsonout = "CreatePipelines=" + jsonout;
-
+                
+                console.log(urlcall);
                 console.log(solajsonout);
                 function sendPipelineSuccess(btn, json) {
                     console.log(json);
+                    toggleRightButtons("all");
+                    document.getElementById("btnResults").click();
+                    listpipelines();
                 }
 
                 function sendPipelineFail(btn) {
@@ -2839,6 +2842,67 @@ function startsession() {
    makeCorsRequest(urlcall, "nobutton", ssSuccess, ssFail, solajsonout);
 }
 
+export function endsession() {
+    let sessioncontext = "my session context";
+    let SessionContext={sessioncontext};
+    
+    var jsonout = JSON.stringify(SessionContext);
+    
+    var urlcall = d3mURL + "/endsession";
+    var solajsonout = "SessionContext=" + jsonout;
+    console.log("solajsonout: ", solajsonout);
+    console.log("urlcall: ", urlcall);
+    
+    function endSuccess(btn, json) {
+        console.log(json);
+    }
+    
+    function endFail(btn) {
+        console.log("end session failed");
+    }
+    
+    makeCorsRequest(urlcall, "nobutton", endSuccess, endFail, solajsonout);
+}
+
+export function listpipelines() {
+    let sessioncontext = "my session context";
+    let PipeLineListRequest={sessioncontext};
+    
+    var jsonout = JSON.stringify(PipeLineListRequest);
+    
+    var urlcall = d3mURL + "/listpipelines";
+    var solajsonout = "PipeLineListRequest=" + jsonout;
+    console.log("solajsonout: ", solajsonout);
+    console.log("urlcall: ", urlcall);
+    
+    function listPipesSuccess(btn, json) {
+        //hardcoded pipes for now
+        let pipes = ["","id1", "id2", "id3", "id4", "id5"]
+        d3.select("#results").selectAll("p")
+        .data(pipes)
+        .enter()
+        .append("p")
+        .attr("id", "_pipe_".concat)
+        .text(d => d)
+        .attr('class', 'item-default')
+        .on("click", function() {
+            if(this.className=="item-select") {
+                return;
+            } else {
+                d3.select("#results").select("p.item-select")
+                .attr('class', 'item-default');
+                d3.select(this).attr('class',"item-select");
+            }});
+        console.log(json);
+    }
+    
+    function listPipesFail(btn) {
+        console.log("list pipelines failed");
+    }
+    
+    makeCorsRequest(urlcall, "nobutton", listPipesSuccess, listPipesFail, solajsonout);
+}
+
 // this is our call to django to update the problem schema
 function updateSchema(type, updates, lookup) {
     console.log('updateSchema....')
@@ -2886,15 +2950,53 @@ function jamescentroid(coord){
 
 
 function toggleRightButtons(set) {
-    if(set=="tasks") {
-        document.getElementById('btnModels').style.display = 'none';
-        document.getElementById('btnSetx').style.display = 'none';
-        document.getElementById('btnResults').style.display = 'none';
+    
+    function setWidths(btns) {
+        let mywidth = 100/btns.length;
+        mywidth = mywidth.toString() + '%';
+        let expandwidth = '35%';
+        let shrinkwidth = 65/(btns.length-1);
+        shrinkwidth = shrinkwidth.toString() + '%';
+        let mylis = document.getElementById('rightpanel').querySelectorAll(".accordian li");
+        // hardly ever runs on the page
+        for (let i = 0; i < mylis.length; i++) {
+            mylis[i].style.width=mywidth;
+            mylis[i].addEventListener('mouseover', function() {
+                                      for(let j = 0; j < mylis.length; j++) {
+                                      mylis[j].style.width=shrinkwidth;
+                                      }
+                                      this.style.width=expandwidth;
+                                      });
+            mylis[i].addEventListener('mouseout', function() {
+                                      for(let j = 0; j < mylis.length; j++) {
+                                      mylis[j].style.width=mywidth;
+                                      }
+                                      });
+        }
+        
+    }
 
-        document.getElementById('btnType').style.display = 'inline';
-        document.getElementById('btnSubtype').style.display = 'inline';
-        document.getElementById('btnMetrics').style.display = 'inline';
-        document.getElementById('btnOutputs').style.display = 'inline';
+    if(set=="tasks") {
+
+        document.getElementById('btnModels').classList.add("noshow");
+        document.getElementById('btnSetx').classList.add("noshow");
+        document.getElementById('btnResults').classList.add("noshow");
+        
+        
+        let mybtns = document.getElementById('rightpanelbuttons').querySelectorAll(".btn:not(.noshow)");
+        setWidths(mybtns);
+        
+        
+    } else if (set=="all") {
+        // first remove noshow class
+        let mybtns = document.getElementById('rightpanelbuttons').querySelectorAll(".noshow");
+        for (let i = 0; i < mybtns.length; i++) {
+            mybtns[i].classList.remove("noshow");
+        }
+        // then select all the buttons
+        mybtns = document.getElementById('rightpanelbuttons').querySelectorAll(".btn:not(.noshow)");
+        setWidths(mybtns);
+
     }
     if(set=="models") {
         document.getElementById('btnModels').style.display = 'inline';
@@ -2906,5 +3008,4 @@ function toggleRightButtons(set) {
         document.getElementById('btnMetrics').style.display = 'none';
         document.getElementById('btnOutputs').style.display = 'none';
     }
-
 }
