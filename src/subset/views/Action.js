@@ -4,13 +4,58 @@
  *
  */
 
+function pentaClass (classNum, count) {
+	this.classNum = classNum;
+	this.count = count;
+}
+
+var pentaCounts = [];
+var pentaDisc = ["Public Statement", "Verbal Cooperation", "Material Cooperation", "Verbal Conflict", "Material Conflict"];
+
 var d3action_draw = false;
 function d3action() {
+	//we have the action data from actionData in json format
+	d3.csv("data/actionlookup.csv", function(d) {
+		return {
+			rootCode: +d.EventRootCode,
+			rootDesc: d.Description,
+			penta: +d.PentaClass
+		};
+	}, function(data) {
+		console.log("lookup data");
+		console.log(data);
+		console.log("action data");
+		console.log(actionData);
+		//~ for (var x = 0; x < 21; x ++){
+			//~ console.log(actionData[x]);
+		//~ }
+		//~ for (var x in actionData)
+			//~ console.log(x);
 
-    if(!d3action_draw) {
-        d3action_draw = true;
-        drawMainGraphAction();
-    }
+		for (var x = 0; x < 5; x++) {
+			pentaCounts.push(new pentaClass(x, 0));
+		}
+		console.log("pentacounts:");
+		console.log(pentaCounts);
+
+		for (var x = 0; x < 20; x ++) {
+			//~ console.log(x);
+			//~ console.log(data[x]);
+			//~ console.log(data[x].penta);
+			//~ console.log(actionData[x + 1]);
+			pentaCounts[data[x].penta].count += actionData[x + 1];
+		}
+		console.log("pentaCounts");
+		console.log(pentaCounts);
+
+		drawMainGraphAction();
+	});
+			
+
+    //~ if(!d3action_draw) {
+        //~ d3action_draw = true;
+        //~ drawMainGraphAction();
+    //~ }
 }
 
 
@@ -27,33 +72,209 @@ var mapActionGraphSVG = new Object();
 function drawMainGraphAction() {
 
 
-    $("#subsetAction").append('<div class="container"><div id="subsetAction_panel" class="row"></div></div>');
+    //~ $("#subsetAction").append('<div class="container"><div id="subsetAction_panel" class="row"></div></div>');
 
-    $("#subsetAction_panel").append("<div class='col-xs-4 location_left' id='subsetActionDivL'></div>");
-    $("#subsetAction_panel").append("<div class='col-xs-4 location_right'><div class='affix' id='subsetActionDivR'></div></div>");
+    //~ $("#subsetAction_panel").append("<div class='col-xs-4 location_left' id='subsetActionDivL'></div>");
+    //~ $("#subsetAction_panel").append("<div class='col-xs-4 location_right'><div class='affix' id='subsetActionDivR'></div></div>");
 
-    $("#subsetActionDivL").append("<table id='svg_graph_table_action' border='0' align='center'><tr><td id='main_graph_action_td_1' class='graph_config'></td></tr><tr><td id='main_graph_action_td_2' class='graph_config'></td></tr></table>");
+    //~ $("#subsetActionDivL").append("<table id='svg_graph_table_action' border='0' align='center'><tr><td id='main_graph_action_td_1' class='graph_config'></td></tr><tr><td id='main_graph_action_td_2' class='graph_config'></td></tr></table>");
 
-    //actionGraphLabel("main_graph_action_td_1");
-    //actionGraphLabel("main_graph_action_td_2");
+    //~ //actionGraphLabel("main_graph_action_td_1");
+    //~ //actionGraphLabel("main_graph_action_td_2");
 
-    var svg1 = d3.select("#main_graph_action_td_1").append("svg:svg")
-        .attr("width",  480)
-        .attr("height", 350)
-        .attr("id", "main_graph_action_svg_1");
+    //~ var svg1 = d3.select("#main_graph_action_td_1").append("svg:svg")
+        //~ .attr("width",  480)
+        //~ .attr("height", 350)
+        //~ .attr("id", "main_graph_action_svg_1");
 
-    var svg2 = d3.select("#main_graph_action_td_2").append("svg:svg")
-        .attr("width",  480)
-        .attr("height", 350)
-        .attr("id", "main_graph_action_svg_2");
+    //~ var svg2 = d3.select("#main_graph_action_td_2").append("svg:svg")
+        //~ .attr("width",  480)
+        //~ .attr("height", 350)
+        //~ .attr("id", "main_graph_action_svg_2");
 
-    mapActionGraphSVG["main_graph_action_1"] = svg1;
-    mapActionGraphSVG["main_graph_action_2"] = svg2;
+    //~ mapActionGraphSVG["main_graph_action_1"] = svg1;
+    //~ mapActionGraphSVG["main_graph_action_2"] = svg2;
 
-    renderActionGraph(svg1, 1);
-    renderActionGraph(svg2, 2);
+    //~ renderActionGraph(svg1, 1);
+    //~ renderActionGraph(svg2, 2);
+
+	//~ renderActionGraph2(svg1, 1);
+	//~ renderActionGraph2(svg2, 2);
+
+	  //~ console.log(d3.max(pentaCounts));
+
+	  //~ var width = 500;
+
+	  //~ var x = d3.scaleLinear()
+//~ .domain([0, d3.max(pentaCounts)])
+//~ .rangeRound([0, width]);
+
+//~ var chart = d3.select("#actionMainGraph")
+//~ .attr("width", width)
+//~ .attr("height", 20 * pentaCounts.length);
+
+//~ var bar = chart.selectAll("g")
+//~ .data(pentaCounts)
+//~ .enter().append("g")
+//~ .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+//~ bar.append("rect")
+//~ .attr("width", x)
+//~ .attr("height", 20 - 1);
+
+//~ bar.append("text")
+//~ .attr("x", function(d) { return x(d) - 3; })
+//~ .attr("y", 20 / 2)
+//~ .attr("dy", ".35em")
+//~ .text(function(d) { return d; });
 
 
+
+	var svg = d3.select("#actionMainGraph"),
+		margin = {top: 20, right: 50, bottom: 50, left: 50},
+		width = +svg.attr("width") - margin.left - margin.right,
+		height = +svg.attr("height") - margin.top - margin.bottom;
+
+	var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleBand().range([height, 0]);
+
+	//~ var g = svg.append("g")
+		//~ .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+	  //~ x.domain(pentaCounts.map(function(d) { return d.classNum; }));
+	  //~ y.domain([0, d3.max(pentaCounts, function(d){return d.count;})]);
+
+	  //~ g.append("g")
+      //~ .attr("class", "axis axis--x")
+      //~ .attr("transform", "translate(0," + height + ")")
+      //~ .call(d3.axisBottom(x));
+
+  //~ g.append("g")
+      //~ .attr("class", "axis axis--y")
+      //~ .call(d3.axisLeft(y).ticks(10, "%"))
+    //~ .append("text")
+      //~ .attr("transform", "rotate(-90)")
+      //~ .attr("y", 6)
+      //~ .attr("dy", "0.71em")
+      //~ .attr("text-anchor", "end")
+      //~ .text("Frequency");
+
+  //~ g.selectAll(".bar")
+    //~ .data(pentaCounts)
+    //~ .enter().append("rect")
+      //~ .attr("class", "bar")
+      //~ .attr("x", function(d) { return d.classNum * 30; })
+      //~ .attr("y", function(d) { return d.count; })
+      //~ .attr("width", x.bandwidth())
+      //~ .attr("width", 20)
+      //~ .attr("height", function(d) { return height - y(d.count); });
+
+      x.domain([0, d3.max(pentaCounts, function(d){return d.count;})]);
+            y.domain(pentaCounts.map(function (d) {
+                return d.classNum;			//MWD
+            }))
+            //~ y.domain([0, 5])
+            .padding(0.15);
+
+            var g = svg.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      g.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x).ticks(5).tickFormat(function (d) {
+                    return parseInt(d);
+                }).tickSizeInner([-height]));
+
+            g.append("g")
+                .attr("class", "y axis")
+                .call(d3.axisLeft(y));
+
+            g.selectAll(".bar_click")
+                .data(pentaCounts)
+                .enter()
+                .append("rect")
+                .attr("class", "bar_click")
+                .attr("height", y.bandwidth())
+                .attr("width", function (d) {
+                    return width - x(d.count);
+                })
+                .attr("x", function (d) {
+                    return x(d.count);
+                })
+                .attr("y", function (d) {
+                    return y(d.classNum);
+                })
+                .attr("onclick", function (d) {
+                    return "javascript:alert('External click on " + d.classNum + "')";
+                })
+                .on("mouseover", function(d) {
+					$("#" + d.classNum + "bar").css("fill", "brown");
+				})
+				.on("mouseout", function(d) {
+					$("#" + d.classNum + "bar").css("fill", "steelblue");
+				});
+
+            g.selectAll(".bar")
+                .data(pentaCounts)
+                .enter()
+                .append("rect")
+                .attr("id", function (d) {
+                    //~ return "tg_rect_action_" + d.pid;
+                    return d.classNum + "bar";
+                })
+                .attr("class", "bar")
+                .attr("x", 0)
+                .attr("height", y.bandwidth())
+                .attr("y", function (d) {
+                    return y(d.classNum);				//MWD
+                })
+                .attr("width", function (d) {
+                    return x(d.count);
+                })
+                //~ .attr("onclick", function (d) {
+                    //~ mapActionGraphSVG[d.pid] = null;
+                    //~ return "javascript:alert('" + d.pid + "')";
+                //~ })
+                .attr("onclick", function (d) {
+					return "javascript:alert('Click on " + d.classNum + "')";
+				})
+                .on("mouseover", function(d) {
+					$("#" + d.classNum + "bar").css("fill", "brown");
+				})
+				.on("mouseout", function(d) {
+					$("#" + d.classNum + "bar").css("fill", "steelblue");
+				});
+
+
+            g.selectAll(".bar_label")
+                .data(pentaCounts)
+                .enter()
+                .append("text")
+                .attr("class", "bar_label")
+                .attr("x", function (d) {
+                    return x(d.count) + 5;
+                })
+                .attr("y", function (d) {
+                    return y(d.classNum) + y.bandwidth() / 2 + 4;
+                })
+                .text(function (d) {
+                    return "" + d.count;
+                });
+
+            g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate(" + (-30) + "," + (height / 2) + ")rotate(-90)")
+                .attr("class", "graph_axis_label")
+                .text("PentaClass");
+
+
+            g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate(" + (width / 2) + "," + (height + 30) + ")")
+                .attr("class", "graph_axis_label")
+                .text("Frequency");
 }
 
 function getMapActionLookup() {
@@ -394,3 +615,59 @@ function renderActionGraph(svg, gid) {
         });
     }
 }
+
+function renderActionGraph2(svg, gid) {
+	var margin = {top: 20, right: 20, bottom: 30, left: 135},
+		width = +svg.attr("width") - margin.left - margin.right,
+		height = +svg.attr("height") - margin.top - margin.bottom;
+
+	var x = d3.scaleLinear().range([0, width]);		//maybe do this in read
+	var y = d3.scaleBand().range([height, 0]);		//difference between linear and band?
+
+	if (gid == 1) {
+		//build top (main) graph off of query to "QuadClass" column of data
+		//we get the frequencies of each pentaclass
+		var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+		x.domain([0, 5]);
+		y.domain([0, d3.max(pentaCounts)]);
+
+		//~ g.append("g")
+		//~ .attr("class", "axis axis--x")
+		//~ .attr("transform", "translate(0," + height + ")")
+		//~ .call(d3.axisBottom(x));
+
+		//~ g.append("g")
+		//~ .attr("class", "axis axis--y")
+		//~ .call(d3.axisLeft(y).ticks(10, "%"))
+		//~ .append("text")
+		//~ .attr("transform", "rotate(-90)")
+		//~ .attr("y", 6)
+		//~ .attr("dy", "0.71em")
+		//~ .attr("text-anchor", "end")
+		//~ .text("Frequency");
+
+		g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate(" + (-115) + "," + (height / 2) + ")rotate(-90)")
+                .attr("class", "graph_axis_label")
+                .text("PentaClass");
+
+
+            g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "translate(" + (width / 2) + "," + (height + 30) + ")")
+                .attr("class", "graph_axis_label")
+                .text("Frequency");
+
+		//~ g.selectAll(".bar")
+		//~ .data(pentaCounts)
+		//~ .enter().append("rect")
+		//~ .attr("class", "bar")
+		//~ .attr("x", function(d) { console.log(d); return x(d); })
+		//~ .attr("y", function(d) { return y(d.frequency); })
+		//~ .attr("width", x.bandwidth())
+		//~ .attr("height", function(d) { return height - y(d.frequency); });
+	}
+}
+		

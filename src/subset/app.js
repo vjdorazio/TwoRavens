@@ -209,7 +209,7 @@ function pageSetup(jsondata) {
         let parsed = JSON.parse(jsondata.action_data[idx]);
         actionData[parsed['action']] = parsed['total']
     }
-    d3action();
+    d3action();		//there's 20 errors from d3 in this call	MWD
 
     actorData = jsondata.actor_data;
     actorDataLoad();
@@ -222,9 +222,10 @@ function pageSetup(jsondata) {
     }
 }
 
+
+
 // Select which tab is shown in the left panel
 function tabLeft(tab) {
-
     document.getElementById('variableTab').style.display = 'none';
     document.getElementById('subsetTab').style.display = 'none';
 
@@ -232,11 +233,10 @@ function tabLeft(tab) {
 
     switch (tab) {
         case "variableTab":
-            document.getElementById('btnVariables').setAttribute("class", "btn active");
-
+            document.getElementById('btnVariables').setAttribute("class", "active");
             break;
         case "subsetTab":
-            document.getElementById('btnSubset').setAttribute("class", "btn active");
+            document.getElementById('btnSubset').setAttribute("class", "active");
     }
 
     d3.select("#leftpanel").attr("class", "sidepanel container clearfix");
@@ -244,6 +244,7 @@ function tabLeft(tab) {
 }
 
 window.onresize = rightpanelMargin;
+$("#btnSubset").trigger("click");		//on load let subset tab show first
 
 function rightpanelMargin() {
 	//actor resize on window resize handled here

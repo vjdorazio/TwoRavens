@@ -139,6 +139,8 @@
     </div>
 
     <div id="subsetAction" style="display:none">
+		<svg id="actionMainGraph" width="500" height="500" style="border: 1px solid blue;"></svg>
+		<svg id="actionSub" width="500" height="500" style="border: 1px solid green;"></svg>
     </div>
 
     <div id="subsetActor" style="display:none">
@@ -153,11 +155,11 @@
                     <div id="actorRadio" class="btn-group" data-toggle="buttons" style="margin-left:6px; width:calc(100% - 12px)">
                         <label class="btn btn-default active" style="width:50%" title="Select sources"
                                onclick="actorTabSwitch('sourceTabBtn', 'sourceDiv')">
-                            <input type="radio" id="sourceTabBtn" name="actorSet" autocomplete="off" checked>Sources</label>
+                            <input type="radio" id="sourceTabBtn" name="actorSet" autocomplete="off" checked>Sources</input>
                         </label>
                         <label class="btn btn-default" style="width:50%" title="Select targets"
                                onclick="actorTabSwitch('targetTabBtn', 'targetDiv')">
-                            <input type="radio" id="targetTabBtn" name="actorSet" autocomplete="off">Targets</label>
+                            <input type="radio" id="targetTabBtn" name="actorSet" autocomplete="off">Targets</input>
                         </label>
                     </div>
                 </div>

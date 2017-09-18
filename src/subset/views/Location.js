@@ -66,7 +66,7 @@ function render(blnIsSubgraph, cid){
 
     // console.log(cid);
 
-    if(!blnIsSubgraph) {
+    if(!blnIsSubgraph) {		//this is the main graph
 
         console.log("Rendering Main Graph...");
 
@@ -175,9 +175,11 @@ function render(blnIsSubgraph, cid){
             }
 
             x.domain([0, maxDomainX]);
-            y.domain(arr_location_region_data.map(function(d) {return d.rname;})).padding(0.1);
+            y.domain(arr_location_region_data.map(function(d) {
+				//~ console.log(d);
+				return d.rname;})).padding(0.2);		//this controls the padding
 
-            var g = svg.append("g")
+            var g = svg.append("g")		//this draws the x axis ticks
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             g.append("g")
                 .attr("class", "x axis")
@@ -190,7 +192,7 @@ function render(blnIsSubgraph, cid){
                 .call(d3.axisLeft(y));
 
 
-            g.selectAll(".bar")
+            g.selectAll(".bar")			//these are the bars themselves
                 .data(arr_location_region_data)
                 .enter()
                 .append("rect")
@@ -202,7 +204,7 @@ function render(blnIsSubgraph, cid){
                 .attr("onclick",  function (d) { mapGraphSVG[d.rid] = null; return "javascript:constructSubgraph('"+d.rid+"')"; })
                 .attr("id", function(d) { return "tg_rect_" + d.rid; });
 
-            g.selectAll(".bar_click")
+            g.selectAll(".bar_click")	//these are the empty space following the bars
                 .data(arr_location_region_data)
                 .enter()
                 .append("rect")
@@ -213,7 +215,7 @@ function render(blnIsSubgraph, cid){
                 .attr("y", function (d) { return y(d.rname);})
                 .attr("onclick",  function (d) { return "javascript:constructSubgraph('"+d.rid+"')"; });
 
-            g.selectAll(".bar_label")
+            g.selectAll(".bar_label")	//these are the labels for the bars
                 .data(arr_location_region_data)
                 .enter()
                 .append("text")
@@ -222,7 +224,7 @@ function render(blnIsSubgraph, cid){
                 .attr("y", function (d) { return y(d.rname) + y.bandwidth() / 2 + 4;})
                 .text(function (d) { return "" + d.freq;});
 
-            g.append("text")
+            g.append("text")			//this is the y axis label
                 .attr("text-anchor", "middle")
                 .attr("transform", "translate("+ (-115) +","+(height/2)+")rotate(-90)")
                 .attr("class", "graph_axis_label")
@@ -230,7 +232,7 @@ function render(blnIsSubgraph, cid){
 
 
 
-            g.append("text")
+            g.append("text")			//this is the x axis label
                 .attr("text-anchor", "middle")
                 .attr("transform", "translate("+ (width/2) +","+(height+30)+")")
                 .attr("class", "graph_axis_label")
@@ -238,7 +240,7 @@ function render(blnIsSubgraph, cid){
 
         });
     }
-    else {
+    else {						//this is a sub graph
 
         // console.log("Rendering Sub Graph...");
 

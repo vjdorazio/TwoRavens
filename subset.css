@@ -1450,3 +1450,20 @@ text.id {
 	pointer-events: none;
 }
 /*end styling for actor*/
+
+#actionMainGraph .bar {
+  fill: steelblue;
+}
+
+#actionMainGraph text {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+font-size: 14px;
+
+line-height: 1.42857143;
+
+color: #333;
+/*
+  text-anchor: end;
+*/
+}
