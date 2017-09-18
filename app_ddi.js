@@ -436,8 +436,8 @@ function connectAll() {
         var pair1 = value1 + value2;
         var pair2 = value2 + value1;
         var count = 0;
-        console.log("pair1 : " + pair1);
-        console.log("pair2 : " + pair2);
+       // console.log("pair1 : " + pair1);
+       // console.log("pair2 : " + pair2);
         for (var k = 0; k < string_check.length; k++) {
             if (string_check[k] == pair1) {
                 count++;
@@ -734,12 +734,10 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         }
     }
     */
-    var margin_cross = {top: 30, right: 35, bottom: 40, left: 50},
-    margin_cross2 = {top: 30, right: 15, bottom: 40, left: 150}
-        , width_cross = 285 - margin_cross.left - margin_cross.right
-        , width_cross2 = 285 - margin_cross2.left - margin_cross2.right
-        , height_cross = 160 - margin_cross.top - margin_cross.bottom
-        , height_cross2 = 160 - margin_cross2.top - margin_cross2.bottom;
+    var margin_cross = {top: 30, right: 35, bottom: 40, left: 40},
+        width_cross = 305 - margin_cross.left - margin_cross.right,
+        height_cross = 160 - margin_cross.top - margin_cross.bottom;
+
     var padding_cross = 100;
 
     for (var i = 0; i < plot_nodes.length; i++) {
@@ -914,15 +912,14 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 // setup the x_cord according to the size given by user
 
 
-
         console.log("welcome to : " + density_env.name);
         //var mydiv = "#resultsView_tabular";
-         var yVals = density_env.ploty;
-         var xVals = density_env.plotx;
+        var yVals = density_env.ploty;
+        var xVals = density_env.plotx;
 
         // an array of objects
 
-var data2=[];
+        var data2 = [];
         for (var i = 0; i < density_env.plotx.length; i++) {
             data2.push({x: density_env.plotx[i], y: density_env.ploty[i]});
         }
@@ -931,7 +928,7 @@ var data2=[];
             d.x = +d.x;
             d.y = +d.y;
         });
-      //  console.log(data2);
+        //  console.log(data2);
 
         var min_x = d3.min(data2, function (d, i) {
             return data2[i].x;
@@ -947,7 +944,7 @@ var data2=[];
             return data2[i].y;
         });
         var avg_y = (max_y - min_y) / 10;
-     var    x = d3.scale.linear()
+        var x = d3.scale.linear()
             .domain([d3.min(xVals), d3.max(xVals)])
             .range([0, width_cross]);
 
@@ -959,7 +956,7 @@ var data2=[];
             }))])
             .domain([0, width_cross]);
 
-      var   y = d3.scale.linear()
+        var y = d3.scale.linear()
             .domain([d3.min(data2.map(function (d) {
                 return d.y;
             })), d3.max(data2.map(function (d) {
@@ -996,17 +993,18 @@ var data2=[];
             })
             .interpolate("monotone");
 
-     var plotsvg = d3.select(mydiv)
-             .append("svg")
+        var plotsvg = d3.select(mydiv)
+            .append("svg")
             .attr("id", "plotsvg_id")
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
             .style("height", height_cross + margin_cross.top + margin_cross.bottom)
+            .style("margin-left","20px")
             .append("g")
             .attr("transform", "translate(0," + margin_cross.top + ")");
 
 
         plotsvg.append("path")
-            .attr("id","path1")
+            .attr("id", "path1")
             .datum(data2)
             .attr("class", "area")
             .attr("d", area);
@@ -1022,9 +1020,34 @@ var data2=[];
             .style("font-size", "12px")
             .text(density_env.name);
 
-        if(isNaN(a)|| a===0)
-        {
+        if (isNaN(a) || a === 0) {
             console.log("do nothing #bar")
+            var upper_limit = d3.max(xVals);
+            var lower_limit = d3.min(xVals);
+
+            var z = 10;
+            //console.log(upper_limit +" and " + lower_limit);
+            var diff = upper_limit - lower_limit;
+            var buffer = diff / z;
+            var x_cord = [];
+            console.log("diff : " + diff);
+            console.log("buffer : " + buffer);
+            var push_data = lower_limit;
+            for (var i = 0; i < z - 1; i++) {
+                push_data = push_data + buffer;
+                x_cord.push(push_data);
+                //console.log("x_cord : " + x_cord);
+
+
+                plotsvg.append("line")
+                    .attr("id", "line1")
+                    .attr("x1", x(x_cord[i]))
+                    .attr("x2", x(x_cord[i]))
+                    .attr("y1", y(d3.min(yVals)))
+                    .attr("y2", y(d3.max(yVals)))
+                    .style("stroke", "#212121")
+                    .style("stroke-dasharray", "3");
+            }
         }
         else {
             if (method_name === "equidistance") {
@@ -1043,7 +1066,7 @@ var data2=[];
                 for (var i = 0; i < a - 1; i++) {
                     push_data = push_data + buffer;
                     x_cord.push(push_data);
-                   console.log("x_cord : " + x_cord);
+                    // console.log("x_cord : " + x_cord);
 
 
                     plotsvg.append("line")
@@ -1052,28 +1075,28 @@ var data2=[];
                         .attr("x2", x(x_cord[i]))
                         .attr("y1", y(d3.min(yVals)))
                         .attr("y2", y(d3.max(yVals)))
-                        .style("stroke", "#212121")
-                        .style("stroke-dasharray", "3");
+                        .style("stroke", "#0D47A1")
+                        .style("stroke-dasharray", "4");
                 }
 
             }
 
             else if (method_name === "equimass") // here we use the data from equimassCalculation to draw lines
             {
-            console.log(" density equimass called ");
-          var temp=[];
+                console.log(" density equimass called ");
+                var temp = [];
 
-          temp=equimassCalculation(density_env,a);
-console.log("temp for density : "+ temp);
-                for (var i = 1; i < a ; i++) {
+                temp = equimassCalculation(density_env, a);
+                console.log("temp for density : " + temp);
+                for (var i = 1; i < a; i++) {
                     plotsvg.append("line")
                         .attr("id", "line1")
                         .attr("x1", x(temp[i]))
                         .attr("x2", x(temp[i]))
                         .attr("y1", y(d3.min(yVals)))
                         .attr("y2", y(d3.max(yVals)))
-                        .style("stroke", "#212121")
-                        .style("stroke-dasharray", "3");
+                        .style("stroke", "#0D47A1")
+                        .style("stroke-dasharray", "4");
                 }
             }
 
@@ -1192,6 +1215,7 @@ console.log("temp for density : "+ temp);
             .attr("id","plotsvg1_id")
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
             .style("height", height_cross + margin_cross.top + margin_cross.bottom)
+          .style("margin-left","20px")
             .append("g")
             .attr("transform", "translate(0," + margin_cross.top + ")");
 
@@ -1231,9 +1255,34 @@ console.log("temp for density : "+ temp);
 
 
 
-        if(isNaN(a)|| a===0)
-        {
-            console.log("do nothing #bar")
+        if(isNaN(a)|| a===0) {
+            console.log("do nothing #bar");
+            var z = 10;
+            var upper_limit1 = maxX;
+            var lower_limit1 = minX;
+            var diff1 = upper_limit1 - lower_limit1;
+            var buffer1 = diff1 / z;
+            var x_cord1 = [];
+            console.log("diff1 : " + diff1);
+            console.log("buffer1 : " + buffer1);
+            var push_data1 = lower_limit1;
+            for (var i = 0; i < z - 1; i++) {
+                push_data1 = push_data1 + buffer1;
+                x_cord1.push(push_data1);
+//console.log("x_cord1 equidis : "+ x_cord1);
+                // console.log("x_cord1 actual: " + x_1(x_cord1[i]));
+//console.log("maxY : "+ maxY);
+                plotsvg1.append("line")
+                    .attr("id", "line2")
+                    .attr("x1", x_1(x_cord1[i]))
+                    .attr("x2", x_1(x_cord1[i]))
+                    .attr("y1", y_1(0))
+                    .attr("y2", y_1(maxY))
+                    .style("stroke", "#212121")
+                    .style("stroke-dasharray", "3");
+
+
+            }
         }
         else {
             if (method_name === "equidistance") {
@@ -1258,8 +1307,8 @@ console.log("temp for density : "+ temp);
                         .attr("x2", x_1(x_cord1[i]))
                         .attr("y1", y_1(0))
                         .attr("y2", y_1(maxY))
-                        .style("stroke", "#212121")
-                        .style("stroke-dasharray", "3");
+                        .style("stroke", "#0D47A1")
+                        .style("stroke-dasharray", "4");
                 }
             }
             else if (method_name==="equimass") {
@@ -1276,8 +1325,8 @@ console.log("temp for density : "+ temp);
                         .attr("x2", x_1(x_cord2[i] ))
                         .attr("y1", y_1(0))
                         .attr("y2", y_1(maxY))
-                        .style("stroke", "#212121")
-                        .style("stroke-dasharray", "3");
+                        .style("stroke", "#0D47A1")
+                        .style("stroke-dasharray", "4");
 
                 }
             }
@@ -1462,7 +1511,7 @@ for (var i=0; i<n; i++)//to get through each arr_c
     {
         if (arr_c[i] === arr_y[j]) {
 
-            store.push({val: i, coor1: j, coor2: j, diff1: 0.34, diff2: 0});
+            store.push({val: i, coor1: j, coor2: j, diff1: 0.34, diff2: 0});// for testing purpose
 
 
         }
@@ -1470,7 +1519,7 @@ for (var i=0; i<n; i++)//to get through each arr_c
 }
     for(var i=0; i<n;i++)
     {
-        var diff_val1, diff_val2;
+        var diff_val1, diff_val2;// here the diff is not actual difference, it is the fraction of the distance from the two points
         var x1, x2, x3,x4;
         for (var j = 0; j < 50; j++) {
           //  console.log(" j out"+ j );
