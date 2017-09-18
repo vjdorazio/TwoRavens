@@ -21,21 +21,10 @@ import {bars, barsNode, barsSubset, density, densityNode, selVarColor} from './p
 //    Developers, see /template/index.html
 //-------------------------------------------------
 
-// for debugging
-export function cdb(msg) {
-    if (!production){
-        console.log(msg);
-    };
-};
+// for debugging - if in production, prints args and returns them
+export let cdb = _ => production || console.log.apply(this, arguments) && arguments;
 
-export let inspect = obj => {
-    console.log(obj);
-    return obj;
-};
-
-
-
-var k = 4;                                            // strength parameter for group attraction/repulsion   
+var k = 4; // strength parameter for group attraction/repulsion
 
 // initial color scale used to establish the initial colors of nodes
 // allNodes.push() below establishes a field for the master node array allNodes called "nodeCol" and assigns a color from this scale to that field
@@ -85,6 +74,7 @@ var ind2 = [(allR+30) * Math.cos(1.1), -1*(allR+30) * Math.sin(1.1),5] // cx, cy
 var myspace = 0;
 
 var forcetoggle = ["true"];
+var locktoggle = true;
 var priv = true;
 
 export let logArray = [];
@@ -121,6 +111,67 @@ var selInteract = false;
 var callHistory = []; // transform and subset calls
 let mytarget = "";
 
+
+//eventually read this from the schema with real descriptions
+// metrics, tasks, and subtasks as specified in D3M schemas
+// MEAN SQUARED ERROR IS SET TO SAME AS RMSE. MSE is in schema but not proto
+let d3mMetrics = { metricUndefined:["description", "METRIC_UNDEFINED" , 0],
+    accuracy : ["description", "ACCURACY" , 1],
+f1:["description", "F1" , 2],
+f1Micro:["description", "F1_MICRO" , 3],
+f1Macro:["description", "F1_MACRO" , 4],
+rocAuc:["description", "ROC_AUC" , 5],
+rocAucMicro:["description", "ROC_AUC_MICRO" , 6],
+rocAucMacro:["description", "ROC_AUC_MACRO" , 7],
+meanSquaredError:["description", "MEAN_SQUARED_ERROR", 8],
+rootMeanSquaredError:["description", "ROOT_MEAN_SQUARED_ERROR" , 8],
+rootMeanSquaredErrorAvg:["description", "ROOT_MEAN_SQUARED_ERROR_AVG" , 9],
+meanAbsoluteError:["description", "MEAN_ABSOLUTE_ERROR" , 10],
+rSquared:["description", "R_SQUARED" , 11],
+normalizedMutualInformation:["description", "NORMALIZED_MUTUAL_INFORMATION" , 12],
+    jaccardSimilarityScore:["description", "JACCARD_SIMILARITY_SCORE" , 13],
+    executionTime:["description", "EXECUTION_TIME" , 14]};
+
+let d3mTaskType = {taskTypeUndefined:["description","TASK_TYPE_UNDEFINED", 0],classification:["description", "CLASSIFICATION" , 1],
+regression:["description", "REGRESSION" , 2],
+similarityMatching:["description", "SIMILARITY_MATCHING" , 3],
+linkPrediction:["description", "LINK_PREDICTION" , 4],
+vertexNomination:["description", "VERTEX_NOMINATION" , 5],
+communityDetection:["description", "COMMUNITY_DETECTION" , 6],
+graphMatching:["description", "GRAPH_MATCHING" , 7],
+timeseriesForecasting:["description", "TIMESERIES_FORECASTING" , 8],
+    collaborativeFiltering:["description", "COLLABORATIVE_FILTERING" , 9]};
+
+let d3mTaskSubtype = {taskSubtypeUndefined:["description", "TASK_SUBTYPE_UNDEFINED", 0],
+subtypeNone:["description","NONE",1],
+    binary:["description", "BINARY" , 2],
+multiClass:["description", "MULTICLASS" , 3],
+multiLabel:["description", "MULTILABEL" , 4],
+uniVariate:["description", "UNIVARIATE" , 5],
+multiVariate:["description", "MULTIVARIATE" , 6],
+overlapping:["description", "OVERLAPPING" , 7],
+    nonOverlapping:["description", "NONOVERLAPPING" , 8]};
+
+let d3mOutputType = {outputUndefined:["description","OUTPUT_TYPE_UNDEFINED ", 0],
+classLabel:["description","CLASS_LABEL", 1],
+probability:["description","PROBABILITY", 2],
+real:["description","REAL", 3],
+nodeID:["description","NODE_ID", 4],
+vectorClassLabel:["description","VECTOR_CLASS_LABEL", 5],
+    vectorStochastic:["description","VECTOR_STOCHASTIC", 6],
+    vectorReal:["description","VECTOR_REAL", 7],
+    file:["description","FILE",8]};
+
+let UpdateProblemSchemaRequest = {
+task_type: [2,"DEFAULT"],
+task_subtype: [1,"DEFAFULT"],
+output_type: [3,"DEFAULT"],
+    metric_type: [4,"DEFAULT"]};
+
+
+
+
+
 var svg, width, height, div, estimateLadda, selectLadda;
 var arc1, arc3, arc4, arcInd1, arcInd2;
 
@@ -143,16 +194,14 @@ export function main(fileid, hostname, ddiurl, dataurl, apikey) {
         throw new Error("Error: No fileid has been provided.");
     }
 
-    let dataverseurl = '';
-    if (hostname) dataverseurl = "https://" + hostname;
-    else if (production) dataverseurl = DATAVERSE_URL;
-    else dataverseurl = "http://localhost:8080";
+    let dataverseurl = hostname ? "https://" + hostname :
+        production ? DATAVERSE_URL :
+        "http://localhost:8080";
 
     if (fileid && !dataurl) {
         // file id supplied; assume we are dealing with dataverse and cook a standard dataverse data access url
         // with the fileid supplied and the hostname we have supplied or configured
         dataurl = dataverseurl + "/api/access/datafile/" + fileid;
-
         // rp; temporarily remove this
         dataurl = dataurl + "?key=" + apikey;
     }
@@ -174,7 +223,7 @@ export function main(fileid, hostname, ddiurl, dataurl, apikey) {
     var subsetdiv = false;
     var setxdiv = false;
 
-    //Width and height for histgrams
+    // width and height for histgrams
     var barwidth = 1.3 * allR;
     var barheight = 0.5 * allR;
     var barPadding = 0.35;
@@ -201,35 +250,28 @@ export function main(fileid, hostname, ddiurl, dataurl, apikey) {
     arcInd1 = arcInd(arcInd1Limits);
     arcInd2 = arcInd(arcInd2Limits);
 
-
     // indicators for showing membership above arcs
- //   let indicator = (degree) => d3.svg.circle()
- //       .cx( allR )//(allR+35) * Math.sin(degree))
- //       .cy( allR )//(allR+35) * Math.cos(degree))
- //       .r(3);
- //   ind1 = indicator(1);
- //   ind2 = indicator(1.2);
+    // let indicator = (degree) => d3.svg.circle()
+    //     .cx( allR )//(allR+35) * Math.sin(degree))
+    //     .cy( allR )//(allR+35) * Math.cos(degree))
+    //     .r(3);
+    // ind1 = indicator(1);
+    // ind2 = indicator(1.2);
 
-    // From .csv
+    // from .csv
     var dataset2 = [];
     var lablArray = [];
     var hold = [];
     var subsetNodes = [];
 
-
     // collapsable user log
-    $('#collapseLog').on('shown.bs.collapse', () => {
-        d3.select("#collapseLog div.panel-body").selectAll("p")
-            .data(logArray)
-            .enter()
-            .append("p")
-            .text(d => d);
-    });
-    $('#collapseLog').on('hidden.bs.collapse', () => {
-        d3.select("#collapseLog div.panel-body").selectAll("p")
-            .remove();
-    });
-
+    $('#collapseLog').on('shown.bs.collapse', () => d3.select("#collapseLog div.panel-body").selectAll("p")
+        .data(logArray)
+        .enter()
+        .append("p")
+        .text(d => d));
+    $('#collapseLog').on('hidden.bs.collapse', () => d3.select("#collapseLog div.panel-body").selectAll("p")
+        .remove());
 
     //set start from user input, then assume locations are consistent based on d3m directory structure (alternatively can make each of these locations be set by user)
     var start = 'data/d3m/o_196seed';
@@ -242,70 +284,65 @@ export function main(fileid, hostname, ddiurl, dataurl, apikey) {
     let d3mPreprocess = start+'/preprocess.json';
     let probDesc=start;
 
-    // default to California PUMS subset
+    // default to California PUMS subset (should, doesn't actually do that)
     let data = 'data/' + (false ? 'PUMS5small' : 'fearonLaitin');
     let metadataurl = ddiurl || (fileid ? `${dataverseurl}/api/meta/datafile/${fileid}` : data + '.xml');
     // read pre-processed metadata and data
     let pURL = dataurl ? `${dataurl}&format=prep` : data + '.json';
-
     cdb('pURL: ' + pURL);
 
     if(d3m_mode) {
         pURL = d3mPreprocess;
         zparams.zdataurl = start+'/data/trainDatamerged.tsv';
         zparams.zdata = d3mDataName;
-    } else if (!production) {
+    } else if(!production)
         zparams.zdataurl = 'data/fearonLaitin.tsv';
-    }
+
     // loads all external data: metadata (DVN's ddi), preprocessed (for plotting distributions), and zeligmodels (produced by Zelig) and initiates the data download to the server
-    var url, p, v, callback;
+    m.request(pURL)
+        // do nothing if preprocess.json already exists, else runPreprocess
+        .then(null, _ => runPreprocess(d3mData, d3mTarget, d3mPreprocess))
+        .then(_ => readPreprocess(pURL, preprocess))
+        .then(() => new Promise((resolve, reject) => d3.xml(metadataurl, 'application/xml', xml => {
+            let vars = Object.keys(preprocess); // this doesn't come from xml, but from preprocessed json
 
-    // this assumes we have to generate a preprocess.json. there's no check if it already exists. execution pauses until preprocess.json is written. the preprocess.json includes the target metadata. the column names in target data are returned in the runPreprocess json.
-    runPreprocess(d3mData, d3mTarget, d3mPreprocess, callback = function() {
-    readPreprocess(url = pURL, p = preprocess, v = null, callback = function() {
-        d3.xml(metadataurl, "application/xml", xml => {
+            // the labels, citations, and file name come from the 'xml' (metadataurl), which is the file from the data repo
+            // however, TwoRavens should function using only the data that comes from our preprocess script, which is the 'json' (pURL)
+            // for now the metadataurl is still Fearon & Laitin
+            let temp = xml.documentElement.getElementsByTagName("fileName");
+            if(!d3m_mode)
+                zparams.zdata = temp[0].childNodes[0].nodeValue;
 
-            var vars = Object.keys(p); // this doesn't come from xml, but from preprocessed json
-
-            // the labels, citations, and file name come from the 'xml' (metadataurl), which is the file from the data repo. but, TwoRavens should function using only the data that comes from our preprocess script, which is the 'json' (pURL)
-               // for now the metadataurl is still Fearon & Laitin
-            var varsXML = xml.documentElement.getElementsByTagName("var");
-            var temp = xml.documentElement.getElementsByTagName("fileName");
-
-               if(!d3m_mode) {
-               zparams.zdata = temp[0].childNodes[0].nodeValue;}
-
-
-            var cite = xml.documentElement.getElementsByTagName("biblCit");
-            zparams.zdatacite = cite[0].childNodes[0].nodeValue;
+            let cite = xml.documentElement.getElementsByTagName("biblCit");
             // clean citation so POST is valid json
-            zparams.zdatacite = zparams.zdatacite.replace(/\&/g, "and")
+            zparams.zdatacite = cite[0].childNodes[0].nodeValue
+                .replace(/\&/g, "and")
                 .replace(/\;/g, ",")
                 .replace(/\%/g, "-");
+            $('#cite div.panel-body').text(zparams.zdatacite);
 
             // dataset name trimmed to 12 chars
-               var dataname = zparams.zdata;
-               if(!d3m_mode){
-               dataname = zparams.zdata.replace(/\.(.*)/, '');} // drop file extension
-            d3.select("#dataName")
-                .html(dataname);
-            $('#cite div.panel-body').text(zparams.zdatacite);
+            let dataname = zparams.zdata;
+            if(!d3m_mode)
+                dataname = zparams.zdata.replace(/\.(.*)/, ''); // drop file extension
+            d3.select("#dataName").html(dataname);
 
             // Put dataset name, from meta-data, into page title
             d3.select("title").html("TwoRavens " + dataname);
             // temporary values for hold that correspond to histogram bins
             hold = [.6, .2, .9, .8, .1, .3, .4];
-            for (var i = 0; i < vars.length; i++) {
-               // valueKey[i] = vars[i].attributes.name.nodeValue;
+            for (let i = 0; i < vars.length; i++) {
+                // valueKey[i] = vars[i].attributes.name.nodeValue;
+                // lablArray[i] = varsXML[i].getElementsByTagName("labl").length == 0 ?
+                // "no label" :
+                // varsXML[i].getElementsByTagName("labl")[0].childNodes[0].nodeValue;
+                // let datasetcount = d3.layout.histogram()
+                //     .bins(barnumber).frequency(false)
+                //     ([0, 0, 0, 0, 0]);
                 valueKey[i] = vars[i];
-                //lablArray[i] = varsXML[i].getElementsByTagName("labl").length == 0 ?
-                //    "no label" :
-                 //   varsXML[i].getElementsByTagName("labl")[0].childNodes[0].nodeValue;
-                lablArray[i]="no label";
-                var datasetcount = d3.layout.histogram()
-                    .bins(barnumber).frequency(false)
-                    ([0, 0, 0, 0, 0]);
-                // contains all the preprocessed data we have for the variable, as well as UI data pertinent to that variable, such as setx values (if the user has selected them) and pebble coordinates
+                lablArray[i] = "no label";
+                // contains all the preprocessed data we have for the variable, as well as UI data pertinent to that variable,
+                // such as setx values (if the user has selected them) and pebble coordinates
                 let obj = {
                     id: i,
                     reflexive: false,
@@ -326,44 +363,85 @@ export function main(fileid, hostname, ddiurl, dataurl, apikey) {
                 jQuery.extend(true, obj, preprocess[valueKey[i]]);
                 allNodes.push(obj);
             };
-
-            // read the zelig models and populate model list in right panel
+            resolve();
+        })))
+        .then(() => new Promise((resolve, reject) => {
+            // read zelig models and populate model list in right panel
             d3.json("data/zelig5models.json", (err, data) => {
                 if (err)
-                    return console.warn(err);
+                    return reject(err);
                 cdb("zelig models json: ", data);
-                for (let key in data.zelig5models) {
+                for (let key in data.zelig5models)
                     if (data.zelig5models.hasOwnProperty(key))
                         mods[data.zelig5models[key].name[0]] = data.zelig5models[key].description[0];
-                }
-                d3.json("data/zelig5choicemodels.json", (err, data) => {
-                    if (err)
-                        return console.warn(err);
-                    cdb("zelig choice models json: ", data);
-                    for (let key in data.zelig5choicemodels) {
-                        if (data.zelig5choicemodels.hasOwnProperty(key))
-                            mods[data.zelig5choicemodels[key].name[0]] = data.zelig5choicemodels[key].description[0];
-                    }
-                    scaffolding(callback = layout);
-                    dataDownload();
-                });
+                resolve();
             });
-               // looks like here is where we'll read in problem schema
-               d3.json(d3mPS, (err, data) => {
-                       console.log("prob schema data: ");
-                       mytarget=data.target.field;
-                       probDesc = start+'/'+data.descriptionFile;
+        }))
+        .then(() => new Promise((resolve, reject) => {
+            if (d3m_mode)
+                return resolve();
+            d3.json("data/zelig5choicemodels.json", (err, data) => {
+                if (err)
+                    return reject(err);
+                cdb("zelig choice models json: ", data);
+                for (let key in data.zelig5choicemodels)
+                    if (data.zelig5choicemodels.hasOwnProperty(key))
+                        mods[data.zelig5choicemodels[key].name[0]] = data.zelig5choicemodels[key].description[0];
 
-                       let aTag = document.createElement('a');
-                       aTag.setAttribute('href',probDesc);
-                       aTag.setAttribute('id',"probdesc");
-                       aTag.setAttribute('target',"_blank");
-                       aTag.textContent = "Problem Description";
-                       document.getElementById("ticker").appendChild(aTag);
-                       });
-        });
-    });
-                  });
+                scaffolding(layout);
+                dataDownload();
+                resolve();
+            })
+        }))
+        .then(() => new Promise((resolve, reject) => {
+            // read in problem schema and we'll make a call to start the session with TA2. if we get this far, data are guaranteed to exist for the frontend
+            if (!d3m_mode)
+                return resolve();
+            d3.json(d3mPS, (_, data) => {
+                console.log("prob schema data: ", data);
+                mytarget = data.target.field;
+                let aTag = document.createElement('a');
+                aTag.setAttribute('href', `${start}/${data.descriptionFile}`);
+                aTag.setAttribute('id', "probdesc");
+                aTag.setAttribute('target', "_blank");
+                aTag.textContent = "Problem Description";
+                document.getElementById("ticker").appendChild(aTag);
+
+                if(data.taskType in d3mTaskType) {
+                    UpdateProblemSchemaRequest.task_type = data.taskType;//[d3mTaskType[data.taskType][2],d3mTaskType[data.taskType][1]]; console.log(UpdateProblemSchemaRequest);
+                } else {
+                    UpdateProblemSchemaRequest.task_type = "taskTypeUndefined";
+                 //   alert("Specified task type, " + data.taskType + ", is not valid.");
+                }
+
+                if(data.taskSubType in d3mTaskSubtype) {
+                    UpdateProblemSchemaRequest.task_subtype = data.taskSubType;
+                    //[d3mTaskSubtype[data.taskSubType][2],d3mTaskSubtype[data.taskSubType][1]];
+                    } else {
+                        UpdateProblemSchemaRequest.task_subtype = "taskSubtypeUndefined";
+                   //     alert("Specified task subtype, " + data.taskSubType + ", is not valid.")
+                    }
+                if(data.metric in d3mMetrics) {
+                    UpdateProblemSchemaRequest.metric_type = data.metric;//[d3mMetrics[data.metric][2],d3mMetrics[data.metric][1]];
+                } else {
+                    UpdateProblemSchemaRequest.matric_type = "metricUndefined";
+                   // alert("Specified metric type, " + data.metric + ", is not valid.");
+                    }
+                if(data.outputType in d3mOutputType) {
+                    UpdateProblemSchemaRequest.output_type = data.outputType;//[d3mOutputType[data.outputType][2],d3mOutputType[data.outputType][1]];
+                } else {
+                    UpdateProblemSchemaRequest.output_type = "outputUndefined";
+                  //  alert("Specified output type, " + data.outputType + ", is not valid.");
+                }
+
+                
+                document.getElementById("btnType").click();
+                startsession();
+                scaffolding(layout);
+                dataDownload();
+                resolve();
+            });
+        }))
 }
 
 let $fill = (obj, op, d1, d2) => d3.select(obj).transition()
@@ -468,6 +546,7 @@ function scaffolding(callback) {
         .style('height', 2000)
         .style('overfill', 'scroll');
 
+    if(!d3m_mode){
     d3.select("#models").selectAll("p")
         .data(Object.keys(mods))
         .enter()
@@ -484,10 +563,114 @@ function scaffolding(callback) {
         .attr("onmouseout", "$(this).popover('toggle');")
         .attr("data-original-title", "Model Description")
         .attr("data-content", d => mods[d]);
+    }
+    if(d3m_mode) {
+
+        //
+
+        toggleRightButtons("tasks");
+
+        d3.select("#types").selectAll("p")
+        .data(Object.keys(d3mTaskType))
+        .enter()
+        .append("p")
+        .attr("id", d => d + ".types")
+        .text(d => d)
+        .attr('class', d=> {
+              if (UpdateProblemSchemaRequest.task_type == d.toString()){
+              return 'item-select';
+              } else {
+              if(locktoggle) return 'item-default item-lineout';
+              return 'item-default';
+              }
+              })
+        .attr("data-container", "body")
+        .attr("data-toggle", "popover")
+        .attr("data-trigger", "hover")
+        .attr("data-placement", "top")
+        .attr("data-html", "true")
+        .attr("onmouseover", "$(this).popover('toggle');")
+        .attr("onmouseout", "$(this).popover('toggle');")
+        .attr("data-original-title", "Task Description")
+        .attr("data-content", d => d3mTaskType[d][1]);
+
+        d3.select("#subtypes").selectAll("p")
+        .data(Object.keys(d3mTaskSubtype))
+        .enter()
+        .append("p")
+        .attr("id", d => d + ".subtypes")
+        .text(d => d)
+        .attr('class', d=> {
+              if (UpdateProblemSchemaRequest.task_subtype == d.toString()){
+              return 'item-select';
+              } else {
+              if(locktoggle) return 'item-default item-lineout';
+              return 'item-default';
+              }
+              })
+        .attr("data-container", "body")
+        .attr("data-toggle", "popover")
+        .attr("data-trigger", "hover")
+        .attr("data-placement", "top")
+        .attr("data-html", "true")
+        .attr("onmouseover", "$(this).popover('toggle');")
+        .attr("onmouseout", "$(this).popover('toggle');")
+        .attr("data-original-title", "Task Subtype Desc.")
+        .attr("data-content", d => d3mTaskSubtype[d][1]);
+
+        d3.select("#metrics").selectAll("p")
+        .data(Object.keys(d3mMetrics))
+        .enter()
+        .append("p")
+        .attr("id", d => d + ".metrics")
+        .text(d => d)
+        .attr('class', d=> {
+              if (UpdateProblemSchemaRequest.metric_type == d.toString()){
+                return 'item-select';
+              } else {
+                if(locktoggle) return 'item-default item-lineout';
+                return 'item-default';
+              }
+              })
+        .attr("data-container", "body")
+        .attr("data-toggle", "popover")
+        .attr("data-trigger", "hover")
+        .attr("data-placement", "top")
+        .attr("data-html", "true")
+        .attr("onmouseover", "$(this).popover('toggle');")
+        .attr("onmouseout", "$(this).popover('toggle');")
+        .attr("data-original-title", "Metric Description")
+        .attr("data-content", d => d3mMetrics[d][1]);
+
+        d3.select("#outputs").selectAll("p")
+        .data(Object.keys(d3mOutputType))
+        .enter()
+        .append("p")
+        .attr("id", d => d + ".outputs")
+        .text(d => d)
+        .attr('class', d=> {
+              if (UpdateProblemSchemaRequest.output_type == d.toString()){
+              return 'item-select';
+              } else {
+              if(locktoggle) return 'item-default item-lineout';
+              return 'item-default';
+              }
+              })
+        .attr("data-container", "body")
+        .attr("data-toggle", "popover")
+        .attr("data-trigger", "hover")
+        .attr("data-placement", "top")
+        .attr("data-html", "true")
+        .attr("onmouseover", "$(this).popover('toggle');")
+        .attr("onmouseout", "$(this).popover('toggle');")
+        .attr("data-original-title", "Output Description")
+        .attr("data-content", d => d3mOutputType[d][1]);
+
+    }
 
     // call layout() because at this point all scaffolding is up and ready
     if (typeof callback == "function") {
-        callback();
+        callback(false,true);
         m.redraw();
     }
 }
@@ -503,9 +686,7 @@ let splice = (color, text, ...args) => {
 
 export let clickVar;
 
-
-
-function layout(v) {
+function layout(v,v2) {
     var myValues = [];
     nodes = [];
     links = [];
@@ -524,7 +705,7 @@ function layout(v) {
         .attr("width", width)
         .attr("height", height);
 
-    visbackground.append("path")                           // note lines, are behind group hulls of which there is a white and colored semi transparent layer
+    visbackground.append("path") // note lines, are behind group hulls of which there is a white and colored semi transparent layer
         .attr("id", 'gr1background')
         .style("fill", '#ffffff')
         .style("stroke", '#ffffff')
@@ -536,7 +717,7 @@ function layout(v) {
         .attr("width", width)
         .attr("height", height);
 
-    vis2background.append("path")                           
+    vis2background.append("path")
         .attr("id", 'gr1background')
         .style("fill", '#ffffff')
         .style("stroke", '#ffffff')
@@ -624,7 +805,8 @@ function layout(v) {
         }
     }
 
-    panelPlots(); // after nodes is populated, add subset and setx panels
+    panelPlots(); // after nodes is populated, add subset and (if !d3m_mode) setx panels
+
 
     var force = d3.layout.force()
         .nodes(nodes)
@@ -732,15 +914,15 @@ function layout(v) {
             return (coords);
         };
 
-        var coords = nodes.map(function(d) {  return [ d.x, d.y]; }); 
-        var gr1coords = findcoords(zparams.zgroup1, zparams.zvars, coords, true);        
-        var gr2coords = findcoords(zparams.zgroup2, zparams.zvars, coords, true);        
-        var depcoords = findcoords(zparams.zdv, zparams.zvars, coords, false);  
+        var coords = nodes.map(function(d) {  return [ d.x, d.y]; });
+        var gr1coords = findcoords(zparams.zgroup1, zparams.zvars, coords, true);
+        var gr2coords = findcoords(zparams.zgroup2, zparams.zvars, coords, true);
+        var depcoords = findcoords(zparams.zdv, zparams.zvars, coords, false);
 
         // draw convex hull around independent variables, if three or more coordinates given
         // note, d3.geom.hull returns null if shorter coordinate set than 3,
         // so findcoords() function has option to lengthen the coordinates returned to bypass this
-        if(gr1coords.length > 2){   
+        if(gr1coords.length > 2){
             visbackground.style("opacity", 1);
             vis.style("opacity", 0.3);
             var myhull = d3.geom.hull(gr1coords);
@@ -755,7 +937,7 @@ function layout(v) {
             //var p = d3.geom.polygon(indcoords).centroid();  // Seems to go strange sometimes
             var p = jamescentroid(gr1coords);
 
-            if(depcoords.length>0){  
+            if(depcoords.length>0){
                 var q = depcoords[0];                         // Note, only using first dep var currently
                 //var r = findboundary(p,q,gr1coords);        // An approach to find the exact boundary, not presently working
                 var ldeltaX = q[0] - p[0],
@@ -796,7 +978,7 @@ function layout(v) {
                 n.y += Math.min(lnormY , ldeltaY/100 ) * k * sign   * force.alpha();
             });
 
-        }else{ 
+        }else{
             visbackground.style("opacity", 0);
 
             vis.style("opacity", 0);
@@ -804,7 +986,7 @@ function layout(v) {
             line.style("opacity", 0);
         };
 
-        if(gr2coords.length > 2){   
+        if(gr2coords.length > 2){
             vis2background.style("opacity", 1);
             vis2.style("opacity", 0.3);
             var myhull = d3.geom.hull(gr2coords);
@@ -818,7 +1000,7 @@ function layout(v) {
             //var p = d3.geom.polygon(indcoords).centroid();  // Seems to go strange sometimes
             var p = jamescentroid(gr2coords);
 
-            if(depcoords.length>0){  
+            if(depcoords.length>0){
                 var q = depcoords[0];                             // Note, only using first dep var currently
                 var ldeltaX = q[0] - p[0],
                     ldeltaY = q[1] - p[1],
@@ -854,7 +1036,7 @@ function layout(v) {
             });
 
 
-        }else{ 
+        }else{
             vis2background.style("opacity", 0);
             vis2.style("opacity", 0);
             line2.style("opacity", 0);
@@ -928,6 +1110,69 @@ function layout(v) {
             restart();
         });
 
+    d3.select("#types").selectAll("p") // models tab
+    //  d3.select("#Display_content")
+    .on("click", function() {
+        if(locktoggle) return;
+        if(this.className=="item-select") {
+            return;
+        } else {
+            d3.select("#types").select("p.item-select")
+            .attr('class', 'item-default');
+            UpdateProblemSchemaRequest.task_type = this.innerHTML.toString();
+            d3.select(this).attr('class',"item-select");
+        }
+        restart();
+        updateSchema("task_type", UpdateProblemSchemaRequest, d3mTaskType);
+        });
+
+    d3.select("#subtypes").selectAll("p")
+    .on("click", function() {
+        if(locktoggle) return;
+        if(this.className=="item-select") {
+            return;
+        } else {
+            d3.select("#subtypes").select("p.item-select")
+            .attr('class', 'item-default');
+            UpdateProblemSchemaRequest.task_subtype = this.innerHTML.toString();
+            d3.select(this).attr('class',"item-select");
+        }
+        restart();
+        updateSchema("task_subtype", UpdateProblemSchemaRequest, d3mTaskSubtype);
+        });
+
+    d3.select("#metrics").selectAll("p")
+    .on("click", function() {
+        if(locktoggle) return;
+        if(this.className=="item-select") {
+            return;
+   //         UpdateProblemSchemaRequest.metric_type = ["",""];
+    //        this.className="item-default";
+        } else {
+            d3.select("#metrics").select("p.item-select")
+            .attr('class', 'item-default');
+            UpdateProblemSchemaRequest.metric_type = this.innerHTML.toString();
+            d3.select(this).attr('class',"item-select");
+        }
+        restart();
+        updateSchema("metric_type", UpdateProblemSchemaRequest, d3mMetrics);
+        });
+
+    d3.select("#outputs").selectAll("p")
+    .on("click", function() {
+        if(locktoggle) return;
+        if(this.className=="item-select") {
+            return;
+        } else {
+            d3.select("#outputs").select("p.item-select")
+            .attr('class', 'item-default');
+            UpdateProblemSchemaRequest.output_type = this.innerHTML.toString();
+            d3.select(this).attr('class',"item-select");
+        }
+        restart();
+        updateSchema("output_type", UpdateProblemSchemaRequest, d3mOutputType);
+        });
+
     // update graph (called when needed)
     function restart() {
         // nodes.id is pegged to allNodes, i.e. the order in which variables are read in
@@ -941,7 +1186,7 @@ function layout(v) {
             });
             force.start();
             force.linkStrength(1);
-            k = 4;                                            // strength parameter for group attraction/repulsion   
+            k = 4;                                            // strength parameter for group attraction/repulsion
             if((zparams.zgroup1.length > 0) & (zparams.zgroup2.length > 0 )){  // scale down by number of active groups
                 k = 2.5;
             }
@@ -1352,11 +1597,11 @@ function layout(v) {
     restart(); // initializes force.layout()
     fakeClick();
 
-    var click_ev = document.createEvent("MouseEvents");
-    // initialize the event
-    click_ev.initEvent("click", true /* bubble */, true /* cancelable */);
-    // trigger the event
-    if(d3m_mode){
+    if(v2 & d3m_mode) {
+        var click_ev = document.createEvent("MouseEvents");
+        // initialize the event
+        click_ev.initEvent("click", true /* bubble */, true /* cancelable */);
+        // trigger the event
         let clickID = "dvArc"+findNodeIndex(mytarget);
         document.getElementById(clickID).dispatchEvent(click_ev);
     }
@@ -1393,7 +1638,7 @@ export let findNode = nodeName => {
     This helps handle the new format and (temporarily)
     the older format in production (rp 8.14.2017)
  */
-export function getVariableData(jsonData){
+export function getVariableData(jsonData) {
     /* "new" response:
     {
         "dataset" : {...}
@@ -1416,6 +1661,39 @@ export function forceSwitch() {
         byId('btnForce').setAttribute("class", "btn active");
     } else {
         byId('btnForce').setAttribute("class", "btn btn-default");
+        fakeClick();
+    }
+}
+
+export function lockDescription() {
+    locktoggle = locktoggle ? false : true;
+    let temp;
+    let i;
+    if (!locktoggle) {
+        document.getElementById('btnLock').setAttribute("class", "btn btn-default");
+        temp = document.getElementById('rightContentArea').querySelectorAll("p.item-lineout");
+        for (i = 0; i < temp.length; i++) {
+            temp[i].classList.remove("item-lineout");
+        }
+    } else {
+        document.getElementById('btnLock').setAttribute("class", "btn active");
+        temp = document.getElementById('metrics').querySelectorAll("p.item-default");
+        console.log(temp);
+        for (i = 0; i < temp.length; i++) {
+            temp[i].classList.add("item-lineout");
+        }
+        temp = document.getElementById('types').querySelectorAll("p.item-default");
+        for (i = 0; i < temp.length; i++) {
+            temp[i].classList.add("item-lineout");
+        }
+        temp = document.getElementById('subtypes').querySelectorAll("p.item-default");
+        for (i = 0; i < temp.length; i++) {
+            temp[i].classList.add("item-lineout");
+        }
+        temp = document.getElementById('outputs').querySelectorAll("p.item-default");
+        for (i = 0; i < temp.length; i++) {
+            temp[i].classList.add("item-lineout");
+        }
         fakeClick();
     }
 }
@@ -1445,6 +1723,7 @@ function zPop() {
 }
 
 export function estimate(btn) {
+    if(!d3m_mode){
     if (production && zparams.zsessionid == '') {
         alert("Warning: Data download is not complete. Try again soon.");
         return;
@@ -1536,118 +1815,75 @@ export function estimate(btn) {
 
     estimateLadda.start(); // start spinner
     makeCorsRequest(urlcall, btn, estimateSuccess, estimateFail, solajsonout);
+    } else { // we are in d3m_mode
+            zPop();
+            zparams.callHistory = callHistory;
+            var jsonout = JSON.stringify(zparams);
+        console.log(jsonout);
+
+            var urlcall = rappURL + "pipelineapp";
+            var solajsonout = "solaJSON=" + jsonout;
+            cdb("urlcall out: ", urlcall);
+            cdb("POST out: ", solajsonout);
+
+            function createPipelineSuccess(btn, json) {
+                estimateLadda.stop(); // stop spinner
+
+                let train_features=json.predictors;
+                let target_features=json.depvar;
+                let task = d3mTaskType[UpdateProblemSchemaRequest.task_type][1];
+                let task_subtype = d3mTaskSubtype[UpdateProblemSchemaRequest.task_subtype][1];
+                let output = d3mOutputType[UpdateProblemSchemaRequest.output_type][1];
+                let metrics = d3mMetrics[UpdateProblemSchemaRequest.metric_type][1];
+
+                let PipelineRequest={train_features, target_features, task, task_subtype, output, metrics};
+
+                let jsonout = JSON.stringify(PipelineRequest);
+
+                let urlcall = d3mURL + "/createpipeline";
+                var solajsonout = "CreatePipelines=" + jsonout;
+                
+                console.log(urlcall);
+                console.log(solajsonout);
+                function sendPipelineSuccess(btn, json) {
+                    console.log(json);
+                    toggleRightButtons("all");
+                    document.getElementById("btnResults").click();
+                    listpipelines();
+                }
+
+                function sendPipelineFail(btn) {
+                    console.log("pipeline to django failed");
+                }
+
+                makeCorsRequest(urlcall, "nobutton", sendPipelineSuccess, sendPipelineFail, solajsonout);
+            }
+
+            function createPipelineFail(btn) {
+                estimateLadda.stop(); // stop spinner
+                estimated = true;
+            }
+
+            estimateLadda.start(); // start spinner
+            makeCorsRequest(urlcall, btn, createPipelineSuccess, createPipelineFail, solajsonout);
+    }
 }
 
-export function runPreprocess(dataloc, targetloc, preprocessloc, callback) {
-    var tojson = {data:dataloc, target:targetloc, preprocess:preprocessloc}
-    var jsonout = JSON.stringify(tojson);
-
-    var urlcall = rappURL + "preprocessapp"; //base.concat(jsonout);
-    var solajsonout = "solaJSON=" + jsonout;
-    cdb("urlcall out: ", urlcall);
-    cdb("POST out: ", solajsonout);
-
-    function preprocessSuccess(btn, json) {
-        cdb("json in: ", json);
-        console.log(json);
-        if (typeof callback == 'function') callback();
-    }
-
-    function preprocessFail(btn) {
-        console.log("preprocess failed");
-    }
-    makeCorsRequest(urlcall, "nobutton", preprocessSuccess, preprocessFail, solajsonout);
+export function runPreprocess(dataloc, targetloc, preprocessloc) {
+    let url = rappURL + 'preprocessapp';
+    let json = JSON.stringify({data: dataloc, target: targetloc, preprocess: preprocessloc});
+    cdb('urlcall out: ', url);
+    cdb('POST out: ', json);
+    let data = new FormData();
+    data.append('solaJSON', json);
+    return m.request({method: 'POST', url: url, data: data})
+        .then(data => {
+            console.log('json in: ', data);
+            return data;
+        }, _ => console.log('preprocess failed'));
 }
 
-
-export function ta2stuff(btn) {
-    if (production && zparams.zsessionid == '') {
-        alert("Warning: Data download is not complete. Try again soon.");
-        return;
-    }
-
-
-
-    zPop();
-    // write links to file & run R CMD
-    // package the output as JSON
-    // add call history and package the zparams object as JSON
-    zparams.callHistory = callHistory;
-
-
-
-    var jsonout = JSON.stringify(zparams);
-
-    var urlcall = rappURL + "zeligapp"; //base.concat(jsonout);
-    var solajsonout = "solaJSON=" + jsonout;
-    cdb("urlcall out: ", urlcall);
-    cdb("POST out: ", solajsonout);
-
-    zparams.allVars = valueKey.slice(10, 25); // because the URL is too long...
-    jsonout = JSON.stringify(zparams);
-    var selectorurlcall = rappURL + "selectorapp";
-
-    function ta2stuffSuccess(btn, json) {
-        estimateLadda.stop(); // stop spinner
-        allResults.push(json);
-        cdb("json in: ", json);
-
-        if (!estimated) byId("results").removeChild(byId("resultsHolder"));
-
-        estimated = true;
-        d3.select("#results")
-        .style("display", "block");
-
-        d3.select("#resultsView")
-        .style("display", "block");
-
-        d3.select("#modelView")
-        .style("display", "block");
-
-        // programmatic click on Results button
-        $("#btnResults").trigger("click");
-
-        let model = "Model".concat(modelCount = modelCount + 1);
-
-        function modCol() {
-            d3.select("#modelView")
-            .selectAll("p")
-            .style('background-color', hexToRgba(varColor));
-        }
-        modCol();
-
-        d3.select("#modelView")
-        .insert("p", ":first-child") // top stack for results
-        .attr("id", model)
-        .text(model)
-        .style('background-color', hexToRgba(selVarColor))
-        .on("click", function() {
-            var a = this.style.backgroundColor.replace(/\s*/g, "");
-            var b = hexToRgba(selVarColor).replace(/\s*/g, "");
-            if (a.substr(0, 17) == b.substr(0, 17))
-            return; // escape function if displayed model is clicked
-            modCol();
-            d3.select(this)
-            .style('background-color', hexToRgba(selVarColor));
-            viz(this.id);
-            });
-
-        let rCall = [];
-        rCall[0] = json.call;
-        showLog("estimate", rCall);
-
-        viz(model);
-    }
-
-    function ta2stuffFail(btn) {
-        estimateLadda.stop(); // stop spinner
-        estimated = true;
-    }
-
-    estimateLadda.start(); // start spinner
-    makeCorsRequest(urlcall, btn, ta2stuffSuccess, ta2stuffFail, solajsonout);
-}
-
+export let ta2stuff = _ => console.log(UpdateProblemSchemaRequest);
 
 function dataDownload() {
     zPop();
@@ -2090,28 +2326,23 @@ export function tabLeft(tab) {
     lefttab = tab;
 }
 
-export function tabRight(tabid) {
-
-    let cls = "sidepanel container clearfix";
+export function tabRight(tab) {
     let select = cls => {
         let panel = d3.select("#rightpanel");
         return cls ? panel.attr('class', cls) : panel.attr('class');
     };
-
+    let cls = "sidepanel container clearfix";
     let toggleR = () => {
         select(function() {
             let expand = cls + ' expandpanel';
             return this.getAttribute("class") === expand ? cls : expand;
         });
     };
-
-    if (tabid == "btnModels") select(cls);
-    else if (tabid == "btnSetx") righttab == "btnSetx" || select() == cls && toggleR();
-    else if (tabid == "btnResults") !estimated ? select(cls) :
-        righttab == "btnResults" || select() == cls ? toggleR() : null;
-
-    righttab = tabid;
-
+    if (tab === "btnModels") select(cls);
+    else if (tab === "btnSetx") righttab === "btnSetx" || select() === cls && toggleR();
+    else if (tab === "btnResults") !estimated ? select(cls) :
+        righttab === "btnResults" || select() === cls && toggleR();
+    righttab = tab;
 }
 
 export let summary = {data: []};
@@ -2222,25 +2453,26 @@ export function panelPlots() {
         }
     }
 
-    d3.select("#setx").selectAll("svg")
+        d3.select("#setx").selectAll("svg")
         .each(function () {
-            d3.select(this);
-            var regstr = /(.+)_setx_(\d+)/;
-            var myname = regstr.exec(this.id);
-            var nodeid = myname[2];
-            myname = myname[1];
-            if (!vars.includes(myname)) {
-                allNodes[nodeid].setxplot = false;
-                let temp = "#".concat(myname, "_setx_", nodeid);
-                d3.select(temp)
-                    .remove();
-                allNodes[nodeid].subsetplot = false;
-                temp = "#".concat(myname, "_tab2_", nodeid);
-                d3.select(temp)
-                    .remove();
-            }
-        });
+              d3.select(this);
+              var regstr = /(.+)_setx_(\d+)/;
+              var myname = regstr.exec(this.id);
+              var nodeid = myname[2];
+              myname = myname[1];
+              if (!vars.includes(myname)) {
+              allNodes[nodeid].setxplot = false;
+              let temp = "#".concat(myname, "_setx_", nodeid);
+              d3.select(temp)
+              .remove();
+              allNodes[nodeid].subsetplot = false;
+              temp = "#".concat(myname, "_tab2_", nodeid);
+              d3.select(temp)
+              .remove();
+              }
+              });
 }
+
 
 // easy functions to collapse panels to base
 function rightpanelMedium() {
@@ -2529,20 +2761,17 @@ export function subsetSelect(btn) {
     makeCorsRequest(urlcall, btn, subsetSelectSuccess, btn => selectLadda.stop(), solajsonout);
 }
 
-function readPreprocess(url, p, v, callback) {
-
-    cdb('readPreprocess: ' + url );
-
-    d3.json(url, (err, json) => {
-        if (err)
-            return console.warn(err);
-        cdb('inside readPreprocess function');
-        cdb(json);
-
-        priv = json.dataset.private || priv;
-        // copy object
-        Object.keys(json.variables).forEach(k => p[k] = json.variables[k]);
-        if (typeof callback == 'function') callback();
+function readPreprocess(url) {
+    return new Promise((resolve, reject) => {
+        cdb('readPreprocess: ' + url);
+        d3.json(url, (err, res) => {
+            if (err)
+                return reject(err);
+            cdb('readPreprocess result: ' + res);
+            priv = res.dataset.private || priv;
+            Object.keys(res.variables).forEach(k => preprocess[k] = res.variables[k]);
+            resolve();
+        });
     });
 }
 
@@ -2588,6 +2817,119 @@ export let fakeClick = () => {
         .classed('active', false);
 };
 
+
+// this is our call to django to start the session
+function startsession() {
+    let user_agent = "some agent";
+    let version = "some version";
+    let SessionRequest={user_agent,version};
+
+    var jsonout = JSON.stringify(SessionRequest);
+
+    var urlcall = d3mURL + "/startsession";
+    var solajsonout = "solaJSON=" + jsonout;
+    console.log("solajsonout: ", solajsonout);
+    console.log("urlcall: ", urlcall);
+
+    function ssSuccess(btn, json) {
+        console.log(json);
+    }
+
+    function ssFail(btn) {
+        console.log("session start failed");
+    }
+
+   makeCorsRequest(urlcall, "nobutton", ssSuccess, ssFail, solajsonout);
+}
+
+export function endsession() {
+    let sessioncontext = "my session context";
+    let SessionContext={sessioncontext};
+    
+    var jsonout = JSON.stringify(SessionContext);
+    
+    var urlcall = d3mURL + "/endsession";
+    var solajsonout = "SessionContext=" + jsonout;
+    console.log("solajsonout: ", solajsonout);
+    console.log("urlcall: ", urlcall);
+    
+    function endSuccess(btn, json) {
+        console.log(json);
+    }
+    
+    function endFail(btn) {
+        console.log("end session failed");
+    }
+    
+    makeCorsRequest(urlcall, "nobutton", endSuccess, endFail, solajsonout);
+}
+
+export function listpipelines() {
+    let sessioncontext = "my session context";
+    let PipeLineListRequest={sessioncontext};
+    
+    var jsonout = JSON.stringify(PipeLineListRequest);
+    
+    var urlcall = d3mURL + "/listpipelines";
+    var solajsonout = "PipeLineListRequest=" + jsonout;
+    console.log("solajsonout: ", solajsonout);
+    console.log("urlcall: ", urlcall);
+    
+    function listPipesSuccess(btn, json) {
+        //hardcoded pipes for now
+        let pipes = ["","id1", "id2", "id3", "id4", "id5"]
+        d3.select("#results").selectAll("p")
+        .data(pipes)
+        .enter()
+        .append("p")
+        .attr("id", "_pipe_".concat)
+        .text(d => d)
+        .attr('class', 'item-default')
+        .on("click", function() {
+            if(this.className=="item-select") {
+                return;
+            } else {
+                d3.select("#results").select("p.item-select")
+                .attr('class', 'item-default');
+                d3.select(this).attr('class',"item-select");
+            }});
+        console.log(json);
+    }
+    
+    function listPipesFail(btn) {
+        console.log("list pipelines failed");
+    }
+    
+    makeCorsRequest(urlcall, "nobutton", listPipesSuccess, listPipesFail, solajsonout);
+}
+
+// this is our call to django to update the problem schema
+function updateSchema(type, updates, lookup) {
+    console.log('updateSchema....')
+    let ReplaceProblemSchemaField=type;
+    let value = lookup[updates[type]][1];
+    let valuenum = lookup[updates[type]][2];
+    let updateRequest = {ReplaceProblemSchemaField, value, valuenum};
+
+    let jsonout = JSON.stringify(updateRequest);
+
+    let urlcall = d3mURL + "/updateproblemschema";
+    let solajsonout = "UpdateProblemSchemaRequest=" + jsonout;
+    console.log("solajsonout: ", solajsonout);
+    console.log("urlcall: ", urlcall);
+
+    function usSuccess(btn, json) {
+        console.log(json);
+    }
+
+    function usFail(btn) {
+        console.log("update schema failed");
+    }
+
+    makeCorsRequest(urlcall, "nobutton", usSuccess, usFail, solajsonout);
+}
+
+
 // Find something centerish to the vertices of a convex hull
 // (specifically, the center of the bounding box)
 function jamescentroid(coord){
@@ -2603,3 +2945,67 @@ function jamescentroid(coord){
     };
         return[(minx + maxx)/2, (miny + maxy)/2];
 };
+
+
+
+
+function toggleRightButtons(set) {
+    
+    function setWidths(btns) {
+        let mywidth = 100/btns.length;
+        mywidth = mywidth.toString() + '%';
+        let expandwidth = '35%';
+        let shrinkwidth = 65/(btns.length-1);
+        shrinkwidth = shrinkwidth.toString() + '%';
+        let mylis = document.getElementById('rightpanel').querySelectorAll(".accordian li");
+        // hardly ever runs on the page
+        for (let i = 0; i < mylis.length; i++) {
+            mylis[i].style.width=mywidth;
+            mylis[i].addEventListener('mouseover', function() {
+                                      for(let j = 0; j < mylis.length; j++) {
+                                      mylis[j].style.width=shrinkwidth;
+                                      }
+                                      this.style.width=expandwidth;
+                                      });
+            mylis[i].addEventListener('mouseout', function() {
+                                      for(let j = 0; j < mylis.length; j++) {
+                                      mylis[j].style.width=mywidth;
+                                      }
+                                      });
+        }
+        
+    }
+
+    if(set=="tasks") {
+
+        document.getElementById('btnModels').classList.add("noshow");
+        document.getElementById('btnSetx').classList.add("noshow");
+        document.getElementById('btnResults').classList.add("noshow");
+        
+        
+        let mybtns = document.getElementById('rightpanelbuttons').querySelectorAll(".btn:not(.noshow)");
+        setWidths(mybtns);
+        
+        
+    } else if (set=="all") {
+        // first remove noshow class
+        let mybtns = document.getElementById('rightpanelbuttons').querySelectorAll(".noshow");
+        for (let i = 0; i < mybtns.length; i++) {
+            mybtns[i].classList.remove("noshow");
+        }
+        // then select all the buttons
+        mybtns = document.getElementById('rightpanelbuttons').querySelectorAll(".btn:not(.noshow)");
+        setWidths(mybtns);
+
+    }
+    if(set=="models") {
+        document.getElementById('btnModels').style.display = 'inline';
+        document.getElementById('btnSetx').style.display = 'inline';
+        document.getElementById('btnResults').style.display = 'inline';
+
+        document.getElementById('btnType').style.display = 'none';
+        document.getElementById('btnSubtype').style.display = 'none';
+        document.getElementById('btnMetrics').style.display = 'none';
+        document.getElementById('btnOutputs').style.display = 'none';
+    }
+}

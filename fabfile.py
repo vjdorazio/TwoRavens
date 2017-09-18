@@ -84,6 +84,7 @@ def run(with_rook=False):
     with_rook=True - runs rook in "nonstop" mode
     """
     clear_js()  # clear any dev css/js files
+    init_db()
     check_config()  # make sure the db has something
 
     commands = [
@@ -141,7 +142,7 @@ def clear_js():
 
 
 def clear_logs():
-    """Delete log files and images in the rook directory"""
+    """Delete log files, image files, and preprocess files from rook"""
     print(clear_logs.__doc__)
 
     # rook directory
@@ -155,17 +156,31 @@ def clear_logs():
                        if re.match(pat1, x) is not None or
                        re.match(pat2, x) is not None]
 
-    if not log_files_names:
-        print('No log files found')
-        return
+    if log_files_names:
+        print('Deleting %s log file(s)' % len(log_files_names))
+        print('-' * 40)
+        for fname in [os.path.join(rook_log_dir, x) for x in log_files_names]:
+            print('removing... %s' % fname)
+            os.remove(fname)
+        print('-' * 40)
+        print('Deleted %s log file(s)' % len(log_files_names))
 
-    print('Deleting %s log file(s)' % len(log_files_names))
-    print('-' * 40)
-    for fname in [os.path.join(rook_log_dir, x) for x in log_files_names]:
-        print('removing... %s' % fname)
-        os.remove(fname)
-    print('-' * 40)
-    print('Deleted %s log file(s)' % len(log_files_names))
+    # data directory
+    rook_data_dir = os.path.join(FAB_BASE_DIR, 'data')
+
+    pat3 = r'^preprocessSubset_(\w|-){15,50}\.txt$'
+    data_file_names = [x for x in os.listdir(rook_data_dir)
+                           if re.match(pat3, x) is not None]
+
+    if data_file_names:
+        print('Deleting %s data file(s)' % len(data_file_names))
+        print('-' * 40)
+        for fname in [os.path.join(rook_data_dir, x) for x in data_file_names]:
+            print('removing... %s' % fname)
+            os.remove(fname)
+        print('-' * 40)
+        print('Deleted %s log file(s)' % len(data_file_names))
+
 
 
 def create_django_superuser():
