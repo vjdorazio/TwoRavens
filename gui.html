@@ -242,11 +242,11 @@
 
         <div class="row-fluid">
             <div id="rightpanelcontent">
-                <div id="rightContentArea" style="overflow:scroll; height:500px; ">
+                <div id="rightContentArea" style="overflow:scroll; height:700px; ">
                     <div id="modelView_Container"
                          style="width: 100%; height: auto; background-color: white; float: left; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
                         <div id="modelView"
-                             style="width:100%; height: 100%; background-color:white; display:none; float:left; overflow: auto;"></div>
+                             style="width:100%; height: 100%; background-color:white; display:none; float:left; overflow: auto; margin-top: 2px"></div>
                     </div>
 
 
@@ -256,7 +256,7 @@
 
 
                         <div id="scatterplot" class="container3"
-                             style="width: 500px; height: 70%; background-color: white;display: none; overflow:auto;">
+                             style="width: 500px; height: 50%; background-color: white;display: none; overflow:auto;">
                         </div>
                             <div id="heatchart" class="container4"
                                  style="width: 500px; height:60%;  display: none; overflow:auto; background-color: #FFEBEE;"></div>
@@ -275,10 +275,14 @@
 
 
                     </div>
-                    <div id="result_right" style="width: 50%;height: 90%; float: left; ">
+                    <div id="result_right" style="width: 50%;height: 90%; float:right;background-color: white; display:none; border-right:groove; border-bottom: groove ;overflow:auto; white-space:nowrap;">
+                        <div class="btn-group btn-toggle col-md-4 text-center" style=" width: auto;height: 10%;   display:block; white-space:nowrap; margin-left:170px; position: relative;">
+                            <button class=" btn btn-primary active" id="selection">Selection</button>
+                            <button class="btn btn-default" id="crossTabs">Cross-Tabs</button>
+                        </div>
                         <div id="resultsView_tabular" class="container1" ;
-                             style="width:100%; height: 70%; background-color:white; display:none; float:left; overflow:auto; white-space:nowrap;border-right:groove; border-bottom: groove">
-
+                             style="width:100%; height: 70%; background-color:white; display:block; float:left; overflow:auto; white-space:nowrap;border-right:groove; border-bottom: groove">
+                            <!--div id="toggle_tab" style=" width: auto;height: 10%;  display:block; white-space:nowrap; margin:0 auto; position: relative; "> <button type="button" id="TabToggle" class="btn btn-outline-warning" onclick="toggleChange(); " >Selection</button><button type="button" id="TabToggle1" class="btn btn-outline-warning" onclick="toggleChange();  ">Cross-Tabs</button></--div-->
 
 
                         </div>

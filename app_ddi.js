@@ -718,7 +718,7 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
 
 function crossTabPlots(PlotNameA, PlotNameB) {
     var mydiv = "#resultsView_tabular";
-    d3.select("#resultsView_tabular").html("");
+    //d3.select("#resultsView_tabular").html("");
 
    // document.getElementById('plotA').style.display = "block";
     //document.getElementById('plotB').style.display = "block";
@@ -1257,29 +1257,20 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
         if(isNaN(a)|| a===0) {
             console.log("do nothing #bar");
-            var z = 10;
-            var upper_limit1 = maxX;
-            var lower_limit1 = minX;
-            var diff1 = upper_limit1 - lower_limit1;
-            var buffer1 = diff1 / z;
-            var x_cord1 = [];
-            console.log("diff1 : " + diff1);
-            console.log("buffer1 : " + buffer1);
-            var push_data1 = lower_limit1;
-            for (var i = 0; i < z - 1; i++) {
-                push_data1 = push_data1 + buffer1;
-                x_cord1.push(push_data1);
-//console.log("x_cord1 equidis : "+ x_cord1);
-                // console.log("x_cord1 actual: " + x_1(x_cord1[i]));
-//console.log("maxY : "+ maxY);
+            x_cord2 = equimass_bar(bar_env, keys.length);
+            //console.log("x_cord2 equidis : " + x_cord2);
+
+            console.log(" bar equimass called ");
+            for (var i = 0; i < keys.length - 1; i++) {
+                // console.log("x_cord1 actual: " + x_1(x_cord2[i]));
                 plotsvg1.append("line")
                     .attr("id", "line2")
-                    .attr("x1", x_1(x_cord1[i]))
-                    .attr("x2", x_1(x_cord1[i]))
+                    .attr("x1", x_1(x_cord2[i] ))
+                    .attr("x2", x_1(x_cord2[i] ))
                     .attr("y1", y_1(0))
                     .attr("y2", y_1(maxY))
                     .style("stroke", "#212121")
-                    .style("stroke-dasharray", "3");
+                    .style("stroke-dasharray", "4");
 
 
             }
@@ -1773,8 +1764,8 @@ function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
 
 
     var margin = {top: 20, right: 15, bottom: 40, left: 60}
-        , width = 520 - margin.left - margin.right
-        , height = 300 - margin.top - margin.bottom;
+        , width = 500 - margin.left - margin.right
+        , height = 280 - margin.top - margin.bottom;
     var padding = 100;
 
     var min_x = d3.min(data_plot, function (d, i) {
@@ -1825,8 +1816,8 @@ function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
 
     var main1 = chart_scatter.append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-        .attr('width', width)
-        .attr('height', height)
+        .attr('width', width+ margin.right + margin.left)
+        .attr('height', height + margin.top + margin.bottom)
         .attr('class', 'main');
 
     main1.append('g')
@@ -2142,7 +2133,7 @@ function heatmap(x_Axis_name, y_Axis_name) {
         .attr("width", width_heat + margin_heat.left + margin_heat.right)
         .attr("height", height_heat + margin_heat.top + margin_heat.bottom)
         .append("g")
-        .attr("transform", "translate(" + margin_heat.left + "," + margin_heat.top + ")")
+        .attr("transform", "translate(" + margin_heat.left + "," + margin_heat.top+ ")")
         .style("background-color", "#FFEBEE");
 
 
@@ -4490,6 +4481,7 @@ function explore(btn) {
                 .append("button")// top stack for results
               //      .append("xhtml:button")
                 .attr("class","btn btn-outline-success")
+                .style("padding","4px")
                 .attr("id", model)
                 .text(model_selection_name)
                 .style('background-color', function () {
@@ -4712,6 +4704,8 @@ function viz(m) {
 
 //KRIPANSHU BHARGAVA, this is viz for explore
 function viz_explore(m, json_vizexplore, model_name_set) {
+    d3.select("#resultsView_tabular").html("");
+
     console.log("Viz explore method called: " + model_name_set);
 
     var get_data = [];
@@ -5054,8 +5048,12 @@ function viz_explore(m, json_vizexplore, model_name_set) {
 
         }
         //console.log(this.innerHTML);
-        if($(this).find('.btn-primary')[0].innerText==="Cross-Tabs"){d3table1(table_obj);}
-        else if($(this).find('.btn-primary')[0].innerText==="Selection"){  crossTabPlots(get_data[0], get_data[1]);}
+        if($(this).find('.btn-primary')[0].innerText==="Cross-Tabs"){
+            d3.select("#resultsView_tabular").html("");
+            d3table1(table_obj);}
+        else if($(this).find('.btn-primary')[0].innerText==="Selection"){
+            d3.select("#resultsView_tabular").html("");
+            crossTabPlots(get_data[0], get_data[1]);}
         $(this).find('.btn').toggleClass('btn-default');
 
     });
