@@ -209,7 +209,7 @@ function pageSetup(jsondata) {
         let parsed = JSON.parse(jsondata.action_data[idx]);
         actionData[parsed['action']] = parsed['total']
     }
-    d3action();		//there's 20 errors from d3 in this call	MWD
+    d3action();		//fixed this! -> there's 20 errors from d3 in this call	MWD
 
     actorData = jsondata.actor_data;
     actorDataLoad();
