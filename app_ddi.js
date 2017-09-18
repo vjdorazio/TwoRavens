@@ -4447,7 +4447,7 @@ function explore(btn) {
 
         function modCol() {
             d3.select("#modelView")
-                .selectAll("p")
+                .selectAll("button")
                 .style('background-color', "#FFD54F");
         }
 
@@ -4487,7 +4487,9 @@ function explore(btn) {
                 .style("white-space", "pre")
                 .style("overflow-y", "hidden")
                 .style("overflow-x", "scroll")
-                .append("p", ":first-child")// top stack for results
+                .append("button")// top stack for results
+              //      .append("xhtml:button")
+                .attr("class","btn btn-outline-success")
                 .attr("id", model)
                 .text(model_selection_name)
                 .style('background-color', function () {
@@ -4702,6 +4704,12 @@ function viz(m) {
 }
 
 
+
+
+
+
+
+
 //KRIPANSHU BHARGAVA, this is viz for explore
 function viz_explore(m, json_vizexplore, model_name_set) {
     console.log("Viz explore method called: " + model_name_set);
@@ -4772,6 +4780,10 @@ function viz_explore(m, json_vizexplore, model_name_set) {
 
         }
     }
+
+
+
+
 //console.log(" the x length is : "+ x_axis.length);
     //  console.log(" the x length is : "+ y_axis.length);
     //document.getElementById('tabular_chart1').style.display = "block";
@@ -4948,7 +4960,6 @@ function viz_explore(m, json_vizexplore, model_name_set) {
     // logArray.push("estimate: ".concat(rCall[0]));
     // showLog();
 
-
     for (var i = 0; i < zparams.zvars.length; i++)
 
 
@@ -4975,7 +4986,7 @@ function viz_explore(m, json_vizexplore, model_name_set) {
 
 
     // d3.select("#resultsView_tabular").html("");
-    /*
+
      function d3table1(data) {
          var width = 120,   // width of svg
              height = 160,  // height of svg
@@ -5015,20 +5026,41 @@ function viz_explore(m, json_vizexplore, model_name_set) {
              }
          }
          sv.append("text")
+             .style("padding","10px")
              .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
              .attr("transform", "translate(" + (padding / 2) + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
              .text(get_data[0]);
 
          sv.append("text")
+             .style("padding","10px")
              .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
              .attr("transform", "translate(" + (width) + "," + (padding / 2) + ")")  // centre below axis
              .text(get_data[1]);
 
      }
 
-     d3table1(table_obj);
+//Toggle buttons function
+    $('.btn-toggle').click(function() {
+        var expression="";
+        $(this).find('.btn').toggleClass('active');
 
- */
+        if ($(this).find('.btn-primary').size()>0) {
+            console.log($(this).find('.btn-primary')[0].innerText);
+
+
+
+            $(this).find('.btn').toggleClass('btn-primary');
+
+
+        }
+        //console.log(this.innerHTML);
+        if($(this).find('.btn-primary')[0].innerText==="Cross-Tabs"){d3table1(table_obj);}
+        else if($(this).find('.btn-primary')[0].innerText==="Selection"){  crossTabPlots(get_data[0], get_data[1]);}
+        $(this).find('.btn').toggleClass('btn-default');
+
+    });
+
+
     // data for the statistical div
     var string1 = cork.toString();
     var string3 = string1.substring(string1.indexOf(":"), string1.length);
