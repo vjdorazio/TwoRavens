@@ -11,15 +11,15 @@ urlpatterns = (
         name='view_d3m_list'),
 
     url(r'^d3m-config/details/(?P<d3m_config_id>\d{1,5})$',
-        views.view_d3m_details,
+        views.view_d3m_details_page,
         name='view_d3m_details_page'),
 
     url(r'^d3m-config/details/json/(?P<d3m_config_id>\d{1,5})$',
-        views.view_d3m_details,
+        views.view_d3m_details_json,
         name='view_d3m_details_json'),
 
     url(r'^d3m-config/json/latest$',
-        views.view_d3m_details,
+        views.view_d3m_details_json_latest,
         name='view_d3m_details_json_latest'),
 
     #url(r'^(?P<app_name_in_url>\w{5,25})$',
