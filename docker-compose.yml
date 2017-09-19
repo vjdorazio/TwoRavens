@@ -3,8 +3,8 @@ version: '3'
 services:
   nginx:
     build:
-      context: ./
-      dockerfile: Dockerfile-nginx
+      context: ./setup/nginx
+      dockerfile: Dockerfile
     links:
       - rook-service:rook-service
       - tworavens:tworavens
@@ -20,7 +20,7 @@ services:
     ports:
       - "8000"
   tworavens:
-    build: ./tworavens
+    build: ./Dockerfile
     links:
       - rook-service
     #command: python3 manage.py runserver 0.0.0.0:8080
