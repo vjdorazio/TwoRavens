@@ -24,6 +24,10 @@ class Command(BaseCommand):
             # Is this a legit file path?
             #
             if not isfile(config_file):
+                if isdir(config_file):
+                    raise CommandError(('Please specify a config file, NOT a'
+                                        ' directory:  "%s"') %\
+                                        config_file)
                 raise CommandError(('The config file was not found "%s".'
                                     ' Please check that the path is correct') %\
                                     config_file)

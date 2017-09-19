@@ -151,7 +151,8 @@ class D3MConfiguration(TimeStampedModel):
         for key in D3M_REQUIRED:
             val = d3m_dict.get(key, None)
             if val is None:
-                return None, '"%s" was not defined.  This field is required.'
+                return None, \
+                       ' "%s" was not defined.  This field is required.' % key
 
         # Load the fields, defaulting to "" (blank)
         #
