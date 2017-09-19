@@ -473,19 +473,19 @@ div#linechart .trendline{
 div#linechart .area{
     opacity: 0.70;
     fill: #f0f8ff;
-    stroke: #EF5350;
+    stroke: #fa8072;
     stroke-width: 1px;
 }
 
 
 div#resultsView_tabular .line {
     fill: none;
-    stroke: #E53935;
+    stroke: #fa8072;
     stroke-width: 2px;
 }
 
 div#resultsView_tabular .area {
-    fill:#E53935;
+    fill:#fa8072;
 }
 div#resultsView_tabular  .path {
     fill: #EF5350;

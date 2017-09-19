@@ -735,7 +735,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
     }
     */
     var margin_cross = {top: 30, right: 35, bottom: 40, left: 40},
-        width_cross = 305 - margin_cross.left - margin_cross.right,
+        width_cross = 300 - margin_cross.left - margin_cross.right,
         height_cross = 160 - margin_cross.top - margin_cross.bottom;
 
     var padding_cross = 100;
@@ -821,7 +821,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         .style('font-size', '75%')
         .style("width", "280px")
         .style("position","relative")
-        .style("left", (margin_cross.left-(padding_cross*1.47)) + "px")
+        .style("left", (margin_cross.left-(padding_cross*1.75)) + "px")
         .style("top", "50px")
 
 
@@ -1015,10 +1015,12 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
         plotsvg.append("text")
             .attr("x", (width_cross / 2))
-            .attr("y", (margin_cross.top + padding_cross + padding_cross / 7 ))
+            .attr("y", (margin_cross.top + padding_cross -10))
             .attr("text-anchor", "middle")
-            .style("font-size", "12px")
-            .text(density_env.name);
+            .text(density_env.name)
+            .style("text-indent","20px")
+            .style("font-size","12px")
+            .style("font-weight","bold");
 
         if (isNaN(a) || a === 0) {
             console.log("do nothing #bar")
@@ -1248,10 +1250,12 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
         plotsvg1.append("text")
             .attr("x", (width_cross / 2))
-            .attr("y", margin_cross.top + padding_cross + padding_cross / 7)
+            .attr("y", margin_cross.top + padding_cross-10)
             .attr("text-anchor", "middle")
-            .style("font-size", "12px")
-            .text(bar_env.name);
+            .text(bar_env.name)
+            .style("text-indent","20px")
+            .style("font-size","12px")
+            .style("font-weight","bold");
 
 
 
@@ -1857,13 +1861,19 @@ function bivariatePlot(x_Axis, y_Axis, x_Axis_name, y_Axis_name) {
         .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
         .attr("transform", "translate(" + padding / 5 + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
         .text(y_Axis_name)
-        .style("fill", "#424242");
+        .style("fill", "#424242")
+        .style("text-indent","20px")
+        .style("font-size","12px")
+        .style("font-weight","bold");
 
     chart_scatter.append("text")
         .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
         .attr("transform", "translate(" + (width / 2) + "," + (height + (padding / 2)) + ")")  // centre below axis
         .text(x_Axis_name)
-        .style("fill", "#424242");
+        .style("fill", "#424242")
+        .style("text-indent","20px")
+        .style("font-size","12px")
+        .style("font-weight","bold");
 
     function zoomed() {
         var panX = d3.event.translate[0];
@@ -2209,13 +2219,19 @@ function heatmap(x_Axis_name, y_Axis_name) {
         .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
         .attr("transform", "translate(-40," + (height_heat / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
         .text(y_Axis_name)
-        .style("fill", "#424242");
+        .style("fill", "#424242")
+        .style("text-indent","20px")
+        .style("font-size","12px")
+        .style("font-weight","bold");
 
     svg_heat.append("text")
         .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
         .attr("transform", "translate(" + (width_heat / 2) + "," + (height_heat + padding / 4) + ")")  // centre below axis
         .text(x_Axis_name)
-        .style("fill", "#424242");
+        .style("fill", "#424242")
+        .style("text-indent","20px")
+        .style("font-size","12px")
+        .style("font-weight","bold");
 
 
 }
