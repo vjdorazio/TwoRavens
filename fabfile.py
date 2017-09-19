@@ -9,6 +9,7 @@ import sys
 from fabric.api import local
 
 import django
+from django.conf import settings
 import subprocess
 
 import re
@@ -45,6 +46,21 @@ def restart():
     stop()
     run()
 
+def make_d3m_config():
+    """Make a D3M config based on local files in the /data directory"""
+    from tworaven_apps.configurations.util_config_maker import TestConfigMaker
+
+    TestConfigMaker.make_configs()
+
+def load_d3m_config(config_file):
+    """Load D3M config file, saving it as D3MConfiguration object.  Pass the config file path: fab load_d3m_config:(path to config file)"""
+    from django.core import management
+
+    try:
+        management.call_command('load_config', config_file)
+    except management.base.CommandError as err_obj:
+        print('> Failed to load D3M config.\n%s' % err_obj)
+
 def load_docker_config():
     """Load config pk=3, name 'Docker Default configuration'"""
     check_config()
@@ -72,9 +88,19 @@ def check_config():
     else:
         print('Configs exist in the db: %d' % config_cnt)
 
-def run():
-    """Run the django dev server and webpack--webpack watches the assets directory and rebuilds when appTwoRavens changes"""
+
+def run_with_rook():
+    """In addition to the django dev server and webpack, run rook via the Terminal"""
+    run(with_rook=True)
+
+
+def run(with_rook=False):
+    """Run the django dev server and webpack--webpack watches the assets directory and rebuilds when appTwoRavens changes
+
+    with_rook=True - runs rook in "nonstop" mode
+    """
     clear_js()  # clear any dev css/js files
+    init_db()
     check_config()  # make sure the db has something
 
     commands = [
@@ -84,6 +110,10 @@ def run():
         #'python manage.py runserver 8080'
         #'celery -A firmament worker --loglevel=info -B'
     ]
+
+    if with_rook:
+        rook_run_cmd = 'cd rook; Rscript rook_nonstop.R'
+        commands.append(rook_run_cmd)
 
     proc_list = [subprocess.Popen(command, shell=True, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr) for command in commands]
     try:
@@ -128,7 +158,7 @@ def clear_js():
 
 
 def clear_logs():
-    """Delete log files and images in the rook directory"""
+    """Delete log files, image files, and preprocess files from rook"""
     print(clear_logs.__doc__)
 
     # rook directory
@@ -142,17 +172,31 @@ def clear_logs():
                        if re.match(pat1, x) is not None or
                        re.match(pat2, x) is not None]
 
-    if not log_files_names:
-        print('No log files found')
-        return
+    if log_files_names:
+        print('Deleting %s log file(s)' % len(log_files_names))
+        print('-' * 40)
+        for fname in [os.path.join(rook_log_dir, x) for x in log_files_names]:
+            print('removing... %s' % fname)
+            os.remove(fname)
+        print('-' * 40)
+        print('Deleted %s log file(s)' % len(log_files_names))
 
-    print('Deleting %s log file(s)' % len(log_files_names))
-    print('-' * 40)
-    for fname in [os.path.join(rook_log_dir, x) for x in log_files_names]:
-        print('removing... %s' % fname)
-        os.remove(fname)
-    print('-' * 40)
-    print('Deleted %s log file(s)' % len(log_files_names))
+    # data directory
+    rook_data_dir = os.path.join(FAB_BASE_DIR, 'data')
+
+    pat3 = r'^preprocessSubset_(\w|-){15,50}\.txt$'
+    data_file_names = [x for x in os.listdir(rook_data_dir)
+                           if re.match(pat3, x) is not None]
+
+    if data_file_names:
+        print('Deleting %s data file(s)' % len(data_file_names))
+        print('-' * 40)
+        for fname in [os.path.join(rook_data_dir, x) for x in data_file_names]:
+            print('removing... %s' % fname)
+            os.remove(fname)
+        print('-' * 40)
+        print('Deleted %s log file(s)' % len(data_file_names))
+
 
 
 def create_django_superuser():
