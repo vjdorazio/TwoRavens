@@ -34,7 +34,7 @@ WORKDIR /var/webapps/TwoRavens
 RUN pip3 install --no-cache-dir -r requirements/dev.txt && \
     fab init_db && \
     fab create_django_superuser && \
-    fab load_docker_config
+    fab load_docker_ui_config
 
 EXPOSE 8080
 
