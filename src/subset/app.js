@@ -1013,7 +1013,7 @@ function buildSubset(){
             if ('not' in rule) {
                 rule_query_inner = {'$not': rule_query_inner}
             }
-            rule_query['AdminInfo'] = {'$in': rule_query_inner};
+            rule_query['CountryCode'] = {'$in': rule_query_inner};
         }
 
         if (rule.name === 'Actor Subset'){

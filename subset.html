@@ -136,6 +136,45 @@
     </div>
 
     <div id="subsetLocation" style="display:none">
+        <div class='location_left' style="margin-top:10px" id='subsetLocationDivL'>
+            <table id='svg_graph_table' style='border: 1px solid #ADADAD;' align='center'>
+                <tr>
+                    <td id='main_graph_td' class='graph_config' style="background-color:rgb(249, 249, 249);">
+                        <div id="main_graph_td_div">
+                            <label id="Region">Region</label>&nbsp; &nbsp; &nbsp;
+                            <button id="Expand_All" class="btn btn-default" type="button" data-toggle="tooltip" onclick=maingraphAction('All')>Expand All</button>
+                            <button id="Collapse_All" class="btn btn-default" type="button" data-toggle="tooltip" onclick=maingraphAction('None')>Collapse All</button>
+                            <label id="Expand_Collapse_Main_Text" class="hide_label">Collapse</label>
+                            <button class="btn btn-default" style="cursor:pointer;" onclick="maingraphAction('Expand_Collapse')"><span id="Exp_Col_Icon" class="glyphicon glyphicon-resize-small"></span></button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class='col-xs-4 location_right'>
+            <div class='affix' id='subsetLocationDivR'></div>
+            <div align="center">
+                <table id="country_table" border="0" align="left">
+                    <tr>
+                        <th id="country_table_th" class="country_table_odd">
+                            <label align="right" id="Expand_Collapse_Country_Text"
+                                   class="hide_label">Collapse</label>
+                            <label>Selected Countries &nbsp;&nbsp;</label><label style="cursor:pointer"
+                                                                                 onclick="javascript:countryTableAction(\'Expand_Collapse\')"><span
+                                id="Exp_Col_Country_Icon"
+                                class="glyphicon glyphicon-resize-small btn btn-default"></span></label>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td id="country_list" class="country_table_config country_table_even">
+                            <div style='height:300px; width:220px; overflow-y: scroll;'>
+                                <table align='center' id='country_list_tab'></table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div id="subsetAction" style="display:none">
