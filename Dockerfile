@@ -22,8 +22,10 @@ ENV DJANGO_SETTINGS_MODULE=tworavensproject.settings.dev_container2
 # Set the R_DEV_SERVER_BASE to the rook-service docker container
 #
 ENV R_DEV_SERVER_BASE=http://rook-service:8000/custom/
-#ENV TA2_TEST_SERVER_URL=localhost:50051
-ENV TA2_TEST_SERVER_URL=docker.for.mac.localhost:50051
+
+# TA2_TEST_SERVER_URL is a bit problematic right now
+#
+ENV TA2_TEST_SERVER_URL=localhost:50051
 
 
 RUN mkdir -p /var/webapps/TwoRavens

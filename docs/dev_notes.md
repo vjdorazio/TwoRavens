@@ -31,5 +31,6 @@ req = Parse(content, core_pb2.SessionRequest())
 core_stub, err_msg = TA2Connection.get_grpc_stub()
 reply = core_stub.StartSession(req)
 
+MessageToJson(reply)
 
 ```
