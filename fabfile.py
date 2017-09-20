@@ -88,7 +88,6 @@ def check_config():
     else:
         print('Configs exist in the db: %d' % config_cnt)
 
-
 def run_with_rook():
     """In addition to the django dev server and webpack, run rook via the Terminal"""
     run(with_rook=True)

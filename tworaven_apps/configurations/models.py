@@ -37,7 +37,7 @@ class AppConfiguration(TimeStampedModel):
 
     d3m_url = models.URLField(\
                     'D3M url',
-                    default='http://127.0.0.1:8080/d3m-service/',
+                    default='http://127.0.0.1:8080/d3m-service',
                     help_text=('URL used to make calls that'
                                ' are converted to gRPC messages'
                                ' and sent to D3M applications'))
