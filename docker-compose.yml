@@ -9,7 +9,7 @@ services:
       - rook-service:rook-service
       - tworavens:tworavens
     ports:
-      - "8060:8060"
+      - "80:80"
     depends_on:
       - tworavens
       - rook-service
@@ -20,9 +20,10 @@ services:
     ports:
       - "8000"
   tworavens:
-    build: ./Dockerfile
+    build:
+      context: ./
+      dockerfile: Dockerfile
     links:
       - rook-service
-    #command: python3 manage.py runserver 0.0.0.0:8080
     ports:
       - "8080"

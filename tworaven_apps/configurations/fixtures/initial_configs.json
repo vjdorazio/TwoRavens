@@ -43,11 +43,11 @@
         "is_active": false,
         "production": false,
         "d3m_mode": true,
-        "d3m_url": "http://0.0.0.0:8060/d3m-service",
+        "d3m_url": "http://0.0.0.0/d3m-service",
         "privacy_mode": false,
-        "rook_app_url": "http://0.0.0.0:8060/rook-custom/",
+        "rook_app_url": "http://0.0.0.0/rook-custom/",
         "dataverse_url": "https://beta.dataverse.org",
-        "description": "Basic dev configuration within docker compose.  Both Rook and Django calls are routed through nginx which is running on port 8060."
+        "description": "Basic dev configuration within docker compose.  Both Rook and Django calls are routed through nginx which is running on port 80."
     }
 }
 ]
