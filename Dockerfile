@@ -22,6 +22,9 @@ ENV DJANGO_SETTINGS_MODULE=tworavensproject.settings.dev_container2
 # Set the R_DEV_SERVER_BASE to the rook-service docker container
 #
 ENV R_DEV_SERVER_BASE=http://rook-service:8000/custom/
+#ENV TA2_TEST_SERVER_URL=localhost:50051
+ENV TA2_TEST_SERVER_URL=docker.for.mac.localhost:50051
+
 
 RUN mkdir -p /var/webapps/TwoRavens
 
@@ -36,7 +39,7 @@ RUN pip3 install --no-cache-dir -r requirements/dev.txt && \
     fab create_django_superuser && \
     fab load_docker_ui_config
 
-EXPOSE 8080
+EXPOSE 8080 50051
 
 WORKDIR /var/webapps/TwoRavens
 
