@@ -3,7 +3,6 @@ import json
 from requests.exceptions import ConnectionError
 
 from django.shortcuts import render
-from django.conf import settings
 from django.http import JsonResponse, HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from tworaven_apps.rook_services.models import TestCallCapture
@@ -27,7 +26,7 @@ def view_rook_route(request, app_name_in_url):
     #
     rook_app_info = RookAppInfo.get_appinfo_from_url(app_name_in_url)
     if rook_app_info is None:
-        return Http404('unknown rook app: %s' % app_name_in_url)
+        raise Http404('unknown rook app: %s' % app_name_in_url)
 
     # look for the "solaJSON" variable in the POST
     #
@@ -53,7 +52,7 @@ def view_rook_route(request, app_name_in_url):
     # Begin object to capture request
     #
     call_capture = None
-    if settings.RECORD_R_SERVICE_ROUTING:
+    if rook_app_info.record_this_call():
         call_capture = TestCallCapture(\
                         app_name=rook_app_info.name,
                         outgoing_url=rook_app_url,
@@ -74,7 +73,7 @@ def view_rook_route(request, app_name_in_url):
 
     # Save request result
     #
-    if settings.RECORD_R_SERVICE_ROUTING:
+    if rook_app_info.record_this_call():
         if r.status_code == 200:
             call_capture.add_success_message(r.text, r.status_code)
         else:
