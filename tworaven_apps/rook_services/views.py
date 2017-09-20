@@ -30,10 +30,12 @@ def view_rook_route(request, app_name_in_url):
 
     # look for the "solaJSON" variable in the POST
     #
-    if (not request.POST) or (not 'solaJSON' in request.POST):
+    if rook_app_info.is_health_check():
+        raven_data_text = 'healthcheck'
+    elif (not request.POST) or (not 'solaJSON' in request.POST):
         return JsonResponse(dict(status="ERROR", message="solaJSON key not found"))
-
-    raven_data_text = request.POST['solaJSON']
+    else:
+        raven_data_text = request.POST['solaJSON']
 
     # Retrieve post data and attempt to insert django session id
     # (if none exists)
