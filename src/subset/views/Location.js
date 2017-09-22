@@ -25,8 +25,8 @@ function d3loc() {
     $("#country_list").append("");
 
 
-    var svg = d3.select("#main_graph_td").append("svg:svg")
-        .attr("width", 480)
+    var svg = d3.select("#main_graph_td_div").append("svg:svg")
+        .attr("width", 450)
         .attr("height", 350)
         .attr("background-color", "#ADADAD")
         .attr("id", "main_graph_svg");
@@ -389,7 +389,7 @@ function constructSubgraph(cid) {
         return;
     }
 
-    $("#svg_graph_table").append('<tr id="sub_graph_tr_' + cid + '"><td id="sub_graph_td_' + cid + '" class="graph_config"></td></tr>');
+    $("#sub_graph_td_div").append('<tr id="sub_graph_tr_' + cid + '"><td id="sub_graph_td_' + cid + '" class="graph_config"></td></tr>');
     subGraphLabel(cid);
 
     var svg = d3.select("#sub_graph_td_" + cid).append("svg:svg")
@@ -450,8 +450,8 @@ function maingraphAction(action) {
         $("#Exp_Col_Icon").addClass("glyphicon-resize-full");
 
 
-        $("#main_graph_td").removeClass('graph_config');
-        $("#main_graph_td").addClass('graph_collapse');
+        $("#main_graph_td_div").removeClass('graph_config');
+        $("#main_graph_td_div").addClass('graph_collapse');
     }
     else if (action == 'Expand') {
 
@@ -460,8 +460,8 @@ function maingraphAction(action) {
         $("#Exp_Col_Icon").removeClass("glyphicon-resize-full");
         $("#Exp_Col_Icon").addClass("glyphicon-resize-small");
 
-        $("#main_graph_td").removeClass('graph_collapse');
-        $("#main_graph_td").addClass('graph_config');
+        $("#main_graph_td_div").removeClass('graph_collapse');
+        $("#main_graph_td_div").addClass('graph_config');
     }
 }
 
@@ -648,7 +648,7 @@ function updateCountryList() {
         }
 
         if (bool == true) {
-            $("#country_list_tab").append('<tr><td><label class="strike_through" style="cursor:pointer" onclick="javascript:removeFromCountryList(\'' + country + '\');">' + country + '</label></td></tr>');
+            $("#country_list_tab").append('<tr><td><label class="strike_through" style="float:left;cursor:pointer" onclick="javascript:removeFromCountryList(\'' + country + '\');">' + country + '</label></td></tr>');
             $("#tg_rect_" + main_subGraphId).attr("class", "bar_all_selected");
             mapLocalMainGraphIdWithSubGraphCnameList[mainGraphId].push(country);
         }

@@ -123,10 +123,10 @@ text.id {
     height: 62px;
 }
 
-#main svg {
+#subsetLocation svg {
     background-color:transparent;
-    width:500px;
-    height:500px;   /*was 600px;*/
+    /*width:500px;*/
+    height:386px;   /*was 600px;*/
 }
 
 /*#main.svg-leftpanel svg, #main.svg-rightpanel svg {width: 100%;}  This is size when left/right panel minimized. Was: calc(100% - 300px);}*/
@@ -1003,47 +1003,45 @@ display: inline;}
 * Added for Location
 */
 .graph_axis_label {
-	font-family: "Times New Roman";
-	 font-size:20px;
+    font-size:20px;
 }
 
 .graph_collapse {
     overflow: hidden;
     display:inline-block; /* or float:left; */
-    height: 55px;
+    height: 44px;
 	width:auto;
-	-webkit-transition: all 1s ease;
+	-webkit-transition: all 0.5s ease;
 }
 
 .graph_close {
     overflow: hidden;
     display:inline-block; /* or float:left; */
-    height: 55px;
+    height: 36px;
 	width:auto;
-	-webkit-transition: all 1s ease;
+	-webkit-transition: all 0.5s ease;
 }
 
 .graph_config {
     overflow: hidden;
     display:inline-block; /* or float:left; */
-    height: 420px;
+    height: 432px;
 	width:auto;
     background-color:#ADADAD;
-	-webkit-transition: all 1s ease;
+	-webkit-transition: all 0.5s ease;
 }
 
-.country_table_collapse {
+.countrytable_collapse {
     overflow: hidden;
     display:inline-block; /* or float:left; */
-    height: 0px;
+    height: 0;
     width:auto;
-    -webkit-transition: all 1s ease;
+    -webkit-transition: all 0.5s ease;
 }
 
 .country_table_config {
     overflow: hidden;
-    display:inline-block; /* or float:left; */
-    height: 300px;
+    float:left; /* or float:left; */
     width:auto;
     -webkit-transition: all 1s ease;
 }
@@ -1107,32 +1105,12 @@ display: inline;}
 	display: none;
 }
 
-.location_right {
-	width:auto;
-	position:absolute;
-    top:11px;
-	left:50%;
-}
-
-.location_left {
-    top:10px;
-    width:220px;
-}
-
 #svg_graph_table tr:nth-child(odd) {
     background: #ADADAD;
 }
 
 #svg_graph_table tr:nth-child(even) {
     background: #ADADAD;
-}
-
-.country_table_odd {
-    background: #ADADAD;
-}
-
-.country_table_even {
-    background: #F9F9F9;
 }
 
 .strike_through:hover {
@@ -1145,14 +1123,6 @@ display: inline;}
 
 #svg_graph_table tr:nth-child(even) {
     background: #ADADAD;
-}
-
-.country_table_odd {
-    background: #ADADAD;
-}
-
-.country_table_even {
-    background: #F9F9F9;
 }
 
 .strike_through:hover {
