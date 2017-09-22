@@ -104,7 +104,7 @@ eventdata.app <- function(env) {
     # Collect frequency data necessary for country plot
     country_frequencies = RMongo::dbAggregate(connection, table, c(
         paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
-        '{$project: {ccode: "$AdminInfo", _id: 0}}',                        # Cull to just AdminInfo field
+        '{$project: {ccode: "$CountryCode", _id: 0}}',                      # Cull to just CountryCode field
         '{$group: { _id: {country: "$ccode"}, country: {$sum:1}}}',         # Compute frequencies of each bin
         '{$project: {state:"$_id.country", total:"$country", _id: 0}}'))    # Rename fields
 

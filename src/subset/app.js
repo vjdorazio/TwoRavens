@@ -199,7 +199,9 @@ function pageSetup(jsondata) {
     countryData = {};
     for (let idx in jsondata.country_data) {
         let parsed = JSON.parse(jsondata.country_data[idx]);
-        countryData[parsed['state']] = parsed['total']
+        if (parsed['state'].length === 3) {
+            countryData[parsed['state']] = parsed['total']
+        }
     }
     d3loc();
 

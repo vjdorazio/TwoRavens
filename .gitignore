@@ -1,5 +1,6 @@
 .idea/
 ~*.docx
+*.~lock.*
 .Rproj.user
 *.Rproj
 *.RData
