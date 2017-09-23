@@ -136,15 +136,15 @@
     </div>
 
     <div id="subsetLocation" style="display:none">
-        <div style="float:left;margin-top:10px;">
+        <div style="width:480px;float:left;margin-top:10px;">
             <div id="main_graph_td_div" class="graph_config" style='width:480px;border: 1px solid #ADADAD; padding-top:3px; background: rgb(249, 249, 249);'  align='center'>
                 <div class="panel-heading text-center" style="float:left;padding-top:9px" id="regionLabel">
                     <h3 class="panel-title">World Regions</h3>
                 </div>
                 <label id="Expand_Collapse_Main_Text" class="hide_label">Collapse</label>
                 <button class="btn btn-default" style="cursor:pointer;float:right;margin-right:5px;" onclick="maingraphAction('Expand_Collapse')"><span id="Exp_Col_Icon" class="glyphicon glyphicon-resize-small"></span></button>
-                <button id="Expand_All" class="btn btn-default" type="button" style="float:right;margin-right:5px;" data-toggle="tooltip" onclick=maingraphAction('All')>Expand All</button>
-                <button id="Collapse_All" class="btn btn-default" type="button" style="float:right;margin-right:5px;" data-toggle="tooltip" onclick=maingraphAction('None')>Collapse All</button>
+                <button id="Expand_All" class="btn btn-default" type="button" style="float:right;margin-right:5px;" data-toggle="tooltip" onclick=maingraphAction('All')>Plot All</button>
+                <button id="Collapse_All" class="btn btn-default" type="button" style="float:right;margin-right:5px;" data-toggle="tooltip" onclick=maingraphAction('None')>Plot None</button>
             </div>
             <div id="sub_graph_td_div"></div>
         </div>
@@ -152,8 +152,8 @@
             <div class="panel-heading text-center" style="padding-top:9px" id="countryTableHeader">
                 <h3 class="panel-title">Selected Countries</h3>
             </div>
-            <div style='margin-left:5px; width:220px;'>
-                <table align='left' id='country_list_tab' style="overflow-y: scroll;"></table>
+            <div style='position:fixed;height:calc(100% - 162px);max-height:392px;overflow-y: scroll;margin-left:5px; width:161px'>
+                <table align='center' id='country_list_tab'></table>
             </div>
         </div>
     </div>

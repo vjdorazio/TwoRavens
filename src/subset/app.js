@@ -187,6 +187,10 @@ function makeCorsRequest(url, post, callback) {
     xhr.send('solaJSON='+ JSON.stringify(post));
 }
 
+
+/**
+*   Draws all subset plots, often invoked as callback after server request for new plotting data
+*/
 function pageSetup(jsondata) {
     console.log(jsondata);
 
@@ -199,6 +203,7 @@ function pageSetup(jsondata) {
     countryData = {};
     for (let idx in jsondata.country_data) {
         let parsed = JSON.parse(jsondata.country_data[idx]);
+        // TODO: All data in the database should be in ISO ALPHA-3 spec. This should not be necessary. Data is discarded.
         if (parsed['state'].length === 3) {
             countryData[parsed['state']] = parsed['total']
         }

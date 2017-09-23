@@ -21,9 +21,9 @@ function resetLocationVariables() {
 
 function d3loc() {
     // Clear existing data and plots
-
-    $("#country_list").append("");
-
+    $("#main_graph_svg").remove();
+    $("#sub_graph_td_div").empty();
+    $("#country_list_tab").empty();
 
     var svg = d3.select("#main_graph_td_div").append("svg:svg")
         .attr("width", 450)
@@ -389,10 +389,9 @@ function constructSubgraph(cid) {
         return;
     }
 
-    $("#sub_graph_td_div").append('<tr id="sub_graph_tr_' + cid + '"><td id="sub_graph_td_' + cid + '" class="graph_config"></td></tr>');
     subGraphLabel(cid);
 
-    var svg = d3.select("#sub_graph_td_" + cid).append("svg:svg")
+    var svg = d3.select("#sub_graph_td_div_" + cid).append("svg:svg")
         .attr("width", 480)
         .attr("height", 350)
         .attr("id", "sub_graph_td_svg_" + cid);
@@ -422,17 +421,19 @@ function maingraphAction(action) {
 
             if (mapGraphSVG[cid] == null) {
                 console.log("SVG CREATE = " + cid);
+                $("#sub_graph_td_div_" + cid).parent().show();
+                $("#sub_graph_td_div_" + cid).removeClass('graph_close');
+                $("#sub_graph_td_div_" + cid).addClass('graph_config');
                 constructSubgraph(cid);
             }
             else if (mapGraphSVG[cid + "_removed"] == null) {
 
                 console.log("SVG SHOW = " + cid);
-                $("#sub_graph_td_" + cid).parent().show();
-                $("#sub_graph_td_" + cid).removeClass('graph_close');
-                $("#sub_graph_td_" + cid).addClass('graph_config');
+                $("#sub_graph_td_div_" + cid).parent().show();
+                $("#sub_graph_td_div_" + cid).removeClass('graph_close');
+                $("#sub_graph_td_div_" + cid).addClass('graph_config');
             }
             else if (mapGraphSVG[cid] != null) {
-
                 console.log("SVG NO_ACTION = " + cid);
             }
         }
@@ -519,8 +520,8 @@ function subgraphAction(textId) {
             $("#Exp_Col_Icon_" + cid).removeClass("glyphicon-resize-small");
             $("#Exp_Col_Icon_" + cid).addClass("glyphicon-resize-full");
 
-            $("#sub_graph_td_" + cid).removeClass('graph_config');
-            $("#sub_graph_td_" + cid).addClass('graph_collapse');
+            $("#sub_graph_td_div_" + cid).removeClass('graph_config');
+            $("#sub_graph_td_div_" + cid).addClass('graph_collapse');
 
         }
         else if (action == 'Expand') {
@@ -532,8 +533,8 @@ function subgraphAction(textId) {
             $("#Exp_Col_Icon_" + cid).removeClass("glyphicon-resize-full");
             $("#Exp_Col_Icon_" + cid).addClass("glyphicon-resize-small");
 
-            $("#sub_graph_td_" + cid).removeClass('graph_collapse');
-            $("#sub_graph_td_" + cid).addClass('graph_config');
+            $("#sub_graph_td_div_" + cid).removeClass('graph_collapse');
+            $("#sub_graph_td_div_" + cid).addClass('graph_config');
         }
     }
     else {
@@ -579,9 +580,9 @@ function removeAllSubGraphSVG() {
             mapGraphSVG[cid + "_removed"] = svgToRemove;
             mapGraphSVG[cid] = null;
 
-            $("#sub_graph_td_" + cid).removeClass('graph_config');
-            $("#sub_graph_td_" + cid).addClass('graph_close');
-            $("#sub_graph_td_" + cid).parent().hide();
+            $("#sub_graph_td_div_" + cid).removeClass('graph_config');
+            $("#sub_graph_td_div_" + cid).addClass('graph_close');
+            $("#sub_graph_td_div_" + cid).parent().hide();
         }
     }
 }
@@ -606,26 +607,37 @@ function subgraphYLabelClicked(cname) {
  **/
 function subGraphLabel(cid) {
 
-    $("#sub_graph_td_" + cid).append('<div id="sub_graph_td_div_' + cid + '"></div>');
+    $("#sub_graph_td_div").append(
+        '        <div style="float:left;">\n' +
+        '            <div id="sub_graph_td_div_' + cid + '" class="graph_config" style="width:480px;border: 1px solid #ADADAD; padding-top:3px; background: rgb(249, 249, 249);"  align=\'center\'>\n' +
+        '                <div class="panel-heading text-center" style="float:left;padding-top:9px">\n' +
+        '                    <h3 class="panel-title">' + map_location_rid_rname.get(cid) + '</h3>\n' +
+        '                </div>\n' +
+        '                <label id="expand_collapse_text_' + cid + '" class="hide_label">Collapse</label>\n' +
+        '                <button class="btn btn-default" style="cursor:pointer;float:right;margin-right:5px;" onclick="subgraphAction(\'expand_collapse_text_' + cid + '\')"><span id="Exp_Col_Icon" class="glyphicon glyphicon-resize-small"></span></button>\n' +
+        '                <button class="btn btn-default" type="button" style="float:right;margin-right:5px;" data-toggle="tooltip" onclick=subgraphAction(\'All_' + cid + '\')>Select All</button>\n' +
+        '                <button class="btn btn-default" type="button" style="float:right;margin-right:5px;" data-toggle="tooltip" onclick=subgraphAction(\'None_' + cid + '\')>Deselect All</button>\n' +
+        '            </div>\n' +
+        '        </div>');
 
-    var cname = map_location_rid_rname.get(cid);
-    var label1 = $('<label align="right">' + cname + ':</label>');
-    $("#sub_graph_td_div_" + cid).append(label1);
-    $("#sub_graph_td_div_" + cid).append("&nbsp;&nbsp;&nbsp;");
+    // $("#sub_graph_td_" + cid).append('<div id="sub_graph_td_div_' + cid + '"></div>');
+    //
+    // var cname = map_location_rid_rname.get(cid);
+    // var label1 = $('<div class="panel-heading text-center" style="float:left;padding-top:9px"><h3 class="panel-title">' + cname + '</h3></div>');
+    // $("#sub_graph_td_div_" + cid).append(label1);
 
-    var label11 = $('<label title="Select All"  onclick = "javascript:subgraphAction(\'All_' + cid + '\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right">All</label></span></label>');
-    var label12 = $('<label title="Remove All"  onclick = "javascript:subgraphAction(\'None_' + cid + '\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right">None</label></span></label>');
-    $("#sub_graph_td_div_" + cid).append(label11);
-    $("#sub_graph_td_div_" + cid).append("&nbsp; &nbsp; &nbsp;");
-    $("#sub_graph_td_div_" + cid).append(label12);
-    $("#sub_graph_td_div_" + cid).append("&nbsp; &nbsp; &nbsp;");
+    // var label11 = $('<label title="Select All"  onclick = "javascript:subgraphAction(\'All_' + cid + '\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right">All</label></span></label>');
+    // var label12 = $('<label title="Remove All"  onclick = "javascript:subgraphAction(\'None_' + cid + '\')"><span class="glyphicon btn btn-default"><label style="cursor:pointer; text-align:center; width:60px;" align="right">None</label></span></label>');
+    // $("#sub_graph_td_div_" + cid).append(label11);
+    // $("#sub_graph_td_div_" + cid).append("&nbsp; &nbsp; &nbsp;");
+    // $("#sub_graph_td_div_" + cid).append(label12);
+    // $("#sub_graph_td_div_" + cid).append("&nbsp; &nbsp; &nbsp;");
 
+    // var label2 = $('<button class="btn btn-default" style="cursor:pointer;float:right;margin-right:5px;" onclick="subgraphAction(\'expand_collapse_text_' + cid + '\')"><span id="Exp_Col_Icon" class="glyphicon glyphicon-resize-small"></span></button>');
+    // $("#sub_graph_td_div_" + cid).append(label2);
 
-    var label2 = $('<label style="cursor:pointer" onclick="javascript:subgraphAction(\'expand_collapse_text_' + cid + '\')"><span class="glyphicon glyphicon-resize-small btn btn-default" id="Exp_Col_Icon_' + cid + '"></span></label>');
-    $("#sub_graph_td_div_" + cid).append(label2);
-
-    var label = $('<label class="hide_label" id="expand_collapse_text_' + cid + '">Collapse</label>');
-    $("#sub_graph_td_div_" + cid).append(label);
+    // var label = $('<label class="hide_label" id="expand_collapse_text_' + cid + '">Collapse</label>');
+    // $("#sub_graph_td_div_" + cid).append(label);
 }
 
 function updateCountryList() {
@@ -648,7 +660,7 @@ function updateCountryList() {
         }
 
         if (bool == true) {
-            $("#country_list_tab").append('<tr><td><label class="strike_through" style="float:left;cursor:pointer" onclick="javascript:removeFromCountryList(\'' + country + '\');">' + country + '</label></td></tr>');
+            $("#country_list_tab").append('<tr><td><label class="strike_through" style="cursor:pointer" onclick="removeFromCountryList(\'' + country + '\');">' + country + '</label></td></tr>');
             $("#tg_rect_" + main_subGraphId).attr("class", "bar_all_selected");
             mapLocalMainGraphIdWithSubGraphCnameList[mainGraphId].push(country);
         }

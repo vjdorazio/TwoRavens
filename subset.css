@@ -395,7 +395,7 @@ path {
 }
 
 table, th, td {
-    border-collapse: collapse;text-align:right;
+    border-collapse: collapse;
 }
 td {
     padding:4px;
@@ -1015,20 +1015,28 @@ display: inline;}
 }
 
 .graph_close {
+    border: 1px solid #ADADAD;
+    padding-top:3px;
+    background: rgb(249, 249, 249);
+    margin-bottom:5px;
+
     overflow: hidden;
     display:inline-block; /* or float:left; */
     height: 36px;
-	width:auto;
+	width:480px;
 	-webkit-transition: all 0.5s ease;
 }
 
 .graph_config {
+    width:480px;
+    border: 1px solid #ADADAD;
+    padding-top:3px;
+    background: rgb(249, 249, 249);
     overflow: hidden;
     display:inline-block; /* or float:left; */
     height: 432px;
-	width:auto;
-    background-color:#ADADAD;
 	-webkit-transition: all 0.5s ease;
+    margin-bottom:5px;
 }
 
 .countrytable_collapse {
