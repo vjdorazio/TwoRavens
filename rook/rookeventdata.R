@@ -83,15 +83,18 @@ eventdata.app <- function(env) {
     everything <- jsonlite::fromJSON(request$POST()$solaJSON, simplifyDataFrame = FALSE)
     subsets = everything$subsets
     variables = everything$variables
+    raw = everything$raw
 
     # print(subsets)
     # print(variables)
     table <- 'samplePhox'
-
     connection <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)
-    query <- RMongo::dbGetQueryForKeys(connection, table, subsets, variables)
 
-    result <- jsonlite::toJSON(query)
+    if (!is.null(raw) && raw) {
+        result = toString(jsonlite::toJSON(RMongo::dbGetQueryForKeys(connection, table, subsets, variables)))
+        response$write(result)
+        return(response$finish())
+    }
 
     # Collect frequency data necessary for subset plot
     date_frequencies = RMongo::dbAggregate(connection, table, c(
@@ -176,5 +179,5 @@ eventdata.app <- function(env) {
         action_data = action_frequencies,
         actor_data = actor_values)))
     response$write(result)
-    response$finish()
+    return(response$finish())
 }

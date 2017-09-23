@@ -19,8 +19,8 @@ function d3date(init=false) {
     $("#dateSVG").empty();
     var dateSVG = d3.select("#dateSVG");
 
-    margin = {top: 20, right: 20, bottom: 110, left: 30};
-    margin2 = {top: 430, right: 20, bottom: 30, left: 30};
+    margin = {top: 20, right: 20, bottom: 110, left: 40};
+    margin2 = {top: 430, right: 20, bottom: 30, left: 40};
     datewidth = +dateSVG.attr("width") - margin.left - margin.right;
     dateheight = +dateSVG.attr("height") - margin.top - margin.bottom;
     dateheight2 = +dateSVG.attr("height") - margin2.top - margin2.bottom;

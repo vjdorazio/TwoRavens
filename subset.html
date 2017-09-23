@@ -27,6 +27,8 @@
     <link rel="stylesheet" href="jqtree/jqtree.css">
     <link rel="stylesheet" href="jqtree/jqtree.style.css">
 
+    <script src="fileSaver/fileSaver.js"></script>
+
     <script src="d3.v4.min.js"></script>
 
     </head>
@@ -105,9 +107,13 @@
     </div>
 
     <div id="rightpanelButtonBar" style="width:232px;position:absolute;bottom:5px">
-        <button id="buttonAddGroup" class="btn btn-default ladda-button" data-spinner-color="#000000"
+        <button id="buttonAddGroup" class="btn btn-default"
                 onclick="addGroup()" type="button"
                 style="float:left;margin-left:6px;">Group
+        </button>
+        <button id="buttonDownload" class="btn btn-default ladda-button" data-spinner-color="#000000"
+                onclick="download()" type="button"
+                style="float:right;margin-right:6px;">Download
         </button>
     </div>
 </div>

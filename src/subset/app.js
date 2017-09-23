@@ -187,6 +187,26 @@ function makeCorsRequest(url, post, callback) {
     xhr.send('solaJSON='+ JSON.stringify(post));
 }
 
+function download() {
+
+    function save(data) {
+        console.log(data);
+
+        const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
+        const header = Object.keys(data[0])
+        let csv = data.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+        csv.unshift(header.join(','))
+
+        var blob = new Blob([csv.join('\r\n')], {type: "text/plain;charset=utf-8"});
+        saveAs(blob, "Eventdata_Subset.csv");
+    }
+    let variableQuery = buildVariables();
+    let subsetQuery = buildSubset();
+    query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery), 'raw': true};
+
+    makeCorsRequest(subsetURL, query, save);
+}
+
 
 /**
 *   Draws all subset plots, often invoked as callback after server request for new plotting data
