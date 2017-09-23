@@ -351,7 +351,6 @@ function rightpanelMargin() {
 //     negate: false,           // If exists, have a negation button
 //     editable: true,          // If false, operation cannot be edited
 //     cancellable: false       // If exists and false, disable the delete button
-//     cancel_prompt: false     // If exists and true, prompt before deletion, and un-subset data
 // }
 
 // variableData is used to create the tree gui on the right panel
@@ -378,7 +377,6 @@ if (queryId === 1) {
 function buttonNegate(id, state) {
     // This state is negated simply because the buttons are visually inverted. An active button appears inactive
     // This is due to css tomfoolery
-    console.log(state);
     if (!state) {
         return '<button id="boolToggle" class="btn btn-default btn-xs" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', true)">not</button> '
     } else {
@@ -388,10 +386,13 @@ function buttonNegate(id, state) {
 
 function callbackNegate(id, bool) {
     let node = $('#subsetTree').tree('getNodeById', id);
+
+    // don't permit change in negation on non-editable node
+    if ('editable' in node && !node.editable) return;
+
     node.negate = bool;
 
     subsetData = JSON.parse($('#subsetTree').tree('toJson'));
-    console.log(subsetData);
     let qtree = $('#subsetTree');
     let state = qtree.tree('getState');
     qtree.tree('loadData', subsetData, 0);
@@ -417,25 +418,25 @@ function buttonOperator(id, state) {
 
 function callbackOperator(id, operand) {
     let node = $('#subsetTree').tree('getNodeById', id);
-    if (!('editable' in node) || ('editable' in node && node.editable)) {
-        node.operation = operand;
+    if ('editable' in node && !node.editable) return;
 
-        // Redraw tree
-        subsetData = JSON.parse($('#subsetTree').tree('toJson'));
-        let qtree = $('#subsetTree');
-        let state = qtree.tree('getState');
-        qtree.tree('loadData', subsetData, 0);
-        qtree.tree('setState', state);
-    }
+    node.operation = operand;
+
+    // Redraw tree
+    subsetData = JSON.parse($('#subsetTree').tree('toJson'));
+    let qtree = $('#subsetTree');
+    let state = qtree.tree('getState');
+    qtree.tree('loadData', subsetData, 0);
+    qtree.tree('setState', state);
 }
 
 function buttonDelete(id) {
-    return "<button type='button' class='btn btn-default btn-xs' style='background:none;border:none;box-shadow:none;float:right;margin-top:3px' onclick='callbackDelete(" + String(id) + ")'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button></div>";
+    return "<button type='button' class='btn btn-default btn-xs' style='background:none;border:none;box-shadow:none;float:right;margin-top:2px;height:18px' onclick='callbackDelete(" + String(id) + ")'><span class='glyphicon glyphicon-remove' style='color:#ADADAD'></span></button></div>";
 }
 
 function callbackDelete(id) {
     let node = $('#subsetTree').tree('getNodeById', id);
-    if ('cancel_prompt' in node && node.cancel_prompt) {
+    if (node.name.indexOf('Query') !== -1) {
         if (!confirm("You are deleting a query. This will return your subsetting to an earlier state.")) {
             return;
         }
@@ -456,7 +457,7 @@ function callbackDelete(id) {
     qtree.tree('loadData', subsetData, 0);
     qtree.tree('setState', state);
 
-    if ('cancel_prompt' in node && node.cancel_prompt) {
+    if (node.name.indexOf('Query') !== -1) {
         let variableQuery = buildVariables();
         let subsetQuery = buildSubset();
 
@@ -510,8 +511,8 @@ $(function () {
 
         // Executed for every node and leaf in the tree
         onCreateLi: function (node, $li) {
+
             if ('negate' in node) {
-                console.log(node.negate);
                 $li.find('.jqtree-element').prepend(buttonNegate(node.id, node.negate));
             }
             if (!('show_op' in node) || ('show_op' in node && node.show_op)) {
@@ -576,6 +577,17 @@ $('#subsetTree').on(
     }
 );
 
+function disable_edit_recursive(node) {
+    node.editable = false;
+    node.cancellable = false;
+    if ('children' in node) {
+        for (let child_id in node.children) {
+            node.children[child_id] = disable_edit_recursive(node.children[child_id]);
+        }
+    }
+    return node
+}
+
 function hide_first(data){
     for (let i = 0; i < data.length; i++) {
         data[i]['show_op'] = i !== 0;
@@ -612,7 +624,7 @@ function addGroup(query=false) {
             movedChildren.push(child);
             removeIds.push(child_id);
 
-            // A query grouping can, however put groups inside of groups.
+        // A query grouping can, however put groups inside of groups.
         } else if (query && child.name.indexOf('Query') === -1) {
             movedChildren.push(child);
             removeIds.push(child_id);
@@ -628,10 +640,15 @@ function addGroup(query=false) {
     }
 
     if (query) {
+        for (let child_id in movedChildren){
+            movedChildren[child_id] = disable_edit_recursive(movedChildren[child_id]);
+        }
         subsetData.push({
             id: String(nodeId++),
             name: 'Query ' + String(queryId++),
             operation: 'and',
+            editable: true,
+            cancellable: true,
             children: movedChildren,
             show_op: subsetData.length > 0
         });
@@ -644,9 +661,6 @@ function addGroup(query=false) {
             show_op: subsetData.length > 0
         });
     }
-
-    $('#subsetTree').tree('loadData', subsetData);
-
 
     let qtree = $('#subsetTree');
     let state = qtree.tree('getState');
@@ -773,6 +787,7 @@ function getSubsetPreferences() {
         };
         // Add each link to the parent node as another rule
         for (let linkId in actorLinks) {
+            console.log(linkId);
             let link = {
                 id: String(nodeId++),
                 name: 'Link ' + String(linkId),
@@ -782,11 +797,13 @@ function getSubsetPreferences() {
                     id: String(nodeId++),
                     name: 'Source: ' + actorLinks[linkId].source.name,
                     show_op: false,
+                    cancellable: false,
                     children: []
                 }, {
                     id: String(nodeId++),
                     name: 'Target: ' + actorLinks[linkId].target.name,
                     show_op: false,
+                    cancellable: false,
                     children: []
                 }]
             };
@@ -848,7 +865,6 @@ function reset() {
  * Makes web request for rightpanel preferences
  */
 function submitQuery() {
-    console.log(subsetData);
 
     // Only construct and submit the query if new subsets have been added since last query
     let newSubsets = false;
@@ -884,13 +900,7 @@ function submitQuery() {
 
             if (node) {
                 qtree.tree("addToSelection", node);
-                node.editable = false;
-
-                if (node.name.indexOf('Query') === -1) {
-                    node.cancellable = false;
-                } else {
-                    node.cancel_prompt = true;
-                }
+                if (node.name.indexOf('Query') === -1) node.editable = false;
             }
         }
     );
