@@ -601,9 +601,12 @@ function updateCountryList() {
         }
 
         if (bool) {
-            let fullcountry = map_fullname_lookup.get(country);
+            let fullcountry = '';
+            if (map_fullname_lookup.has(country)) {
+                fullcountry = ": " + map_fullname_lookup.get(country);
+            }
 
-            $("#country_list_tab").append('<tr><td><label class="strike_through" style="cursor:pointer" onclick="removeFromCountryList(\'' + country + '\');">' + country + ': ' + fullcountry +'</label></td></tr>');
+            $("#country_list_tab").append('<tr><td><label class="strike_through" style="cursor:pointer" onclick="removeFromCountryList(\'' + country + '\');">' + country + fullcountry +'</label></td></tr>');
             $("#tg_rect_" + main_subGraphId).attr("class", "bar_all_selected");
             mapLocalMainGraphIdWithSubGraphCnameList[mainGraphId].push(country);
         }

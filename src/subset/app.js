@@ -190,8 +190,6 @@ function makeCorsRequest(url, post, callback) {
 function download() {
 
     function save(data) {
-        console.log(data);
-
         const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
         const header = Object.keys(data[0])
         let csv = data.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
@@ -200,6 +198,7 @@ function download() {
         var blob = new Blob([csv.join('\r\n')], {type: "text/plain;charset=utf-8"});
         saveAs(blob, "Eventdata_Subset.csv");
     }
+
     let variableQuery = buildVariables();
     let subsetQuery = buildSubset();
     query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery), 'raw': true};
@@ -379,10 +378,11 @@ if (queryId === 1) {
 function buttonNegate(id, state) {
     // This state is negated simply because the buttons are visually inverted. An active button appears inactive
     // This is due to css tomfoolery
+    console.log(state);
     if (!state) {
-        return '<button id="boolToggle" class="btn btn-default btn-xs active" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', true)">not</button> '
+        return '<button id="boolToggle" class="btn btn-default btn-xs" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', true)">not</button> '
     } else {
-        return '<button id="boolToggle" class="btn btn-default btn-xs" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', false)">not</button> '
+        return '<button id="boolToggle" class="btn btn-default btn-xs active" type="button" data-toggle="button" aria-pressed="true" onclick="callbackNegate(' + id + ', false)">not</button> '
     }
 }
 
@@ -391,6 +391,7 @@ function callbackNegate(id, bool) {
     node.negate = bool;
 
     subsetData = JSON.parse($('#subsetTree').tree('toJson'));
+    console.log(subsetData);
     let qtree = $('#subsetTree');
     let state = qtree.tree('getState');
     qtree.tree('loadData', subsetData, 0);
@@ -509,12 +510,12 @@ $(function () {
 
         // Executed for every node and leaf in the tree
         onCreateLi: function (node, $li) {
-
+            if ('negate' in node) {
+                console.log(node.negate);
+                $li.find('.jqtree-element').prepend(buttonNegate(node.id, node.negate));
+            }
             if (!('show_op' in node) || ('show_op' in node && node.show_op)) {
                 $li.find('.jqtree-element').prepend(buttonOperator(node.id, node.operation));
-            }
-            if ('negate' in node) {
-                $li.find('.jqtree-element').prepend(buttonNegate(node.id, node.negate));
             }
             if (!('cancellable' in node) || (node['cancellable'] === true)) {
                 $li.find('.jqtree-element').append(buttonDelete(node.id));
@@ -733,6 +734,7 @@ function getSubsetPreferences() {
             id: String(nodeId++),
             name: 'Location Subset',
             operation: 'and',
+            negate: 'false',
             children: []
         };
 
@@ -750,7 +752,6 @@ function getSubsetPreferences() {
         if (subset['children'].length === 0) {
             return {}
         }
-
         return subset
     }
 
@@ -1037,10 +1038,11 @@ function buildSubset(){
                 rule_query_inner.push(rule.children[child_id].name);
             }
 
-            if ('not' in rule) {
-                rule_query_inner = {'$not': rule_query_inner}
+            rule_query_inner = {'$in': rule_query_inner};
+            if ('negate' in rule && !rule.negate) {
+                rule_query_inner = {'$not': rule_query_inner};
             }
-            rule_query['CountryCode'] = {'$in': rule_query_inner};
+            rule_query['CountryCode'] = rule_query_inner;
         }
 
         if (rule.name === 'Actor Subset'){
