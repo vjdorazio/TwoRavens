@@ -148,12 +148,13 @@
             </div>
             <div id="sub_graph_td_div"></div>
         </div>
-        <div id="country_table" style="position:fixed;margin-left:10px;margin-top:10px;height:calc(100% - 122px);max-height:432px; display:inline-block;background: rgb(249, 249, 249);border: 1px solid #ADADAD;">
-            <div class="panel-heading text-center" style="padding-top:9px" id="countryTableHeader">
-                <h3 class="panel-title">Selected Countries</h3>
+        <div id="country_table" style="position:fixed;margin-left:10px;margin-top:10px;width:250px;height:calc(100% - 122px);max-height:432px; display:inline-block;background: rgb(249, 249, 249);border: 1px solid #ADADAD;">
+            <div style="width:250px;display:inline-block;" id="countryTableHeader">
+                <h3 class="panel-title" style="padding-left:10px;padding-top:12px;float:left;width:calc(100% - 60px)">Selected Countries</h3>
+                <button class="btn btn-default" style="cursor:pointer;float:right;margin-top:5px;margin-right:7px" onclick="d3loc()"><span id="Exp_Col_Country_Icon" style="font-size:1em;color:#818181;" class="glyphicon glyphicon-remove"></span></button>
             </div>
-            <div style='position:fixed;height:calc(100% - 162px);max-height:392px;overflow-y: scroll;margin-left:5px; width:161px'>
-                <table align='center' id='country_list_tab'></table>
+            <div style='position:fixed;height:calc(100% - 168px);max-height:386px;overflow-y: scroll;margin-left:5px; width:243px'>
+                <table align='left' id='country_list_tab'></table>
             </div>
         </div>
     </div>
