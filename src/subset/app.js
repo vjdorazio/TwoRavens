@@ -273,7 +273,9 @@ window.onresize = rightpanelMargin;
 $("#btnSubset").trigger("click");		//on load let subset tab show first
 
 function rightpanelMargin() {
-	resizeActorSVG();
+    if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded){
+        resizeActorSVG();
+    }
 
     let main = $("#main");
     if (main.get(0).scrollHeight > main.get(0).clientHeight) {

@@ -1319,7 +1319,7 @@ function capitalizeFirst(str) {
 function resizeActorSVG(){
     //actor resize on window resize handled here
 	// Only resize actor SVG if actor subset is selected
-    if (subsetKeySelected === 'Actor' && typeof actorCodeLoaded !== "undefined" && actorCodeLoaded) {
+    if (subsetKeySelected === 'Actor') {
         var curHeight = $("#main").height() - 20;		//this is the height of the container
         var titleHeight = $("#linkTitle").height();			//this is the height of the title div above the SVG
         var trySize = actorHeight;
