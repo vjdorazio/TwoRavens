@@ -1345,6 +1345,9 @@ function resizeActorSVG(){
         let diagramWidth = $("#linkTitle").width();
         actorWidth = actorSVG.node().getBoundingClientRect().width;
 
+        boundaryLeft = Math.floor(actorWidth/2) - 20;		//max x coordinate source nodes can move
+        boundaryRight = Math.ceil(actorWidth/2) + 20;		//max x coordinate target nodes can move
+
         actorSVG.attr("width", diagramWidth);
         d3.select("#centerLine").attr("d", function() {return "M" + diagramWidth/2 + "," + 0 + "V" + actorHeight;});
         updateAll();
