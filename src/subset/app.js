@@ -168,7 +168,7 @@ function makeCorsRequest(url, post, callback) {
             console.log(json.warning);
             alert('Warning: Additional information in console.')
         }
-        callback(json)
+        callback(json);
     };
 
     xhr.onerror = function () {
@@ -212,6 +212,10 @@ function download() {
 */
 function pageSetup(jsondata) {
     console.log(jsondata);
+    if (jsondata.date_data.length === 0) {
+        alert("No records match your subset. Plots will not be updated.");
+        return false;
+    }
 
     dateData.length = 0;
     for (let idx in jsondata.date_data) {
@@ -235,7 +239,7 @@ function pageSetup(jsondata) {
         let parsed = JSON.parse(jsondata.action_data[idx]);
         actionData[parsed['action']] = parsed['total']
     }
-    d3action();		//fixed this! -> there's 20 errors from d3 in this call	MWD
+    d3action();
 
     actorData = jsondata.actor_data;
     actorDataLoad();
@@ -246,6 +250,7 @@ function pageSetup(jsondata) {
         // In the case where the user has not yet made a subset selection, this is ignored
         showSubset(subsetKeySelected);
     }
+    return true;
 }
 
 
@@ -846,47 +851,51 @@ function submitQuery() {
     }
     if (!newSubsets) return;
 
+    function submitQueryCallback(jsondata) {
+        // If page setup failed, then don't lock the preferences behind a query
+        if (!pageSetup(jsondata)) return;
+
+        // True for adding a query group, all existing preferences are grouped under a 'query group'
+        addGroup(true);
+
+        // Add all nodes to selection
+        let qtree = $('#subsetTree');
+        let nodeList = [...Array(nodeId).keys()];
+
+        nodeList.forEach(
+            function(node_id){
+                const node = qtree.tree("getNodeById", node_id);
+
+                if (node) {
+                    qtree.tree("addToSelection", node);
+                    if (node.name.indexOf('Query') === -1) node.editable = false;
+                }
+            }
+        );
+
+        // Redraw tree
+        subsetData = JSON.parse($('#subsetTree').tree('toJson'));
+        let state = qtree.tree('getState');
+        qtree.tree('loadData', subsetData, 0);
+        qtree.tree('setState', state);
+
+        // Store user preferences in local data
+        localStorage.setItem('variablesSelected', JSON.stringify([...variablesSelected]));
+
+        localStorage.setItem('subsetData', $('#subsetTree').tree('toJson'));
+        localStorage.setItem('nodeId', nodeId);
+        localStorage.setItem('groupId', groupId);
+        localStorage.setItem('queryId', queryId);
+    }
+
     let variableQuery = buildVariables();
     let subsetQuery = buildSubset();
 
-    // True for adding a query group, all existing preferences are grouped under a 'query group'
-    addGroup(true);
-
-    // Store user preferences in local data (must be stored after adding the query group)
-    localStorage.setItem('variablesSelected', JSON.stringify([...variablesSelected]));
-
-    localStorage.setItem('subsetData', $('#subsetTree').tree('toJson'));
-    localStorage.setItem('nodeId', nodeId);
-    localStorage.setItem('groupId', groupId);
-    localStorage.setItem('queryId', queryId);
-
-    // Add all nodes to selection
-    let qtree = $('#subsetTree');
-    let nodeList = [...Array(nodeId).keys()];
-
-    nodeList.forEach(
-        function(node_id){
-            const node = qtree.tree("getNodeById", node_id);
-
-            if (node) {
-                qtree.tree("addToSelection", node);
-                if (node.name.indexOf('Query') === -1) node.editable = false;
-            }
-        }
-    );
-
-    // Redraw tree
-    subsetData = JSON.parse($('#subsetTree').tree('toJson'));
-    let state = qtree.tree('getState');
-    qtree.tree('loadData', subsetData, 0);
-    qtree.tree('setState', state);
-
-    console.log(JSON.stringify(subsetQuery));
-    console.log(JSON.stringify(variableQuery, null, '  '));
+    console.log("Query: " + JSON.stringify(subsetQuery));
+    // console.log(JSON.stringify(variableQuery, null, '  '));
 
     query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery)};
-
-    makeCorsRequest(subsetURL, query, pageSetup);
+    makeCorsRequest(subsetURL, query, submitQueryCallback);
 }
 
 // Construct mongoDB selection (subsets columns)
