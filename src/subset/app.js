@@ -273,44 +273,16 @@ window.onresize = rightpanelMargin;
 $("#btnSubset").trigger("click");		//on load let subset tab show first
 
 function rightpanelMargin() {
-	//actor resize on window resize handled here
-	if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded) {	//handle only if actor code is loaded
-		var curHeight = $("#actorContainer").height();		//this is the height of the container
-		var titleHeight = $("#linkTitle").height();			//this is the height of the title div above the SVG
-		var trySize = actorHeight;
-		$("#actorSelectionDiv").css("height", curHeight);	//this constrains the left side
-		if (sourceActualSize <= calcCircleNum(curHeight - titleHeight) && targetActualSize <= calcCircleNum(curHeight - titleHeight)) {		//if link div is empty enough, maintain height alignment		
-			$("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
-			actorHeight = actorSVG.node().getBoundingClientRect().height;
-			actorSVG.attr("height", actorHeight);
-			d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
-			updateAll();
-		}
-		else if (trySize > curHeight){		//note this is a slow implementation, especially if dragging to resize
-			while (sourceActualSize <= calcCircleNum(trySize) && targetActualSize <= calcCircleNum(trySize)) {		//reduce the size of the SVG to a comfortable viewing size
-				trySize -= 20;		//try half of actorNodeR
-			}
+	resizeActorSVG();
 
-			$("#actorLinkDiv").height(function(n, c){return c - (actorHeight - trySize);});
-			actorHeight = trySize;
-			actorSVG.attr("height", actorHeight);
-			d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
-			updateAll();
-		}
-	}
-	
     let main = $("#main");
     if (main.get(0).scrollHeight > main.get(0).clientHeight) {
         // Vertical scrollbar
         document.getElementById("rightpanel").style.right = "27px";
         if ($('#rightpanel').hasClass('closepanel')) {
             document.getElementById("stageButton").style.right = "56px";
-            $("#actorContainer").css("width", "1100px");
-            $("#actorLinkDiv").css("margin-right", "100px");
         } else {
             document.getElementById("stageButton").style.right = "286px";
-            $("#actorContainer").css("width", "1330px");
-            $("#actorLinkDiv").css("margin-right", "330px");
             
         }
     } else {
@@ -318,12 +290,8 @@ function rightpanelMargin() {
         document.getElementById("rightpanel").style.right = "10px";
         if ($('#rightpanel').hasClass('closepanel')) {
             document.getElementById("stageButton").style.right = "40px";
-            $("#actorContainer").css("width", "1100px");
-            $("#actorLinkDiv").css("margin-right", "100px");
         } else {
             document.getElementById("stageButton").style.right = "270px";
-            $("#actorContainer").css("width", "1330px");
-            $("#actorLinkDiv").css("margin-right", "330px");
         }
     }
 

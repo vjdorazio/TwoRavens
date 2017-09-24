@@ -42,11 +42,11 @@
     </a>
 
     <div id="navbarNav" style="margin-top:11px">
-        <label class="btn btn-default ladda-button navbar-right" style="margin-left:2em;margin-right:1em;"
+        <label class="btn btn-default ladda-button navbar-right" style="float:right;margin-left:2em;margin-right:1em;"
                id="btnSubmit" onclick="submitQuery()" data-spinner-color="#000000"
                data-style="zoom-in"><span class="ladda-label">Subset</span></label>
         <button class="btn btn-default navbar-right" id="btnReset" title="Reset" onclick="reset()"
-                style="margin-left:2.0em;"><span style="font-size:1em;color:#818181; pointer-events:none;"
+                style="margin-left:2.0em;float:right;"><span style="font-size:1em;color:#818181; pointer-events:none;"
                                                  class="glyphicon glyphicon-repeat"></span></button>
     </div>
 
@@ -142,7 +142,7 @@
     </div>
 
     <div id="subsetLocation" style="display:none">
-        <div style="width:480px;float:left;margin-top:10px;">
+        <div style="width:480px;float:left;margin-top:10px;margin-left:10px;">
             <div id="main_graph_td_div" class="graph_config" style='width:480px;border: 1px solid #ADADAD; padding-top:3px; background: rgb(249, 249, 249);'  align='center'>
                 <div class="panel-heading text-center" style="float:left;padding-top:9px" id="regionLabel">
                     <h3 class="panel-title">World Regions</h3>
@@ -171,8 +171,9 @@
     </div>
 
     <div id="subsetActor" style="display:none">
-        <div id="actorContainer">
-
+        <table id="actorContainer">
+            <tr>
+            <td width="350">
             <div id="actorSelectionDiv">
                 <div id="actorSelectionTitle" class="panel-heading text-center">
                     <h3 class="panel-title">Actor Selection</h3>
@@ -347,16 +348,19 @@
                     </div>
                 </div>
             </div>
+            </td>
 
-            <div id="actorLinkDiv">
+            <td id="actorLinkDiv">
                 <div id="linkTitle">
                     <h3 id="linkTitleLeft" class="panel-title text-center">Sources</h3>
                     <h3 id="linkTitleRight" class="panel-title text-center">Targets</h3>
                 </div>
 
                 <svg id="actorLinkSVG"></svg>
-            </div>
-        </div>
+            </td>
+
+            </tr>
+        </table>
     </div>
 </div>
 
@@ -384,12 +388,14 @@
         }
 
         if ($('#leftpanel').hasClass('closepanel')) {
-            $('#main').css('margin-left', '46px');
-            $('#main').css('width', 'calc(100% - 46px)');
+            $('#main').css('margin-left', '36px');
+            $('#main').css('width', 'calc(100% - 36px)');
         } else {
-            $('#main').css('margin-left', '270px');
-            $('#main').css('width', 'calc(100% - 270px)');
+            $('#main').css('margin-left', '260px');
+            $('#main').css('width', 'calc(100% - 260px)');
         }
+
+        resizeActorSVG();
     }
 
     function toggleRightPanel() {

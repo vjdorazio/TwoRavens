@@ -1316,4 +1316,36 @@ function capitalizeFirst(str) {
 	return str.charAt(0).toUpperCase() + str.substring(1);
 }
 
-//end of actor code
+function resizeActorSVG(){
+    //actor resize on window resize handled here
+    if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded) {	//handle only if actor code is loaded
+        var curHeight = $("#main").height() - 20;		//this is the height of the container
+        var titleHeight = $("#linkTitle").height();			//this is the height of the title div above the SVG
+        var trySize = actorHeight;
+        $("#actorSelectionDiv").css("height", curHeight);	//this constrains the left side
+        if (sourceActualSize <= calcCircleNum(curHeight - titleHeight) && targetActualSize <= calcCircleNum(curHeight - titleHeight)) {		//if link div is empty enough, maintain height alignment
+            $("#actorLinkDiv").css("height", $("#actorSelectionDiv").height() + 2);
+            actorHeight = actorSVG.node().getBoundingClientRect().height;
+            actorSVG.attr("height", actorHeight);
+            d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+            updateAll();
+        }
+        else if (trySize > curHeight){		//note this is a slow implementation, especially if dragging to resize
+            while (sourceActualSize <= calcCircleNum(trySize) && targetActualSize <= calcCircleNum(trySize)) {		//reduce the size of the SVG to a comfortable viewing size
+                trySize -= 20;		//try half of actorNodeR
+            }
+
+            $("#actorLinkDiv").height(function(n, c){return c - (actorHeight - trySize);});
+            actorHeight = trySize;
+            actorSVG.attr("height", actorHeight);
+            d3.select("#centerLine").attr("d", function() {return "M" + actorWidth/2 + "," + 0 + "V" + actorHeight;});
+            updateAll();
+        }
+        let diagramWidth = $("#linkTitle").width();
+        actorWidth = actorSVG.node().getBoundingClientRect().width;
+
+        actorSVG.attr("width", diagramWidth);
+        d3.select("#centerLine").attr("d", function() {return "M" + diagramWidth/2 + "," + 0 + "V" + actorHeight;});
+        updateAll();
+    }
+}
