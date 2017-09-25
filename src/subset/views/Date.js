@@ -141,6 +141,9 @@ function d3date(init=false) {
         return row.Date >= dateminUser && row.Date <= datemaxUser;
     });
 
+    data_highlight.unshift({"Date": dateminUser, "Freq": interpolate(data, dateminUser)});
+    data_highlight.push({"Date": datemaxUser, "Freq": interpolate(data, datemaxUser)});
+
     var format = d3.timeFormat("%m-%d-%Y");
 
     if (dateSetup) {
@@ -278,6 +281,47 @@ $("#todate").datepicker({
         d3date();
     }
 });
+
+function interpolate(data, date) {
+    let allDates = [];
+    for (let item in data){
+        allDates.push(data[item]['Date'])
+    }
+
+    let lower = allDates[0];
+    let upper = allDates[allDates.length - 1];
+
+    for (let candidate in allDates) {
+        if (allDates[candidate] > lower && allDates[candidate] < date) {
+            lower = allDates[candidate];
+            console.log("SUCCESS")
+        }
+        if (allDates[candidate] < upper && allDates[candidate] > date) {
+            upper = allDates[candidate];
+            console.log("SUCCESS2")
+        }
+    }
+
+    let lowerFreq = data[0]['Freq'];
+    let upperFreq = data[data.length - 1]['Freq'];
+
+    for (let candidate in data) {
+        if (data[candidate]['Date'] === lower) lowerFreq = data[candidate]['Freq'];
+        if (data[candidate]['Date'] === upper) upperFreq = data[candidate]['Freq'];
+    }
+
+    console.log(upper);
+
+    let interval_lower = date.getTime() - lower.getTime();
+    let timespan = upper.getTime() - lower.getTime();
+
+    let weight = interval_lower / timespan;
+    console.log("TEST");
+    console.log(lowerFreq);
+    console.log(upperFreq);
+    console.log(weight * lowerFreq + (1 - weight) * upperFreq);
+    return (1 - weight) * lowerFreq + weight * upperFreq;
+}
 
 
 function setDatefromSlider() {
