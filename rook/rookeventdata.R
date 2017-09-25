@@ -120,10 +120,9 @@ eventdata.app <- function(env) {
         '{$sort: {action: 1}}'))                                            # Sort
 
     # Collect unique values in for sources page
-    actor_source = RMongo::dbGetDistinct(connection, table, 'Source', subsets)
-    actor_source_entities = RMongo::dbGetDistinct(connection, table, 'SrcActor', subsets)
-    actor_source_role = RMongo::dbGetDistinct(connection, table, 'SrcAgent', subsets)
-    actor_source_attributes = RMongo::dbGetDistinct(connection, table, 'SOthAgent', subsets)
+    actor_source = sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets))
+    actor_source_entities = sort(RMongo::dbGetDistinct(connection, table, 'SrcActor', subsets))
+    actor_source_role = sort(RMongo::dbGetDistinct(connection, table, 'SrcAgent', subsets))
     actor_source_attributes = RMongo::dbAggregate(connection, table, c(
         paste('{$match: ', subsets, '}'),                                        # First, match based on data subset
         '{$project: {SOthAgent: "$SOthAgent"}}',                                 # Cull to TOthAgent field
@@ -142,9 +141,9 @@ eventdata.app <- function(env) {
         attributes = actor_source_attributes
     )
 
-    actor_target = RMongo::dbGetDistinct(connection, table, 'Target', subsets)
-    actor_target_entities = RMongo::dbGetDistinct(connection, table, 'TgtActor', subsets)
-    actor_target_role = RMongo::dbGetDistinct(connection, table, 'TgtAgent', subsets)
+    actor_target = sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets))
+    actor_target_entities = sort(RMongo::dbGetDistinct(connection, table, 'TgtActor', subsets))
+    actor_target_role = sort(RMongo::dbGetDistinct(connection, table, 'TgtAgent', subsets))
     actor_target_attributes = RMongo::dbAggregate(connection, table, c(
         paste('{$match: ', subsets, '}'),                                        # First, match based on data subset
         '{$project: {TOthAgent: "$TOthAgent"}}',                                 # Cull to SOthAgent field
