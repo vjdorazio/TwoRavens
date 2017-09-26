@@ -785,11 +785,6 @@ function actorDataLoad(){
             case 3:
                 displayList = document.getElementById("attribute" + capitalizeFirst(actorType[m]) + "sList");
                 displayList.innerHTML = "";
-                let attributes = [];
-                for (let idx in lines) {
-                    attributes.push(JSON.parse(lines[idx]).attribute);
-                }
-                lines = attributes.slice();
                 break;
         }
 

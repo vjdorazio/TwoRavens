@@ -8,7 +8,7 @@ if (!production) {
     rappURL = "https://beta.dataverse.org/custom/"; //this will change when/if the production host changes
 }
 
-let subsetURL = rappURL + 'eventdataapp';
+let subsetURL = rappURL + 'eventdatasubsetapp';
 
 let variables = ["X","GID","Date","Year","Month","Day","Source","SrcActor","SrcAgent","SOthAgent","Target","TgtActor",
     "TgtAgent","TOthAgent","CAMEO","RootCode","QuadClass","Goldstein","None","Lat","Lon","Geoname","CountryCode",
@@ -43,8 +43,7 @@ if (localStorage.getItem("subsetData") !== null) {
 let variableQuery = buildVariables();
 let subsetQuery = buildSubset();
 
-console.log(JSON.stringify(subsetQuery));
-console.log(JSON.stringify(variableQuery, null, '  '));
+console.log("Query: " + JSON.stringify(subsetQuery));
 
 let query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery)};
 
@@ -211,6 +210,7 @@ function download() {
 *   Draws all subset plots, often invoked as callback after server request for new plotting data
 */
 function pageSetup(jsondata) {
+    console.log("Server returned:");
     console.log(jsondata);
     if (jsondata.date_data.length === 0) {
         alert("No records match your subset. Plots will not be updated.");
@@ -233,8 +233,11 @@ function pageSetup(jsondata) {
     }
     d3loc();
 
-
     actionData = {};
+    for (let i = 0; i < 20; i++) {
+        actionData[i] = 0;
+    }
+
     for (let idx in jsondata.action_data) {
         let parsed = JSON.parse(jsondata.action_data[idx]);
         actionData[parsed['action']] = parsed['total']
@@ -499,7 +502,6 @@ $(function () {
             }
             if ((!('show_op' in node) || ('show_op' in node && node.show_op)) && 'operation' in node) {
                 $li.find('.jqtree-element').prepend(buttonOperator(node.id, node.operation));
-                console.log(node);
             }
             if (!('cancellable' in node) || (node['cancellable'] === true)) {
                 $li.find('.jqtree-element').append(buttonDelete(node.id));
@@ -553,7 +555,6 @@ $('#subsetTree').on(
         subsetData = JSON.parse($('#subsetTree').tree('toJson'));
 
         hide_first(subsetData);
-        console.log(subsetData);
         let qtree = $('#subsetTree');
         let state = qtree.tree('getState');
         qtree.tree('loadData', subsetData);
@@ -577,9 +578,6 @@ function hide_first(data){
         if ('children' in data[child_id]) {
             data[child_id].children = hide_first(data[child_id].children);
         }
-        console.log(data[child_id].name);
-        console.log(child_id);
-        console.log(child_id !== 0);
         data[child_id]['show_op'] = child_id !== "0";
     }
     return data;
@@ -779,8 +777,6 @@ function getSubsetPreferences() {
         };
         // Add each link to the parent node as another rule
         for (let linkId in actorLinks) {
-            console.log("linkId:");
-            console.log(linkId);
             let link = {
                 id: String(nodeId++),
                 name: 'Link ' + String(linkId),
@@ -867,7 +863,11 @@ function submitQuery() {
             break
         }
     }
-    if (!newSubsets) return;
+
+    if (!newSubsets) {
+        alert("Nothing has been staged yet! Stage your preferences before subset.");
+        return;
+    }
 
     function submitQueryCallback(jsondata) {
         // If page setup failed, then don't lock the preferences behind a query

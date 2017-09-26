@@ -1,7 +1,7 @@
 .idea/
 ~*.docx
 *.~lock.*
-.Rproj.user
-*.Rproj
-*.RData
-*.Rhistory
+rook/.Rproj.user
+rook/.Rproj
+rook/.RData
+rook/.Rhistory

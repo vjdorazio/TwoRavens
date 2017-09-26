@@ -294,11 +294,9 @@ function interpolate(data, date) {
     for (let candidate in allDates) {
         if (allDates[candidate] > lower && allDates[candidate] < date) {
             lower = allDates[candidate];
-            console.log("SUCCESS")
         }
         if (allDates[candidate] < upper && allDates[candidate] > date) {
             upper = allDates[candidate];
-            console.log("SUCCESS2")
         }
     }
 
@@ -310,16 +308,10 @@ function interpolate(data, date) {
         if (data[candidate]['Date'] === upper) upperFreq = data[candidate]['Freq'];
     }
 
-    console.log(upper);
-
     let interval_lower = date.getTime() - lower.getTime();
     let timespan = upper.getTime() - lower.getTime();
 
     let weight = interval_lower / timespan;
-    console.log("TEST");
-    console.log(lowerFreq);
-    console.log(upperFreq);
-    console.log(weight * lowerFreq + (1 - weight) * upperFreq);
     return (1 - weight) * lowerFreq + weight * upperFreq;
 }
 

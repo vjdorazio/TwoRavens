@@ -22,13 +22,13 @@ if(production) {
 if(!production){
     packageList<-c("Rcpp","VGAM", "AER", "dplyr", "quantreg", "geepack", "maxLik", "Amelia", "Rook","jsonlite","rjson", "devtools", "DescTools", "nloptr","XML", "RMongo")
 
-   ## install missing packages, and update if newer version available
-   for(i in 1:length(packageList)){
-       if (!require(packageList[i],character.only = TRUE)){
-           install.packages(packageList[i], repos="http://lib.stat.cmu.edu/R/CRAN/")
-       }
-   }
-   update.packages(ask = FALSE, dependencies = c('Suggests'), oldPkgs=packageList, repos="http://lib.stat.cmu.edu/R/CRAN/")
+    ## install missing packages, and update if newer version available
+    for(i in 1:length(packageList)){
+        if (!require(packageList[i],character.only = TRUE)){
+            install.packages(packageList[i], repos="http://lib.stat.cmu.edu/R/CRAN/")
+        }
+    }
+    update.packages(ask = FALSE, dependencies = c('Suggests'), oldPkgs=packageList, repos="http://lib.stat.cmu.edu/R/CRAN/")
 }
 
 library(Rook)
@@ -70,8 +70,13 @@ if(!production){
     myInterface <- "0.0.0.0"
     status <- -1
 
-    # The call to start the server is "tools::startHTTPD" on older versions of R.
-    status <- .Call(tools:::C_startHTTPD, myInterface, myPort)
+    # Call to start internal server has changed.
+    # Thanks James! http://jeffreyhorner.tumblr.com/post/33814488298/deploy-rook-apps-part-ii
+    if (as.integer(R.version[["svn rev"]]) > 72310) {
+        status <- .Call(tools:::C_startHTTPD, myInterface, myPort)
+    } else {
+        status <- .Call(tools:::startHTTPD, myInterface, myPort)
+    }
 
     if( status!=0 ){
         print("WARNING: Error setting interface or port")
@@ -90,6 +95,7 @@ if(!production){
     R.server$start(listen=myInterface, port=myPort)
     R.server$listenAddr <- myInterface
     R.server$listenPort <- myPort
+
 }
 
 
@@ -104,7 +110,8 @@ source("rookwrite.R")
 source("rookquery.R")
 source("build.R")
 source("rookagg.R")
-source("rookeventdata.R")
+source("eventdata/rooksubset.R")
+source("eventdata/rooksubset_local.R")
 
 if(addPrivacy){
     source("rookprivate.R")
@@ -124,9 +131,10 @@ if(!production){
     R.server$add(app = query.app, name="queryapp")
     R.server$add(app = build.app, name="buildapp")
     R.server$add(app = aggregate.app, name="aggregateapp")
-    R.server$add(app = eventdata.app, name="eventdataapp")
-    
-        ## These add the .apps for the privacy budget allocator interface
+    R.server$add(app = eventdata_subset_local.app, name="eventdatasubsetlocalapp")
+    R.server$add(app = eventdata_subset.app, name="eventdatasubsetapp")
+
+    ## These add the .apps for the privacy budget allocator interface
     if(addPrivacy){
         R.server$add(app = privateStatistics.app, name="privateStatisticsapp")
         R.server$add(app = privateAccuracies.app, name="privateAccuraciesapp")
