@@ -128,12 +128,25 @@ eventdata_subset_local.app <- function(env) {
     '{$project: {state:"$_id.country", total:"$country", _id: 0}}'))    # Rename fields
 
     # Collect frequency data necessary for action plot
-    action_frequencies = RMongo::dbAggregate(connection, table, c(
+    action_code_frequencies = RMongo::dbAggregate(connection, table, c(
     paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
     '{$project: {rcode: "$RootCode", _id: 0}}',                         # Cull to just RootCode field
     '{$group: { _id: {action: "$rcode"}, action: {$sum:1}}}',           # Compute frequencies of each bin
     '{$project: {action:"$_id.action", total:"$action", _id: 0}}',      # Rename fields
     '{$sort: {action: 1}}'))                                            # Sort
+
+    # Collect frequency data necessary for action plot
+    action_class_frequencies = RMongo::dbAggregate(connection, table, c(
+    paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
+    '{$project: {rcode: "$QuadClass", _id: 0}}',                        # Cull to just QuadClass field
+    '{$group: { _id: {action: "$rcode"}, action: {$sum:1}}}',           # Compute frequencies of each bin
+    '{$project: {action:"$_id.action", total:"$action", _id: 0}}',      # Rename fields
+    '{$sort: {action: 1}}'))                                            # Sort
+
+    action_values = list(
+    code_data = action_code_frequencies,
+    class_data = action_class_frequencies
+    )
 
     # Collect unique values in for sources page
     actor_source = sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets))
@@ -173,7 +186,7 @@ eventdata_subset_local.app <- function(env) {
     result = toString(jsonlite::toJSON(list(
     date_data = date_frequencies,
     country_data = country_frequencies,
-    action_data = action_frequencies,
+    action_data = action_values,
     actor_data = actor_values)))
     response$write(result)
     return(response$finish())

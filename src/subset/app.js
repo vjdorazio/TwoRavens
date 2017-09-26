@@ -8,7 +8,7 @@ if (!production) {
     rappURL = "https://beta.dataverse.org/custom/"; //this will change when/if the production host changes
 }
 
-let subsetURL = rappURL + 'eventdatasubsetapp';
+let subsetURL = rappURL + 'eventdatasubsetlocalapp';
 
 let variables = ["X","GID","Date","Year","Month","Day","Source","SrcActor","SrcAgent","SOthAgent","Target","TgtActor",
     "TgtAgent","TOthAgent","CAMEO","RootCode","QuadClass","Goldstein","None","Lat","Lon","Geoname","CountryCode",
@@ -24,8 +24,9 @@ let selVarColor = 'rgba(250,128,114, 0.5)';    //d3.rgb("salmon");
 
 let dateData = [];
 let countryData = [];
-let actorData = [];
-let actionData = {};
+let actorData = {};
+let actionCodeData = [];
+let actionClassData = [];
 
 // This is set once data is loaded and the graphs can be drawn. Subset menus will not be shown until this is set
 let initialLoad = false;
@@ -233,15 +234,26 @@ function pageSetup(jsondata) {
     }
     d3loc();
 
-    actionData = {};
+    actionCodeData = {};
     for (let i = 0; i < 20; i++) {
-        actionData[i] = 0;
+        actionCodeData[i] = 0;
+    }
+    for (let idx in jsondata.action_data.code_data) {
+        let parsed = JSON.parse(jsondata.action_data.code_data[idx]);
+        actionCodeData[parsed['action']] = parsed['total']
     }
 
-    for (let idx in jsondata.action_data) {
-        let parsed = JSON.parse(jsondata.action_data[idx]);
-        actionData[parsed['action']] = parsed['total']
+    actionClassData = {};
+    for (let i = 0; i < 5; i++) {
+        actionClassData[i] = 0;
     }
+    for (let idx in jsondata.action_data.class_data) {
+        let parsed = JSON.parse(jsondata.action_data.class_data[idx]);
+        actionClassData[parsed['action']] = parsed['total']
+    }
+    console.log("Action data loaded in these variables:")
+    console.log(actionCodeData);
+    console.log(actionClassData);
     d3action();
 
     actorData = jsondata.actor_data;
