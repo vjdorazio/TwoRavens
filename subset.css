@@ -1480,19 +1480,29 @@ color: #333;
 	border: 1px solid black;
 }
 
-.actionBar, .actionBar_none {
-	fill: steelblue;
-	cursor: pointer;
-}
-
 .actionBar_click {
     fill: white;
     cursor: pointer;
     opacity: 0;
 }
 
+.actionBar, .actionBar_none {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+.actionBar_none:hover, .actionBar_none_hover {
+	fill: brown;
+	cursor: pointer;
+}
+
 .actionBar_some {
 	fill: url("#actionPattern");
+	cursor: pointer;
+}
+
+.actionBar_some:hover, .actionBar_some_hover {
+	fill: steelblue;
 	cursor: pointer;
 }
 
@@ -1501,6 +1511,10 @@ color: #333;
 	cursor: pointer;
 }
 
+.actionBar_all:hover, .actionBar_all_hover {
+	fill: steelblue;
+	cursor: pointer;
+}
 
 /*
 .bar_all_selected {
