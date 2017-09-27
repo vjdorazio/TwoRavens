@@ -212,22 +212,26 @@ function updateData() {
 				})		//extend to edge of svg
 				.attr("x", function(d) {return actionMainX(d.count);}).attr("y", function(d) {return actionMainY(d.classNum);})
 				.on("click", function(d) {
-					//~ if (d.maxSelect == d.selectCount) {		//deselect all of penta class
-						//~ for (var x = 0; x < actionSubData.length; x ++) {
-							//~ if (actionSubData[x].penta == d.classNum && actionSubData[x].active) {
-								//~ console.log("deselecting #actionSubBar" + (x + 1));
-								//~ $("#actionSubBar_click" + (x + 1)).d3Click();
-							//~ }
-						//~ }
-					//~ }
-					//~ else {
-						//~ for (var x = 0; x < actionSubData.length; x ++) {
-							//~ if (actionSubData[x].penta == d.classNum && !actionSubData[x].active) {
-								//~ console.log("selecting #actionSubBar" + (x + 1));
-								//~ $("#actionSubBar_click" + (x + 1)).d3Click();
-							//~ }
-						//~ }
-					//~ }
+					console.log("clicked " + d.classNum);
+					if (d.maxSelect == d.selectCount) {		//deselect all of penta class
+						for (var x = 0; x < actionSubData.length; x ++) {
+							if (actionSubData[x].penta == d.classNum && actionSubData[x].active) {
+								console.log("deselecting #actionSubBar" + (x + 1));
+								$("#actionSubBar" + (x + 1)).d3Click();
+							}
+						}
+					}
+					else {
+						for (var x = 0; x < actionSubData.length; x ++) {
+							if (actionSubData[x].penta == d.classNum && !actionSubData[x].active) {
+								console.log("selecting #actionSubBar" + (x + 1));
+								$("#actionSubBar" + (x + 1)).d3Click();
+							}
+						}
+					}
+					console.log("main buffer:");
+					console.log(actionBuffer);
+					console.log("\n");
 				})
 				.on("mouseover", function(d) {
 					var oldClasses = $("#actionBar" + d.classNum).attr("class");
@@ -257,7 +261,7 @@ function updateData() {
 						for (var x = 0; x < actionSubData.length; x ++) {
 							if (actionSubData[x].penta == d.classNum && actionSubData[x].active) {
 								console.log("deselecting #actionSubBar" + (x + 1));
-								$("#actionSubBar_click" + (x + 1)).d3Click();
+								$("#actionSubBar" + (x + 1)).d3Click();
 							}
 						}
 					}
@@ -265,7 +269,7 @@ function updateData() {
 						for (var x = 0; x < actionSubData.length; x ++) {
 							if (actionSubData[x].penta == d.classNum && !actionSubData[x].active) {
 								console.log("selecting #actionSubBar" + (x + 1));
-								$("#actionSubBar_click" + (x + 1)).d3Click();
+								$("#actionSubBar" + (x + 1)).d3Click();
 							}
 						}
 					}
@@ -303,7 +307,7 @@ function updateData() {
 	}).tickSizeInner([-actionMainHeight]));
 	d3.select("#actionSubGraph").select(".subY").call(d3.axisLeft(actionSubY));
 
-	actionSubGraphData = actionSubGraphData.data(actionSubData, function(d) {return d.count * d.active;});
+	actionSubGraphData = actionSubGraphData.data(actionSubData, function(d) {return d.rootCode + "_" + d.count;});
 	actionSubGraphData.exit().remove();
 	
 	actionSubGraphData = actionSubGraphData.enter()
@@ -377,6 +381,9 @@ function updateData() {
 				.on("click", function (d) {
 					console.log("clicked on actionSubBar" + d.rootCode);
 					d.active = !d.active;
+					console.log("d active: " + d.active);
+					console.log("actionSubData");
+					console.log(actionSubData);
 					$("#actionSubBar" + d.rootCode).attr("class", function() {return "actionBar " + (d.active ? "actionBar_all" : "actionBar_none");});
 					d.active ? actionBuffer.push(d.rootCode) : actionBuffer.splice(actionBuffer.indexOf(d.rootCode), 1);
 
