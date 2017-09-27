@@ -790,12 +790,30 @@ function getSubsetPreferences() {
     }
 
     if (subsetKeySelected === 'Action') {
-        return {
+        // Make parent node
+        let subset = {
             id: String(nodeId++),
             name: 'Action Subset',
             operation: 'and',
+            negate: 'false',
             children: []
+        };
+        actionBuffer.sort();
+        // Add each action to the parent node as another rule
+        for (let action in actionBuffer) {
+            if (actionBuffer[action]) {
+                subset['children'].push({
+                    id: String(nodeId++),
+                    name: actionBuffer[action].toString(),
+                    show_op: false
+                });
+            }
         }
+        // Don't add a rule and ignore the stage if no countries are selected
+        if (subset['children'].length === 0) {
+            return {}
+        }
+        return subset
     }
     if (subsetKeySelected === 'Actor') {
         // Make parent node
@@ -1082,6 +1100,19 @@ function buildSubset(){
                 rule_query_inner = {'$not': rule_query_inner};
             }
             rule_query['CountryCode'] = rule_query_inner;
+        }
+
+        if (rule.name === 'Action Subset'){
+            let rule_query_inner = [];
+            for (let child_id in rule.children) {
+                rule_query_inner.push(parseInt(rule.children[child_id].name));
+            }
+
+            rule_query_inner = {'$in': rule_query_inner};
+            if ('negate' in rule && !rule.negate) {
+                rule_query_inner = {'$not': rule_query_inner};
+            }
+            rule_query['RootCode'] = rule_query_inner;
         }
 
         if (rule.name === 'Actor Subset'){
