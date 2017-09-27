@@ -1430,12 +1430,14 @@ text.id {
 }
 /*end styling for actor*/
 
+/*
 #actionMainGraph .bar {
   fill: steelblue;
 }
+*/
 
-#actionMainGraph text {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+#actionMainGraph text,#actionSubGraph text {
+font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 font-size: 14px;
 
@@ -1446,3 +1448,86 @@ color: #333;
   text-anchor: end;
 */
 }
+
+#actionMainGraph .axis {
+/*
+	stroke: red;
+*/
+}
+
+#actionMainGraph, #actionSubGraph {
+	border: 1px solid black;
+}
+
+.actionBar_click {
+    fill: white;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.actionBar, .actionBar_none {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+.actionBar_none:hover, .actionBar_none_hover {
+	fill: brown;
+	cursor: pointer;
+}
+
+.actionBar_some {
+	fill: url("#actionPattern");
+	cursor: pointer;
+}
+
+.actionBar_some:hover, .actionBar_some_hover {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+.actionBar_all {
+	fill: brown;
+	cursor: pointer;
+}
+
+.actionBar_all:hover, .actionBar_all_hover {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+/*
+.bar_all_selected {
+	fill: brown;
+	cursor: pointer;
+}
+
+.bar_some_selected {
+	stroke: #000000; 
+	fill: url(#pattern1);
+	cursor: pointer;
+}
+
+.bar:hover {
+	fill: brown;
+	cursor: pointer;
+}
+
+.bar_all_selected:hover {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+.bar_some_selected:hover {
+	fill: steelblue;
+	cursor: pointer;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #D4D8DA;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+.x path {
+	display: none;
+}*/
