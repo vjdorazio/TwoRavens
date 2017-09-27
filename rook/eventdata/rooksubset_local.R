@@ -85,6 +85,9 @@ eventdata_subset_local.app <- function(env) {
     variables = everything$variables
     raw = everything$raw
 
+    subsets = gsub('date8', 'Date', subsets)
+    print(subsets)
+
     # print(subsets)
     # print(variables)
     table <- 'samplePhox'
@@ -112,40 +115,33 @@ eventdata_subset_local.app <- function(env) {
         return(sort(unlist(accumulator)))
     }
 
-    # Collect frequency data necessary for subset plot
+    # Collect frequency data necessary for date plot
     date_frequencies = RMongo::dbAggregate(connection, table, c(
     paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
     '{$project: {Year: "$Year", Month: "$Month", _id: 0}}',             # Cull to just Year and Month fields
-    '{$group: { _id: { year: "$Year", month: "$Month" }, total: {$sum: 1} }}', # Group by years and months
-    '{$project: {"_id": 0, "datebin": "$_id", "total": "$total"}}',     # Rename fields
-    '{$sort: {"datebin.year": 1, "datebin.month": 1}}'))                # Sort
+    '{$group: { _id: { year: "$Year", month: "$Month" }, total: {$sum: 1} }}')) # Group by years and months
 
     # Collect frequency data necessary for country plot
     country_frequencies = RMongo::dbAggregate(connection, table, c(
     paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
     '{$project: {ccode: "$CountryCode", _id: 0}}',                      # Cull to just CountryCode field
-    '{$group: { _id: {country: "$ccode"}, country: {$sum:1}}}',         # Compute frequencies of each bin
-    '{$project: {state:"$_id.country", total:"$country", _id: 0}}'))    # Rename fields
+    '{$group: { _id: {CountryCode: "$ccode"}, total: {$sum:1}}}'))        # Compute frequencies of each bin
 
     # Collect frequency data necessary for action plot
     action_code_frequencies = RMongo::dbAggregate(connection, table, c(
     paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
     '{$project: {rcode: "$RootCode", _id: 0}}',                         # Cull to just RootCode field
-    '{$group: { _id: {action: "$rcode"}, action: {$sum:1}}}',           # Compute frequencies of each bin
-    '{$project: {action:"$_id.action", total:"$action", _id: 0}}',      # Rename fields
-    '{$sort: {action: 1}}'))                                            # Sort
+    '{$group: { _id: {RootCode: "$rcode"}, total: {$sum:1}}}'))          # Compute frequencies of each bin
 
     # Collect frequency data necessary for action plot
     action_class_frequencies = RMongo::dbAggregate(connection, table, c(
     paste('{$match: ', subsets, '}'),                                   # First, match based on data subset
     '{$project: {rcode: "$QuadClass", _id: 0}}',                        # Cull to just QuadClass field
-    '{$group: { _id: {action: "$rcode"}, action: {$sum:1}}}',           # Compute frequencies of each bin
-    '{$project: {action:"$_id.action", total:"$action", _id: 0}}',      # Rename fields
-    '{$sort: {action: 1}}'))                                            # Sort
+    '{$group: { _id: {QuadClass: "$rcode"}, total: {$sum:1}}}'))          # Compute frequencies of each bin
 
     action_values = list(
-    code_data = action_code_frequencies,
-    class_data = action_class_frequencies
+        code_data = action_code_frequencies,
+        class_data = action_class_frequencies
     )
 
     # Collect unique values in for sources page
@@ -155,10 +151,10 @@ eventdata_subset_local.app <- function(env) {
     actor_source_attributes = unique(RMongo::dbGetDistinct(connection, table, 'SOthAgent', subsets))
 
     actor_source_values = list(
-    full = actor_source,
-    entities = actor_source_entities,
-    roles = actor_source_role,
-    attributes = actor_source_attributes
+        full = actor_source,
+        entities = actor_source_entities,
+        roles = actor_source_role,
+        attributes = actor_source_attributes
     )
 
     actor_target = sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets))
@@ -167,16 +163,16 @@ eventdata_subset_local.app <- function(env) {
     actor_target_attributes = unique(RMongo::dbGetDistinct(connection, table, 'TOthAgent', subsets))
 
     actor_target_values = list(
-    full = actor_target,
-    entities = actor_target_entities,
-    roles = actor_target_role,
-    attributes = actor_target_attributes
+        full = actor_target,
+        entities = actor_target_entities,
+        roles = actor_target_role,
+        attributes = actor_target_attributes
     )
 
     # Package actor data
     actor_values = list(
-    source = actor_source_values,
-    target = actor_target_values
+        source = actor_source_values,
+        target = actor_target_values
     )
 
 
@@ -184,10 +180,11 @@ eventdata_subset_local.app <- function(env) {
         sink()
     }
     result = toString(jsonlite::toJSON(list(
-    date_data = date_frequencies,
-    country_data = country_frequencies,
-    action_data = action_values,
-    actor_data = actor_values)))
+        date_data = date_frequencies,
+        country_data = country_frequencies,
+        action_data = action_values,
+        actor_data = actor_values
+    )))
     response$write(result)
     return(response$finish())
 }

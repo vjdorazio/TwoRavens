@@ -19,8 +19,8 @@ function d3date(init=false) {
     $("#dateSVG").empty();
     var dateSVG = d3.select("#dateSVG");
 
-    margin = {top: 20, right: 20, bottom: 110, left: 40};
-    margin2 = {top: 430, right: 20, bottom: 30, left: 40};
+    margin = {top: 20, right: 20, bottom: 110, left: 80};
+    margin2 = {top: 430, right: 20, bottom: 30, left: 80};
     datewidth = +dateSVG.attr("width") - margin.left - margin.right;
     dateheight = +dateSVG.attr("height") - margin.top - margin.bottom;
     dateheight2 = +dateSVG.attr("height") - margin2.top - margin2.bottom;
@@ -112,11 +112,21 @@ function d3date(init=false) {
 
     let data = [];
 
-    for (let idx in dateData) {
-        let binLabel = dateData[idx].datebin;
-        let bin = {'Date': new Date(binLabel.year, binLabel.month + 1, 0), 'Freq': dateData[idx].total};
-        data.push(bin)
+    function dateSort(a, b) {
+        if (a['Date'] === b['Date']) {
+            return 0;
+        }
+        else {
+            return (a['Date'] < b['Date']) ? -1 : 1;
+        }
     }
+
+    for (let idx in dateData) {
+        let binLabel = dateData[idx]._id;
+        let bin = {'Date': new Date(binLabel.year, binLabel.month + 1, 0), 'Freq': dateData[idx].total};
+        data.push(bin);
+    }
+    data = data.sort(dateSort);
 
     // Set calendar ranges
     datemin = d3.min(data, function (d) {

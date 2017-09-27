@@ -76,14 +76,18 @@ eventdata_subset.app <- function(env) {
         return(sort(unlist(accumulator)))
     }
 
-    variables = everything$variables
+    getData = function(url) {
+        data = jsonlite::fromJSON(url)$data
+        print(data)
+        return(data)
+    }
 
     # Check if metadata has already been computed, and return cached value if it has
     # if (!file.exists("./data/cachedQueries.RData")) save(list(0), file="./data/cachedQueries.RData")
     #
     # cachedQueries = load("./data/cachedQueries.RData")
     # if (subsets %in% cachedQueries) {
-    #     response$write(jsonlite::fromJSON(paste("./data/", match(subsets, cachedQueries)), ".txt"))$data
+    #     response$write(getData(paste("./data/", match(subsets, cachedQueries)), ".txt"))$data
     #     return(response$finish())
     # }
 
@@ -92,32 +96,33 @@ eventdata_subset.app <- function(env) {
     # query_url = paste(query_url, '&select=', paste0(variables, collapse=','))
 
     print("Collecting date frequencies")
-    date_frequencies = jsonlite::fromJSON(paste(query_url, '&group=year,month', sep=""))$data
+    date_frequencies = getData(paste(query_url, '&group=year,month', sep=""))
+
     print("Collecting country frequencies")
-    country_frequencies = jsonlite::fromJSON(paste(query_url, '&group=country_code', sep=""))$data
+    country_frequencies = getData(paste(query_url, '&group=country_code', sep=""))
 
     print("Collecting action codes")
-    actionCode_frequencies = jsonlite::fromJSON(paste(query_url, '&group=code', sep=""))$data
+    action_code_frequencies = getData(paste(query_url, '&group=root_code', sep=""))
 
     print("Collecting pentaclass codes")
-    actionClass_frequencies = jsonlite::fromJSON(paste(query_url, '&group=quad_class', sep=""))$data
+    action_class_frequencies = getData(paste(query_url, '&group=quad_class', sep=""))
 
     action_values = list(
-        code_data = actionCode_frequencies,
-        class_data = actionClass_frequencies
+        code_data = action_code_frequencies,
+        class_data = action_class_frequencies
     )
 
     print("Collecting actor sources")
-    actor_source = jsonlite::fromJSON(paste(query_url, '&distinct=source', sep=""))$data
+    actor_source = getData(paste(query_url, '&unique=source', sep=""))
 
     print("Collecting actor source entities")
-    actor_source_entities = jsonlite::fromJSON(paste(query_url, '&distinct=src_actor', sep=""))$data
+    actor_source_entities = getData(paste(query_url, '&unique=src_actor', sep=""))
 
     print("Collecting actor source agents/roles")
-    actor_source_role = jsonlite::fromJSON(paste(query_url, '&distinct=src_agent', sep=""))$data
+    actor_source_role = getData(paste(query_url, '&unique=src_agent', sep=""))
 
     print("Collecting actor source other agents")
-    actor_source_attributes = unique(jsonlite::fromJSON(paste(query_url, '&distinct=src_other_agent', sep=""))$data)
+    actor_source_attributes = unique(jsonlite::fromJSON(paste(query_url, '&unique=src_other_agent', sep=""))$data)
 
     actor_source_values = list(
         full = actor_source,
@@ -127,16 +132,16 @@ eventdata_subset.app <- function(env) {
     )
 
     print("Collecting actor targets")
-    actor_target = jsonlite::fromJSON(paste(query_url, '&distinct=target', sep=""))$data
+    actor_target = getData(paste(query_url, '&unique=target', sep=""))
 
     print("Collecting actor target entities")
-    actor_target_entities = jsonlite::fromJSON(paste(query_url, '&distinct=tgt_actor', sep=""))$data
+    actor_target_entities = getData(paste(query_url, '&unique=tgt_actor', sep=""))
 
     print("Collecting actor target agents/roles")
-    actor_target_role = jsonlite::fromJSON(paste(query_url, '&distinct=tgt_agent', sep=""))$data
+    actor_target_role = getData(paste(query_url, '&unique=tgt_agent', sep=""))
 
     print("Collecting actor target other agents")
-    actor_target_attributes = unique(jsonlite::fromJSON(paste(query_url, '&distinct=tgt_other_agent', sep=""))$data)
+    actor_target_attributes = unique(jsonlite::fromJSON(paste(query_url, '&unique=tgt_other_agent', sep=""))$data)
 
     actor_target_values = list(
         full = actor_target,
@@ -162,8 +167,8 @@ eventdata_subset.app <- function(env) {
         action_data = action_values,
         actor_data = actor_values
     )))
-    print(result)
 
+    print("Complete!")
     response$write(result)
     response$finish()
 }

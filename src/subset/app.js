@@ -7,8 +7,17 @@ if (!production) {
 } else {
     rappURL = "https://beta.dataverse.org/custom/"; //this will change when/if the production host changes
 }
+// Set to 'eventdatasubsetlocalapp' to load from local mongo server
+// Set to 'eventdatasubsetapp' to load from API
+let appname = 'eventdatasubsetapp';
 
-let subsetURL = rappURL + 'eventdatasubsetlocalapp';
+// TODO: When the server has field names 'to spec':
+//      Remove the gsub in the R app
+//      R app unique and grouping labels must be changed
+//      Query builder date8 -> Date
+//      pageSetup data parsers need names adjusted
+
+let subsetURL = rappURL + appname;
 
 let variables = ["X","GID","Date","Year","Month","Day","Source","SrcActor","SrcAgent","SOthAgent","Target","TgtActor",
     "TgtAgent","TOthAgent","CAMEO","RootCode","QuadClass","Goldstein","None","Lat","Lon","Geoname","CountryCode",
@@ -218,45 +227,72 @@ function pageSetup(jsondata) {
         return false;
     }
 
-    dateData.length = 0;
-    for (let idx in jsondata.date_data) {
-        dateData.push(JSON.parse(jsondata.date_data[idx]))
+    if (appname === "evendatasubsetlocalapp") {
+        dateData.length = 0;
+        for (let idx in jsondata.date_data) {
+            dateData.push(JSON.parse(jsondata.date_data[idx]))
+        }
+
+        countryData = {};
+        for (let idx in jsondata.country_data) {
+            let parsed = JSON.parse(jsondata.country_data[idx]);
+            // TODO: All data in the database should be in ISO ALPHA-3 spec. This should not be necessary. Data is discarded.
+            if (parsed['_id']['CountryCode'].length === 3) {
+                countryData[parsed['_id']['CountryCode']] = parsed['total']
+            }
+        }
+
+        actionCodeData = {};
+        for (let i = 0; i < 20; i++) {
+            actionCodeData[i] = 0;
+        }
+        for (let idx in jsondata.action_data.code_data) {
+            let parsed = JSON.parse(jsondata.action_data.code_data[idx]);
+            actionCodeData[parsed['_id']['RootCode']] = parsed['total']
+        }
+
+        actionClassData = {};
+        for (let i = 0; i < 5; i++) {
+            actionClassData[i] = 0;
+        }
+        for (let idx in jsondata.action_data.class_data) {
+            let parsed = JSON.parse(jsondata.action_data.class_data[idx]);
+            actionClassData[parsed['_id']['QuadClass']] = parsed['total']
+        }
+
+        actorData = jsondata.actor_data;
+
+    } else {
+        dateData = jsondata.date_data;
+
+        for (let idx in jsondata.country_data) {
+            // TODO: All data in the database should be in ISO ALPHA-3 spec. This should not be necessary. Data is discarded.
+            if (jsondata.country_data[idx]._id.country_code.length === 3) {
+                countryData[jsondata.country_data[idx]._id.country_code]= jsondata.country_data[idx].total
+            }
+        }
+
+        actionCodeData = {};
+        for (let i = 0; i < 20; i++) {
+            actionCodeData[i] = 0;
+        }
+        for (let idx in jsondata.action_data.code_data) {
+            actionCodeData[jsondata.action_data.code_data[idx]._id.root_code] = jsondata.action_data.code_data[idx].total
+        }
+
+        actionClassData = {};
+        for (let i = 0; i < 5; i++) {
+            actionClassData[i] = 0;
+        }
+        for (let idx in jsondata.action_data.class_data) {
+            actionClassData[jsondata.action_data.class_data[idx]._id.quad_class] = jsondata.action_data.class_data[idx].total
+        }
+
+        actorData = jsondata.actor_data;
     }
     d3date(true);
-
-    countryData = {};
-    for (let idx in jsondata.country_data) {
-        let parsed = JSON.parse(jsondata.country_data[idx]);
-        // TODO: All data in the database should be in ISO ALPHA-3 spec. This should not be necessary. Data is discarded.
-        if (parsed['state'].length === 3) {
-            countryData[parsed['state']] = parsed['total']
-        }
-    }
     d3loc();
-
-    actionCodeData = {};
-    for (let i = 0; i < 20; i++) {
-        actionCodeData[i] = 0;
-    }
-    for (let idx in jsondata.action_data.code_data) {
-        let parsed = JSON.parse(jsondata.action_data.code_data[idx]);
-        actionCodeData[parsed['action']] = parsed['total']
-    }
-
-    actionClassData = {};
-    for (let i = 0; i < 5; i++) {
-        actionClassData[i] = 0;
-    }
-    for (let idx in jsondata.action_data.class_data) {
-        let parsed = JSON.parse(jsondata.action_data.class_data[idx]);
-        actionClassData[parsed['action']] = parsed['total']
-    }
-    console.log("Action data loaded in these variables:")
-    console.log(actionCodeData);
-    console.log(actionClassData);
     d3action();
-
-    actorData = jsondata.actor_data;
     actorDataLoad();
 
     // If first load of data, user may have selected a subset and is waiting. Render page now that data is available
@@ -1035,7 +1071,8 @@ function buildSubset(){
                     let date = child.fromDate.getFullYear().toString() +
                         pad(child.fromDate.getMonth()) +
                         pad(child.fromDate.getDay());
-                    rule_query_inner['$gte'] = parseInt(date);
+                    if (appname === 'eventdatasubsetlocalapp') rule_query_inner['$gte'] = parseInt(date);
+                    else rule_query_inner['$gte'] = date;
                 }
                 if ('toDate' in child) {
 
@@ -1045,10 +1082,11 @@ function buildSubset(){
                     let date = child.toDate.getFullYear().toString() +
                         pad(child.toDate.getMonth()) +
                         pad(child.toDate.getDay());
-                    rule_query_inner['$lte'] = parseInt(date);
+                    if (appname === 'eventdatasubsetlocalapp') rule_query_inner['$lte'] = parseInt(date);
+                    else rule_query_inner['$lte'] = date;
                 }
             }
-            rule_query['Date'] = rule_query_inner;
+            rule_query['date8'] = rule_query_inner;
         }
 
         if (rule.name === 'Location Subset'){
