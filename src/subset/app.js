@@ -9,7 +9,7 @@ if (!production) {
 }
 // Set to 'eventdatasubsetlocalapp' to load from local mongo server
 // Set to 'eventdatasubsetapp' to load from API
-let appname = 'eventdatasubsetapp';
+let appname = 'eventdatasubsetlocalapp';
 
 // TODO: When the server has field names 'to spec':
 //      Remove the gsub in the R app
@@ -34,8 +34,7 @@ let selVarColor = 'rgba(250,128,114, 0.5)';    //d3.rgb("salmon");
 let dateData = [];
 let countryData = [];
 let actorData = {};
-let actionCodeData = [];
-let actionClassData = [];
+let actionData = [];
 
 // This is set once data is loaded and the graphs can be drawn. Subset menus will not be shown until this is set
 let initialLoad = false;
@@ -227,7 +226,7 @@ function pageSetup(jsondata) {
         return false;
     }
 
-    if (appname === "evendatasubsetlocalapp") {
+    if (appname === "eventdatasubsetlocalapp") {
         dateData.length = 0;
         for (let idx in jsondata.date_data) {
             dateData.push(JSON.parse(jsondata.date_data[idx]))
@@ -242,22 +241,13 @@ function pageSetup(jsondata) {
             }
         }
 
-        actionCodeData = {};
+        actionData = {};
         for (let i = 0; i < 20; i++) {
-            actionCodeData[i] = 0;
+            actionData[i] = 0;
         }
-        for (let idx in jsondata.action_data.code_data) {
-            let parsed = JSON.parse(jsondata.action_data.code_data[idx]);
-            actionCodeData[parsed['_id']['RootCode']] = parsed['total']
-        }
-
-        actionClassData = {};
-        for (let i = 0; i < 5; i++) {
-            actionClassData[i] = 0;
-        }
-        for (let idx in jsondata.action_data.class_data) {
-            let parsed = JSON.parse(jsondata.action_data.class_data[idx]);
-            actionClassData[parsed['_id']['QuadClass']] = parsed['total']
+        for (let idx in jsondata.action_data) {
+            let parsed = JSON.parse(jsondata.action_data[idx]);
+            actionData[parsed['_id']['RootCode']] = parsed['total']
         }
 
         actorData = jsondata.actor_data;
@@ -272,20 +262,12 @@ function pageSetup(jsondata) {
             }
         }
 
-        actionCodeData = {};
+        actionData = {};
         for (let i = 0; i < 20; i++) {
-            actionCodeData[i] = 0;
+            actionData[i] = 0;
         }
-        for (let idx in jsondata.action_data.code_data) {
-            actionCodeData[jsondata.action_data.code_data[idx]._id.root_code] = jsondata.action_data.code_data[idx].total
-        }
-
-        actionClassData = {};
-        for (let i = 0; i < 5; i++) {
-            actionClassData[i] = 0;
-        }
-        for (let idx in jsondata.action_data.class_data) {
-            actionClassData[jsondata.action_data.class_data[idx]._id.quad_class] = jsondata.action_data.class_data[idx].total
+        for (let idx in jsondata.action_data) {
+            actionData[jsondata.action_data[idx]._id.root_code] = jsondata.action_data[idx].total
         }
 
         actorData = jsondata.actor_data;

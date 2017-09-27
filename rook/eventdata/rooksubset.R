@@ -102,15 +102,7 @@ eventdata_subset.app <- function(env) {
     country_frequencies = getData(paste(query_url, '&group=country_code', sep=""))
 
     print("Collecting action codes")
-    action_code_frequencies = getData(paste(query_url, '&group=root_code', sep=""))
-
-    print("Collecting pentaclass codes")
-    action_class_frequencies = getData(paste(query_url, '&group=quad_class', sep=""))
-
-    action_values = list(
-        code_data = action_code_frequencies,
-        class_data = action_class_frequencies
-    )
+    action_frequencies = getData(paste(query_url, '&group=root_code', sep=""))
 
     print("Collecting actor sources")
     actor_source = getData(paste(query_url, '&unique=source', sep=""))
@@ -164,7 +156,7 @@ eventdata_subset.app <- function(env) {
     result = toString(jsonlite::toJSON(list(
         date_data = date_frequencies,
         country_data = country_frequencies,
-        action_data = action_values,
+        action_data = action_frequencies,
         actor_data = actor_values
     )))
 
