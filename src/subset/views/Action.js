@@ -69,9 +69,9 @@ function d3action() {
 			//~ console.log(actionData[x + 1]);
 			if (!isNaN(actionData[x + 1])) {
 				pentaCounts[data[x].penta].count += actionData[x + 1];
-				pentaCounts[data[x].penta].maxSelect ++;
 				actionSubData[x].count = actionData[x + 1];
 			}
+			pentaCounts[data[x].penta].maxSelect ++;
 		}
 		console.log("pentaCounts");
 		console.log(pentaCounts);
