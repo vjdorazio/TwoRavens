@@ -29,6 +29,10 @@
 
     <script src="fileSaver/fileSaver.js"></script>
 
+    <!--Used to implement tutorial-->
+    <script src="hopscotch/hopscotch.js"></script>
+    <link rel="stylesheet" href="hopscotch/hopscotch.css">
+
     <script src="d3.v4.min.js"></script>
 
     </head>
@@ -118,10 +122,15 @@
     </div>
 </div>
 
-<button id="stageButton" class="btn btn-default" type="button" onclick=addRule()>Stage</button>
+<button id="stageButton" class="btn btn-default" type="button" onclick=addRule();>Stage</button>
 
 <div id="ticker" class="ticker">
-    <!--<a href="somelink" target="_blank" id="logID">Replication</a>-->
+    <span class="label label-default" style="margin-left:10px">Tours</span>
+    <button id="tourButtonGeneral" class="btn btn-default btn-sm" type="button" style="margin-left:5px;margin-top:4px" onclick=hopscotch.startTour(generalTour)>General</button>
+    <button id="tourButtonActor" class="btn btn-default btn-sm" type="button" style="margin-left:5px;margin-top:4px" onclick=tourStartActor()>Actor</button>
+    <button id="tourButtonDate" class="btn btn-default btn-sm" type="button" style="margin-left:5px;margin-top:4px" onclick=tourStartDate()>Date</button>
+    <button id="tourButtonAction" class="btn btn-default btn-sm" type="button" style="margin-left:5px;margin-top:4px" onclick=tourStartAction()>Action</button>
+    <button id="tourButtonLocation" class="btn btn-default btn-sm" type="button" style="margin-left:5px;margin-top:4px" onclick=tourStartLocation()>Location</button>
 </div>
 
 <div id="main" class="left" onresize=rightpanelMargin()>
@@ -399,6 +408,15 @@
         resizeActorSVG();
     }
 
+    function openRightPanel() {
+        if ($('#rightpanel').hasClass('closepanel')) {
+            /*$('#rightpanel .nav-tabs').hide();*/
+            $('#rightpanel > div.row-fluid').toggleClass('closepanel');
+            $('#rightpanel').toggleClass('closepanel');
+            rightpanelMargin();
+        }
+    }
+
     function toggleRightPanel() {
         if (!$('#rightpanel').hasClass('forceclosepanel')) {
             /*$('#rightpanel .nav-tabs').hide();*/
@@ -487,6 +505,8 @@
 <script id="locationCodeJS" type="text/javascript" src="src/subset/views/Location.js"></script>
 <script id="actionCodeJS" type="text/javascript" src="src/subset/views/Action.js"></script>
 <script id="actorCodeJS" type="text/javascript" src="src/subset/views/Actor.js"></script>
+
+<script id="hopscotchTour" type="text/javascript" src="src/subset/tour.js"></script>
 </body>
 </html>
 

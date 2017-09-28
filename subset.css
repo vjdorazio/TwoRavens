@@ -1531,3 +1531,9 @@ color: #333;
 .x path {
 	display: none;
 }*/
+
+
+/* The arrow was oversized, causing an unsightly scrollbar*/
+div.hopscotch-bubble .hopscotch-bubble-arrow-container {
+    overflow:hidden
+}

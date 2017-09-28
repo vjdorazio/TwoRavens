@@ -110,29 +110,27 @@ d3.select("#subsetList").selectAll("p")
         else return varColor;
     })
     .on("click", function () {
-
         subsetKeySelected = d3.select(this).text();
-        d3.select('#subsetList').selectAll("p").style('background-color', function (d) {
-            if (d === subsetKeySelected) return selVarColor;
-            else return varColor;
-        });
-
-        if (!initialLoad) {
-            alert("Resources are still being loaded from the server. The plots will render once resources have been loaded");
-        } else {
-            showSubset(subsetKeySelected);
-        }
-
+        showSubset(subsetKeySelected)
     });
 
 function showSubset(subsetKeySelected) {
-    if (subsetKeySelected !== ""){
-        $("#main").children().hide();
-        $("#subset" + subsetKeySelected).css('display', 'inline');
-        if (subsetKeySelected === "Actor") {
-            d3actor();
+    d3.select('#subsetList').selectAll("p").style('background-color', function (d) {
+        if (d === subsetKeySelected) return selVarColor;
+        else return varColor;
+    });
+
+    if (!initialLoad) {
+        alert("Resources are still being loaded from the server. Subsets will be available once resources have been loaded.");
+    } else {
+        if (subsetKeySelected !== ""){
+            $("#main").children().hide();
+            $("#subset" + subsetKeySelected).css('display', 'inline');
+            if (subsetKeySelected === "Actor") {
+                d3actor();
+            }
+            rightpanelMargin();
         }
-        rightpanelMargin();
     }
 }
 
