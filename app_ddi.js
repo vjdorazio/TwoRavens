@@ -717,7 +717,12 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
 //Kripanshu Bhargava  plot for cross tab
 
 function crossTabPlots(PlotNameA, PlotNameB) {
-    var mydiv = "#resultsView_tabular";
+    var mydiv = "#plotA";
+    var mydiv1 = "#plotB";
+    var mydiv2 = "#SelectionData";
+    var count_c=0;
+    var count_b=0;
+    var plotA_size,plotB_size,plotA_sizem,plotB_sizem;
     //d3.select("#resultsView_tabular").html("");
 
    // document.getElementById('plotA').style.display = "block";
@@ -734,6 +739,39 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         }
     }
     */
+    for (var i = 0; i < plot_nodes.length; i++) {
+        if (plot_nodes[i].name === PlotNameA) {
+            if (plot_nodes[i].plottype === "continuous") {
+              count_c++;
+            }
+            else if (plot_nodes[i].plottype === "bar") {
+              count_b++;
+            }
+        } else if (plot_nodes[i].name === PlotNameB) {
+            if (plot_nodes[i].plottype === "continuous") {
+                count_c++;
+            }
+            else if (plot_nodes[i].plottype === "bar") {
+                count_b++;
+            }
+        }
+
+
+    }
+    if(count_c===2)
+    {
+        document.getElementById("plotA").style.width = "100%";
+        document.getElementById("plotB").style.width = "0";
+    }else if (count_b===2)
+    {
+        document.getElementById("plotB").style.width = "100%";
+        document.getElementById("plotA").style.width = "0";
+    }else if(count_b===1 && count_c===1)
+        {
+            document.getElementById("plotB").style.width = "50%";
+            document.getElementById("plotA").style.width = "50";
+        }
+
     var margin_cross = {top: 30, right: 35, bottom: 40, left: 40},
         width_cross = 300 - margin_cross.left - margin_cross.right,
         height_cross = 160 - margin_cross.top - margin_cross.bottom;
@@ -759,13 +797,13 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
 
     }
-    d3.select(mydiv).append("g")
+    d3.select(mydiv2).append("g")
         .attr("id", "btnDiv")
         .style('font-size', '75%')
         .style("width", "280px")
         .style("position","relative")
-        .style("left", (margin_cross.left+ (padding_cross/2)) + "px")
-        .style("top", "18px")
+        .style("left", "120px")
+        .style("top", "0px");
 
 
     d3.select("#btnDiv")[0][0].innerHTML =[
@@ -816,13 +854,13 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
 
 
-    d3.select(mydiv).append("g")
+    d3.select(mydiv2).append("g")
         .attr("id", "btnDiv1")
         .style('font-size', '75%')
         .style("width", "280px")
         .style("position","relative")
-        .style("left", (margin_cross.left-(padding_cross*1.75)) + "px")
-        .style("top", "50px")
+        .style("left", "-102px")
+        .style("top", "40px")
 
 
 
@@ -862,22 +900,22 @@ function crossTabPlots(PlotNameA, PlotNameB) {
     });
 
     btns1.on("click", getData1);
-
+var var1,var2 , varsize1,varsize2;
     function getData() {
 
         if (this.innerText === "EQUIDISTANCE")
         {
-
-            var plotA_size= parseInt(d3.select("input#a")[0][0].value);
-
+var1="equidistance";
+             plotA_size= parseInt(d3.select("input#a")[0][0].value);
+varsize1=plotA_size;
             equidistance(PlotNameA,plotA_size);
 
         }
         else if (this.innerText === "EQUIMASS") {
-            var plotA_sizem= parseInt(d3.select("input#a")[0][0].value);
-
+             plotA_sizem= parseInt(d3.select("input#a")[0][0].value);
+varsize1=plotA_sizem
             equimass(PlotNameA,plotA_sizem);
-
+var1="equimass";
 
         }
 
@@ -887,13 +925,16 @@ function crossTabPlots(PlotNameA, PlotNameB) {
         if (this.innerText === "EQUIDISTANCE")
         {
 
-
-            var plotB_size= parseInt(d3.select("input#b")[0][0].value);
+            var1="equidistance";
+             plotB_size= parseInt(d3.select("input#b")[0][0].value);
             equidistance(PlotNameB,plotB_size);
+            varsize2=plotB_size;
         }
         else if (this.innerText === "EQUIMASS") {
-            var plotB_sizem= parseInt(d3.select("input#b")[0][0].value);
+            var2="equimass";
+             plotB_sizem= parseInt(d3.select("input#b")[0][0].value);
             equimass(PlotNameB,plotB_sizem);
+        varsize2=plotB_sizem;
         }
 
     }
@@ -1212,7 +1253,7 @@ function crossTabPlots(PlotNameA, PlotNameB) {
             .scale(y_1)
             .orient("left");
 
-      var    plotsvg1 = d3.select(mydiv)
+      var    plotsvg1 = d3.select(mydiv1)
             .append("svg")
             .attr("id","plotsvg1_id")
             .style("width", width_cross + margin_cross.left + margin_cross.right) //setting height to the height of #main.left
@@ -1259,75 +1300,75 @@ function crossTabPlots(PlotNameA, PlotNameB) {
 
 
 
-        if(isNaN(a)|| a===0) {
-            console.log("do nothing #bar");
-            x_cord2 = equimass_bar(bar_env, keys.length);
+    if (isNaN(a) || a === 0) {
+        console.log("do nothing #bar");
+        x_cord2 = equimass_bar(bar_env, keys.length);
+        //console.log("x_cord2 equidis : " + x_cord2);
+
+        console.log(" bar equimass called ");
+        for (var i = 0; i < keys.length - 1; i++) {
+            // console.log("x_cord1 actual: " + x_1(x_cord2[i]));
+            plotsvg1.append("line")
+                .attr("id", "line2")
+                .attr("x1", x_1(x_cord2[i]))
+                .attr("x2", x_1(x_cord2[i]))
+                .attr("y1", y_1(0))
+                .attr("y2", y_1(maxY))
+                .style("stroke", "#212121")
+                .style("stroke-dasharray", "4");
+
+
+        }
+    }
+    else {
+        if (method_name === "equidistance") {
+
+            var upper_limit1 = maxX;
+            var lower_limit1 = minX;
+            var diff1 = upper_limit1 - lower_limit1;
+            var buffer1 = diff1 / a;
+            var x_cord1 = [];
+            console.log("diff1 : " + diff1);
+            console.log("buffer1 : " + buffer1);
+            var push_data1 = lower_limit1;
+            for (var i = 0; i < a - 1; i++) {
+                push_data1 = push_data1 + buffer1;
+                x_cord1.push(push_data1);
+//console.log("x_cord1 equidis : "+ x_cord1);
+                // console.log("x_cord1 actual: " + x_1(x_cord1[i]));
+//console.log("maxY : "+ maxY);
+                plotsvg1.append("line")
+                    .attr("id", "line2")
+                    .attr("x1", x_1(x_cord1[i]))
+                    .attr("x2", x_1(x_cord1[i]))
+                    .attr("y1", y_1(0))
+                    .attr("y2", y_1(maxY))
+                    .style("stroke", "#0D47A1")
+                    .style("stroke-dasharray", "4");
+            }
+        }
+        else if (method_name === "equimass") {
+            var x_cord2 = [];
+            x_cord2 = equimass_bar(bar_env, a);
             //console.log("x_cord2 equidis : " + x_cord2);
 
             console.log(" bar equimass called ");
-            for (var i = 0; i < keys.length - 1; i++) {
+            for (var i = 0; i < a - 1; i++) {
                 // console.log("x_cord1 actual: " + x_1(x_cord2[i]));
                 plotsvg1.append("line")
                     .attr("id", "line2")
-                    .attr("x1", x_1(x_cord2[i] ))
-                    .attr("x2", x_1(x_cord2[i] ))
+                    .attr("x1", x_1(x_cord2[i]))
+                    .attr("x2", x_1(x_cord2[i]))
                     .attr("y1", y_1(0))
                     .attr("y2", y_1(maxY))
-                    .style("stroke", "#212121")
+                    .style("stroke", "#0D47A1")
                     .style("stroke-dasharray", "4");
 
-
-            }
-        }
-        else {
-            if (method_name === "equidistance") {
-
-                var upper_limit1 = maxX;
-                var lower_limit1 = minX;
-                var diff1 = upper_limit1 - lower_limit1;
-                var buffer1 = diff1 / a;
-                var x_cord1 = [];
-                console.log("diff1 : " + diff1);
-                console.log("buffer1 : " + buffer1);
-                var push_data1 = lower_limit1;
-                for (var i = 0; i < a - 1; i++) {
-                    push_data1 = push_data1 + buffer1;
-                    x_cord1.push(push_data1);
-//console.log("x_cord1 equidis : "+ x_cord1);
-                  // console.log("x_cord1 actual: " + x_1(x_cord1[i]));
-//console.log("maxY : "+ maxY);
-                    plotsvg1.append("line")
-                        .attr("id", "line2")
-                        .attr("x1", x_1(x_cord1[i]))
-                        .attr("x2", x_1(x_cord1[i]))
-                        .attr("y1", y_1(0))
-                        .attr("y2", y_1(maxY))
-                        .style("stroke", "#0D47A1")
-                        .style("stroke-dasharray", "4");
-                }
-            }
-            else if (method_name==="equimass") {
-                var x_cord2 = [];
-                x_cord2 = equimass_bar(bar_env, a);
-                //console.log("x_cord2 equidis : " + x_cord2);
-
-                console.log(" bar equimass called ");
-                for (var i = 0; i < a - 1; i++) {
-                   // console.log("x_cord1 actual: " + x_1(x_cord2[i]));
-                    plotsvg1.append("line")
-                        .attr("id", "line2")
-                        .attr("x1", x_1(x_cord2[i] ))
-                        .attr("x2", x_1(x_cord2[i] ))
-                        .attr("y1", y_1(0))
-                        .attr("y2", y_1(maxY))
-                        .style("stroke", "#0D47A1")
-                        .style("stroke-dasharray", "4");
-
-                }
             }
         }
 
 
+}
 
     }
 
@@ -1645,6 +1686,32 @@ function equimass_bar(plot_ev,n) {
         return temp_final;
     }
 }
+    function writeCrossTabsJson()
+    {
+var jsondata=
+    {
+        var1:
+            {
+                name: PlotNameA,
+                value: varsize1,
+                    buttonType:var1
+
+
+            },
+        var2:
+            {
+                name: PlotNameB,
+                value:varsize2,
+                buttonType:var2
+
+
+            }
+
+    }
+console.log("The JsonData to be sent is : ");
+console.log(jsondata);
+
+    }
 /*
     function equidistance(a)
     {
@@ -1715,7 +1782,7 @@ function equimass_bar(plot_ev,n) {
 
     }
     */
-
+    crossTabPlots.writeCrossTabsJson=writeCrossTabsJson;
 }
 
 
@@ -4279,6 +4346,13 @@ function estimate(btn) {
         d3.select("#resultsView_tabular")
             .style("display", "block");
 
+        d3.select("#plotA")
+            .style("display", "block");
+
+        d3.select("#plotB")
+            .style("display", "block");
+        d3.select("#SelectionData")
+            .style("display", "block");
         d3.select("#resultsView_statistics")
             .style("display", "block");
 
@@ -4414,6 +4488,14 @@ function explore(btn) {
             .style("display", "block");
 
         d3.select("#resultsView_tabular")
+            .style("display", "block");
+
+        d3.select("#plotA")
+            .style("display", "block");
+
+        d3.select("#plotB")
+            .style("display", "block");
+        d3.select("#SelectionData")
             .style("display", "block");
 
         d3.select("#resultsView_statistics")
@@ -4720,8 +4802,12 @@ function viz(m) {
 
 //KRIPANSHU BHARGAVA, this is viz for explore
 function viz_explore(m, json_vizexplore, model_name_set) {
-    d3.select("#resultsView_tabular").html("");
-
+    d3.select("#tabular_1")
+        .style("display", "block");
+   // d3.select("#resultsView_tabular").html("");
+    d3.select("#plotA").html("");
+    d3.select("#plotB").html("");
+    d3.select("#SelectionData").html("");
     console.log("Viz explore method called: " + model_name_set);
 
     var get_data = [];
@@ -4802,7 +4888,7 @@ function viz_explore(m, json_vizexplore, model_name_set) {
     bivariatePlot(x_axis, y_axis, get_data[0], get_data[1]);
     //  crossTabDensityPlot(x_axis,y_axis,get_data[0],get_data[1]);
 
-    crossTabPlots(get_data[0], get_data[1]);
+   crossTabPlots(get_data[0], get_data[1]);
 
 
     /*
@@ -4998,12 +5084,14 @@ function viz_explore(m, json_vizexplore, model_name_set) {
     // d3.select("#resultsView_tabular").html("");
 
      function d3table1(data) {
+         d3.select("#tabular_2").style("display","block");
+         d3.select("#tabular_1").style("display","none");
          var width = 120,   // width of svg
              height = 160,  // height of svg
              padding = 22; // space around the chart, not including labels
 
 
-         d3.select("#resultsView_tabular")
+         d3.select("#tabular_2")
              .html("")
              .style("background-color", "#fff")
              .append("h5")
@@ -5011,7 +5099,7 @@ function viz_explore(m, json_vizexplore, model_name_set) {
              .style("color", "#424242")
          ;
 
-         var sv = d3.select("#resultsView_tabular").append("svg").attr("width", "100%").attr("height", "100%").style("overflow", "visible");
+         var sv = d3.select("#tabular_2").append("svg").attr("width", "100%").attr("height", "100%").style("overflow", "visible");
          var fo = sv.append('foreignObject').attr("width", "100%").attr("height", "100%").style("padding", 10).attr("overflow", "visible");
          var table = fo.append("xhtml:table").attr("class", "table").style("border-collapse", " collapse"),
              th = table.append("tr").style("border", 1).text("_").style("color", "#fff");
@@ -5048,14 +5136,14 @@ function viz_explore(m, json_vizexplore, model_name_set) {
              .text(get_data[1]);
 
      }
-
+/*
 //Toggle buttons function
     $('.btn-toggle').click(function() {
         var expression="";
         $(this).find('.btn').toggleClass('active');
 
         if ($(this).find('.btn-primary').size()>0) {
-            console.log($(this).find('.btn-primary')[0].innerText);
+           // console.log($(this).find('.btn-primary')[0].innerText);
 
 
 
@@ -5065,13 +5153,55 @@ function viz_explore(m, json_vizexplore, model_name_set) {
         }
         //console.log(this.innerHTML);
         if($(this).find('.btn-primary')[0].innerText==="Cross-Tabs"){
-            d3.select("#resultsView_tabular").html("");
-            d3table1(table_obj);}
+            console.log($(this).find('.btn-primary')[0].innerText);
+            d3.select("#plotA").html("");
+            d3.select("#plotB").html("");
+            d3.select("#SelectionData").html("");
+            //d3.select("#tabular_2").html("");
+            d3.select("#tabular_2").html("");
+            d3table1(table_obj);
+            }
+
         else if($(this).find('.btn-primary')[0].innerText==="Selection"){
-            d3.select("#resultsView_tabular").html("");
-            crossTabPlots(get_data[0], get_data[1]);}
+            console.log($(this).find('.btn-primary')[0].innerText);
+            d3.select("#tabular_2").html("");
+            d3.select("#tabular_2").style("display","none");
+            d3.select("#tabular_1").style("display","block");
+            d3.select("#plotA").html("");
+            d3.select("#plotB").html("");
+            d3.select("#SelectionData").html("");
+           crossTabPlots(get_data[0], get_data[1]);
+                 }
         $(this).find('.btn').toggleClass('btn-default');
 
+    });
+
+*/
+    $('#selection').click(function()
+    {
+        console.log("this is selection");
+
+        d3.select("#tabular_2").html("");
+        d3.select("#tabular_2").style("display","none");
+        d3.select("#tabular_1").style("display","block");
+        d3.select("#plotA").html("");
+        d3.select("#plotB").html("");
+        d3.select("#SelectionData").html("");
+        crossTabPlots(get_data[0], get_data[1]);
+    });
+    $('#crossTabs').click(function()
+    {
+
+        console.log("this is crossTabs");
+
+        d3.select("#plotA").html("");
+        d3.select("#plotB").html("");
+        d3.select("#SelectionData").html("");
+        //d3.select("#tabular_2").html("");
+        d3.select("#tabular_2").html("");
+        d3table1(table_obj);
+
+        crossTabPlots.writeCrossTabsJson();
     });
 
 
