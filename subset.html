@@ -11,7 +11,7 @@
     <script src="Ladda/dist/spin.min.js"></script>
     <script src="Ladda/dist/ladda.min.js"></script>
 
-    <!--Used for rendering date calendar?-->
+    <!--Used for rendering date calendar-->
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css">
 
     <!--NOTE: JQuery-ui must be loaded before bootstrap-->
@@ -174,10 +174,24 @@
         </div>
     </div>
 
-    <div id="subsetAction" style="display:none">
-		<svg id="actionMainGraph" width="500" height="500" style="border: 1px solid blue;"></svg>
-		<svg id="actionSubGraph" width="500" height="500" style="border: 1px solid green;"></svg>
-		<div class="SVGtooltip"></div>
+    <div id="subsetAction" style="display:none;">
+        <div id="actionSVGbin" style="display:inline-block;margin-top:10px; margin-left:10px; height:calc(100% - 20px); width:calc(100% - 46px)">
+            <div id="pentaclass_container" class="action_graph_config" style="float:left;display:inline-block;vertical-align: top;height:100%;width:calc(50% - 10px)">
+                <div class="panel-heading text-center" style="float:left;padding-top:9px" id="pentaclassLabel">
+                    <h3 class="panel-title">Penta Classes</h3>
+                </div><br>
+                <svg id="actionMainGraph" style="background:none" width="100%" height="100%"></svg>
+            </div>
+
+            <div id="rootcode_container" class="action_graph_config" style="float:right;display:inline-block;vertical-align: top;height:100%;width:calc(50%)">
+                <div class="panel-heading text-center" style="float:left;padding-top:9px" id="rootclassLabel">
+                    <h3 class="panel-title">Root Classes</h3>
+                </div><br>
+                <svg id="actionSubGraph" style="background:none" width="100%" height="100%"></svg>
+            </div>
+
+            <div class="SVGtooltip"></div>
+        </div>
     </div>
 
     <div id="subsetActor" style="display:none">
@@ -398,11 +412,15 @@
         }
 
         if ($('#leftpanel').hasClass('closepanel')) {
-            $('#main').css('margin-left', '36px');
-            $('#main').css('width', 'calc(100% - 36px)');
+            $('#main').css('margin-left', '30px');
+            $('#main').css('width', 'calc(100% - 30px)');
         } else {
             $('#main').css('margin-left', '260px');
             $('#main').css('width', 'calc(100% - 260px)');
+        }
+        if (subsetKeySelected === "Action") {
+            drawGraphs();
+            updateData();
         }
 
         resizeActorSVG();

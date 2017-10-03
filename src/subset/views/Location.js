@@ -364,6 +364,7 @@ function constructSubgraph(cid) {
     if (mapGraphSVG[cid] != null) {
 
         subgraphAction('expand_collapse_text_' + cid);
+        console.log("Subgraph already made and visible!");
 
         return;
     }
@@ -373,13 +374,15 @@ function constructSubgraph(cid) {
         mapGraphSVG[cid] = mapGraphSVG[cid + "_removed"];
         mapGraphSVG[cid + "_removed"] = null;
 
-        $("#sub_graph_td_" + cid).parent().show();
-        $("#sub_graph_td_" + cid).removeClass('graph_close');
-        $("#sub_graph_td_" + cid).addClass('graph_config');
+        $("#sub_graph_td_div_" + cid).parent().show();
+        $("#sub_graph_td_div_" + cid).removeClass('graph_close');
+        $("#sub_graph_td_div_" + cid).addClass('graph_config');
 
         return;
     }
 
+
+    console.log("Making new subgraph!");
     subGraphLabel(cid);
 
     var svg = d3.select("#sub_graph_td_div_" + cid).append("svg:svg")

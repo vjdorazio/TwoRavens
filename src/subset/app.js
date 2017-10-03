@@ -129,6 +129,10 @@ function showSubset(subsetKeySelected) {
             if (subsetKeySelected === "Actor") {
                 d3actor();
             }
+            if (subsetKeySelected === "Action") {
+                drawGraphs();
+                updateData();
+            }
             rightpanelMargin();
         }
     }
@@ -272,7 +276,7 @@ function pageSetup(jsondata) {
     }
     d3date(true);
     d3loc();
-    d3action();
+    resetActionCounts();
     actorDataLoad();
 
     // If first load of data, user may have selected a subset and is waiting. Render page now that data is available
@@ -281,6 +285,12 @@ function pageSetup(jsondata) {
         // In the case where the user has not yet made a subset selection, this is ignored
         showSubset(subsetKeySelected);
     }
+
+    if (subsetKeySelected === "Action") {
+        drawGraphs();
+        updateData();
+    }
+
     return true;
 }
 
@@ -311,6 +321,12 @@ $("#btnSubset").trigger("click");		//on load let subset tab show first
 function rightpanelMargin() {
     if (typeof actorCodeLoaded !== "undefined" && actorCodeLoaded){
         resizeActorSVG();
+    }
+
+    // Resize SVGs in action
+    if (subsetKeySelected === "Action") {
+        drawGraphs();
+        updateData();
     }
 
     let main = $("#main");

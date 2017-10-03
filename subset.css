@@ -1430,11 +1430,12 @@ text.id {
 }
 /*end styling for actor*/
 
-/*
-#actionMainGraph .bar {
-  fill: steelblue;
+.action_graph_config {
+    border: 1px solid #ADADAD;
+    padding-top:3px;
+    background: rgb(249, 249, 249);
+    overflow: hidden;
 }
-*/
 
 #actionMainGraph text,#actionSubGraph text {
 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -1453,10 +1454,6 @@ color: #333;
 /*
 	stroke: red;
 */
-}
-
-#actionMainGraph, #actionSubGraph {
-	border: 1px solid black;
 }
 
 .actionBar_click {
