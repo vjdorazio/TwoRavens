@@ -364,7 +364,6 @@ function constructSubgraph(cid) {
     if (mapGraphSVG[cid] != null) {
 
         subgraphAction('expand_collapse_text_' + cid);
-        console.log("Subgraph already made and visible!");
 
         return;
     }
@@ -381,8 +380,6 @@ function constructSubgraph(cid) {
         return;
     }
 
-
-    console.log("Making new subgraph!");
     subGraphLabel(cid);
 
     var svg = d3.select("#sub_graph_td_div_" + cid).append("svg:svg")

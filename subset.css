@@ -22,12 +22,7 @@ svg {
   #tab5{
     text-align: center;
   }
-/*#fromdate,#todate{
 
-  width: 200px;
-  height: 200px;
-  display: inline;
-}*/
 #subset {
   /*position: absolute;*/
   float:left;margin-right:.5em;
