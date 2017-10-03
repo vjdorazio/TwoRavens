@@ -737,6 +737,10 @@ loadDictionary();
 
 // This code is called when data is loaded. It populates the dictionary and source/target lists
 function actorDataLoad(){
+	sourceFullList = [];
+	targetFullList = [];
+	document.getElementById("sourceSearch").value = "";
+	document.getElementById("targetSearch").value = "";
     $("#sourceTabBtn").trigger("click");
 
 	var defer = $.Deferred();
@@ -744,9 +748,11 @@ function actorDataLoad(){
 		var orgList;
 		if (m == 0) {
 			orgList = document.getElementById("orgSourcesList");
+			orgList.innerHTML = "";
 		}
 		else {
 			orgList = document.getElementById("orgTargetsList");
+			orgList.innerHTML = "";
 		}
 		for (var y = 0; y < orgs.length; y++) {
 			createElement(true, actorType[m], "Org", orgs[y], y, orgList);
