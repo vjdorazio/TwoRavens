@@ -737,6 +737,10 @@ loadDictionary();
 
 // This code is called when data is loaded. It populates the dictionary and source/target lists
 function actorDataLoad(){
+	sourceFullList = [];
+	targetFullList = [];
+	document.getElementById("sourceSearch").value = "";
+	document.getElementById("targetSearch").value = "";
     $("#sourceTabBtn").trigger("click");
 
 	var defer = $.Deferred();
