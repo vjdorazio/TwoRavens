@@ -748,9 +748,11 @@ function actorDataLoad(){
 		var orgList;
 		if (m == 0) {
 			orgList = document.getElementById("orgSourcesList");
+			orgList.innerHTML = "";
 		}
 		else {
 			orgList = document.getElementById("orgTargetsList");
+			orgList.innerHTML = "";
 		}
 		for (var y = 0; y < orgs.length; y++) {
 			createElement(true, actorType[m], "Org", orgs[y], y, orgList);
