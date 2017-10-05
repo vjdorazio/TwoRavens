@@ -227,6 +227,7 @@ function pageSetup(jsondata) {
         alert("No records match your subset. Plots will not be updated.");
         return false;
     }
+    console.log(appname);
 
     if (appname === "eventdatasubsetlocalapp") {
         dateData.length = 0;

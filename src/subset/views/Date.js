@@ -123,7 +123,7 @@ function d3date(init=false) {
 
     for (let idx in dateData) {
         let binLabel = dateData[idx]._id;
-        let bin = {'Date': new Date(binLabel.year, binLabel.month + 1, 0), 'Freq': dateData[idx].total};
+        let bin = {'Date': new Date(binLabel.year, binLabel.month - 1, 0), 'Freq': dateData[idx].total};
         data.push(bin);
     }
     data = data.sort(dateSort);
