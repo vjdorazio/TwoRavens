@@ -1282,7 +1282,7 @@ function actorSearch(actorName) {
 		else {
 			var matchFilter = true;
 			//search for text
-			if (searchText != "" && window[actorName + "FullList"][x].indexOf(searchText) == -1) {
+			if (searchText != "" && window[actorName + "FullList"][x].indexOf(searchText)%3 != 0) {
 				matchFilter = false;
 			}
 
