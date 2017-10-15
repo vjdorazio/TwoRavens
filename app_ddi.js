@@ -17,6 +17,7 @@
 
 
 // Kripanshu testing.
+// index.js
 
 var production = false;
 var private = false;
@@ -126,7 +127,8 @@ var zparams = {
     zsessionid: "",
     zdatacite: "",
     zmetadataurl: "",
-    zusername: ""
+    zusername: "",
+    zcrosstab:[]
 };
 
 var json_data_explore = "empty";
@@ -915,7 +917,7 @@ varsize1=plotA_size;
              plotA_sizem= parseInt(d3.select("input#a")[0][0].value);
 varsize1=plotA_sizem
             equimass(PlotNameA,plotA_sizem);
-var1="equimass";
+var2="equimass";
 
         }
 
@@ -1688,29 +1690,46 @@ function equimass_bar(plot_ev,n) {
 }
     function writeCrossTabsJson()
     {
-var jsondata=
-    {
-        var1:
+
+
+
+        var plotAval=varsize1,plotBval=varsize2,buttontypeA=var1,buttontypeB=var2;
+        if(isNaN(plotAval))
+        {
+            plotAval=10;
+        }
+        if(isNaN(plotBval)){plotBval=10;}
+
+
+        var jsondata=
             {
-                name: PlotNameA,
-                value: varsize1,
-                    buttonType:var1
+                var1:
+                    {
+                        name: PlotNameA,
+                        value: plotAval,
+                            buttonType:var1
 
 
-            },
-        var2:
-            {
-                name: PlotNameB,
-                value:varsize2,
-                buttonType:var2
+                    },
+                var2:
+                    {
+                        name: PlotNameB,
+                        value:plotBval,
+                        buttonType:var2
 
 
-            }
+                    }
 
-    }
+            };
+
 console.log("The JsonData to be sent is : ");
-console.log(jsondata);
+var jsonoutput= JSON.stringify(jsondata);
 
+
+
+console.log(jsonoutput);
+
+return jsondata;
     }
 /*
     function equidistance(a)
@@ -4442,9 +4461,9 @@ function explore(btn) {
     //console.log("urlcall out: ", urlcall);
     console.log("POST out: ", solajsonout);
 
-    var jsonout = JSON.stringify(zparams);
-
-
+   // var jsonout = JSON.stringify(zparams);
+//console.log("This is the url call");
+//console.log(urlcall);
     // explore success method
     function exploreSuccess(btn, json) {
         console.log("ExploreSuccess method called");
@@ -5199,11 +5218,60 @@ function viz_explore(m, json_vizexplore, model_name_set) {
         d3.select("#SelectionData").html("");
         //d3.select("#tabular_2").html("");
         d3.select("#tabular_2").html("");
-        d3table1(table_obj);
 
-        crossTabPlots.writeCrossTabsJson();
+
+
+        explore_crosstab(2);
     });
+    function explore_crosstab(btn) {
 
+        for (var key in zparams) {
+            if (zparams.hasOwnProperty(key)) {
+                // do something with `key'
+                if(key==="zcrosstabs")
+                {
+                    delete zparams[key];
+                }
+
+            }
+        }
+
+       // console.log("new JSONOUT : ", zparams)
+
+       zparams.zcrosstab.push(crossTabPlots.writeCrossTabsJson());
+
+        if (production && zparams.zsessionid == "") {
+            alert("Warning: Data download is not complete. Try again soon.");
+            return;
+        }
+        zPop();
+        console.log("zpop: ", zparams);
+        // write links to file & run R CMD
+
+        //package the output as JSON
+        // add call history and package the zparams object as JSON
+        zparams.callHistory = callHistory;
+        var jsonout = JSON.stringify(zparams);
+
+        //var base = rappURL+"zeligapp?solaJSON="
+        urlcall = rappURL + "exploreapp"; //base.concat(jsonout);
+        var crossjsonout = "solaJSON=" + jsonout;
+        //console.log("urlcall out: ", urlcall);
+        console.log("POST out: ", crossjsonout);
+
+     function explore_crosstabSuccess() {
+    console.log("crossTabSuccess");
+         d3table1(d);
+
+     }
+        function explore_crosstabFail() {
+            estimateLadda.stop();  // stop spinner
+            estimated = true;
+        }
+        estimateLadda.start();  // start spinner
+        makeCorsRequest(urlcall, btn, explore_crosstabSuccess, explore_crosstabFail, crossjsonout);
+
+    }
 
     // data for the statistical div
     var string1 = cork.toString();
@@ -5645,7 +5713,7 @@ function createCORSRequest(method, url, callback) {
     if ("withCredentials" in xhr) {
         // XHR for Chrome/Firefox/Opera/Safari.
         xhr.open(method, url, true);
-    } else if (typeof XDomainRequest != "undefined") {
+    } else if (typeof XDomainRequest !== "undefined") {
         // XDomainRequest for IE.
         xhr = new XDomainRequest();
         xhr.open(method, url);
