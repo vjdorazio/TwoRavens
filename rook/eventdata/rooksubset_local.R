@@ -60,6 +60,7 @@ eventdata_subset_local.app <- function(env) {
         print("Preflight")
         response$status = 200L
 
+
         # Ensures CORS header is permitted
         response$header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
         response$header("Access-Control-Allow-Headers", "origin, content-type, accept")
@@ -83,7 +84,13 @@ eventdata_subset_local.app <- function(env) {
     everything <- jsonlite::fromJSON(request$POST()$solaJSON, simplifyDataFrame = FALSE)
     subsets = everything$subsets
     variables = everything$variables
-    raw = everything$raw
+
+    # raw: return query as is
+    # summary: return metadata
+    # actor: return actor filtering
+    type = everything$type
+    length = everything$length
+
 
     subsets = gsub('date8', 'Date', subsets)
     print(subsets)
@@ -93,8 +100,24 @@ eventdata_subset_local.app <- function(env) {
     table <- 'samplePhox'
     connection <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)
 
-    if (!is.null(raw) && raw) {
+    if (!is.null(type) && type == 'raw') {
         result = toString(jsonlite::toJSON(RMongo::dbGetQueryForKeys(connection, table, subsets, variables)))
+        response$write(result)
+        return(response$finish())
+    }
+
+    if (!is.null(type) && type == 'actor' && !is.null(length) && length > 0) {
+        actor_source = sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets))
+        actor_source = lapply(actor_source,head,n=min(length, lengths(actor_source)))
+
+        actor_target = sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets))
+        actor_target = lapply(actor_target,head,n=min(length, lengths(actor_target)))
+
+        result = toString(jsonlite::toJSON(list(
+            source = actor_source,
+            target = actor_target
+        )))
+
         response$write(result)
         return(response$finish())
     }
@@ -135,6 +158,8 @@ eventdata_subset_local.app <- function(env) {
 
     # Collect unique values in for sources page
     actor_source = sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets))
+    actor_source = lapply(actor_source,head,n=min(100, lengths(actor_source)))
+
     actor_source_entities = sort(RMongo::dbGetDistinct(connection, table, 'SrcActor', subsets))
     actor_source_role = sort(RMongo::dbGetDistinct(connection, table, 'SrcAgent', subsets))
     actor_source_attributes = unique(RMongo::dbGetDistinct(connection, table, 'SOthAgent', subsets))
@@ -147,6 +172,8 @@ eventdata_subset_local.app <- function(env) {
     )
 
     actor_target = sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets))
+    actor_target = lapply(actor_target,head,n=min(100, lengths(actor_target)))
+
     actor_target_entities = sort(RMongo::dbGetDistinct(connection, table, 'TgtActor', subsets))
     actor_target_role = sort(RMongo::dbGetDistinct(connection, table, 'TgtAgent', subsets))
     actor_target_attributes = unique(RMongo::dbGetDistinct(connection, table, 'TOthAgent', subsets))
