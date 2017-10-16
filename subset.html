@@ -386,6 +386,15 @@
             </tr>
         </table>
     </div>
+
+    <div id="subsetCustom" style="display:none">
+        <div class="panel-heading text-left" id="subsetCustomLabel" style="margin-top:10px;width:14em;float:left">
+            <h3 class="panel-title">Custom Query String</h3>
+        </div>
+        <button id="subsetCustomValidate" onClick="validateCustom(document.getElementById('subsetCustomText').value, print=true)"
+                style="display:inline;margin-top:10px;">Validate</button>
+        <textarea id="subsetCustomText"  style="margin-left:10px;width:calc(100% - 45px); height:calc(100% - 59px);"></textarea>
+    </div>
 </div>
 
 <script>
@@ -523,6 +532,7 @@
 <script id="locationCodeJS" type="text/javascript" src="src/subset/views/Location.js"></script>
 <script id="actionCodeJS" type="text/javascript" src="src/subset/views/Action.js"></script>
 <script id="actorCodeJS" type="text/javascript" src="src/subset/views/Actor.js"></script>
+<script id="customCodeJS" type="text/javascript" src="src/subset/views/Custom.js"></script>
 
 <script id="hopscotchTour" type="text/javascript" src="src/subset/tour.js"></script>
 </body>

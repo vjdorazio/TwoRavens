@@ -24,7 +24,7 @@ let variables = ["X","GID","Date","Year","Month","Day","Source","SrcActor","SrcA
     "AdminInfo","ID","URL","sourcetxt"];
 let variablesSelected = new Set();
 
-let subsetKeys = ["Actor", "Date", "Action", "Location"]; // Used to label buttons in the left panel
+let subsetKeys = ["Actor", "Date", "Action", "Location", "Custom"]; // Used to label buttons in the left panel
 let subsetKeySelected = 'Actor';
 
 
@@ -607,6 +607,16 @@ $('#subsetTree').on(
     }
 );
 
+$('#subsetTree').on(
+    'tree.click',
+    function(event) {
+        let node = event.node;
+        if (node.name === 'Custom Subset') {
+            alert(node.custom);
+        }
+    }
+);
+
 function disable_edit_recursive(node) {
     node.editable = false;
     node.cancellable = false;
@@ -884,6 +894,19 @@ function getSubsetPreferences() {
 
         return subset
     }
+    if (subsetKeySelected === 'Custom') {
+        let text = document.getElementById("subsetCustomText").value;
+
+        if (validateCustom(text)) {
+            return {
+                id: String(nodeId++),
+                name: 'Custom Subset',
+                custom: text
+            }
+        } else {
+            return {}
+        }
+    }
 }
 
 function reset() {
@@ -1150,6 +1173,10 @@ function buildSubset(){
                 link_list.push(link_rule)
             }
             rule_query['$and'] = link_list;
+        }
+
+        if (rule.name === 'Custom Subset') {
+            rule_query = JSON.parse(rule.custom.replace(/\s/g,''));
         }
 
         return rule_query;

@@ -88,6 +88,7 @@ eventdata_subset_local.app <- function(env) {
     # raw: return query as is
     # summary: return metadata
     # actor: return actor filtering
+    # validate: check if query is valid
     type = everything$type
     length = everything$length
 
@@ -116,6 +117,21 @@ eventdata_subset_local.app <- function(env) {
         )))
 
         response$write(result)
+        return(response$finish())
+    }
+
+    if (!is.null(type) && type == 'validate') {
+
+        handler = function(exc) {
+            response$write(paste('{"response": "', toString(exc), '"}'))
+        }
+
+        tryCatch({
+            RMongo::dbGetQuery(connection, table, subsets);
+            response$write('{"response": "Query is valid."}')},
+            warning = handler,
+            error = handler
+        )
         return(response$finish())
     }
 
