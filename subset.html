@@ -33,7 +33,8 @@
     <script src="hopscotch/hopscotch.js"></script>
     <link rel="stylesheet" href="hopscotch/hopscotch.css">
 
-    <script src="d3.v4.min.js"></script>
+    <script src="d3/d3.v4.min.js"></script>
+    <script src="d3/d3.v4.drag.js"></script>
 
     </head>
 
@@ -387,13 +388,32 @@
         </table>
     </div>
 
+    <div id="subsetCoordinates" style="display:none">
+
+        <div id="latitudeInterval" class="form-inline" style="display: inline-block;vertical-align:top;margin:20px">
+            <label id="latUpperLabel" for="latUpper" style="width:120px;float:left;display:inline-block;margin-top:10px;">North Latitude </label>
+            <input id="latUpper" class="form-control" style="display:inline-block;float:left" type="text" value="56.682">
+            <label id="latLowerLabel" for="latLower" style="width:120px;float:left;display:inline-block;margin-top:10px;margin-left:10px;">South Latitude</label>
+            <input id="latLower" class="form-control" style="display:inline-block;float:left" type="text" value="26.381">
+        </div>
+
+        <div id="longitudeInterval" class="form-inline" style="display: inline-block;vertical-align:top;margin-left:20px">
+            <label id="lonLeftLabel" for="LonLeft" style="width:120px;float:left;display:inline-block;margin-top:10px;">West Longitude </label>
+            <input id="lonLeft" class="form-control" style="display:inline-block;float:left" type="text" value="-9.524">
+            <label id="lonRightLabel" for="lonRight" style="width:120px;float:left;display:inline-block;margin-top:10px;margin-left:10px;">East Longitude</label>
+            <input id="lonRight" class="form-control" style="display:inline-block;float:left" type="text" value="17.823">
+        </div>
+
+        <svg id="worldMap" viewBox="0 0 2 1" style="margin-left:10px;width:calc(100% - 45px);height:calc(100% - 120px);"></svg>
+    </div>
+
     <div id="subsetCustom" style="display:none">
         <div class="panel-heading text-left" id="subsetCustomLabel" style="margin-top:10px;width:14em;float:left">
             <h3 class="panel-title">Custom Query String</h3>
         </div>
         <button id="subsetCustomValidate" onClick="validateCustom(document.getElementById('subsetCustomText').value, print=true)"
                 style="display:inline;margin-top:10px;">Validate</button>
-        <textarea id="subsetCustomText"  style="margin-left:10px;width:calc(100% - 45px); height:calc(100% - 59px);"></textarea>
+        <textarea id="subsetCustomText"  style="resize:none;margin-left:10px;width:calc(100% - 45px); height:calc(100% - 59px);"></textarea>
     </div>
 </div>
 
@@ -532,6 +552,7 @@
 <script id="locationCodeJS" type="text/javascript" src="src/subset/views/Location.js"></script>
 <script id="actionCodeJS" type="text/javascript" src="src/subset/views/Action.js"></script>
 <script id="actorCodeJS" type="text/javascript" src="src/subset/views/Actor.js"></script>
+<script id="coordinateCodeJS" type="text/javascript" src="src/subset/views/Coordinates.js"></script>
 <script id="customCodeJS" type="text/javascript" src="src/subset/views/Custom.js"></script>
 
 <script id="hopscotchTour" type="text/javascript" src="src/subset/tour.js"></script>

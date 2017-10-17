@@ -9,7 +9,9 @@ function validateCustom(text, debug=false) {
     }
 
     function callbackValidate(data) {
-        alert(data.response);
+        if (data.response !== 'Query is valid.' || debug) {
+            alert(data.response);
+        }
     }
 
     if (debug) {

@@ -24,7 +24,7 @@ let variables = ["X","GID","Date","Year","Month","Day","Source","SrcActor","SrcA
     "AdminInfo","ID","URL","sourcetxt"];
 let variablesSelected = new Set();
 
-let subsetKeys = ["Actor", "Date", "Action", "Location", "Custom"]; // Used to label buttons in the left panel
+let subsetKeys = ["Actor", "Date", "Action", "Location", "Coordinates", "Custom"]; // Used to label buttons in the left panel
 let subsetKeySelected = 'Actor';
 
 
@@ -840,6 +840,7 @@ function getSubsetPreferences() {
         }
         return subset
     }
+
     if (subsetKeySelected === 'Actor') {
         // Make parent node
         let subset = {
@@ -894,6 +895,65 @@ function getSubsetPreferences() {
 
         return subset
     }
+
+    if (subsetKeySelected === 'Coordinates') {
+        let valLeft = parseFloat($("#lonLeft").val());
+        let valRight = parseFloat($("#lonRight").val());
+
+        let valUpper = parseFloat($("#latUpper").val());
+        let valLower = parseFloat($("#latLower").val());
+
+        // Make parent node
+        let subset = {
+            id: String(nodeId++),
+            name: 'Coordinates Subset',
+            operation: 'and',
+            negate: 'false',
+            children: []
+        };
+
+        let longitude = {
+            id: String(nodeId++),
+            name: 'Longitude',
+            operation: 'and',
+                negate: 'false',
+                children: []
+        };
+
+        longitude.children.push({
+            id: String(nodeId++),
+            name: valLeft > valRight ? $("#lonLeft").val() : $("#lonRight").val()
+        });
+
+        longitude.children.push({
+            id: String(nodeId++),
+            name: valLeft < valRight ? $("#lonLeft").val() : $("#lonRight").val()
+        });
+
+        let latitude = {
+            id: String(nodeId++),
+            name: 'Latitude',
+            negate: 'false',
+            children: []
+        };
+
+        latitude.children.push({
+            id: String(nodeId++),
+            name: valUpper > valLower ? $("#latUpper").val() : $("#latLower").val()
+        });
+
+        latitude.children.push({
+            id: String(nodeId++),
+            name: valUpper < valLower ? $("#latUpper").val() : $("#latLower").val()
+        });
+
+        subset.children.push(latitude);
+        subset.children.push(longitude);
+
+        return subset
+
+    }
+
     if (subsetKeySelected === 'Custom') {
         let text = document.getElementById("subsetCustomText").value;
 
@@ -1173,6 +1233,32 @@ function buildSubset(){
                 link_list.push(link_rule)
             }
             rule_query['$and'] = link_list;
+        }
+
+        if (rule.name === 'Coordinates Subset') {
+
+            let rule_query_inner = [];
+
+            for (let child_id in rule.children) {
+                let child = rule.children[child_id];
+
+                if (child.name === 'Latitude') {
+                    rule_query_inner.push({
+                        'Lat': {
+                            '$lte': parseFloat(child.children[0].name),
+                            '$gte': parseFloat(child.children[1].name)
+                        }
+                    })
+                } else if (child.name === 'Longitude') {
+                    rule_query_inner.push({
+                        'Lon': {
+                            '$lte': parseFloat(child.children[0].name),
+                            '$gte': parseFloat(child.children[1].name)
+                        }
+                    })
+                }
+            }
+            rule_query['$and'] = rule_query_inner;
         }
 
         if (rule.name === 'Custom Subset') {
