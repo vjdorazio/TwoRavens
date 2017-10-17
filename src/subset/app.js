@@ -49,6 +49,8 @@ if (localStorage.getItem("subsetData") !== null) {
     subsetData = JSON.parse(localStorage.getItem('subsetData'));
 }
 
+document.getElementById('subsetCustomText').value += sampleQuery;
+
 let variableQuery = buildVariables();
 let subsetQuery = buildSubset();
 
