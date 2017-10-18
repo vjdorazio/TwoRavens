@@ -595,8 +595,8 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
         }
 
         // var cite = xml.documentElement.getElementsByTagName("biblCit");
-        var cite = findValue(jsondata, "biblCit");
-        zparams.zdatacite = cite;//[0].childNodes[0].nodeValue;
+      //  var cite = findValue(jsondata, "biblCit");
+       // zparams.zdatacite = cite;//[0].childNodes[0].nodeValue;
         // console.log("value of zdatacite: ",zparams.zdatacite);
         if (zparams.zdatacite !== undefined) {
             zparams.zdatacite = cleanstring(zparams.zdatacite);
@@ -610,7 +610,7 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
         d3.select("#dataName")
             .html(dataname);
 
-        $('#cite div.panel-body').text(zparams.zdatacite);
+      //  $('#cite div.panel-body').text(zparams.zdatacite);
 
         // Put dataset name, from meta-data, into page title
         d3.select("title").html("TwoRavens " + dataname)
