@@ -1,0 +1,102 @@
+{
+  "GID": {
+    "name": "event_id",
+    "format": "."
+  },
+  "Date": {
+    "name": "date",
+    "format": "^\\d{8}$"
+  },
+  "Year": {
+    "name": "year",
+    "format": "^\\d{4}$"
+  },
+  "Month": {
+    "name": "month",
+    "format": "^([1-9]|1[0-2])$"
+  },
+  "Day": {
+    "name": "day",
+    "format": "^([1-9]|[12]\\d|3[01])$"
+  },
+  "Source": {
+    "name": "source",
+    "format": "^(\\p{L}\\p{L}\\p{L})*$"
+  },
+  "SrcActor": {
+    "name": "src_actor",
+    "format": "^\\p{L}\\p{L}\\p{L}$"
+  },
+  "SrcAgent": {
+    "name": "src_agent",
+    "format": "^(|\\p{L}\\p{L}\\p{L})$"
+  },
+  "SOthAgent": {
+    "name": "src_other_agent",
+    "format": "^(|(\\p{L}\\p{L}\\p{L}(|;))*)$"
+  },
+  "Target": {
+    "name": "target",
+    "format": "^(\\p{L}\\p{L}\\p{L})*$"
+  },
+  "TgtActor": {
+    "name": "tgt_actor",
+    "format": "^\\p{L}\\p{L}\\p{L}$"
+  },
+  "TgtAgent": {
+    "name": "tgt_agent",
+    "format": "^(|\\p{L}\\p{L}\\p{L})$"
+  },
+  "TOthAgent": {
+    "name": "tgt_other_agent",
+    "format": "^(|(\\p{L}\\p{L}\\p{L}(|;))*)$"
+  },
+  "RootCode": {
+    "name": "root_code",
+    "format": "^(|1)\\d$"
+  },
+  "QuadClass": {
+    "name": "quad_class",
+    "format": "^[0-4]$"
+  },
+  "Goldstein": {
+    "name": "goldstein",
+    "format": "^[+-]?\\d+\\.?\\d+$"
+  },
+  "Lat": {
+    "name": "latitude",
+    "format": "^(NA|[+-]?\\d?\\d\\.?\\d+)$"
+  },
+  "Lon": {
+    "name": "longitude",
+    "format": "^(NA|[+-]?\\d?\\d\\.?\\d+)$"
+  },
+  "Geoname": {
+    "name": "geoname",
+    "format": "^(|[\\p{L}\\s]+)$"
+  },
+  "CAMEO": {
+    "name": "code",
+    "format": "^\\d+$"
+  },
+  "CountryCode": {
+    "name": "country_code",
+    "format": "^(|\\p{L}\\p{L}\\p{L})$"
+  },
+  "AdminInfo": {
+    "name": "admin_info",
+    "format": "^(|[\\p{L}\\s]+)$"
+  },
+  "ID": {
+    "name": "id",
+    "format": "."
+  },
+  "URL": {
+    "name": "url",
+    "format": "."
+  },
+  "sourcetxt": {
+    "name": "source_text",
+    "format": "."
+  }
+}

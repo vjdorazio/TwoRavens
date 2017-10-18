@@ -1,0 +1,102 @@
+{
+  "GID": {
+    "name": "GID",
+    "format": "."
+  },
+  "Date": {
+    "name": "Date",
+    "format": "^\\d{8}$"
+  },
+  "Year": {
+    "name": "Year",
+    "format": "^\\d{4}$"
+  },
+  "Month": {
+    "name": "Month",
+    "format": "^([1-9]|1[0-2])$"
+  },
+  "Day": {
+    "name": "Day",
+    "format": "^([1-9]|[12]\\d|3[01])$"
+  },
+  "Source": {
+    "name": "Source",
+    "format": "^(\\p{L}\\p{L}\\p{L})*$"
+  },
+  "SrcActor": {
+    "name": "SrcActor",
+    "format": "^\\p{L}\\p{L}\\p{L}$"
+  },
+  "SrcAgent": {
+    "name": "SrcAgent",
+    "format": "^(|\\p{L}\\p{L}\\p{L})$"
+  },
+  "SOthAgent": {
+    "name": "SOthAgent",
+    "format": "^(|(\\p{L}\\p{L}\\p{L}(|;))*)$"
+  },
+  "Target": {
+    "name": "Target",
+    "format": "^(\\p{L}\\p{L}\\p{L})*$"
+  },
+  "TgtActor": {
+    "name": "TgtActor",
+    "format": "^\\p{L}\\p{L}\\p{L}$"
+  },
+  "TgtAgent": {
+    "name": "TgtAgent",
+    "format": "^(|\\p{L}\\p{L}\\p{L})$"
+  },
+  "TOthAgent": {
+    "name": "TOthAgent",
+    "format": "^(|(\\p{L}\\p{L}\\p{L}(|;))*)$"
+  },
+  "RootCode": {
+    "name": "RootCode",
+    "format": "^(|1)\\d$"
+  },
+  "QuadClass": {
+    "name": "QuadClass",
+    "format": "^[0-4]$"
+  },
+  "Goldstein": {
+    "name": "Goldstein",
+    "format": "^[+-]?\\d*\\.?\\d?+$"
+  },
+  "Lat": {
+    "name": "Lat",
+    "format": "^(|NA|[+-]?\\d*\\.?\\d+)$"
+  },
+  "Lon": {
+    "name": "Lon",
+    "format": "^(|NA|[+-]?\\d*\\.?\\d+)$"
+  },
+  "Geoname": {
+    "name": "Geoname",
+    "format": "^(|[\\p{L}\\s]+)$"
+  },
+  "CAMEO": {
+    "name": "CAMEO",
+    "format": "^\\d+$"
+  },
+  "CountryCode": {
+    "name": "CountryCode",
+    "format": "^[^0-9]*$"
+  },
+  "AdminInfo": {
+    "name": "AdminInfo",
+    "format": "^[^0-9]*$"
+  },
+  "ID": {
+    "name": "ID",
+    "format": "."
+  },
+  "URL": {
+    "name": "URL",
+    "format": ".*"
+  },
+  "sourcetxt": {
+    "name": "sourcetxt",
+    "format": ".*"
+  }
+}

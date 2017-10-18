@@ -418,132 +418,61 @@
 </div>
 
 <script>
-    function about() { $('#about').show(); }
-    function closeabout() { $('#about').hide(); }
-    // note that .textContent is the new way to write text to a div
-    $('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cumulative guidance and meta-analysis.');
-    //This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
+function about() { $('#about').show(); }
+function closeabout() { $('#about').hide(); }
+// note that .textContent is the new way to write text to a div
+$('#about div.panel-body').text('TwoRavens v0.1 "Dallas" -- The Norse god Odin had two talking ravens as advisors, who would fly out into the world and report back all they observed.  In the Norse, their names were "Thought" and "Memory".  In our coming release, our thought-raven automatically advises on statistical model selection, while our memory-raven accumulates previous statistical models from Dataverse, to provide cumulative guidance and meta-analysis.');
+//This is the first public release of a new, interactive Web application to explore data, view descriptive statistics, and estimate statistical models.";
 
 
-    // Open/Close Panels
-    $('#leftpanel span').click(function () {
-        toggleLeftPanel();
-    });
-    $('#rightpanel span').click(function () {
-        toggleRightPanel();
-    });
+// Open/Close Panels
+$('#leftpanel span').click(function () {
+    toggleLeftPanel();
+});
+$('#rightpanel span').click(function () {
+    toggleRightPanel();
+});
 
-    function toggleLeftPanel() {
-        if (!$('#leftpanel').hasClass('forceclosepanel')) {
-            $('#leftpanel').removeClass('expandpanel');
-            $('#leftpanel > div.row-fluid').toggleClass('closepanel');
-            $('#leftpanel').toggleClass('closepanel');
-        }
-
-        if ($('#leftpanel').hasClass('closepanel')) {
-            $('#main').css('margin-left', '30px');
-            $('#main').css('width', 'calc(100% - 30px)');
-        } else {
-            $('#main').css('margin-left', '260px');
-            $('#main').css('width', 'calc(100% - 260px)');
-        }
-        if (subsetKeySelected === "Action") {
-            drawGraphs();
-            updateData();
-        }
-
-        resizeActorSVG();
+function toggleLeftPanel() {
+    if (!$('#leftpanel').hasClass('forceclosepanel')) {
+        $('#leftpanel').removeClass('expandpanel');
+        $('#leftpanel > div.row-fluid').toggleClass('closepanel');
+        $('#leftpanel').toggleClass('closepanel');
     }
 
-    function openRightPanel() {
-        if ($('#rightpanel').hasClass('closepanel')) {
-            /*$('#rightpanel .nav-tabs').hide();*/
-            $('#rightpanel > div.row-fluid').toggleClass('closepanel');
-            $('#rightpanel').toggleClass('closepanel');
-            rightpanelMargin();
-        }
+    if ($('#leftpanel').hasClass('closepanel')) {
+        $('#main').css('margin-left', '30px');
+        $('#main').css('width', 'calc(100% - 30px)');
+    } else {
+        $('#main').css('margin-left', '260px');
+        $('#main').css('width', 'calc(100% - 260px)');
+    }
+    if (subsetKeySelected === "Action") {
+        drawGraphs();
+        updateData();
     }
 
-    function toggleRightPanel() {
-        if (!$('#rightpanel').hasClass('forceclosepanel')) {
-            /*$('#rightpanel .nav-tabs').hide();*/
-            $('#rightpanel').removeClass('expandpanel');
-            $('#rightpanel > div.row-fluid').toggleClass('closepanel');
-            $('#rightpanel').toggleClass('closepanel');
-            rightpanelMargin();
-        }
-    }
+    resizeActorSVG();
+}
 
-    var myurl = window.location.toString();
-    var fileid = "";
-    var cindex = 0;
-    if (myurl.indexOf("dfId=") > 0) {
-        fileid = myurl.substring(myurl.indexOf("dfId=") + 5);
-        cindex = fileid.indexOf("&");
-        if (cindex > 0) {
-            fileid = fileid.substring(0, cindex);
-        }
+function openRightPanel() {
+    if ($('#rightpanel').hasClass('closepanel')) {
+        /*$('#rightpanel .nav-tabs').hide();*/
+        $('#rightpanel > div.row-fluid').toggleClass('closepanel');
+        $('#rightpanel').toggleClass('closepanel');
+        rightpanelMargin();
     }
-    var hostname = "";
-    if (myurl.indexOf("host=") > 0) {
-        hostname = myurl.substring(myurl.indexOf("host=") + 5);
-        cindex = hostname.indexOf("&");
-        if (cindex > 0) {
-            hostname = hostname.substring(0, cindex);
-        }
-    }
-    var apikey = "";
-    if (myurl.indexOf("key=") > 0) {
-        apikey = myurl.substring(myurl.indexOf("key=") + 4);
-        cindex = apikey.indexOf("&");
-        if (cindex > 0) {
-            apikey = apikey.substring(0, cindex);
-        }
-    }
-    var ddiurl = "";
-    if (myurl.indexOf("ddiurl=") > 0) {
-        ddiurl = myurl.substring(myurl.indexOf("ddiurl=") + 7);
-        ddiurl = ddiurl.replace(/%25/g, "%");
-        ddiurl = ddiurl.replace(/%3A/g, ":");
-        ddiurl = ddiurl.replace(/%2F/g, "/");
-        cindex = ddiurl.indexOf("&");
-        if (cindex > 0) {
-            ddiurl = ddiurl.substring(0, cindex);
-        }
-    }
-    var dataurl = "";
-    if (myurl.indexOf("dataurl=") > 0) {
-        dataurl = myurl.substring(myurl.indexOf("dataurl=") + 8);
-        dataurl = dataurl.replace(/%25/g, "%");
-        dataurl = dataurl.replace(/%3A/g, ":");
-        dataurl = dataurl.replace(/%2F/g, "/");
-        cindex = dataurl.indexOf("&");
-        if (cindex > 0) {
-            dataurl = dataurl.substring(0, cindex);
-        }
-    }
+}
 
-    var username = "";
-    if (myurl.indexOf("username=") > 0) {
-        username = myurl.substring(myurl.indexOf("dataurl=") + 8);
-        username = username.replace(/%25/g, "%");
-        username = username.replace(/%3A/g, ":");
-        username = username.replace(/%2F/g, "/");
-        username = username.indexOf("&");
-        if (cindex > 0) {
-            username = username.substring(0, cindex);
-        }
+function toggleRightPanel() {
+    if (!$('#rightpanel').hasClass('forceclosepanel')) {
+        /*$('#rightpanel .nav-tabs').hide();*/
+        $('#rightpanel').removeClass('expandpanel');
+        $('#rightpanel > div.row-fluid').toggleClass('closepanel');
+        $('#rightpanel').toggleClass('closepanel');
+        rightpanelMargin();
     }
-    else {
-        username = "rohit";
-    }
-
-    //  console.log("fileid: "+fileid);
-    //  console.log("hostname: "+hostname);
-    //  console.log("apikey: "+apikey);
-    //  console.log("ddiurl: "+ddiurl);
-    //  console.log("dataurl: "+dataurl);
-    //  console.log("Username:"+username);
+}
 </script>
 <script id="querySample" type="text/javascript" src="src/subset/sampleQuery.js"></script>
 <script id="subsetCodeJS" type="text/javascript" src="src/subset/app.js"></script>

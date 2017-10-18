@@ -44,7 +44,8 @@
 #       If you use Rstudio, modify the IDE config so that it won't share the same port as the R server
 
 eventdata_subset_local.app <- function(env) {
-    production <- FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
+    production = FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
+    validate_db = TRUE     ## Toggle:  TRUE - Check if database is properly formatted
 
     if (production) {
         sink(file = stderr(), type = "output")
@@ -56,10 +57,17 @@ eventdata_subset_local.app <- function(env) {
 
     print("Request received")
 
+    table <- 'samplePhox'
+    connection <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)
+
     if (request$options()) {
         print("Preflight")
         response$status = 200L
 
+        if (validate_db) {
+            warnings = validate(RMongo::dbGetQuery(connection, table, "{}", skip=0, limit=100), 'phoenix');
+            response$write(paste('{"warning": "', toString(jsonlite::toJSON(warnings)), '"}'));
+        }
 
         # Ensures CORS header is permitted
         response$header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
@@ -92,14 +100,8 @@ eventdata_subset_local.app <- function(env) {
     type = everything$type
     length = everything$length
 
-
     subsets = gsub('date8', 'Date', subsets)
     print(subsets)
-
-    # print(subsets)
-    # print(variables)
-    table <- 'samplePhox'
-    connection <- RMongo::mongoDbConnect('eventdata', '127.0.0.1', 27017)
 
     if (!is.null(type) && type == 'raw') {
         result = toString(jsonlite::toJSON(RMongo::dbGetQueryForKeys(connection, table, subsets, variables)))

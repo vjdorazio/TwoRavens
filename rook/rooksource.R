@@ -112,6 +112,7 @@ source("build.R")
 source("rookagg.R")
 source("eventdata/rooksubset.R")
 source("eventdata/rooksubset_local.R")
+source("eventdata/rookformatter.R")
 
 if(addPrivacy){
     source("rookprivate.R")
