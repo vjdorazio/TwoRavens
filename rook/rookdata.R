@@ -10,7 +10,7 @@ data.app <- function(env){
 
     ## Define paths for output.
     ## Also set `production` toggle:  TRUE - Production, FALSE - Local Development.
-    source("rookconfig.R") 
+  #  source("rookconfig.R")
 
     warning<-FALSE
     result <- list()
@@ -50,28 +50,28 @@ data.app <- function(env){
       metadataurl=everything$zmetadataurl
       if(length(metadataurl)==0)
       {metadataurl=NULL}
-      username=everything$zusername
-      if(length(username)==0)
-      {username=NULL}
-      else{
+     # username=everything$zusername
+     # if(length(username)==0)
+     # {username=NULL}
+     # else{
 
-        mainDir<-"../users"
-        subDir<-username
+      #  mainDir<-"../users"
+      #  subDir<-username
         #create a new directory for the particular user if it doesnt exist
-        if(!dir.exists(file.path(mainDir, subDir)))
-        {
+       # if(!dir.exists(file.path(mainDir, subDir)))
+       # {
 
-          dir.create(file.path(mainDir, subDir))
-        }
+        #  dir.create(file.path(mainDir, subDir))
+        #}
 
         #print("metadataurl")
         #print(metadataurl)
         #print("Username")
         #print(username)
-      }
-      config=list(metadata=metadataurl,user=username,data=datanm)
-      outconfig=rjson::toJSON(config)
-      write(outconfig,file="config.json")
+      #}
+     # config=list(metadata=metadataurl,user=username,data=datanm)
+     # outconfig=rjson::toJSON(config)
+     # write(outconfig,file="config.json")
     }
   if(!warning){
       datacite=everything$zdatacite
