@@ -68,7 +68,11 @@ if(!production){
     myPort <- "8000"
     myInterface <- "0.0.0.0"
     status <- -1
-    status<-.Call(tools:::startHTTPD, myInterface, myPort)
+    if (as.integer(R.version[["svn rev"]]) > 72310) {
+        status <- .Call(tools:::C_startHTTPD, myInterface, myPort)
+    } else {
+        status <- .Call(tools:::startHTTPD, myInterface, myPort)
+    }
 
 
     if( status!=0 ){
@@ -100,7 +104,6 @@ source("rookzelig.R")
 source("rookutils.R")
 source("rookdata.R")
 source("rookwrite.R")
-source("rookexplore.R")
 if(addPrivacy){
     source("rookprivate.R")
 }
@@ -116,7 +119,6 @@ if(!production){
     R.server$add(app = transform.app, name="transformapp")
     R.server$add(app = data.app, name="dataapp")
     R.server$add(app = write.app, name="writeapp")
-    R.server$add(app = explore.app, name="exploreapp")
     
         ## These add the .apps for the privacy budget allocator interface
     if(addPrivacy){
