@@ -2,6 +2,8 @@
 function density(node, div, private) {
     var mydiv;
 
+    console.log(" This is plotjs " + node.name);
+
     if(div=="subset") {
         mydiv = "#tab2";
     }
@@ -301,6 +303,7 @@ function density(node, div, private) {
 
     // brushing functions
     function brushed() {
+
         if(mydiv=="#tab2") {
         plotsvg.select("text#range")
         .text(function() {

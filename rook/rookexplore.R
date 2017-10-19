@@ -6,7 +6,7 @@
 
 
 explore.app <- function(env){
-    print("explore app called")
+   # print("explore app called")
     print(env)
     production<-FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
     warning<-FALSE  
@@ -20,9 +20,9 @@ explore.app <- function(env){
     response <- Response$new(headers = list( "Access-Control-Allow-Origin"="*"))
     
     valid <- jsonlite::validate(request$POST()$solaJSON)
-    valid1 <- jsonlite::validate(request$POST()$crossJSON)
+   # valid1 <- jsonlite::validate(request$POST()$crossJSON)
     print("this is valid.........")
-    print(valid1)
+   # print(valid1)
     if(!valid) {
         warning <- TRUE
         result <- list(warning="The request is not valid json. Check for special characters.")
@@ -147,6 +147,8 @@ explore.app <- function(env){
             print("this is zcrosstab yo")
             print(crosstab)
 
+
+
           ## plot data
           plotd <- mydata[,vars]
           if(nrow(plotd)>1000) {
@@ -193,8 +195,7 @@ explore.app <- function(env){
               # what will be returned in "tabular"
               useTab<-usedata
               #here the data comes from the json
-
-
+              
 
               # this is a default of 10 if greater than 10 unique values. eventually we can incorporate user input to define this
 
@@ -213,7 +214,7 @@ explore.app <- function(env){
               tabData <- list()
               
               for (j in 1:nrow(myTab)) {
-                  #                  assign(paste("row", j, sep = ""), c(rown[j],myTab[j,]))
+                  #  assign(paste("row", j, sep = ""), c(rown[j],myTab[j,]))
                   assign("tabData", c(tabData, list(eval(parse(text="myTab[j,]")))))
               }
               tabInfo <- list(colnames=coln, rownames=rown, colvar=colv, rowvar=rowv, data=tabData)

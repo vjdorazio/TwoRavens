@@ -5255,12 +5255,16 @@ function viz_explore(m, json_vizexplore, model_name_set) {
 
         //var base = rappURL+"zeligapp?solaJSON="
         urlcall = rappURL + "exploreapp"; //base.concat(jsonout);
-        var crossjsonout = "solaJSON=" + jsonout;
+        var solajsonout = "solaJSON=" + jsonout;
         //console.log("urlcall out: ", urlcall);
-        console.log("POST out: ", crossjsonout);
+        console.log("POST out this: ", solajsonout);
 
      function explore_crosstabSuccess() {
     console.log("crossTabSuccess");
+    dataDownload();
+
+    var jsonget=JSON.stringify(zparams);
+    console.log("json ohyeah"+ jsonget);
          d3table1(d);
 
      }
@@ -5269,7 +5273,7 @@ function viz_explore(m, json_vizexplore, model_name_set) {
             estimated = true;
         }
         estimateLadda.start();  // start spinner
-        makeCorsRequest(urlcall, btn, explore_crosstabSuccess, explore_crosstabFail, crossjsonout);
+        makeCorsRequest(urlcall, btn, explore_crosstabSuccess, explore_crosstabFail, solajsonout);
 
     }
 
