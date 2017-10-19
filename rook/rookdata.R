@@ -88,13 +88,19 @@ data.app <- function(env){
           # this will generate a unique id on the system for Mac/Unix. Might need something else for other systems. getData() is called by rookdata.R, which is the app that is called when TwoRavens is loaded (the "Explore" button is clicked). This downloads the data in the background to /tmp/ while the user is specifying a model. /tmp/ will be wiped every so often or after inactivity.
 
           # See if an ID exists; django layer may try to pass an initial id
-          myid=everything$zsessionid
-          if(length(myid)==0){
-            # no id? then generate one using uuid
-            myid <- system("uuidgen",intern=T)
-          }
-          logfile<-logFile(myid, production)
-          logSessionInfo(logfile, myid, datacite)
+      # See if an ID exists; django layer may try to pass an initial id
+      myid=everything$zsessionid
+
+      # if myid="" i.e it is null then use uuidgen
+      if(myid==""){
+          # no id? then generate one using uuid
+          myid <- system("uuidgen",intern=T)
+      }
+      print("my id")
+      print(myid)
+
+      logfile<-logFile(myid, production)
+      logSessionInfo(logfile, myid, datacite)
 
           # We discovered that R's read.delim() method does not work with https URLs.
           # So I worked around it with the hack below - I first download the tab-delimited file and
