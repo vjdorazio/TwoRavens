@@ -266,18 +266,21 @@ if (dataurl) {
     // no dataurl/file id supplied; use one of the sample data files distributed with the
     // app in the "data" directory:
     //pURL = "data/preprocess2429360.txt";   // This is the Strezhnev Voeten JSON data
-    // pURL = "data/fearonLaitin.json";     // This is the Fearon Laitin JSON data
+     pURL = "data/fearonLaitin.json";     // This is the Fearon Laitin JSON data
     //pURL = "data/fearonLaitinNewPreprocess3long.json";     // This is the revised (May 29, 2015) Fearon Laitin JSON data
-    purltest = "users/" + username + "/fearonLaitinDatapreprocess.json"
+   
+   /*
+     purltest = "users/" + username + "/fearonLaitinDatapreprocess.json"
     //This is testing whether a newer json file exists or not. if yes, we will use that file, else use the default file
     var test = UrlExists(purltest);
     if (test == true) {
         pURL = purltest;
-        // console.log("test is true");
+         console.log("test is true");
     }
     else
         console.log("loading fearonLaitin.json");
     pURL = "data/fearonLaitin.json";
+    */
 
     // console.log("yo value of test",test);
     /*$.ajax({
@@ -595,8 +598,8 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
         }
 
         // var cite = xml.documentElement.getElementsByTagName("biblCit");
-        var cite = findValue(jsondata, "biblCit");
-        zparams.zdatacite = cite;//[0].childNodes[0].nodeValue;
+      //  var cite = findValue(jsondata, "biblCit");
+       // zparams.zdatacite = cite;//[0].childNodes[0].nodeValue;
         // console.log("value of zdatacite: ",zparams.zdatacite);
         if (zparams.zdatacite !== undefined) {
             zparams.zdatacite = cleanstring(zparams.zdatacite);
@@ -610,7 +613,7 @@ readPreprocess(url = pURL, p = preprocess, v = null, callback = function () {
         d3.select("#dataName")
             .html(dataname);
 
-        $('#cite div.panel-body').text(zparams.zdatacite);
+      //  $('#cite div.panel-body').text(zparams.zdatacite);
 
         // Put dataset name, from meta-data, into page title
         d3.select("title").html("TwoRavens " + dataname)
@@ -4662,7 +4665,7 @@ function dataDownload() {
     // add call history and package the zparams object as JSON
     //console.log("inside datadownload, zparams= ",zparams);
     zparams.zmetadataurl = metadataurl;
-    zparams.zusername = username;
+   // zparams.zusername = username;
     var jsonout = JSON.stringify(zparams);
     var btn = "nobutton";
 

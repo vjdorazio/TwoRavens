@@ -8,29 +8,32 @@
 
 data.app <- function(env){
 
-    production<-FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
+    ## Define paths for output.
+    ## Also set `production` toggle:  TRUE - Production, FALSE - Local Development.
+  #  source("rookconfig.R")
+
     warning<-FALSE
     result <- list()
-    
+
     if(production){
         sink(file = stderr(), type = "output")
     }
 
     request <- Request$new(env)
     response <- Response$new(headers = list( "Access-Control-Allow-Origin"="*"))
-    
+
     valid <- jsonlite::validate(request$POST()$solaJSON)
     print(valid)
     if(!valid) {
         warning <- TRUE
         result <- list(warning="The request is not valid json. Check for special characters.")
     }
-    
+
     if(!warning) {
         everything <- jsonlite::fromJSON(request$POST()$solaJSON)
         print(everything)
     }
-  
+
   if(!warning){
       dataurl=everything$zdataurl
       if(length(dataurl) == 0){
@@ -47,49 +50,52 @@ data.app <- function(env){
       metadataurl=everything$zmetadataurl
       if(length(metadataurl)==0)
       {metadataurl=NULL}
-      username=everything$zusername
-      if(length(username)==0)
-      {username=NULL}
-      else{
-        
-        mainDir<-"../users"
-        subDir<-username
+     # username=everything$zusername
+     # if(length(username)==0)
+     # {username=NULL}
+     # else{
+
+      #  mainDir<-"../users"
+      #  subDir<-username
         #create a new directory for the particular user if it doesnt exist
-        if(!dir.exists(file.path(mainDir, subDir)))
-        { 
-          
-          dir.create(file.path(mainDir, subDir))
-        }
-        
+       # if(!dir.exists(file.path(mainDir, subDir)))
+       # {
+
+        #  dir.create(file.path(mainDir, subDir))
+        #}
+
         #print("metadataurl")
         #print(metadataurl)
         #print("Username")
         #print(username)
-      }
-      config=list(metadata=metadataurl,user=username,data=datanm)
-      outconfig=rjson::toJSON(config)
-      write(outconfig,file="config.json")
-    }
-  if(!warning)
-  {
-      datacite="No datacite provided"
-      #datacite=everything$zdatacite
-     # if(length(datacite) == 0)
-      #     warning <- TRUE
-       #   result<-list(warning="No data file citation.")
       #}
-
-  }
-    
-    
-  
+     # config=list(metadata=metadataurl,user=username,data=datanm)
+     # outconfig=rjson::toJSON(config)
+     # write(outconfig,file="config.json")
+    }
   if(!warning){
-      
+      datacite=everything$zdatacite
+      if(length(datacite) == 0){
+          warning <- TRUE
+          result<-list(warning="No data file citation.")
+      }
+  }
+
+
+
+  if(!warning){
+
           # this will generate a unique id on the system for Mac/Unix. Might need something else for other systems. getData() is called by rookdata.R, which is the app that is called when TwoRavens is loaded (the "Explore" button is clicked). This downloads the data in the background to /tmp/ while the user is specifying a model. /tmp/ will be wiped every so often or after inactivity.
-          myid <- system("uuidgen",intern=T)
+
+          # See if an ID exists; django layer may try to pass an initial id
+          myid=everything$zsessionid
+          if(length(myid)==0){
+            # no id? then generate one using uuid
+            myid <- system("uuidgen",intern=T)
+          }
           logfile<-logFile(myid, production)
           logSessionInfo(logfile, myid, datacite)
-          
+
           # We discovered that R's read.delim() method does not work with https URLs.
           # So I worked around it with the hack below - I first download the tab-delimited file and
           # save it locally, using download.file() method; then read the local file with read.delim.
@@ -117,10 +123,9 @@ data.app <- function(env){
     if(production){
         sink()
     }
-    
+
     result<-jsonlite:::toJSON(result)
-    
+
     response$write(result)
     response$finish()
 }
-
