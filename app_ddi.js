@@ -130,7 +130,7 @@ var zparams = {
     zusername: "",
     zcrosstab:[]
 };
-
+var myjson;
 var json_data_explore = "empty";
 // Radius of circle
 var allR = 40;
@@ -4474,7 +4474,7 @@ function explore(btn) {
         allResults.push(json);
         var json_explore = json;
         //     console.log("the allResults is : " +allResults);
-        console.log("json in: ", json);
+        console.log("json in for explore: ", json);
 
 
         var myparent = document.getElementById("rightContentArea");
@@ -4935,77 +4935,81 @@ function viz_explore(m, json_vizexplore, model_name_set) {
 
      d3.select("#resultsView").style("box-shadow","1px 1px 3px grey").style("background-color","#F5F5F5");
      */
-
-
+    var cork = [];
+    var corp = [];
+    var cors = [];
+    var var1 = [];
+    var var2 = [];
     var table_obj = [];
     var colnames = [];
     var colvar = [];
     var table_data = [];
     var rowvar = [];
     var rownames = [];
+function crossTab_Table(json_my) {
+
+    var json1 = json_my;
+
+
 
 
     // data for statistics
 
-    var cork = [];
-    var corp = [];
-    var cors = [];
-    var var1 = [];
-    var var2 = [];
-    for (var i in json.tabular) {
+
+    for (var i in json1.tabular) {
         //console.log("this is data : " + i)
         if (i == model_name1 || i == model_name2) {
-            for (var j in json.tabular[i].colnames) {
+            for (var j in json1.tabular[i].colnames) {
 
 
                 //   console.log("colnames: ");
-                //  console.log(json.tabular[i].colnames[j]);
-                colnames.push(json.tabular[i].colnames[j]);
+               //  console.log(json.tabular[i].colnames[j]);
+                colnames.push(json1.tabular[i].colnames[j]);
 
             }
         }
     }
 
 
-    for (var i in json.tabular) {
+    for (var i in json1.tabular) {
         //   console.log("rownames: ");
         if (i == model_name1 || i == model_name2) {
-            for (var k in json.tabular[i].rownames) {
+            for (var k in json1.tabular[i].rownames) {
 
                 //   console.log(json.tabular[i].rownames[k]);
-                rownames.push(json.tabular[i].rownames[k]);
+                rownames.push(json1.tabular[i].rownames[k]);
             }
         }
     }
-    for (var i in json.tabular) {
+    for (var i in json1.tabular) {
         if (i == model_name1 || i == model_name2) {
-            for (var l in json.tabular[i].rowvar) {
+            for (var l in json1.tabular[i].rowvar) {
                 //  console.log("rowvar: ");
                 // console.log(json.tabular[i].rowvar[l]);
-                rowvar.push(json.tabular[i].rowvar[l]);
+                rowvar.push(json1.tabular[i].rowvar[l]);
             }
         }
     }
-    for (var i in json.tabular) {
+    for (var i in json1.tabular) {
         if (i == model_name1 || i == model_name2) {
-            for (var m in json.tabular[i].colvar) {
+            for (var m in json1.tabular[i].colvar) {
                 // console.log("colavar: ");
                 //  console.log(json.tabular[i].colvar[m]);
-                colvar.push(json.tabular[i].colvar[m]);
+                colvar.push(json1.tabular[i].colvar[m]);
             }
         }
     }
-    for (var i in json.tabular) {
+    for (var i in json1.tabular) {
         if (i == model_name1 || i == model_name2) {
             // console.log("This is data : ");
-            for (var n in json.tabular[i].data) {
+            for (var n in json1.tabular[i].data) {
                 table_data[n] = [];
                 //  console.log(json.tabular[i].data[n]);
                 //  console.log("this is data for : " + json.tabular[i].data[n]);
                 for (var a = 0; a < colnames.length; a++) {
                     // console.log("data : ");
                     // console.log(json.tabular[i].data[n][a]);
-                    table_data[n].push(json.tabular[i].data[n][a]);
+                    table_data[n].push(json1.tabular[i].data[n][a]);
                 }
 
             }
@@ -5018,10 +5022,18 @@ function viz_explore(m, json_vizexplore, model_name_set) {
             // console.log("col data : ");
             //  console.log(table_data[p][l]);
             table_obj.push({rowname: rownames[p], colname: colnames[l], value: table_data[p][l]});
-            //console.log(" the dynamic object data : rowname = "+ objd.rowname + " colname :  "+ objd.colname + " value : "+ objd.value );
+           // console.log(" the dynamic object data : rowname = "+ table_obj[i].rowname + " colname :  "+ table_obj[i].colname + " value : "+ table_obj[i].value );
         }
     }
-
+// crosstab_table ends
+/*for(var i=0; i<table_obj.length; i++)
+{
+    console.log(" the dynamic object data : rowname = "+ table_obj[i].rowname + " colname :  "+ table_obj[i].colname + " value : "+ table_obj[i].value );
+    // console.log(" the dynamic object data : rowname = "+ table_obj.rowname + " colname :  "+ table_obj.colname + " value : "+ table_obj.value );
+}
+*/
+d3table1(table_obj);
+}
 
     // for the statistics]
     // console.log("The data for the statistical"+ json.statistical)
@@ -5138,8 +5150,11 @@ function viz_explore(m, json_vizexplore, model_name_set) {
              var tr = table.append("tr").style("margin-left", 20).style("background-color", "#BDBDBD").style("border", 1).style("text-align", "center").text(rownames[k]);
              for (var m = 0; m < colnames.length; m++) {
                  for (var z = 0; z < data.length; z++) {
-                     if (rownames[k] == data[z].rowname && colnames[m] == data[z].colname) {
+
+
+                     if (rownames[k] === data[z].rowname && colnames[m] === data[z].colname) {
                          tr.append("td").style("border", 1).style("text-align", "center").style("position", "relative").style("background-color", varColor).text(data[z].value);
+                        // console.log("data: "+ data[z].value);
                      }
                  }
 
@@ -5224,7 +5239,7 @@ function viz_explore(m, json_vizexplore, model_name_set) {
 
 
 
-        explore_crosstab(2);
+        explore_crosstab(json);
     });
     function explore_crosstab(btn) {
 
@@ -5262,14 +5277,22 @@ function viz_explore(m, json_vizexplore, model_name_set) {
         //console.log("urlcall out: ", urlcall);
         console.log("POST out this: ", solajsonout);
 
-     function explore_crosstabSuccess() {
+     function explore_crosstabSuccess(json) {
     console.log("crossTabSuccess");
-    dataDownload();
+   // readPreprocess(url,p,v,callback);
+         d3.json("rook/myresult2.json", function (error, json) {
+             if (error) return console.warn(error);
+             var jsondata = json;
 
-    var jsonget=JSON.stringify(zparams);
-    console.log("json ohyeah"+ jsonget);
-         d3table1(d);
+             console.log("explore DATA json: ", jsondata);
 
+
+crossTab_Table(jsondata);
+   // var jsonget=json.tabular;
+    //console.log("json :"+ jsonget);
+        // d3table1(d);
+
+     });
      }
         function explore_crosstabFail() {
             estimateLadda.stop();  // stop spinner
