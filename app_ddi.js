@@ -130,7 +130,7 @@ var zparams = {
     zusername: "",
     zcrosstab:[]
 };
-var myjson;
+//var myjson;
 var json_data_explore = "empty";
 // Radius of circle
 var allR = 40;
@@ -299,6 +299,9 @@ if (dataurl) {
      //file exists
      }
      });*/
+
+
+
     function UrlExists(url) {
         var http = new XMLHttpRequest();
         http.open('HEAD', url, false);
@@ -905,12 +908,12 @@ function crossTabPlots(PlotNameA, PlotNameB) {
     });
 
     btns1.on("click", getData1);
-var var1,var2 , varsize1,varsize2;
+var varn1,varn2 , varsize1,varsize2;
     function getData() {
 
         if (this.innerText === "EQUIDISTANCE")
         {
-var1="equidistance";
+varn1="equidistance";
              plotA_size= parseInt(d3.select("input#a")[0][0].value);
 varsize1=plotA_size;
             equidistance(PlotNameA,plotA_size);
@@ -920,7 +923,7 @@ varsize1=plotA_size;
              plotA_sizem= parseInt(d3.select("input#a")[0][0].value);
 varsize1=plotA_sizem
             equimass(PlotNameA,plotA_sizem);
-var2="equimass";
+varn1="equimass";
 
         }
 
@@ -930,13 +933,13 @@ var2="equimass";
         if (this.innerText === "EQUIDISTANCE")
         {
 
-            var1="equidistance";
+            varn2="equidistance";
              plotB_size= parseInt(d3.select("input#b")[0][0].value);
             equidistance(PlotNameB,plotB_size);
             varsize2=plotB_size;
         }
         else if (this.innerText === "EQUIMASS") {
-            var2="equimass";
+            varn2="equimass";
              plotB_sizem= parseInt(d3.select("input#b")[0][0].value);
             equimass(PlotNameB,plotB_sizem);
         varsize2=plotB_sizem;
@@ -1694,9 +1697,11 @@ function equimass_bar(plot_ev,n) {
     function writeCrossTabsJson()
     {
 
+console.log(" buttontype A : "+ varn1)
+        console.log(" buttontype B : "+ varn2)
 
 
-        var plotAval=varsize1,plotBval=varsize2,buttontypeA=var1,buttontypeB=var2;
+        var plotAval=varsize1,plotBval=varsize2;
         if(isNaN(plotAval))
         {
             plotAval=10;
@@ -1710,7 +1715,7 @@ function equimass_bar(plot_ev,n) {
                     {
                         name: PlotNameA,
                         value: plotAval,
-                            buttonType:var1
+                            buttonType:varn1
 
 
                     },
@@ -1718,7 +1723,7 @@ function equimass_bar(plot_ev,n) {
                     {
                         name: PlotNameB,
                         value:plotBval,
-                        buttonType:var2
+                        buttonType:varn2
 
 
                     }
@@ -5160,17 +5165,17 @@ d3table1(table_obj);
 
              }
          }
-         sv.append("text")
-             .style("padding","10px")
-             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-             .attr("transform", "translate(" + (padding / 2) + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
-             .text(get_data[0]);
-
-         sv.append("text")
-             .style("padding","10px")
-             .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-             .attr("transform", "translate(" + (width) + "," + (padding / 2) + ")")  // centre below axis
-             .text(get_data[1]);
+         // sv.append("text")
+         //     .style("padding","10px")
+         //     .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+         //     .attr("transform", "translate(" + (padding / 2) + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+         //     .text(get_data[0]);
+         //
+         // sv.append("text")
+         //     .style("padding","10px")
+         //     .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+         //     .attr("transform", "translate(" + (width) + "," + (padding / 2) + ")")  // centre below axis
+         //     .text(get_data[1]);
 
      }
 /*
@@ -5224,6 +5229,8 @@ d3table1(table_obj);
         d3.select("#plotA").html("");
         d3.select("#plotB").html("");
         d3.select("#SelectionData").html("");
+
+
         crossTabPlots(get_data[0], get_data[1]);
     });
     $('#crossTabs').click(function()
@@ -5240,6 +5247,8 @@ d3table1(table_obj);
 
 
         explore_crosstab(json);
+        estimateLadda.stop();  // stop spinner
+        estimated = true;
     });
     function explore_crosstab(btn) {
 
