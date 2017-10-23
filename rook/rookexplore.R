@@ -28,8 +28,10 @@ explore.app <- function(env){
         result <- list(warning="The request is not valid json. Check for special characters.")
     }
     
-    if(!warning) {
-        everything <- jsonlite::fromJSON(request$POST()$solaJSON)
+    if(!warning)
+    {
+        everything <- jsonlite::fromJSON(request$POST()$solaJSON, flatten=TRUE )
+
         print("this is everything.........")
         print(everything)
     }
@@ -142,10 +144,10 @@ explore.app <- function(env){
           plotdata<<-list()
           plotcount<-0
 
-            crosstab <- everything$zcrosstab
 
-            print("this is zcrosstab yo")
-            print(crosstab)
+
+
+
 
 
 
@@ -195,18 +197,94 @@ explore.app <- function(env){
               # what will be returned in "tabular"
               useTab<-usedata
               #here the data comes from the json
-              
+              crosstab <- everything$zcrosstab
+              #crosstab1<- new_crosstab$zcrosstab
+              var1name <- crosstab$var1.name
+              var2name <- crosstab$var2.name
+
+              var1value <- crosstab$var1.value
+              var2value <- crosstab$var2.value
+
+              var1buttontype <- crosstab$var1.buttonType
+              var2buttontype <- crosstab$var2.buttonType
+
+
+
+              print(" var1 name");
+                 print(var1name)
+              print(" var2 name");
+              print(var2name)
+print(" var1 buttontype");
+              print(var1buttontype)
+              print(" var2 buttontype");
+              print(var2buttontype)
+              print(" var1 value");
+              print(var1value)
+              print(" var2 value" );
+              print(var2value)
+
+
 
               # this is a default of 10 if greater than 10 unique values. eventually we can incorporate user input to define this
+if(length(var1buttontype)==0 || length(var2buttontype)==0|| length(var1value)==0 || length(var2value)==0 || length(var2name)==0 ||length(var1name)==0)
+{
+    print("not defined value part")
+    if(length(unique(useTab[,1]))>10 & !isTRUE(rowvNature=="nominal")) {
+        useTab[,1] <- cut(useTab[,1], breaks=10)
+    }
+    if(length(unique(useTab[,2]))>10 & !isTRUE(colvNature=="nominal")) {
+        useTab[,2] <- cut(useTab[,2], breaks=10)
+    }
+}
 
+else
+{
+
+              if(var1buttontype == "equidistance")
+            {
+                print("equidistance var 1  called")
               if(length(unique(useTab[,1]))>10 & !isTRUE(rowvNature=="nominal")) {
-                  useTab[,1] <- cut(useTab[,1], breaks=10)
+                  useTab[,1] <- cut(useTab[,1], breaks=var1value)
               }
 
-              if(length(unique(useTab[,2]))>10 & !isTRUE(colvNature=="nominal")) {
-                useTab[,2] <- cut(useTab[,2], breaks=10)
-              }
+            }
+            else if (var1buttontype == "equimass")
+            {  print("equimass var 1 called")
+                # first arrange
+                usethis<- sort(useTab[,1], decreasing = FALSE, na.last = NA  )
+                print("equimass usethis")
+                print(usethis)
 
+                if(length(unique(useTab[,1]))>10 & !isTRUE(rowvNature=="nominal")) {
+                    useTab[,1] <- cut(usethis, breaks=var1value)
+                }
+
+
+
+            }
+
+              if (var2buttontype == "equidistance")
+              {
+
+                  print("equidistance var 2  called")
+                  if(length(unique(useTab[,2]))>10 & !isTRUE(colvNature=="nominal")) {
+                      useTab[,2] <- cut(useTab[,2], breaks=var2value)
+                  }
+              }
+              else if(var2buttontype == "equimass")
+              {
+                  print("equimass var 2  called")
+                  # first arrange
+                  usethis<- sort(useTab[,2], decreasing = FALSE, na.last = NA  )
+                  print("equimass usethis")
+                  print(usethis)
+                  if(length(unique(useTab[,2]))>10 & !isTRUE(colvNature=="nominal")) {
+
+
+                      useTab[,2] <- cut(usethis, breaks=var2value)
+                  }
+              }
+                  }
               myTab <- table(useTab[,1],useTab[,2])
               rm(useTab)
               coln <- colnames(myTab)
@@ -309,7 +387,7 @@ explore.app <- function(env){
         result<-jsonlite:::toJSON(result)
         #}
     print("........this is result.........")
-    print(result)
+   # print(result)
     if(production){
         sink()
     }
