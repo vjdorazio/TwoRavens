@@ -1207,8 +1207,8 @@ div.actorTab button.active {
 }
 
 .actorRight {
-	width: 150px;
-	height: 100%;
+    width:164px;
+    height:100%;
 	display: inline-block;
 	vertical-align: top;
 }
@@ -1216,15 +1216,15 @@ div.actorTab button.active {
 .actorSearch {
 	margin: 5px 0 5px 5px;
 	height: 30px;
-	width: 175px;
+	width: 170px !important;
 }
 
 .actorFullList {
 	display: inline-block;
 	position: absolute;
 	width :180px;
-	height: calc(100% - 200px);
-	overflow-x: scroll;
+	height: calc(100% - 212px);
+	overflow-x: auto;
 	overflow-y: scroll;
 	white-space: nowrap;
 }
@@ -1232,16 +1232,18 @@ div.actorTab button.active {
 .actorFilterList {
 	display: inline-block;
 	position: absolute;
-	width: 150px;
-	height: calc(100% - 200px);
-	overflow-x: scroll;
+	width: 164px;
+	height: calc(100% - 206px);
+    margin-top:3px;
+	overflow-x: auto;
 	overflow-y: scroll;
 	white-space: nowrap;
 }
 
 .clearActorBtn {
 	display: block;
-	margin: 5px;
+	margin: 5px 38px 5px 5px;
+    width:calc(100% - 43px);
 	height: 30px;
 }
 
@@ -1279,9 +1281,8 @@ div.actorTab button.active {
 }
 
 .actorBottom {
-	margin-top: -5px;
-	margin-left: 5px;
-	margin-right: 5px;
+	margin: 5px;
+    margin-top:-12px;
 }
 
 .actorNewGroup {

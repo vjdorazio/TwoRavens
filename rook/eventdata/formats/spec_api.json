@@ -1,101 +1,101 @@
 {
-  "GID": {
+  "<event_id>": {
     "name": "event_id",
     "format": "."
   },
-  "Date": {
+  "<date>": {
     "name": "date",
     "format": "^\\d{8}$"
   },
-  "Year": {
+  "<year>": {
     "name": "year",
     "format": "^\\d{4}$"
   },
-  "Month": {
+  "<month>": {
     "name": "month",
     "format": "^([1-9]|1[0-2])$"
   },
-  "Day": {
+  "<day>": {
     "name": "day",
     "format": "^([1-9]|[12]\\d|3[01])$"
   },
-  "Source": {
+  "<source>": {
     "name": "source",
     "format": "^(\\p{L}\\p{L}\\p{L})*$"
   },
-  "SrcActor": {
+  "<src_actor>": {
     "name": "src_actor",
     "format": "^\\p{L}\\p{L}\\p{L}$"
   },
-  "SrcAgent": {
+  "<src_agent>": {
     "name": "src_agent",
     "format": "^(|\\p{L}\\p{L}\\p{L})$"
   },
-  "SOthAgent": {
+  "<src_other_agent>": {
     "name": "src_other_agent",
     "format": "^(|(\\p{L}\\p{L}\\p{L}(|;))*)$"
   },
-  "Target": {
+  "<target>": {
     "name": "target",
     "format": "^(\\p{L}\\p{L}\\p{L})*$"
   },
-  "TgtActor": {
+  "<tgt_actor>": {
     "name": "tgt_actor",
     "format": "^\\p{L}\\p{L}\\p{L}$"
   },
-  "TgtAgent": {
+  "<tgt_agent>": {
     "name": "tgt_agent",
     "format": "^(|\\p{L}\\p{L}\\p{L})$"
   },
-  "TOthAgent": {
+  "<tgt_other_agent>": {
     "name": "tgt_other_agent",
     "format": "^(|(\\p{L}\\p{L}\\p{L}(|;))*)$"
   },
-  "RootCode": {
+  "<root_code>": {
     "name": "root_code",
     "format": "^(|1)\\d$"
   },
-  "QuadClass": {
+  "<quad_class>": {
     "name": "quad_class",
     "format": "^[0-4]$"
   },
-  "Goldstein": {
+  "<goldstein>": {
     "name": "goldstein",
     "format": "^[+-]?\\d+\\.?\\d+$"
   },
-  "Lat": {
+  "<latitude>": {
     "name": "latitude",
     "format": "^(NA|[+-]?\\d?\\d\\.?\\d+)$"
   },
-  "Lon": {
+  "<longitude>": {
     "name": "longitude",
     "format": "^(NA|[+-]?\\d?\\d\\.?\\d+)$"
   },
-  "Geoname": {
+  "<geoname>": {
     "name": "geoname",
     "format": "^(|[\\p{L}\\s]+)$"
   },
-  "CAMEO": {
+  "<cameo>": {
     "name": "code",
     "format": "^\\d+$"
   },
-  "CountryCode": {
+  "<country_code>": {
     "name": "country_code",
     "format": "^(|\\p{L}\\p{L}\\p{L})$"
   },
-  "AdminInfo": {
+  "<admin_info>": {
     "name": "admin_info",
     "format": "^(|[\\p{L}\\s]+)$"
   },
-  "ID": {
+  "<id>": {
     "name": "id",
     "format": "."
   },
-  "URL": {
+  "<url>": {
     "name": "url",
     "format": "."
   },
-  "sourcetxt": {
+  "<sourcetxt>": {
     "name": "source_text",
     "format": "."
   }

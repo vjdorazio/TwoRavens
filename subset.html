@@ -235,8 +235,9 @@
                         </div>
 
                         <div class="actorRight">
-                            <button id="clearAllSources" type="button" data-toggle="tooltip" class="clearActorBtn"
-                                    title="Clears search text and filters">Clear All Filters
+                            <button id="clearAllSources" type="button" data-toggle="tooltip"
+                                    class="btn btn-default clearActorBtn" title="Clears search text and filters">
+                                Clear All Filters
                             </button>
 
                             <div id="sourceFilter" class="actorFilterList">
@@ -245,7 +246,7 @@
                                         class="actorChk actorShowSelected" name="sourceShowSelected"
                                         id="sourceShowSelected" type="checkbox" value="show"
                                         onchange="showSelected(this)">Show Selected</label>
-                                <div class="seperator"></div>
+                                <div class="separator"></div>
 
                                 <!--dynamically add checks for filters at load-->
                                 <button id="entitySourceExpand" class="filterExpand" value="expand"></button>
@@ -258,7 +259,7 @@
                                                                       value="organizations">Organizations</label>
                                     <div id="orgSourcesList" class="filterContainer" style="padding-left:30px;"></div>
 
-                                    <div class="seperator"></div>
+                                    <div class="separator"></div>
 
                                     <button id="countrySourceExpand" class="filterExpand" value="expand"></button>
                                     <label class="actorChkLbl"><input class="actorChk allCheck"
@@ -269,13 +270,13 @@
                                          style="padding-left:30px;"></div>
                                 </div>
 
-                                <div class="seperator"></div>
+                                <div class="separator"></div>
 
                                 <button id="roleSourceExpand" class="filterExpand" value="expand"></button>
                                 <label id="roleSources" class="actorHead4" for="roleSourceExpand"><b>Role</b></label>
                                 <div id="roleSourcesList" class="filterContainer"></div>
 
-                                <div class="seperator"></div>
+                                <div class="separator"></div>
 
                                 <button id="attributeSourceExpand" class="filterExpand" value="expand"></button>
                                 <label id="attributeSources" class="actorHead4" for="attributeSourceExpand"><b>Attributes</b></label>
@@ -283,17 +284,15 @@
                             </div>
                         </div>
 
-                        <button id="sourceSelectAll" class="actorBottom actorSelectAll" type="button"
-                                data-toggle="tooltip" title="Selects all sources that match the filter criteria">Select
-                            All
+                        <button id="sourceSelectAll" class="btn btn-default actorBottom actorSelectAll" type="button"
+                                data-toggle="tooltip" title="Selects all sources that match the filter criteria">Select All
                         </button>
 
-                        <button id="sourceClearSel" class="actorBottom actorClearAll" type="button"
-                                data-toggle="tooltip" title="Clears all sources that match the filter criteria">Clear
-                            All
+                        <button id="sourceClearSel" class="btn btn-default actorBottom actorClearAll" type="button"
+                                data-toggle="tooltip" title="Clears all sources that match the filter criteria">Clear All
                         </button>
 
-                        <button id="sourceNew" class="actorBottom actorNewGroup" type="button" data-toggle="tooltip"
+                        <button id="sourceNew" class="btn btn-default actorBottom actorNewGroup" type="button" data-toggle="tooltip"
                                 title="Create new source group">New Group
                         </button>
                     </div>
@@ -309,7 +308,7 @@
                         </div>
 
                         <div class="actorRight">
-                            <button id="clearAllTargets" type="button" data-toggle="tooltip" class="clearActorBtn"
+                            <button id="clearAllTargets" type="button" data-toggle="tooltip" class="btn btn-default clearActorBtn"
                                     title="Clears search text and filters">Clear All Filters
                             </button>
 
@@ -319,7 +318,7 @@
                                         class="actorChk actorShowSelected" name="targetShowSelected"
                                         id="targetShowSelected" type="checkbox" value="show"
                                         onchange="showSelected(this)">Show Selected</label>
-                                <div class="seperator"></div>
+                                <div class="separator"></div>
 
                                 <!--dynamically add checks for filters at load-->
                                 <button id="entityTargetExpand" class="filterExpand" value="expand"></button>
@@ -332,7 +331,7 @@
                                                                       value="organizations">Organizations</label>
                                     <div id="orgTargetsList" class="filterContainer" style="padding-left:30px;"></div>
 
-                                    <div class="seperator"></div>
+                                    <div class="separator"></div>
 
                                     <button id="countryTargetExpand" class="filterExpand" value="expand"></button>
                                     <label class="actorChkLbl"><input class="actorChk allCheck"
@@ -343,13 +342,13 @@
                                          style="padding-left:30px;"></div>
                                 </div>
 
-                                <div class="seperator"></div>
+                                <div class="separator"></div>
 
                                 <button id="roleTargetExpand" class="filterExpand" value="expand"></button>
                                 <label id="roleTargets" class="actorHead4" for="roleTargetExpand"><b>Role</b></label>
                                 <div id="roleTargetsList" class="filterContainer"></div>
 
-                                <div class="seperator"></div>
+                                <div class="separator"></div>
 
                                 <button id="attributeTargetExpand" class="filterExpand" value="expand"></button>
                                 <label id="attributeTargets" class="actorHead4" for="attributeTargetExpand"><b>Attributes</b></label>
@@ -357,17 +356,15 @@
                             </div>
                         </div>
 
-                        <button id="targetSelectAll" class="actorBottom actorSelectAll" type="button"
-                                data-toggle="tooltip" title="Selects all targets that match the filter criteria">Select
-                            All
+                        <button id="targetSelectAll" class="btn btn-default actorBottom actorSelectAll" type="button"
+                                data-toggle="tooltip" title="Selects all targets that match the filter criteria">Select All
                         </button>
 
-                        <button id="targetClearSel" class="actorBottom actorClearAll" type="button"
-                                data-toggle="tooltip" title="Clears all targets that match the filter criteria">Clear
-                            All
+                        <button id="targetClearSel" class="btn btn-default actorBottom actorClearAll" type="button"
+                                data-toggle="tooltip" title="Clears all targets that match the filter criteria">Clear All
                         </button>
 
-                        <button id="targetNew" class="actorBottom actorNewGroup" type="button" data-toggle="tooltip"
+                        <button id="targetNew" class="btn btn-default actorBottom actorNewGroup" type="button" data-toggle="tooltip"
                                 title="Create new target group">New Group
                         </button>
                     </div>
@@ -412,7 +409,7 @@
             <h3 class="panel-title">Custom Query String</h3>
         </div>
         <button id="subsetCustomValidate" onClick="validateCustom(document.getElementById('subsetCustomText').value, print=true)"
-                style="display:inline;margin-top:10px;">Validate</button>
+                class="btn btn-default" style="display:inline;margin-top:10px;">Validate</button>
         <textarea id="subsetCustomText"  style="resize:none;margin-left:10px;width:calc(100% - 45px); height:calc(100% - 59px);"></textarea>
     </div>
 </div>
@@ -465,13 +462,12 @@ function openRightPanel() {
 }
 
 function toggleRightPanel() {
-    if (!$('#rightpanel').hasClass('forceclosepanel')) {
-        /*$('#rightpanel .nav-tabs').hide();*/
-        $('#rightpanel').removeClass('expandpanel');
-        $('#rightpanel > div.row-fluid').toggleClass('closepanel');
-        $('#rightpanel').toggleClass('closepanel');
-        rightpanelMargin();
-    }
+    let rightPanel = $('#rightpanel');
+    if (rightPanel.hasClass('forceclosepanel')) return;
+
+    rightPanel.toggleClass('closepanel');
+    rightpanelMargin();
+
 }
 </script>
 <script id="querySample" type="text/javascript" src="src/subset/sampleQuery.js"></script>

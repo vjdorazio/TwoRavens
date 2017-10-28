@@ -10,6 +10,7 @@ if (!production) {
 // Set to 'eventdatasubsetlocalapp' to load from local mongo server
 // Set to 'eventdatasubsetapp' to load from API
 let appname = 'eventdatasubsetlocalapp';
+let dataset = 'phoenix';
 
 // TODO: When the server has field names 'to spec':
 //      Remove the gsub in the R app
@@ -56,7 +57,7 @@ let subsetQuery = buildSubset();
 
 console.log("Query: " + JSON.stringify(subsetQuery));
 
-let query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery)};
+let query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery), 'dataset': dataset};
 
 reloadLeftpanelVariables();
 $("#searchvar").keyup(reloadLeftpanelVariables);
@@ -213,7 +214,12 @@ function download() {
 
     let variableQuery = buildVariables();
     let subsetQuery = buildSubset();
-    query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery), 'raw': true};
+    query = {
+        'subsets': JSON.stringify(subsetQuery),
+        'variables': JSON.stringify(variableQuery),
+        'dataset': 'phoenix',
+        'raw': true
+    };
 
     makeCorsRequest(subsetURL, query, save);
 }
@@ -487,7 +493,11 @@ function callbackDelete(id) {
             console.log(JSON.stringify(subsetQuery));
             console.log(JSON.stringify(variableQuery, null, '  '));
 
-            query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery)};
+            query = {
+                'subsets': JSON.stringify(subsetQuery),
+                'variables': JSON.stringify(variableQuery),
+                'dataset': 'phoenix'
+            };
             makeCorsRequest(subsetURL, query, pageSetup);
 
             // Store user preferences in local data
@@ -908,7 +918,7 @@ function getSubsetPreferences() {
         // Make parent node
         let subset = {
             id: String(nodeId++),
-            name: 'Coordinates Subset',
+            name: 'Coords Subset',
             operation: 'and',
             negate: 'false',
             children: []
@@ -993,7 +1003,11 @@ function reset() {
     reloadRightPanelVariables();
 
     if (!suppress) {
-        let query = {'subsets': JSON.stringify({}), 'variables': JSON.stringify({})};
+        query = {
+            'subsets': JSON.stringify({}),
+            'variables': JSON.stringify({}),
+            'dataset': dataset
+        };
         makeCorsRequest(subsetURL, query, pageSetup);
     }
 }
@@ -1060,7 +1074,11 @@ function submitQuery() {
     console.log("Query: " + JSON.stringify(subsetQuery));
     // console.log(JSON.stringify(variableQuery, null, '  '));
 
-    query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery)};
+    query = {
+        'subsets': JSON.stringify(subsetQuery),
+        'variables': JSON.stringify(variableQuery),
+        'dataset': dataset
+    };
     makeCorsRequest(subsetURL, query, submitQueryCallback);
 }
 
@@ -1186,7 +1204,7 @@ function buildSubset(){
                     else rule_query_inner['$lte'] = date;
                 }
             }
-            rule_query['date8'] = rule_query_inner;
+            rule_query['<date>'] = rule_query_inner;
         }
 
         if (rule.name === 'Location Subset'){
@@ -1199,7 +1217,7 @@ function buildSubset(){
             if ('negate' in rule && !rule.negate) {
                 rule_query_inner = {'$not': rule_query_inner};
             }
-            rule_query['CountryCode'] = rule_query_inner;
+            rule_query['<country_code>'] = rule_query_inner;
         }
 
         if (rule.name === 'Action Subset'){
@@ -1212,7 +1230,7 @@ function buildSubset(){
             if ('negate' in rule && !rule.negate) {
                 rule_query_inner = {'$not': rule_query_inner};
             }
-            rule_query['RootCode'] = rule_query_inner;
+            rule_query['<root_code>'] = rule_query_inner;
         }
 
         if (rule.name === 'Actor Subset'){
@@ -1224,20 +1242,20 @@ function buildSubset(){
                 for (let idxsource in rule.children[idx].children[0].children) {
                     sourceList.push(rule.children[idx].children[0].children[idxsource].name);
                 }
-                link_rule['Source'] = {'$in': sourceList};
+                link_rule['<Source>'] = {'$in': sourceList};
 
                 let targetList = [];
                 for (let idxtarget in rule.children[idx].children[1].children) {
                     targetList.push(rule.children[idx].children[1].children[idxtarget].name)
                 }
-                link_rule['Target'] = {'$in': targetList};
+                link_rule['<Target>'] = {'$in': targetList};
 
                 link_list.push(link_rule)
             }
             rule_query['$and'] = link_list;
         }
 
-        if (rule.name === 'Coordinates Subset') {
+        if (rule.name === 'Coords Subset') {
 
             let rule_query_inner = [];
 
@@ -1246,14 +1264,14 @@ function buildSubset(){
 
                 if (child.name === 'Latitude') {
                     rule_query_inner.push({
-                        'Lat': {
+                        '<latitude>': {
                             '$lte': parseFloat(child.children[0].name),
                             '$gte': parseFloat(child.children[1].name)
                         }
                     })
                 } else if (child.name === 'Longitude') {
                     rule_query_inner.push({
-                        'Lon': {
+                        '<longitude>': {
                             '$lte': parseFloat(child.children[0].name),
                             '$gte': parseFloat(child.children[1].name)
                         }

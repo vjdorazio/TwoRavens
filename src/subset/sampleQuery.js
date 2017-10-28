@@ -5,7 +5,7 @@ let sampleQuery = `{
         {
           "$and": [
             {
-              "CountryCode": {
+              "<country_code>": {
                 "$in": [
                   "BHR",
                   "ARM",
@@ -32,7 +32,7 @@ let sampleQuery = `{
               }
             },
             {
-              "RootCode": {
+              "<root_code>": {
                 "$in": [
                   10,
                   11,
@@ -54,13 +54,13 @@ let sampleQuery = `{
         {
           "$and": [
             {
-              "Lat": {
+              "<latitude>": {
                 "$lte": 2.872,
                 "$gte": -79.809
               }
             },
             {
-              "Lon": {
+              "<longitude>": {
                 "$lte": -13.844,
                 "$gte": -48.572
               }
@@ -68,7 +68,7 @@ let sampleQuery = `{
           ]
         },
         {
-          "Date": {
+          "<date>": {
             "$gte": 20150300,
             "$lte": 20160306
           }

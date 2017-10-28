@@ -154,6 +154,7 @@ let imgs = svgMap.selectAll("image").data([0]);
 imgs.enter()
     .append("svg:image")
     .attr("id", "worldMapImage")
+    .attr("float", "left")
     .attr("xlink:href", "images/world.svg")
     .attr("x", "0")
     .attr("y", "0")

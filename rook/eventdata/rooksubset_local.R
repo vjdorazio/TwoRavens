@@ -90,7 +90,7 @@ eventdata_subset_local.app <- function(env) {
     }
 
     everything <- jsonlite::fromJSON(request$POST()$solaJSON, simplifyDataFrame = FALSE)
-    subsets = everything$subsets
+    subsets = relabel(everything$subsets, everything$dataset)
     variables = everything$variables
 
     # raw: return query as is

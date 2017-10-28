@@ -25,6 +25,19 @@ validate = function(jsonData, format) {
     return(warnings);
 }
 
-format = function(jsonObject, format) {
+relabel = function(queryString, format) {
+
+    jsonFormat = jsonlite::fromJSON(readLines(paste("./eventdata/formats/", format, '.json', sep="")));
+
+    print(queryString)
+    key = names(jsonFormat)
+
+    for (i in 1:length(jsonFormat)) {
+        queryString = gsub(key[[i]], jsonFormat[[i]]$name, queryString)
+    }
+    return(queryString)
+}
+
+reformat = function(jsonObject, format) {
     # Not implemented. Applies a transform function loaded from the formats json to each element.
 }
