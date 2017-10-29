@@ -53,7 +53,7 @@ if (localStorage.getItem("subsetData") !== null) {
 document.getElementById('subsetCustomText').value += sampleQuery;
 
 let variableQuery = buildVariables();
-let subsetQuery = buildSubset();
+let subsetQuery = buildSubset(subsetData);
 
 console.log("Query: " + JSON.stringify(subsetQuery));
 
@@ -213,7 +213,7 @@ function download() {
     }
 
     let variableQuery = buildVariables();
-    let subsetQuery = buildSubset();
+    let subsetQuery = buildSubset(subsetData);
     query = {
         'subsets': JSON.stringify(subsetQuery),
         'variables': JSON.stringify(variableQuery),
@@ -488,7 +488,7 @@ function callbackDelete(id) {
 
         if (node.name.indexOf('Query') !== -1) {
             let variableQuery = buildVariables();
-            let subsetQuery = buildSubset();
+            let subsetQuery = buildSubset(subsetData);
 
             console.log(JSON.stringify(subsetQuery));
             console.log(JSON.stringify(variableQuery, null, '  '));
@@ -1069,7 +1069,7 @@ function submitQuery() {
     }
 
     let variableQuery = buildVariables();
-    let subsetQuery = buildSubset();
+    let subsetQuery = buildSubset(subsetData);
 
     console.log("Query: " + JSON.stringify(subsetQuery));
     // console.log(JSON.stringify(variableQuery, null, '  '));
@@ -1093,13 +1093,15 @@ function buildVariables(){
 }
 
 // Construct mongoDB filter (subsets rows)
-function buildSubset(){
+function buildSubset(tree){
+
     if (subsetData.length === 0) return {};
+    return processGroup({'children': tree});
 
-    let subsetQuery = processGroup({'children': subsetData});
+    // Recursively traverse the tree in the right panel. For each node, call processNode
 
-    // First construct a boolean expression tree via operator precedence between group siblings
-    // Then build query for each node and pass up the tree
+    // If node is a group, then build up the overall operator tree via processGroup
+    // If node is a subset, then consider it a leaf, use processRule to build query specific to subset
 
     function processNode(node){
         if (node.name.indexOf('Group') !== -1 && 'children' in node && node.children.length !== 0) {
@@ -1116,6 +1118,7 @@ function buildSubset(){
     }
 
     // Group precedence parser
+    // Constructs a boolean operator tree via operator precedence between siblings (for groups and queries)
     function processGroup(group) {
 
         // all rules are 'or'ed together
@@ -1263,21 +1266,37 @@ function buildSubset(){
                 let child = rule.children[child_id];
 
                 if (child.name === 'Latitude') {
-                    rule_query_inner.push({
+                    let latitude = {
                         '<latitude>': {
                             '$lte': parseFloat(child.children[0].name),
                             '$gte': parseFloat(child.children[1].name)
                         }
-                    })
+                    };
+
+                    if ('negate' in child && !child.negate) {
+                        latitude = {'$not': latitude};
+                    }
+                    rule_query_inner.push(latitude);
+
                 } else if (child.name === 'Longitude') {
-                    rule_query_inner.push({
+                    let longitude = {
                         '<longitude>': {
                             '$lte': parseFloat(child.children[0].name),
                             '$gte': parseFloat(child.children[1].name)
                         }
-                    })
+                    };
+
+                    if ('negate' in child && !child.negate) {
+                        longitude = {'$not': longitude};
+                    }
+                    rule_query_inner.push(longitude);
                 }
             }
+
+            if ('negate' in rule && !rule.negate) {
+                rule_query_inner = {'$not': rule_query_inner};
+            }
+
             rule_query['$and'] = rule_query_inner;
         }
 
@@ -1287,6 +1306,4 @@ function buildSubset(){
 
         return rule_query;
     }
-
-    return subsetQuery;
 }

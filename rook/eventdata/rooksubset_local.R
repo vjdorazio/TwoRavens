@@ -98,7 +98,6 @@ eventdata_subset_local.app <- function(env) {
     # actor: return actor filtering
     # validate: check if query is valid
     type = everything$type
-    length = everything$length
 
     subsets = gsub('date8', 'Date', subsets)
     print(subsets)
@@ -109,16 +108,19 @@ eventdata_subset_local.app <- function(env) {
         return(response$finish())
     }
 
-    if (!is.null(type) && type == 'actor' && !is.null(length) && length > 0) {
-        actor_source = head(sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets)), n=length)
-        actor_target = head(sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets)), n=length)
+    # Arguments specific to sources/targets queries
+    length = everything$length
+    pagination = everything$page
 
-        result = toString(jsonlite::toJSON(list(
-            source = actor_source,
-            target = actor_target
-        )))
+    if (!is.null(type) && type == 'source' && !is.null(length) && length > 0) {
+        uniques = head(sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets)), n=length)
+        response$write(toString(jsonlite::toJSON(list(source = uniques))))
+        return(response$finish())
+    }
 
-        response$write(result)
+    if (!is.null(type) && type == 'target' && !is.null(length) && length > 0) {
+        uniques = head(sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets)), n=length)
+        response$write(toString(jsonlite::toJSON(list(target = uniques))))
         return(response$finish())
     }
 
