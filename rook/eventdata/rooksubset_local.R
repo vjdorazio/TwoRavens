@@ -113,13 +113,13 @@ eventdata_subset_local.app <- function(env) {
     pagination = everything$page
 
     if (!is.null(type) && type == 'source' && !is.null(length) && length > 0) {
-        uniques = head(sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets)), n=length)
+        uniques = sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets))
         response$write(toString(jsonlite::toJSON(list(source = uniques))))
         return(response$finish())
     }
 
     if (!is.null(type) && type == 'target' && !is.null(length) && length > 0) {
-        uniques = head(sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets)), n=length)
+        uniques = sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets))
         response$write(toString(jsonlite::toJSON(list(target = uniques))))
         return(response$finish())
     }
@@ -174,7 +174,7 @@ eventdata_subset_local.app <- function(env) {
     '{$group: { _id: {RootCode: "$rcode"}, total: {$sum:1}}}'))          # Compute frequencies of each bin
 
     # Collect unique values for sources page
-    actor_source = head(sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets)), n=100)
+    actor_source = sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets))
     actor_source_entities = sort(RMongo::dbGetDistinct(connection, table, 'SrcActor', subsets))
     actor_source_role = sort(RMongo::dbGetDistinct(connection, table, 'SrcAgent', subsets))
     actor_source_attributes = unique(RMongo::dbGetDistinct(connection, table, 'SOthAgent', subsets))
@@ -186,7 +186,7 @@ eventdata_subset_local.app <- function(env) {
         attributes = actor_source_attributes
     )
 
-    actor_target = head(sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets)), n=100)
+    actor_target = sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets))
     actor_target_entities = sort(RMongo::dbGetDistinct(connection, table, 'TgtActor', subsets))
     actor_target_role = sort(RMongo::dbGetDistinct(connection, table, 'TgtAgent', subsets))
     actor_target_attributes = unique(RMongo::dbGetDistinct(connection, table, 'TOthAgent', subsets))

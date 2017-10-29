@@ -101,29 +101,40 @@ $(document).ready(function () {
     $(".actorBottom, .clearActorBtn, #deleteGroup, .actorShowSelectedLbl, #editGroupName").tooltip({container: "body"});
 });
 
-var sourceFilterChecked = [];	//list of filters excluding entities under source that are checked
-var sourceEntityChecked = [];	//list of entities under source that are checked
-var targetFilterChecked = [];
-var targetEntityChecked = [];
+// Lists of all values in each list
+let filterAll = {
+    'source': {
+        'full': [],
+        'entities': [],
+        'roles': [],
+        'attributes': []
+    },
+    'target': {
+        'full': [],
+        'entities': [],
+        'roles': [],
+        'attributes': []
+    }
+};
 
-var sourceFullList = [];	//list of all sources
-var targetFullList = [];	//list of all targets
+// Lists of all checked values
+let filterSet = {
+    'source': {
+        'full': [],
+        'entities': [],
+        'roles': [],
+        'attributes': []
+    },
+    'target': {
+        'full': [],
+        'entities': [],
+        'roles': [],
+        'attributes': []
+    }
+};
 
 const orgs = ["IGO", "IMG", "MNC", "NGO"];		//hard coded organizations to remove from entities list; hopefully temporary
-
-var sourceOrgLength = orgs.length;		//variables to keep track number of entities checked to display all checked
-var sourceCountryLength;
-var sourceOrgSelect = 0, sourceCountrySelect = 0;
-
-var targetOrgLength = orgs.length;
-var targetCountryLength;
-var targetOrgSelect = 0, targetCountrySelect = 0;
-
-const actorType = ["source", "target"];		//these arrays are to help loop through actor loading
-const actorOrder = ["Full", "Entity", "Role", "Attr"];
-
-// Hack to read data from JSON returned by server
-const actorOrderJSON = ["full", "entities", "roles", "attributes"];
+const actorTypes = ["source", "target"];		//these arrays are to help loop through actor loading
 
 //definition of a node
 function nodeObj(name, group, groupIndices, color, actorType, actorID) {
@@ -154,8 +165,8 @@ var targetCurrentNode = null;
 let currentSize = 0;					//total number of nodes created; this is never decremented
 let sourceSize = 0;						//total number of source nodes created; this is never decremented
 let targetSize = 0;						//total number of target nodes created; this is never decremented
-let sourceActualSize = 0;				//total number of source nodes present
-let targetActualSize = 0;				//total number of target nodes present
+var sourceActualSize = 0;				//total number of source nodes present
+var targetActualSize = 0;				//total number of target nodes present
 let changeID = 0;						//number that is updated whenever a node is added/changed, set to actorID
 
 //begin force definitions
@@ -791,17 +802,15 @@ loadDictionary();
 
 // This code is called when data is loaded. It populates the dictionary and source/target lists
 function actorDataLoad() {
-    sourceFullList = [];
-    targetFullList = [];
     document.getElementById("sourceSearch").value = "";
     document.getElementById("targetSearch").value = "";
     $("#sourceTabBtn").trigger("click");
 
     const defer = $.Deferred();
 
-    for (let m = 0; m < actorType.length; m++) {
+    for (let actorType of actorTypes) {
         let orgList;
-        if (m === 0) {
+        if (actorType === "source") {
             orgList = document.getElementById("orgSourcesList");
             orgList.innerHTML = "";
         }
@@ -809,161 +818,143 @@ function actorDataLoad() {
             orgList = document.getElementById("orgTargetsList");
             orgList.innerHTML = "";
         }
+
         for (let y = 0; y < orgs.length; y++) {
-            createElement(true, actorType[m], "Org", orgs[y], y, orgList);
+            createElement(true, actorType, "Org", orgs[y], y, orgList);
         }
 
-        for (let i = 0; i < actorOrder.length; i++) {
-            loadDataHelper(i, m);
+        for (let columnType of filterAll[currentTab]) {
+            loadDataHelper(actorType, columnType);
         }
     }
     defer.resolve();
-
-    //handles data selection and read asynchronously to help speed up load
-    function loadDataHelper(i, m) {
-        let lines = actorData[actorType[m]][actorOrderJSON[i]];
-        let displayList;
-        let chkSwitch = true;		//enables code for filter
-        switch (i) {
-            case 0:
-                displayList = document.getElementById("searchList" + capitalizeFirst(actorType[m]) + "s");
-                displayList.innerHTML = "";
-                chkSwitch = false;
-                break;
-            case 1:
-                displayList = document.getElementById("country" + capitalizeFirst(actorType[m]) + "sList");
-                displayList.innerHTML = "";
-                lines = lines.filter(function (val) {
-                    return (orgs.indexOf(val) == -1);
-                });
-                window[actorType[m] + "CountryLength"] = lines.length;
-                actorOrder[i] = "Country";
-                break;
-            case 2:
-                displayList = document.getElementById("role" + capitalizeFirst(actorType[m]) + "sList");
-                displayList.innerHTML = "";
-                break;
-            case 3:
-                displayList = document.getElementById("attribute" + capitalizeFirst(actorType[m]) + "sList");
-                displayList.innerHTML = "";
-                break;
-        }
+}
 
 
-        for (let x = 0; x < lines.length - 1; x++) {
-            const lineData = lines[x].replace(/["]+/g, '');
-            createElement(chkSwitch, actorType[m], actorOrder[i], lineData, x, displayList);
+//handles data selection and read asynchronously to help speed up load
+function loadDataHelper(actorType, columnType) {
+    let lines = filterAll[actorType][columnType];
+    let displayList;
+    let chkSwitch = true;		//enables code for filter
 
-            switch (actorType[m] + actorOrder[i]) {
-                case "sourceFull":
-                    sourceFullList.push(lineData);
-                    currentScreen.push(x);
-                    break;
-                case "targetFull":
-                    targetFullList.push(lineData);
-                    currentScreen.push(x);
-                    break;
-            }
-        }
-        if (actorOrder[i] == "Country") {
-            actorOrder[i] = "Entity";
-        }
+    if (columnType === "full") {
+        displayList = document.getElementById("searchList" + capitalizeFirst(actorType) + "s");
+        displayList.innerHTML = "";
+        chkSwitch = false;
     }
 
-    //creates elements and adds to display
-    function createElement(chkSwitch = true, type, order, value, x, displayList) {
-        const separator = document.createElement("div");
-        separator.className = "separator";
+    if (columnType === "entities") {
+        displayList = document.getElementById("country" + capitalizeFirst(actorType) + "sList");
+        displayList.innerHTML = "";
 
-        const chkbox = document.createElement("input");
-        chkbox.type = "checkbox";
-        chkbox.name = type + order + "Check";
-        chkbox.id = type + order + "Check" + x;
-        chkbox.value = value;
-        if (order != "Full") {
-            chkbox.className = "actorChk";
-        }
-        else {
-            chkbox.className = type + "Chk";
-        }
+        lines = lines.filter(function (val) {
+            return (orgs.indexOf(val) === -1);
+        });
+    }
 
-        if (chkSwitch) {
-            chkbox.onchange = function () {
-                actorFilterChanged(this);
-            };
-        }
-        else {
-            chkbox.onchange = function () {
-                actorSelectChanged(this);
-            };
-        }
+    if (columnType === "roles") {
+        displayList = document.getElementById("role" + capitalizeFirst(actorType) + "sList");
+        displayList.innerHTML = "";
+    }
 
-        const lbl = document.createElement("label");
-        lbl.htmlFor = type + order + "Check" + x;
-        lbl.className = "actorChkLbl";
-        lbl.id = type + order + "Lbl" + x;
-        lbl.innerHTML = value;
+    if (columnType === "attributes") {
+        displayList = document.getElementById("attribute" + capitalizeFirst(actorType) + "sList");
+        displayList.innerHTML = "";
+    }
 
-        lbl.setAttribute("data-container", "body");
-        lbl.setAttribute("data-toggle", "popover");
-        lbl.setAttribute("data-placement", "right");
-        lbl.setAttribute("data-trigger", "hover");
+    // Populate listing
+    let idx = 0;
+    for (let line of lines) createElement(chkSwitch, actorType, columnType, line, idx++, displayList);
+}
 
-        displayList.appendChild(chkbox);
-        displayList.appendChild(lbl);
-        displayList.appendChild(separator);
+// creates elements and adds to display
+function createElement(chkSwitch = true, actorType, columnType, value, index, displayList) {
+    const separator = document.createElement("div");
+    separator.className = "separator";
 
-        $("#" + lbl.id).mouseover(function () {
-            if (!$(this).attr("data-content")) {
-                if (order != "Full")
-                    $(this).attr("data-content", binarySearch(value));
+    const chkbox = document.createElement("input");
+    chkbox.type = "checkbox";
+    chkbox.name = actorType + columnType + "Check";
+    chkbox.id = actorType + columnType + "Check" + index;
+    chkbox.value = value;
+    chkbox.className = "actorChk";
+
+    if (chkSwitch) {
+        chkbox.onchange = function () {
+            actorFilterChanged(this);
+        };
+    }
+    else {
+        chkbox.onchange = function () {
+            actorSelectChanged(this);
+        };
+    }
+
+    const lbl = document.createElement("label");
+    lbl.htmlFor = actorType + columnType + "Check" + index;
+    lbl.className = "actorChkLbl";
+    lbl.id = actorType + columnType + "Lbl" + index;
+    lbl.innerHTML = value;
+
+    lbl.setAttribute("data-container", "body");
+    lbl.setAttribute("data-toggle", "popover");
+    lbl.setAttribute("data-placement", "right");
+    lbl.setAttribute("data-trigger", "hover");
+
+    displayList.appendChild(chkbox);
+    displayList.appendChild(lbl);
+    displayList.appendChild(separator);
+
+    $("#" + lbl.id).mouseover(function () {
+        if (!$(this).attr("data-content")) {
+            if (columnType !== "full")
+                $(this).attr("data-content", binarySearch(value));
+            else {
+                const head = binarySearch(value);
+                let tail = "";
+                for (let x = 0; x < value.length; x += 3) {
+                    let temp = binarySearch(value.substring(x, x + 3));
+                    if (temp === "no translation found")
+                        temp = "?";
+                    tail += temp + " ";
+                }
+                tail = tail.trim();
+
+                if (head === "no translation found")
+                    $(this).attr("data-content", tail);
                 else {
-                    const head = binarySearch(value);
-                    let tail = "";
-                    for (let x = 0; x < value.length; x += 3) {
-                        let temp = binarySearch(value.substring(x, x + 3));
-                        if (temp == "no translation found")
-                            temp = "?";
-                        tail += temp + " ";
-                    }
-                    tail = tail.trim();
-
-                    if (head == "no translation found")
-                        $(this).attr("data-content", tail);
-                    else {
-                        if (head != tail)
-                            $(this).attr("data-content", head + "; " + tail);
-                        else
-                            $(this).attr("data-content", head);
-                    }
+                    if (head !== tail)
+                        $(this).attr("data-content", head + "; " + tail);
+                    else
+                        $(this).attr("data-content", head);
                 }
             }
-            $(this).popover("toggle");
-        });
+        }
+        $(this).popover("toggle");
+    });
 
-        $("#" + lbl.id).mouseout(function () {
-            $(this).popover("toggle");
-        });
+    $("#" + lbl.id).mouseout(function () {
+        $(this).popover("toggle");
+    });
 
-        function binarySearch(element) {
-            let l = 0, r = dict.length - 1;
-            while (l <= r) {
-                const m = Math.floor((l + r) / 2);
-                const head = dict[m].split("\t")[0];
-                if (head == element) {
-                    return dict[m].split("\t")[1];
+    function binarySearch(element) {
+        let l = 0, r = dict.length - 1;
+        while (l <= r) {
+            const m = Math.floor((l + r) / 2);
+            const head = dict[m].split("\t")[0];
+            if (head === element) {
+                return dict[m].split("\t")[1];
+            }
+            else {
+                if (head < element) {
+                    l = m + 1;
                 }
                 else {
-                    if (head < element) {
-                        l = m + 1;
-                    }
-                    else {
-                        r = m - 1;
-                    }
+                    r = m - 1;
                 }
             }
-            return "no translation found";
         }
+        return "no translation found";
     }
 }
 
@@ -987,29 +978,48 @@ function actorSelectChanged(element) {
 
 //when filter checkbox checked, add or remove filter
 function actorFilterChanged(element) {
-    element.checked = !!(element.checked);
-    const ending = getActorEnding(element);
+    let filterListing;
+
+    function setFilter(element) {
+        filterListing.push(element.value);
+    }
+
+    function unsetFilter(element) {
+        let index = filterListing.indexOf(element.value);
+        if (index !== -1) filterListing.splice(index, 1);
+    }
+
+    let updateFilter;
+    if (!!(element.checked)) updateFilter = setFilter;
+    else updateFilter = unsetFilter;
+
+    if (element.name === "OrgCheck") {
+        filterListing = filterSet[currentTab]["entities"];
+        updateFilter(element);
+
+        let groupCheck = $("#" + currentTab + "OrgAllCheck");
+        if (filterSet[currentTab].length === window[currentTab + "OrgLength"]) {
+            groupCheck.prop("checked", true);
+            groupCheck.prop("indeterminate", false);
+        }
+        else {
+            groupCheck.prop("checked", false);
+            groupCheck.prop("indeterminate", true);
+        }
+    }
 
     if (element.checked) {
         $("#" + currentTab + "ShowSelected").prop("checked", false);
 
-        if (ending == "orga" || ending == "coun") {
+        if (ending === "orga" || ending === "coun") {
             window[currentTab + "EntityChecked"].push(element.value + ending);
             switch (ending) {
                 case "orga":
-                    window[currentTab + "OrgSelect"]++;
-                    if (window[currentTab + "OrgSelect"] == window[currentTab + "OrgLength"]) {
-                        $("#" + currentTab + "OrgAllCheck").prop("checked", true);
-                        $("#" + currentTab + "OrgAllCheck").prop("indeterminate", false);
-                    }
-                    else {
-                        $("#" + currentTab + "OrgAllCheck").prop("checked", false);
-                        $("#" + currentTab + "OrgAllCheck").prop("indeterminate", true);
-                    }
+
                     break;
                 case "coun":
                     window[currentTab + "CountrySelect"]++;
-                    if (window[currentTab + "CountrySelect"] == window[currentTab + "CountryLength"]) {
+                    if (window[currentTab + "CountrySelect"] === window[currentTab + "CountryLength"]) {
                         $("#" + currentTab + "CountryAllCheck").prop("checked", true);
                         $("#" + currentTab + "CountryAllCheck").prop("indeterminate", false);
                     }
@@ -1022,17 +1032,20 @@ function actorFilterChanged(element) {
         }
         else {
             window[currentTab + "FilterChecked"].push(element.value + ending);
+            // Store the roles and attributes separately for query construction
+            if (ending === "role") window[currentTab + "RoleChecked"].push(element.value);
+            if (ending === "attr") window[currentTab + "AttrChecked"].push(element.value);
         }
     }
     else {
-        if (ending == "orga" || ending == "coun") {
+        if (ending === "orga" || ending === "coun") {
             var index = window[currentTab + "EntityChecked"].indexOf(element.value + ending);
             if (index > -1) {
                 window[currentTab + "EntityChecked"].splice(index, 1);
                 switch (ending) {
                     case "orga":
                         window[currentTab + "OrgSelect"]--;
-                        if (window[currentTab + "OrgSelect"] == 0) {
+                        if (window[currentTab + "OrgSelect"] === 0) {
                             $("#" + currentTab + "OrgAllCheck").prop("checked", false);
                             $("#" + currentTab + "OrgAllCheck").prop("indeterminate", false);
                         }
@@ -1043,7 +1056,7 @@ function actorFilterChanged(element) {
                         break;
                     case "coun":
                         window[currentTab + "CountrySelect"]--;
-                        if (window[currentTab + "CountrySelect"] == 0) {
+                        if (window[currentTab + "CountrySelect"] === 0) {
                             $("#" + currentTab + "CountryAllCheck").prop("checked", false);
                             $("#" + currentTab + "CountryAllCheck").prop("indeterminate", false);
                         }
@@ -1056,8 +1069,8 @@ function actorFilterChanged(element) {
             }
         }
         else {
-            var index = window[currentTab + "FilterChecked"].indexOf(element.value + ending);
-            if (index > -1) {
+            let index = window[currentTab + "FilterChecked"].indexOf(element.value + ending);
+            if (index !== -1) {
                 window[currentTab + "FilterChecked"].splice(index, 1);
             }
         }
@@ -1382,6 +1395,32 @@ function actorSearch(actorName) {
         }
     }
 
+    let actorFilters = [];
+
+    if (window[currentTab + "EntityChecked"].length !== 0) {
+        actorFilters.push({
+            '<src_actor>': {
+                '$in': window[currentTab + "EntityChecked"]
+            }
+        });
+    }
+
+    if (window[currentTab + "EntityChecked"].length !== 0) {
+        actorFilters.push({
+            '<src_agent>': {
+                '$in': window[currentTab + "EntityChecked"]
+            }
+        });
+    }
+
+    if (window[currentTab + "EntityChecked"].length !== 0) {
+        actorFilters.push({
+            '<src_other_agent>': {
+                '$regex': '^([A-Z][A-Z][A-Z])*(' + window[currentTab + "EntityChecked"].join('|') + ')'
+            }
+        });
+    }
+
     let stagedSubsetData = [];
     for (let child_id in subsetData) {
         let child = subsetData[child_id];
@@ -1391,14 +1430,12 @@ function actorSearch(actorName) {
     }
 
     let stagedQuery = buildSubset(stagedSubsetData);
-    let actorQuery = {'$and': [stagedQuery, actorFilters]};
 
     // Submit query and update listings
     query = {
-        'subsets': JSON.stringify(actorQuery),
+        'subsets': JSON.stringify({'$and': [stagedQuery, ...actorFilters]}),
         'dataset': dataset,
-        'type': currentTab,
-        'length': 100
+        'type': currentTab
     };
 
     function updateActorListing(data) {
