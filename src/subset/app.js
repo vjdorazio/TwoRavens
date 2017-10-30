@@ -54,8 +54,22 @@ let variableQuery = buildVariables();
 let subsetQuery = buildSubset(subsetData);
 
 console.log("Query: " + JSON.stringify(subsetQuery));
-
 let query = {'subsets': JSON.stringify(subsetQuery), 'variables': JSON.stringify(variableQuery), 'dataset': dataset};
+
+// The editor for the custom subset
+var container = document.getElementById("subsetCustomEditor");
+var options = {
+    mode: 'code',
+    modes: ['code', 'form', 'text', 'tree', 'view'],
+    onError: function (err) {
+        alert(err.toString());
+    }
+};
+var editor = new JSONEditor(container, options);
+
+
+editor.set(JSON.parse(sampleQuery));
+
 
 reloadLeftpanelVariables();
 $("#searchvar").keyup(reloadLeftpanelVariables);
@@ -115,7 +129,8 @@ d3.select("#subsetList").selectAll("p")
         showSubset(subsetKeySelected)
     });
 
-function showSubset(subsetKeySelected) {
+function showSubset(subsetKey) {
+    subsetKeySelected = subsetKey;
     d3.select('#subsetList').selectAll("p").style('background-color', function (d) {
         if (d === subsetKeySelected) return selVarColor;
         else return varColor;
@@ -233,7 +248,6 @@ function pageSetup(jsondata) {
         alert("No records match your subset. Plots will not be updated.");
         return false;
     }
-    console.log(appname);
 
     if (appname === "eventdatasubsetlocalapp") {
         dateData.length = 0;
@@ -622,7 +636,21 @@ $('#subsetTree').on(
     function(event) {
         let node = event.node;
         if (node.name === 'Custom Subset') {
-            alert(node.custom);
+            editor.set(JSON.parse(node.custom));
+            showSubset("Custom");
+        }
+    }
+);
+
+$('#subsetTree').bind(
+    'tree.contextmenu',
+    function(event) {
+        let tempQuery = buildSubset([event.node]);
+        if ($.isEmptyObject(tempQuery)) {
+            alert("\"" + event.node.name + "\" is too specific to parse into a query.");
+        } else {
+            editor.set(tempQuery);
+            showSubset("Custom");
         }
     }
 );
@@ -631,8 +659,8 @@ function disable_edit_recursive(node) {
     node.editable = false;
     node.cancellable = false;
     if ('children' in node) {
-        for (let child of node.children) {
-            child = disable_edit_recursive(child);
+        for (let child_id in node.children) {
+            node.children[child_id] = disable_edit_recursive(node.children[child_id]);
         }
     }
     return node
@@ -693,8 +721,8 @@ function addGroup(query=false) {
     }
 
     if (query) {
-        for (let child in movedChildren){
-            child = disable_edit_recursive(child);
+        for (let child_id in movedChildren){
+            movedChildren[child_id] = disable_edit_recursive(movedChildren[child_id]);
         }
         subsetData.push({
             id: String(nodeId++),
@@ -965,7 +993,7 @@ function getSubsetPreferences() {
     }
 
     if (subsetKeySelected === 'Custom') {
-        let text = document.getElementById("subsetCustomEditor").get();
+        let text = JSON.stringify(editor.get());
 
         if (validateCustom(text)) {
             return {

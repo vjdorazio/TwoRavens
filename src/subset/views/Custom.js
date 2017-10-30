@@ -1,6 +1,7 @@
 function validateCustom(text, debug=false) {
+
     try {
-        JSON.parse(text);
+        JSON.stringify(text);
     } catch (e) {
         if (debug) {
             alert(e);
@@ -17,7 +18,8 @@ function validateCustom(text, debug=false) {
     if (debug) {
         // Check if query is compatible with API
         let post = {
-            'subsets': text.replace(/\s/g,''),
+            'subsets': JSON.stringify(text).replace(/\s/g,''),
+            'dataset': dataset,
             'type': 'validate'
         };
 
@@ -25,17 +27,3 @@ function validateCustom(text, debug=false) {
     }
     return true;
 }
-
-// create the editor
-var container = document.getElementById("subsetCustomEditor");
-var options = {
-    mode: 'code',
-    modes: ['code', 'form', 'text', 'tree', 'view'],
-    onError: function (err) {
-        alert(err.toString());
-    }
-};
-var editor = new JSONEditor(container, options);
-
-
-editor.set(JSON.parse(sampleQuery));
