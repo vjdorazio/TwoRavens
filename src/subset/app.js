@@ -50,8 +50,6 @@ if (localStorage.getItem("subsetData") !== null) {
     subsetData = JSON.parse(localStorage.getItem('subsetData'));
 }
 
-document.getElementById('subsetCustomText').value += sampleQuery;
-
 let variableQuery = buildVariables();
 let subsetQuery = buildSubset(subsetData);
 
@@ -967,7 +965,7 @@ function getSubsetPreferences() {
     }
 
     if (subsetKeySelected === 'Custom') {
-        let text = document.getElementById("subsetCustomText").value;
+        let text = document.getElementById("subsetCustomEditor").get();
 
         if (validateCustom(text)) {
             return {

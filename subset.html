@@ -22,6 +22,10 @@
     <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
     <script src="bootstrap/js/bootstrap.min.js"></script>
 
+    <!--Used for custom query editor-->
+    <link href="jsoneditor/jsoneditor.min.css" rel="stylesheet" type="text/css">
+    <script src="jsoneditor/jsoneditor.min.js"></script>
+
     <!--Used for right panel query tree-->
     <script src="jqtree/tree.jquery.js"></script>
     <link rel="stylesheet" href="jqtree/jqtree.css">
@@ -408,9 +412,9 @@
         <div class="panel-heading text-left" id="subsetCustomLabel" style="margin-top:10px;width:14em;float:left">
             <h3 class="panel-title">Custom Query String</h3>
         </div>
-        <button id="subsetCustomValidate" onClick="validateCustom(document.getElementById('subsetCustomText').value, print=true)"
+        <button id="subsetCustomValidate" onClick="validateCustom(document.getElementById('subsetCustomEditor').get(), print=true)"
                 class="btn btn-default" style="display:inline;margin-top:10px;">Validate</button>
-        <textarea id="subsetCustomText"  style="resize:none;margin-left:10px;width:calc(100% - 45px); height:calc(100% - 59px);"></textarea>
+        <div id="subsetCustomEditor" style="resize:none;margin-left:10px;margin-top:5px;width:calc(100% - 45px); height:calc(100% - 59px);"></div>
     </div>
 </div>
 
