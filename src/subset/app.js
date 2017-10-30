@@ -34,6 +34,7 @@ let selVarColor = 'rgba(250,128,114, 0.5)';    //d3.rgb("salmon");
 
 let dateData = [];
 let countryData = [];
+let actorData = {};
 let actionData = [];
 
 // This is set once data is loaded and the graphs can be drawn. Subset menus will not be shown until this is set
@@ -260,7 +261,7 @@ function pageSetup(jsondata) {
             actionData[parsed['_id']['RootCode']] = parsed['total']
         }
 
-        filterAll = jsondata.actor_data;
+        actorData = jsondata.actor_data;
 
     } else {
         dateData = jsondata.date_data;
@@ -280,7 +281,7 @@ function pageSetup(jsondata) {
             actionData[jsondata.action_data[idx]._id.root_code] = jsondata.action_data[idx].total
         }
 
-        filterAll = jsondata.actor_data;
+        actorData = jsondata.actor_data;
     }
     d3date(true);
     d3loc();
@@ -632,8 +633,8 @@ function disable_edit_recursive(node) {
     node.editable = false;
     node.cancellable = false;
     if ('children' in node) {
-        for (let child_id in node.children) {
-            node.children[child_id] = disable_edit_recursive(node.children[child_id]);
+        for (let child of node.children) {
+            child = disable_edit_recursive(child);
         }
     }
     return node
@@ -694,8 +695,8 @@ function addGroup(query=false) {
     }
 
     if (query) {
-        for (let child_id in movedChildren){
-            movedChildren[child_id] = disable_edit_recursive(movedChildren[child_id]);
+        for (let child in movedChildren){
+            child = disable_edit_recursive(child);
         }
         subsetData.push({
             id: String(nodeId++),

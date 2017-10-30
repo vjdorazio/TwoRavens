@@ -112,13 +112,13 @@ eventdata_subset_local.app <- function(env) {
     length = everything$length
     pagination = everything$page
 
-    if (!is.null(type) && type == 'source' && !is.null(length) && length > 0) {
+    if (!is.null(type) && type == 'source') {
         uniques = sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets))
         response$write(toString(jsonlite::toJSON(list(source = uniques))))
         return(response$finish())
     }
 
-    if (!is.null(type) && type == 'target' && !is.null(length) && length > 0) {
+    if (!is.null(type) && type == 'target') {
         uniques = sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets))
         response$write(toString(jsonlite::toJSON(list(target = uniques))))
         return(response$finish())

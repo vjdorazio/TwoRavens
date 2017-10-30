@@ -101,35 +101,19 @@ $(document).ready(function () {
     $(".actorBottom, .clearActorBtn, #deleteGroup, .actorShowSelectedLbl, #editGroupName").tooltip({container: "body"});
 });
 
-// Lists of all values in each list
-let filterAll = {
-    'source': {
-        'full': [],
-        'entities': [],
-        'roles': [],
-        'attributes': []
-    },
-    'target': {
-        'full': [],
-        'entities': [],
-        'roles': [],
-        'attributes': []
-    }
-};
-
 // Lists of all checked values
 let filterSet = {
     'source': {
-        'full': [],
-        'entities': [],
-        'roles': [],
-        'attributes': []
+        'full': new Set(),
+        'entities': new Set(),
+        'roles': new Set(),
+        'attributes': new Set()
     },
     'target': {
-        'full': [],
-        'entities': [],
-        'roles': [],
-        'attributes': []
+        'full': new Set(),
+        'entities': new Set(),
+        'roles': new Set(),
+        'attributes': new Set()
     }
 };
 
@@ -823,7 +807,7 @@ function actorDataLoad() {
             createElement(true, actorType, "Org", orgs[y], y, orgList);
         }
 
-        for (let columnType of filterAll[currentTab]) {
+        for (let columnType in actorData[actorType]) {
             loadDataHelper(actorType, columnType);
         }
     }
@@ -833,7 +817,7 @@ function actorDataLoad() {
 
 //handles data selection and read asynchronously to help speed up load
 function loadDataHelper(actorType, columnType) {
-    let lines = filterAll[actorType][columnType];
+    let lines = actorData[actorType][columnType];
     let displayList;
     let chkSwitch = true;		//enables code for filter
 
@@ -980,116 +964,67 @@ function actorSelectChanged(element) {
 function actorFilterChanged(element) {
     let filterListing;
 
-    function setFilter(element) {
-        filterListing.push(element.value);
+    function toggleFilter(element) {
+        if (!!(element.checked)) {
+            filterListing.add(element.value);
+        } else {
+            filterListing.delete(element.value);
+        }
     }
 
-    function unsetFilter(element) {
-        let index = filterListing.indexOf(element.value);
-        if (index !== -1) filterListing.splice(index, 1);
-    }
+    console.log(element.name);
 
-    let updateFilter;
-    if (!!(element.checked)) updateFilter = setFilter;
-    else updateFilter = unsetFilter;
-
-    if (element.name === "OrgCheck") {
+    if (element.name.indexOf("OrgCheck") !== -1) {
         filterListing = filterSet[currentTab]["entities"];
-        updateFilter(element);
+        toggleFilter(element);
 
-        let groupCheck = $("#" + currentTab + "OrgAllCheck");
-        if (filterSet[currentTab].length === window[currentTab + "OrgLength"]) {
-            groupCheck.prop("checked", true);
-            groupCheck.prop("indeterminate", false);
-        }
-        else {
-            groupCheck.prop("checked", false);
-            groupCheck.prop("indeterminate", true);
-        }
-    }
-
-    if (element.checked) {
-        $("#" + currentTab + "ShowSelected").prop("checked", false);
-
-        if (ending === "orga" || ending === "coun") {
-            window[currentTab + "EntityChecked"].push(element.value + ending);
-            switch (ending) {
-                case "orga":
-
-                    break;
-                case "coun":
-                    window[currentTab + "CountrySelect"]++;
-                    if (window[currentTab + "CountrySelect"] === window[currentTab + "CountryLength"]) {
-                        $("#" + currentTab + "CountryAllCheck").prop("checked", true);
-                        $("#" + currentTab + "CountryAllCheck").prop("indeterminate", false);
-                    }
-                    else {
-                        $("#" + currentTab + "CountryAllCheck").prop("check", false);
-                        $("#" + currentTab + "CountryAllCheck").prop("indeterminate", true);
-                    }
-                    break;
+        let allOrgSet = true;
+        for (let org of orgs) {
+            if (!filterListing.has(org)){
+                allOrgSet = false;
+                break;
             }
         }
-        else {
-            window[currentTab + "FilterChecked"].push(element.value + ending);
-            // Store the roles and attributes separately for query construction
-            if (ending === "role") window[currentTab + "RoleChecked"].push(element.value);
-            if (ending === "attr") window[currentTab + "AttrChecked"].push(element.value);
-        }
+
+        $("#" + currentTab + "OrgAllCheck")
+            .prop("checked", allOrgSet)
+            .prop("indeterminate", !allOrgSet);
     }
+
+    else if (element.name.indexOf("entitiesCheck") !== -1) {
+        filterListing = filterSet[currentTab]["entities"];
+        toggleFilter(element);
+
+        let allCountrySet = true;
+
+        for (let country of actorData[currentTab]["entities"]) {
+            if (!(country in orgs) && !filterListing.has(country)){
+                allCountrySet = false;
+                break;
+            }
+        }
+
+        $("#" + currentTab + "CountryAllCheck")
+            .prop("checked", allCountrySet)
+            .prop("indeterminate", !allCountrySet);
+    }
+
+    else if (element.name.indexOf("rolesCheck") !== -1) {
+        filterListing = filterSet[currentTab]["roles"];
+        toggleFilter(element);
+    }
+
+    else if (element.name.indexOf("attributesCheck") !== -1) {
+        filterListing = filterSet[currentTab]["attributes"];
+        toggleFilter(element);
+    }
+
     else {
-        if (ending === "orga" || ending === "coun") {
-            var index = window[currentTab + "EntityChecked"].indexOf(element.value + ending);
-            if (index > -1) {
-                window[currentTab + "EntityChecked"].splice(index, 1);
-                switch (ending) {
-                    case "orga":
-                        window[currentTab + "OrgSelect"]--;
-                        if (window[currentTab + "OrgSelect"] === 0) {
-                            $("#" + currentTab + "OrgAllCheck").prop("checked", false);
-                            $("#" + currentTab + "OrgAllCheck").prop("indeterminate", false);
-                        }
-                        else {
-                            $("#" + currentTab + "OrgAllCheck").prop("checked", false);
-                            $("#" + currentTab + "OrgAllCheck").prop("indeterminate", true);
-                        }
-                        break;
-                    case "coun":
-                        window[currentTab + "CountrySelect"]--;
-                        if (window[currentTab + "CountrySelect"] === 0) {
-                            $("#" + currentTab + "CountryAllCheck").prop("checked", false);
-                            $("#" + currentTab + "CountryAllCheck").prop("indeterminate", false);
-                        }
-                        else {
-                            $("#" + currentTab + "CountryAllCheck").prop("check", false);
-                            $("#" + currentTab + "CountryAllCheck").prop("indeterminate", true);
-                        }
-                        break;
-                }
-            }
-        }
-        else {
-            let index = window[currentTab + "FilterChecked"].indexOf(element.value + ending);
-            if (index !== -1) {
-                window[currentTab + "FilterChecked"].splice(index, 1);
-            }
-        }
+        filterListing = filterSet[currentTab]["full"];
+        toggleFilter(element);
     }
-    actorSearch(currentTab);
-}
 
-//returns a string of the type of filter; element is a checkbox
-function getActorEnding(element) {
-    switch (element.name.substring(6)) {
-        case "OrgCheck":
-            return "orga";
-        case "CountryCheck":
-            return "coun";
-        case "RoleCheck":
-            return "role";
-        case "AttrCheck":
-            return "attr";
-    }
+    actorSearch(currentTab);
 }
 
 //returns a string with the actor ending stripped
@@ -1107,12 +1042,14 @@ $(".clearActorBtn").click(function (event) {
 function clearChecks() {
     document.getElementById(currentTab + "Search").value = "";
     $("#" + currentTab + "Filter :checkbox").prop("checked", false);
-    window[currentTab + "FilterChecked"].length = 0;
-    window[currentTab + "EntityChecked"].length = 0;
-    window[currentTab + "OrgSelect"] = 0;
     $("#" + currentTab + "OrgAllCheck").prop("checked", false).prop("indeterminate", false);
-    window[currentTab + "CountrySelect"] = 0;
     $("#" + currentTab + "CountryAllCheck").prop("checked", false).prop("indeterminate", false);
+
+    filterSet[currentTab]["entities"] = new Set();
+    filterSet[currentTab]["roles"] = new Set();
+    filterSet[currentTab]["attributes"] = new Set();
+
+    actorSearch(currentTab);
 }
 
 //clear search box when reloading page
@@ -1122,7 +1059,10 @@ $(".actorSearch").ready(function () {
 
 //when typing in search box
 $(".actorSearch").on("keyup", function (event) {
-    actorSearch(currentTab);
+    const searchText = $("#" + currentTab + "Search").val().toUpperCase();
+    if (searchText.length % 3 === 0) {
+        actorSearch(currentTab);
+    }
 });
 
 //on load of page, keep actorShowSelected unchecked
@@ -1150,8 +1090,7 @@ function showSelected(element) {
             }
         });
     }
-    else
-        $("#clearAll" + capitalizeFirst(currentTab) + "s").click();		//later implement to restore previous view?
+    else $("#clearAll" + capitalizeFirst(currentTab) + "s").click();		//later implement to restore previous view?
 }
 
 //on load of page, keep checkbox for selecting all filters unchecked
@@ -1341,89 +1280,48 @@ $("#deleteGroup").click(function () {
     }
 });
 
-//searches for the specified text and filters (maybe implement escape characters for text search?), and sets currentScreen as an array of items matching criteria
 function actorSearch(actorName) {
-
-    currentScreen.length = 0;
-    actorName = actorName.toLowerCase();
     const searchText = $("#" + actorName + "Search").val().toUpperCase();
 
-    const listLen = window[actorName + "FullList"].length;
-    for (let x = 0; x < listLen; x++) {
-        let matched = false;
-        //search for entity
-        let tempLen = window[actorName + "EntityChecked"].length;
-        for (var i = 0; i < tempLen; i++) {
-            if (removeEnding(window[actorName + "EntityChecked"][i]) == window[actorName + "FullList"][x].substring(0, 3)) {
-                matched = true;
-                break;
-            }
-        }
-        if (!matched && window[actorName + "EntityChecked"].length > 0) {
-            $("#" + actorName + "FullCheck" + x).css("display", "none");
-            $("#" + actorName + "FullLbl" + x).css("display", "none");
-        }
-        else {
-            let matchFilter = true;
-            //search for text
-            if (searchText != "" && window[actorName + "FullList"][x].indexOf(searchText) % 3 != 0) {
-                matchFilter = false;
-            }
-
-            //search for other filters
-            tempLen = window[actorName + "FilterChecked"].length;
-            for (var i = 0; matchFilter && i < tempLen; i++) {
-                const index = window[actorName + "FullList"][x].indexOf(removeEnding(window[actorName + "FilterChecked"][i]));
-                if (index < 0) {
-                    matchFilter = false;
-                }
-                else {
-                    if (removeEnding(window[actorName + "FilterChecked"][i]).length == 3 && index % 3 != 0) {
-                        matchFilter = false;
-                    }
-                }
-            }
-            if (matchFilter) {
-                $("#" + actorName + "FullCheck" + x).css("display", "inline-block");
-                $("#" + actorName + "FullLbl" + x).css("display", "inline-block");
-                currentScreen.push(x);
-            }
-            else {
-                $("#" + actorName + "FullCheck" + x).css("display", "none");
-                $("#" + actorName + "FullLbl" + x).css("display", "none");
-            }
-        }
-    }
-
+    const operator = '$and';
     let actorFilters = [];
 
-    if (window[currentTab + "EntityChecked"].length !== 0) {
-        actorFilters.push({
-            '<src_actor>': {
-                '$in': window[currentTab + "EntityChecked"]
-            }
-        });
+    let abbreviated = currentTab === "source" ? "src" : "tgt";
+
+    if (filterSet[currentTab]["entities"].size !== 0) {
+        let filter = {};
+        filter['<' + abbreviated + '_actor>'] = { '$in': [...filterSet[currentTab]["entities"]] };
+        actorFilters.push(filter);
     }
 
-    if (window[currentTab + "EntityChecked"].length !== 0) {
-        actorFilters.push({
-            '<src_agent>': {
-                '$in': window[currentTab + "EntityChecked"]
-            }
-        });
+    if (filterSet[currentTab]["roles"].size !== 0) {
+        let filter = {};
+        filter['<' + abbreviated + '_agent>'] = {'$in': [...filterSet[currentTab]["roles"]]};
+        actorFilters.push(filter);
     }
 
-    if (window[currentTab + "EntityChecked"].length !== 0) {
-        actorFilters.push({
-            '<src_other_agent>': {
-                '$regex': '^([A-Z][A-Z][A-Z])*(' + window[currentTab + "EntityChecked"].join('|') + ')'
-            }
-        });
+    // Apply regex searches last
+    if (filterSet[currentTab]["attributes"].size !== 0) {
+        let filter = {};
+        filter['<' + abbreviated + '_other_agent>'] = {
+            '$regex': '^([A-Z][A-Z][A-Z].)*(' + [...filterSet[currentTab]["attributes"]].join('|') + ')'
+        };
+        actorFilters.push(filter);
     }
+
+    if (searchText.length % 3 === 0 && searchText.length !== 0) {
+        const tags = searchText.match(/.{3}/g);
+
+        let filter = {};
+        filter['<' + currentTab + '>'] = { '$regex': '^([A-Z][A-Z][A-Z])*(' + tags.join('|') + ')' };
+        actorFilters.push(filter)
+    }
+
+    let actorFiltersOp = {};
+    actorFiltersOp[operator] = actorFilters;
 
     let stagedSubsetData = [];
-    for (let child_id in subsetData) {
-        let child = subsetData[child_id];
+    for (let child of subsetData) {
         if (child.name.indexOf("Query") !== -1) {
             stagedSubsetData.push(child)
         }
@@ -1431,23 +1329,30 @@ function actorSearch(actorName) {
 
     let stagedQuery = buildSubset(stagedSubsetData);
 
+    // If no filters are set, don't add any filtering
+    let subsets;
+    if (actorFilters.length !== 0) {
+        subsets = {'$and': [stagedQuery, actorFiltersOp]};
+    } else {
+        subsets = stagedQuery;
+    }
+
     // Submit query and update listings
     query = {
-        'subsets': JSON.stringify({'$and': [stagedQuery, ...actorFilters]}),
+        'subsets': JSON.stringify(subsets),
         'dataset': dataset,
         'type': currentTab
     };
 
     function updateActorListing(data) {
         if ('source' in data) {
-            document.getElementById("orgSourcesList").innerHTML = "";
             actorData.source.full = data.source;
-            loadDataHelper(0, 0);
+            loadDataHelper("source", "full");
         }
         if ('target' in data) {
-            document.getElementById("orgTargetsList").innerHTML = "";
+            document.getElementById("searchListTargets").innerHTML = "";
             actorData.target.full = data.target;
-            loadDataHelper(0, 1);
+            loadDataHelper("target", "full");
         }
     }
     makeCorsRequest(subsetURL, query, updateActorListing);
