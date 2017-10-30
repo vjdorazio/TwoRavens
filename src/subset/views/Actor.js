@@ -141,14 +141,13 @@ function linkObj(source, target, rev, dup) {
 const actorNodes = [];
 const actorLinks = [];
 
-const currentScreen = [];					//the currently viewed items
 let currentTab = "source";
 
 var sourceCurrentNode = null;			//current source node that is selected
 var targetCurrentNode = null;
 let currentSize = 0;					//total number of nodes created; this is never decremented
-let sourceSize = 0;						//total number of source nodes created; this is never decremented
-let targetSize = 0;						//total number of target nodes created; this is never decremented
+var sourceSize = 0;						//total number of source nodes created; this is never decremented
+var targetSize = 0;						//total number of target nodes created; this is never decremented
 var sourceActualSize = 0;				//total number of source nodes present
 var targetActualSize = 0;				//total number of target nodes present
 let changeID = 0;						//number that is updated whenever a node is added/changed, set to actorID
@@ -474,23 +473,19 @@ function updateSVG() {
 
     //performs on "click" of node, shows actor selection on node click; call moved to mousedown because click() did not fire for Chrome
     function nodeClick(d) {
-        if (window[d.actor + "CurrentNode"] === d) {
-            $("#" + d.actor + "TabBtn").trigger("click");
-        }
-        else if (window[currentTab + "CurrentNode"] !== d) {			//only update gui if selected node is different than the current
-            $("#" + d.actor + "TabBtn").trigger("click");
+        window[currentTab + "CurrentNode"].group = [...filterSet[currentTab]["full"]];
+        $("#" + d.actor + "TabBtn").trigger("click");
+
+        if (window[currentTab + "CurrentNode"] !== d) {			//only update gui if selected node is different than the current
+
             window[currentTab + "CurrentNode"] = d;
+            filterSet[currentTab]["full"] = new Set(d.group);
 
             //update gui
             updateGroupName(d.name);
-            $("#clearAll" + capitalizeFirst(currentTab) + "s").click();
-
-            //update actor selection checks
-            $("." + currentTab + "Chk:checked").prop("checked", false);
-            for (let x = 0; x < d.groupIndices.length; x++)
-                $("#" + d.groupIndices[x]).prop("checked", true);
-
-            $("#" + currentTab + "ShowSelected").trigger("click");
+            clearChecks();
+            document.getElementById(currentTab + "ShowSelected").checked = true;
+            showSelected(document.getElementById(currentTab + "ShowSelected"));
         }
     }
 
@@ -804,7 +799,7 @@ function actorDataLoad() {
         }
 
         for (let y = 0; y < orgs.length; y++) {
-            createElement(true, actorType, "Org", orgs[y], y, orgList);
+            createElement(true, actorType, "entities", orgs[y], y, orgList);
         }
 
         for (let columnType in actorData[actorType]) {
@@ -853,6 +848,11 @@ function loadDataHelper(actorType, columnType) {
 
 // creates elements and adds to display
 function createElement(chkSwitch = true, actorType, columnType, value, index, displayList) {
+    // Don't create an element if it is not selected and must be selected
+    if (document.getElementById(currentTab + "ShowSelected").checked && !filterSet[actorType][columnType].has(value)) {
+        return;
+    }
+
     const separator = document.createElement("div");
     separator.className = "separator";
 
@@ -862,6 +862,7 @@ function createElement(chkSwitch = true, actorType, columnType, value, index, di
     chkbox.id = actorType + columnType + "Check" + index;
     chkbox.value = value;
     chkbox.className = "actorChk";
+    chkbox.checked = filterSet[actorType][columnType].has(value);
 
     if (chkSwitch) {
         chkbox.onchange = function () {
@@ -972,8 +973,6 @@ function actorFilterChanged(element) {
         }
     }
 
-    console.log(element.name);
-
     if (element.name.indexOf("OrgCheck") !== -1) {
         filterListing = filterSet[currentTab]["entities"];
         toggleFilter(element);
@@ -1027,18 +1026,13 @@ function actorFilterChanged(element) {
     actorSearch(currentTab);
 }
 
-//returns a string with the actor ending stripped
-function removeEnding(str) {
-    return str.substring(0, str.length - 4);
-}
-
 //clears search and filter selections
 $(".clearActorBtn").click(function (event) {
     clearChecks();
     actorSearch(currentTab);
 });
 
-//performs clearing of all filter checks
+// Clear all filters
 function clearChecks() {
     document.getElementById(currentTab + "Search").value = "";
     $("#" + currentTab + "Filter :checkbox").prop("checked", false);
@@ -1072,25 +1066,7 @@ $(".actorShowSelected").ready(function () {
 
 //called when showing only selected elements, element is the checkbox calling the function
 function showSelected(element) {
-    if (element.checked) {
-        currentScreen.length = 0;
-        clearChecks();
-
-        $("#" + element.id).prop("checked", true);		//set self to checked because clearChecks() removes the check
-
-        $("." + currentTab + "Chk").each(function (i, element) {
-            if (element.checked) {
-                currentScreen.push(i);
-                $("#" + element.id).css("display", "inline-block");
-                $("#" + element.id).next().css("display", "inline-block");		//set label for checkbox to visible
-            }
-            else {
-                $("#" + element.id).css("display", "none");
-                $("#" + element.id).next().css("display", "none");
-            }
-        });
-    }
-    else $("#clearAll" + capitalizeFirst(currentTab) + "s").click();		//later implement to restore previous view?
+    actorSearch(currentTab);
 }
 
 //on load of page, keep checkbox for selecting all filters unchecked
@@ -1101,70 +1077,45 @@ $(".allCheck").ready(function () {
 //selects all checks for specified element, handles indeterminate state of checkboxes
 $(".allCheck").click(function (event) {
     const currentEntityType = event.target.id.substring(6, 9);
-    const currentElement = (currentEntityType == "Org") ? $("#" + currentTab + currentEntityType + "AllCheck") : $("#" + currentTab + "CountryAllCheck");
+    const currentElement = (currentEntityType === "Org") ? $("#" + currentTab + currentEntityType + "AllCheck") : $("#" + currentTab + "CountryAllCheck");
 
     currentElement.prop("indeterminate", false);
-    if (currentElement.prop("checked")) {
-        if (currentEntityType == "Org") {
-            $("#org" + capitalizeFirst(currentTab) + "sList input:checkbox:not(:checked)").each(function () {
-                window[currentTab + "EntityChecked"].push(this.value + "orga");
-                $(this).prop("checked", true);
-            });
-            window[currentTab + "OrgSelect"] = window[currentTab + "OrgLength"];
-        }
-        else {
-            $("#country" + capitalizeFirst(currentTab) + "sList input:checkbox:not(:checked)").each(function () {
-                window[currentTab + "EntityChecked"].push(this.value + "coun");
-                $(this).prop("checked", true);
-            });
-            window[currentTab + "CountrySelect"] = window[currentTab + "CountryLength"];
-        }
+
+    let entityDiv;
+    if (currentEntityType === "Org") {
+        entityDiv = $("#org" + capitalizeFirst(currentTab) + "sList input:checkbox");
+    } else {
+        entityDiv = $("#country" + capitalizeFirst(currentTab) + "sList input:checkbox");
     }
-    else {
-        if (currentEntityType == "Org") {
-            $("#org" + capitalizeFirst(currentTab) + "sList input:checkbox:checked").each(function () {
-                window[currentTab + "EntityChecked"].splice(window[currentTab + "EntityChecked"].indexOf(this.value + "orga"), 1);
-                $(this).prop("checked", false);
-            });
-            window[currentTab + "OrgSelect"] = 0;
-        }
-        else {
-            $("#country" + capitalizeFirst(currentTab) + "sList input:checkbox:checked").each(function () {
-                window[currentTab + "EntityChecked"].splice(window[currentTab + "EntityChecked"].indexOf(this.value + "coun"), 1);
-                $(this).prop("checked", false);
-            });
-            window[currentTab + "CountrySelect"] = 0;
-        }
+
+    if (currentElement.prop("checked")) {
+        entityDiv.each(function () {
+            filterSet[currentTab]['entities'].add(this.value);
+            $(this).prop("checked", true);
+        });
+    } else {
+        entityDiv.each(function() {
+            filterSet[currentTab]['entities'].delete(this.value);
+            $(this).prop("checked", false);
+        });
     }
     actorSearch(currentTab);
 });
 
 //adds all of the current matched items into the current selection
 $(".actorSelectAll").click(function (event) {
-    for (let x = 0; x < currentScreen.length; x++) {
-        if (window[currentTab + "CurrentNode"].group.indexOf(window[currentTab + "FullList"][currentScreen[x]]) < 0) {
-            window[currentTab + "CurrentNode"].group.push(window[currentTab + "FullList"][currentScreen[x]]);
-            window[currentTab + "CurrentNode"].groupIndices.push(currentTab + "FullCheck" + currentScreen[x]);
-        }
-        $("#" + currentTab + "FullCheck" + currentScreen[x]).prop("checked", true);
-    }
+    $("#searchList" + capitalizeFirst(currentTab) + "s").children().each(function () {
+        filterSet[currentTab]["full"].add(this.value);
+        this.checked = true;
+    });
 });
 
 //clears all of the current matched items from the current selection
 $(".actorClearAll").click(function (event) {
-    if ($("#" + currentTab + "ShowSelected").prop("checked")) {
-        $("#" + currentTab + "ShowSelected").prop("checked", false);
-        $("#clearAll" + capitalizeFirst(currentTab) + "s").click();
-    }
-
-    for (let x = 0; x < currentScreen.length; x++) {
-        index = window[currentTab + "CurrentNode"].group.indexOf(window[currentTab + "FullList"][currentScreen[x]]);
-        if (index > -1) {
-            window[currentTab + "CurrentNode"].group.splice(index, 1);
-            window[currentTab + "CurrentNode"].groupIndices.splice(index, 1);
-            $("#" + currentTab + "FullCheck" + currentScreen[x]).prop("checked", false);
-        }
-    }
+    $("#searchList" + capitalizeFirst(currentTab) + "s").children().each(function () {
+        filterSet[currentTab]["full"].delete(this.value);
+        this.checked = false;
+    });
 });
 
 //adds a new group for source/target
@@ -1175,11 +1126,18 @@ $(".actorNewGroup").click(function (event) {
     currentSize++;
     changeID++;
 
+    // Save values to the current node
+    window[currentTab + "CurrentNode"].group = [...filterSet[currentTab]["full"]];
+
+    // Set current node to new node
     window[currentTab + "CurrentNode"] = actorNodes[actorNodes.length - 1];
     updateGroupName(window[currentTab + "CurrentNode"].name);
+
     //update gui
     $("#clearAll" + capitalizeFirst(currentTab) + "s").click();
-    $("." + currentTab + "Chk:checked").prop("checked", false);
+    filterSet[currentTab]["full"] = new Set();
+    actorSearch(currentTab);
+
     //update svg
     //change dimensions of SVG if needed (exceeds half of the space)
     if (window[currentTab + "ActualSize"] > calcCircleNum(actorHeight)) {
@@ -1300,20 +1258,26 @@ function actorSearch(actorName) {
         actorFilters.push(filter);
     }
 
-    // Apply regex searches last
     if (filterSet[currentTab]["attributes"].size !== 0) {
         let filter = {};
+
         filter['<' + abbreviated + '_other_agent>'] = {
-            '$regex': '^([A-Z][A-Z][A-Z].)*(' + [...filterSet[currentTab]["attributes"]].join('|') + ')'
+            '$regex':  "^(....)*(" + [...filterSet[currentTab]["attributes"]].join('|') + ")"
         };
         actorFilters.push(filter);
     }
 
+    // Apply the lookahead search regex last, as it is the most expensive
     if (searchText.length % 3 === 0 && searchText.length !== 0) {
         const tags = searchText.match(/.{3}/g);
 
+        let regex = "";
+        for (let tag of tags) {
+            regex = regex + "(?=^(...)*" + tag + ")";
+        }
+
         let filter = {};
-        filter['<' + currentTab + '>'] = { '$regex': '^([A-Z][A-Z][A-Z])*(' + tags.join('|') + ')' };
+        filter['<' + currentTab + '>'] = { '$regex': regex + ".*" };
         actorFilters.push(filter)
     }
 
@@ -1358,7 +1322,6 @@ function actorSearch(actorName) {
     makeCorsRequest(subsetURL, query, updateActorListing);
 }
 
-//does as its name says; returns a string with the first character capitalized
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.substring(1);
 }

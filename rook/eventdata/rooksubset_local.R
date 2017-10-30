@@ -113,14 +113,14 @@ eventdata_subset_local.app <- function(env) {
     pagination = everything$page
 
     if (!is.null(type) && type == 'source') {
-        uniques = sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets))
-        response$write(toString(jsonlite::toJSON(list(source = uniques))))
+        unique_vals = sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets))
+        response$write(toString(jsonlite::toJSON(list(source = unique_vals))))
         return(response$finish())
     }
 
     if (!is.null(type) && type == 'target') {
-        uniques = sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets))
-        response$write(toString(jsonlite::toJSON(list(target = uniques))))
+        unique_vals = sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets))
+        response$write(toString(jsonlite::toJSON(list(target = unique_vals))))
         return(response$finish())
     }
 
@@ -139,20 +139,14 @@ eventdata_subset_local.app <- function(env) {
         return(response$finish())
     }
 
-    unique = function(values) {
+    uniques = function(values) {
         accumulator = list()
         for (key in values) {
             if (key != "") {
-
-                for (elem in strsplit(key, ';')) {
-                    if (!(elem %in% accumulator)) {
-                        accumulator = c(accumulator, elem)
-                    }
-                }
-
+                accumulator = c(accumulator, strsplit(key, ';'))
             }
         }
-        return(sort(unlist(accumulator)))
+        return(sort(unlist(unique(do.call(c, accumulator)))))
     }
 
     # Collect frequency data necessary for date plot
@@ -177,7 +171,7 @@ eventdata_subset_local.app <- function(env) {
     actor_source = sort(RMongo::dbGetDistinct(connection, table, 'Source', subsets))
     actor_source_entities = sort(RMongo::dbGetDistinct(connection, table, 'SrcActor', subsets))
     actor_source_role = sort(RMongo::dbGetDistinct(connection, table, 'SrcAgent', subsets))
-    actor_source_attributes = unique(RMongo::dbGetDistinct(connection, table, 'SOthAgent', subsets))
+    actor_source_attributes = uniques(RMongo::dbGetDistinct(connection, table, 'SOthAgent', subsets))
 
     actor_source_values = list(
         full = actor_source,
@@ -189,7 +183,7 @@ eventdata_subset_local.app <- function(env) {
     actor_target = sort(RMongo::dbGetDistinct(connection, table, 'Target', subsets))
     actor_target_entities = sort(RMongo::dbGetDistinct(connection, table, 'TgtActor', subsets))
     actor_target_role = sort(RMongo::dbGetDistinct(connection, table, 'TgtAgent', subsets))
-    actor_target_attributes = unique(RMongo::dbGetDistinct(connection, table, 'TOthAgent', subsets))
+    actor_target_attributes = uniques(RMongo::dbGetDistinct(connection, table, 'TOthAgent', subsets))
 
     actor_target_values = list(
         full = actor_target,
