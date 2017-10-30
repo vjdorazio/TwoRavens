@@ -269,3 +269,96 @@ var locationTour = {
         }
     ]
 };
+
+
+tourStartCoordinates = function() {
+    showSubset('Coordinates');
+    hopscotch.startTour(coordinatesTour);
+};
+
+var coordinatesTour = {
+    id: "subset-coordinates-tour",
+    showPrevButton: true,
+    nextOnTargetClick: true,
+    steps: [
+        {
+            title: "Overview",
+            content: "Limit records via latitude and longitude demarcations. Edit the text to move the box on the world map, or move the box on the world map to edit the text in the boxes.",
+            target: document.querySelector("#latUpperLabel"),
+            placement: "left",
+            width: 200
+        },
+        {
+            title: "Switched Bounds",
+            content: "If a boundary is given that is beyond the other boundary, the labels will switch. The labels will switch back if the box on the world map is clicked, or if the text boxes are corrected manually.",
+            target: document.querySelector("#latUpperLabel"),
+            placement: "left",
+            width: 200
+        },
+        {
+            title: "Map Editing",
+            content: "Both edges and corners of the box can be dragged, as well as the entire box!",
+            target: document.querySelector("#worldMapImage"),
+            placement: "left",
+            width: 200
+        },
+        {
+            title: "Stage",
+            content: "'Stage' places the selected bounds in the query summary. The faded 'not' in the query summary allows for negation of the overall box. One may also negate latitude and longitude to select regions outside the demarcated row/column.",
+            target: document.querySelector("#stageButton"),
+            placement: "left",
+            arrowOffset: 140,
+            width: 200
+        }
+    ]
+};
+
+
+tourStartCustom = function() {
+    showSubset('Custom');
+    hopscotch.startTour(customTour);
+};
+
+var customTour = {
+    id: "subset-custom-tour",
+    showPrevButton: true,
+    nextOnTargetClick: true,
+    steps: [
+        {
+            title: "Overview",
+            content: "Manually create or edit a query. Important! Notice that right clicking rules, groups, and queries in the right panel will fill the editor with the query for that element in the tree.",
+            target: document.querySelector("#subsetCustomLabel"),
+            placement: "left",
+            width: 200
+        },
+        {
+            title: "Format",
+            content: "The query must be formatted as JSON. Additionally, queries must be constructed with <a href='https://docs.mongodb.com/manual/reference/operator/query/' target='_blank'>MongoDB query operators</a>.",
+            target: document.querySelector("#subsetCustomEditor"),
+            placement: "left",
+            width: 200
+        },
+        {
+            title: "Column Names",
+            content: "Feel free to use the generalized column names, denoted <>, or the column names specific to the dataset. For example, queries can be written directly with the Phoenix dataset labels.",
+            target: document.querySelector("#subsetCustomEditor"),
+            placement: "left",
+            width: 200
+        },
+        {
+            title: "Validate",
+            content: "Check if the query is valid JSON, and check that the query can be interpreted by MongoDB.",
+            target: document.querySelector("#subsetCustomValidate"),
+            placement: "left",
+            width: 200
+        },
+        {
+            title: "Stage",
+            content: "'Stage' places the selected bounds in the query summary. If the custom query is not valid, a warning will be provided. Keep in mind that matching on a non-existent column is completely valid.",
+            target: document.querySelector("#stageButton"),
+            placement: "left",
+            arrowOffset: 140,
+            width: 200
+        }
+    ]
+};

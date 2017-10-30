@@ -241,6 +241,14 @@ function d3date(init=false) {
 
     dateSVG.append("datecontext");
 
+    dateSVG.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0)
+        .attr("x", 0 - (dateheight / 2))
+        .attr("dy", "2em")
+        .style("text-anchor", "middle")
+        .text("Frequency by Month");
+
     dateSetup = false;
 }
 

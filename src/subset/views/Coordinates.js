@@ -154,14 +154,11 @@ let imgs = svgMap.selectAll("image").data([0]);
 imgs.enter()
     .append("svg:image")
     .attr("id", "worldMapImage")
-    .attr("float", "left")
     .attr("xlink:href", "images/world.svg")
     .attr("x", "0")
     .attr("y", "0")
     .attr("width", "100%")
     .attr("height", "100%");
-
-
 
 var widthCoord = 0.2,
     heightCoord = 0.2,
@@ -213,8 +210,8 @@ var dragrect = newg.append("rect")
     .attr("height", heightCoord)
     .attr("width", widthCoord)
     .attr("fill-opacity", .2)
-    .attr("fill", "#ADADAD")
-    .attr("stroke", "#ADADAD")
+    .attr("fill", "#9D9D9D !important")
+    .attr("stroke", "#9D9D9D")
     .attr("stroke-width", .005)
     .attr("cursor", "move")
     .call(drag);

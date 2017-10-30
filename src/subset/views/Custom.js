@@ -6,7 +6,7 @@ function validateCustom(text, debug=false) {
         if (debug) {
             alert(e);
         }
-        return e;
+        return false;
     }
 
     function callbackValidate(data) {
@@ -15,15 +15,13 @@ function validateCustom(text, debug=false) {
         }
     }
 
-    if (debug) {
-        // Check if query is compatible with API
-        let post = {
-            'subsets': JSON.stringify(text).replace(/\s/g,''),
-            'dataset': dataset,
-            'type': 'validate'
-        };
+    // Check if query is compatible with API
+    let post = {
+        'subsets': JSON.stringify(text).replace(/\s/g,''),
+        'dataset': dataset,
+        'type': 'validate'
+    };
 
-        makeCorsRequest(subsetURL, post, callbackValidate);
-    }
+    makeCorsRequest(subsetURL, post, callbackValidate);
     return true;
 }

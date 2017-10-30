@@ -11,6 +11,7 @@ if (!production) {
 // Set to 'eventdatasubsetapp' to load from API
 let appname = 'eventdatasubsetlocalapp';
 let dataset = 'phoenix';
+// document.getElementById("header").innerHTML = dataset;
 
 // TODO: When the server has field names 'to spec':
 //      Remove the gsub in the R app
@@ -993,14 +994,12 @@ function getSubsetPreferences() {
     }
 
     if (subsetKeySelected === 'Custom') {
-        let text = JSON.stringify(editor.get());
-
-        if (validateCustom(text)) {
+        if (validateCustom(editor.get())) {
             return {
                 id: String(nodeId++),
                 name: 'Custom Subset',
-                custom: text
-            }
+                custom: JSON.stringify(editor.get())
+        }
         } else {
             return {}
         }

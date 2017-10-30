@@ -50,7 +50,8 @@
              onmouseover="about();" onmouseout="closeabout();">
     </a>
 
-    <div id="navbarNav" style="margin-top:11px">
+    <!--<h4><span class="label label-default" id="header" style="display:inline-block"></span></h4>-->
+    <div id="navbarNav" style="margin-top:11px;">
         <label class="btn btn-default ladda-button navbar-right" style="float:right;margin-left:2em;margin-right:1em;"
                id="btnSubmit" onclick="submitQuery()" data-spinner-color="#000000"
                data-style="zoom-in"><span class="ladda-label">Subset</span></label>
@@ -136,6 +137,8 @@
     <button id="tourButtonDate" class="btn btn-default btn-sm" type="button" style="margin-left:5px;margin-top:4px" onclick=tourStartDate()>Date</button>
     <button id="tourButtonAction" class="btn btn-default btn-sm" type="button" style="margin-left:5px;margin-top:4px" onclick=tourStartAction()>Action</button>
     <button id="tourButtonLocation" class="btn btn-default btn-sm" type="button" style="margin-left:5px;margin-top:4px" onclick=tourStartLocation()>Location</button>
+    <button id="tourButtonCoordinates" class="btn btn-default btn-sm" type="button" style="margin-left:5px;margin-top:4px" onclick=tourStartCoordinates()>Coordinates</button>
+    <button id="tourButtonCustom" class="btn btn-default btn-sm" type="button" style="margin-left:5px;margin-top:4px" onclick=tourStartCustom()>Custom</button>
 </div>
 
 <div id="main" class="left" onresize=rightpanelMargin()>
@@ -162,7 +165,7 @@
                     <h3 class="panel-title">World Regions</h3>
                 </div>
                 <label id="Expand_Collapse_Main_Text" class="hide_label">Collapse</label>
-                <button class="btn btn-default" style="cursor:pointer;float:right;margin-right:5px;" onclick="maingraphAction('Expand_Collapse')"><span id="Exp_Col_Icon" class="glyphicon glyphicon-resize-small"></span></button>
+                <button class="btn btn-default" style="cursor:pointer;float:right;margin-right:5px;" onclick="maingraphAction('Expand_Collapse')"><span id="Exp_Col_Icon" class="glyphicon glyphicon-resize-small" style="color:#818181;"></span></button>
                 <button id="Expand_All" class="btn btn-default" type="button" style="float:right;margin-right:5px;" data-toggle="tooltip" onclick=maingraphAction('All')>Plot All</button>
                 <button id="Collapse_All" class="btn btn-default" type="button" style="float:right;margin-right:5px;" data-toggle="tooltip" onclick=maingraphAction('None')>Plot None</button>
             </div>
@@ -405,14 +408,14 @@
             <input id="lonRight" class="form-control" style="display:inline-block;float:left" type="text" value="17.823">
         </div>
 
-        <svg id="worldMap" viewBox="0 0 2 1" style="margin-left:10px;width:calc(100% - 45px);height:calc(100% - 120px);"></svg>
+        <svg id="worldMap" viewBox="0 0 2 1" preserveAspectRatio="xMinYMid" style="margin-left:10px;width:calc(100% - 45px);height:calc(100% - 120px);"></svg>
     </div>
 
     <div id="subsetCustom" style="display:none">
         <div class="panel-heading text-left" id="subsetCustomLabel" style="margin-top:10px;width:14em;float:left">
             <h3 class="panel-title">Custom Query String</h3>
         </div>
-        <button id="subsetCustomValidate" onClick="validateCustom(editor.get(), print=true)"
+        <button id="subsetCustomValidate" onClick="validateCustom(editor.get(), true)"
                 class="btn btn-default" style="display:inline;margin-top:10px;">Validate</button>
         <div id="subsetCustomEditor" style="resize:none;margin-left:10px;margin-top:5px;width:calc(100% - 45px); height:calc(100% - 59px);"></div>
     </div>

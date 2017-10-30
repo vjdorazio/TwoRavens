@@ -574,7 +574,7 @@ function subGraphLabel(cid) {
         '                    <h3 class="panel-title">' + map_location_rid_rname.get(cid) + '</h3>\n' +
         '                </div>\n' +
         '                <label id="expand_collapse_text_' + cid + '" class="hide_label">Collapse</label>\n' +
-        '                <button class="btn btn-default" style="cursor:pointer;float:right;margin-right:5px;" onclick="subgraphAction(\'expand_collapse_text_' + cid + '\')"><span id="Exp_Col_Icon_' + cid + '" class="glyphicon glyphicon-resize-small"></span></button>\n' +
+        '                <button class="btn btn-default" style="cursor:pointer;float:right;margin-right:5px;" onclick="subgraphAction(\'expand_collapse_text_' + cid + '\')"><span id="Exp_Col_Icon_' + cid + '" class="glyphicon glyphicon-resize-small" style="color:#818181 !important;"></span></button>\n' +
         '                <button class="btn btn-default" type="button" style="float:right;margin-right:5px;" data-toggle="tooltip" onclick=subgraphAction(\'All_' + cid + '\')>Select All</button>\n' +
         '                <button class="btn btn-default" type="button" style="float:right;margin-right:5px;" data-toggle="tooltip" onclick=subgraphAction(\'None_' + cid + '\')>Deselect All</button>\n' +
         '            </div>\n' +

@@ -127,7 +127,10 @@ eventdata_subset_local.app <- function(env) {
     if (!is.null(type) && type == 'validate') {
 
         handler = function(exc) {
-            response$write(paste('{"response": "The custom query is malformed:\n', toString(exc), '"}'))
+            cleanedExc = gsub('\\\n', '', gsub('"', "'", toString(exc)))
+            print(paste('{"response": "The custom query is malformed:', cleanedExc, '"}'))
+
+            response$write(paste('{"response": "The custom query is malformed:', cleanedExc, '"}'))
         }
 
         tryCatch({
